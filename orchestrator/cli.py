@@ -9,13 +9,13 @@ import shutil
 import sys
 from pathlib import Path
 from .codex_runner import discover_codex
-from .config import load_config, profile_by_id
+from .config import load_config, profile_by_id, validate_codex_settings
 from .evidence import create_run, save_process, write_json
 from .process import run_process
-from .scheduler import load_tasks, plan, run_task, task_order, validate_tasks
+from .scheduler import format_plan, load_tasks, plan, run_plan, run_task, task_order, validate_tasks
 from .schemas import read_json
 from .materials import load_proofs
-from .verifier_runner import verify_profile
+from .verifier_runner import current_proof_evidence, verify_profile
 from .workspace import checked_path
 
 
@@ -55,8 +55,8 @@ def validate_repository(root: Path, config: dict) -> dict:
         documents = {name: (root / "input" / name).read_text(encoding="utf-8")
                      for name in ("requirements.md", "properties.md", "assumptions.md", "trust.md", "proofs.md")}
         for name, body in documents.items():
-            if "Status: DRAFT." not in body:
-                errors.append(f"{name} must remain DRAFT")
+            if not re.search(r"Status: (DRAFT|REVIEWED|APPROVED)\.", body):
+                errors.append(f"{name} must declare its review status")
         raft = "\n".join(documents.values())
         tasks = load_tasks(root, config)
         if not tasks:
@@ -65,6 +65,7 @@ def validate_repository(root: Path, config: dict) -> dict:
         obligations, coverage = load_proofs(root)
         indexed = {o['id']: o for o in obligations}
         ids = set(indexed)
+        local_ids = set(config.get("local_obligations", {}))
         task_order([dict(id=o['id'], dependency_ids=o['dependencies']) for o in obligations])
         safety = {"S-ELECTION", "S-APPEND", "S-LOG", "S-COMPLETE", "S-APPLY", "S-INTERFACE"}
         liveness = {"L-ELECTION", "L-COMMIT", "L-DELIVER"}
@@ -78,7 +79,7 @@ def validate_repository(root: Path, config: dict) -> dict:
         if not assumptions or len(assumptions) != len(set(assumptions)) or not tcb or len(tcb) != len(set(tcb)):
             errors.append("missing or duplicate assumption/TCB IDs")
         for task in tasks:
-            if set(task['target_obligation_ids']) - ids:
+            if set(task['target_obligation_ids']) - ids - local_ids:
                 errors.append(f"{task['id']}: unknown obligations")
         inherited = {}
         model_source = checked_path(root, "crates/raft-spec/src/lib.rs").read_text()
@@ -91,8 +92,11 @@ def validate_repository(root: Path, config: dict) -> dict:
                 inherited[identifier].update(inherited[dependency])
             if identifier.startswith("PO-S-") and any(a.startswith("A-L-") for a in inherited[identifier]):
                 errors.append(f"{identifier}: safety depends on a liveness environment assumption")
-            if item['status'] not in {"OPEN", "IN_PROGRESS", "BLOCKED", "REVIEW_REQUIRED"}:
-                errors.append(f"{identifier}: no reviewed ingestion path for a completed proof")
+            if item['status'] not in {"OPEN", "IN_PROGRESS", "BLOCKED", "REVIEW_REQUIRED", "CHECKED"}:
+                errors.append(f"{identifier}: unknown proof status")
+            if item['status'] == "CHECKED" and not any(current_proof_evidence(root, profile, identifier)
+                    for profile in config["profiles"] if identifier in profile.get("expected_obligation_ids", [])):
+                errors.append(f"{identifier}: CHECKED requires current real independent proof evidence")
             if set(item['blocking_decision_ids']) - {f"ADR-{n:02d}" for n in range(1, 11)}:
                 errors.append(f"{identifier}: unknown decision ID")
             source = model_source
@@ -104,7 +108,7 @@ def validate_repository(root: Path, config: dict) -> dict:
         if set(full.get('expected_obligation_ids', [])) != ids:
             errors.append("full checking profile and proof checklist disagree")
         for profile in config['profiles']:
-            if set(profile.get('expected_obligation_ids', [])) - ids:
+            if set(profile.get('expected_obligation_ids', [])) - ids - local_ids:
                 errors.append(f"{profile['id']}: unknown checked obligation")
             for entry in profile['entrypoints']:
                 if not checked_path(root, entry).is_file():
@@ -118,8 +122,8 @@ def validate_repository(root: Path, config: dict) -> dict:
             for source in entry['source_paths']:
                 if not checked_path(root, source).is_file():
                     errors.append("coverage references a missing source")
-        from .scheduler import approval_bindings
-        approval_bindings(root, config)
+        from .scheduler import input_bindings
+        input_bindings(root, config)
     except (ValueError, KeyError, OSError, TypeError) as exc:
         errors.append(str(exc))
     return {"status": "PASS" if not errors else "FAIL", "check_kind": "STRUCTURAL_ONLY",
@@ -132,26 +136,39 @@ def report_run(root: Path, run_id: str) -> dict:
         raise ValueError("invalid run ID")
     directory = root / "evidence/runs" / run_id
     metadata = read_json(directory / "run.json")
-    conclusion = read_json(directory / "conclusion.json")
+    conclusion_path = directory / "conclusion.json"
+    conclusion = read_json(conclusion_path if conclusion_path.is_file() else directory / "plan-state.json")
     checks = [read_json(path) for path in sorted(directory.rglob("*.check.json"))
               if "candidate" not in path.relative_to(directory).parts]
     return {"run": metadata, "controller_conclusion": conclusion, "independent_checks": checks,
-            "evidence_scope": "LOCAL_DEVELOPMENT_NOT_TAMPER_RESISTANT", "full_acceptance": False}
+            "evidence_scope": "LOCAL_DEVELOPMENT_NOT_TAMPER_RESISTANT", "full_acceptance": bool(conclusion.get("full_acceptance"))}
 
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="DRAFT Raft workflow; default operations do not invoke Codex exec")
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--config", default="workflow.toml")
+    parser.add_argument("--model", help="Codex model override for this invocation; does not start generation")
+    parser.add_argument("--reasoning-effort", help="Codex model_reasoning_effort override, for example high")
     commands = parser.add_subparsers(dest="command", required=True)
-    for name in ("doctor", "validate", "plan"):
+    for name in ("doctor", "validate"):
         commands.add_parser(name)
+    planning = commands.add_parser("plan")
+    planning.add_argument("--format", choices=("json", "text"), default="json")
     run = commands.add_parser("run-task")
     run.add_argument("--task", required=True)
     mode = run.add_mutually_exclusive_group()
     mode.add_argument("--dry-run", action="store_true")
     mode.add_argument("--execute-codex", action="store_true")
-    run.add_argument("--approval-file", type=Path)
+    for command in ("run-plan", "resume"):
+        batch = commands.add_parser(command)
+        if command == "resume":
+            batch.add_argument("--run-id", required=True)
+        else:
+            batch.add_argument("--tasks", nargs="+")
+        batch_mode = batch.add_mutually_exclusive_group()
+        batch_mode.add_argument("--dry-run", action="store_true")
+        batch_mode.add_argument("--execute-codex", action="store_true")
     prompt = commands.add_parser("prompt")
     prompt.add_argument("--task", required=True)
     verify = commands.add_parser("verify")
@@ -162,6 +179,11 @@ def main(argv=None) -> int:
     try:
         root = args.root.resolve()
         config = load_config(root, args.config)
+        if args.model is not None:
+            config.setdefault("codex", {})["model"] = args.model
+        if args.reasoning_effort is not None:
+            config.setdefault("codex", {})["model_reasoning_effort"] = args.reasoning_effort
+        validate_codex_settings(config.get("codex", {}))
         if args.command == "prompt":
             from .scheduler import render_prompt
             task = next((t for t in load_tasks(root, config) if t['id'] == args.task), None)
@@ -175,8 +197,14 @@ def main(argv=None) -> int:
             result = validate_repository(root, config)
         elif args.command == "plan":
             result = plan(root, config)
+            if args.format == "text":
+                print(format_plan(result))
+                return 1 if result.get("errors") else 0
         elif args.command == "run-task":
-            result = run_task(root, config, args.task, args.execute_codex, args.approval_file)
+            result = run_task(root, config, args.task, args.execute_codex)
+        elif args.command in {"run-plan", "resume"}:
+            result = run_plan(root, config, getattr(args, "tasks", None), args.execute_codex,
+                              resume_id=getattr(args, "run_id", None))
         elif args.command == "verify":
             run_id, directory = create_run(root, "verify")
             result = verify_profile(root, profile_by_id(config, args.profile), directory, run_id)

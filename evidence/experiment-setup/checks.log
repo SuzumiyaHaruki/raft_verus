@@ -1,0 +1,330 @@
+
+COMMAND ["bash", "-n", "experiment.sh"]
+
+EXIT 0; ELAPSED 0.005s
+
+COMMAND ["python3", "-m", "orchestrator", "validate"]
+{
+  "status": "PASS",
+  "check_kind": "STRUCTURAL_ONLY",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "errors": [],
+  "meaning": "Markdown references and configuration checks only; no proof obligation closed"
+}
+
+EXIT 0; ELAPSED 0.536s
+
+COMMAND ["/home/nitro/Desktop/raft_verus/experiment.sh"]
+{
+  "status": "DRY_RUN",
+  "agent_calls": 0,
+  "resume_id": null,
+  "completion_scope": "SELECTED_STEPS_ONLY",
+  "full_acceptance": false,
+  "codex_request": {
+    "model": "gpt-6.1-sol",
+    "model_reasoning_effort": "high"
+  },
+  "tasks": [
+    "REPLICATION-RECONCILE",
+    "REPLICATION-PROOF",
+    "REPLICATION-REPLAY",
+    "INTEGRATION-MEASURE"
+  ]
+}
+
+EXIT 0; ELAPSED 0.423s
+
+COMMAND ["python3", "-m", "unittest", "discover", "-s", "orchestrator/tests", "-v"]
+test_agent_claim_does_not_overrule_independent_failure (test_adapters.AdapterTests) ... ok
+test_agent_local_build_outputs_do_not_mutate_candidate_sources (test_adapters.AdapterTests) ... ok
+test_changes_during_check_invalidate_result (test_adapters.AdapterTests) ... ok
+test_checked_targets_cannot_be_unrelated (test_adapters.AdapterTests) ... ok
+test_cli_capability_discovery (test_adapters.AdapterTests) ... ok
+test_codex_success_is_candidate_only (test_adapters.AdapterTests) ... ok
+test_explicit_model_and_effort_reach_the_subprocess (test_adapters.AdapterTests) ... ok
+test_fake_verifier_pass_is_simulated (test_adapters.AdapterTests) ... ok
+test_invalid_model_settings_are_rejected (test_adapters.AdapterTests) ... ok
+test_missing_verifier (test_adapters.AdapterTests) ... ok
+test_negative_smoke_requires_actual_rejection (test_adapters.AdapterTests) ... ok
+test_protocol_errors (test_adapters.AdapterTests) ... ok
+test_real_schema_rejects_trusted_result_in_agent_report (test_adapters.AdapterTests) ... ok
+test_typecheck_is_separate_from_proof_pass (test_adapters.AdapterTests) ... ok
+test_unknown_event_preserved_with_warning (test_adapters.AdapterTests) ... ok
+test_unset_model_and_effort_do_not_override_codex_defaults (test_adapters.AdapterTests) ... ok
+test_verifier_failure_modes_never_pass (test_adapters.AdapterTests) ... ok
+test_zero_verification_is_not_a_proof_pass (test_adapters.AdapterTests) ... ok
+test_cli_model_override_is_visible_bound_and_does_not_enable_execution (test_modules.ModuleTests) ... ok
+test_fixture_plan_passes_only_selected_step (test_modules.ModuleTests) ... ok
+test_invalid_module_configuration_cannot_fall_back_to_legacy_task (test_modules.ModuleTests) ... ok
+test_misspelled_duplicate_and_empty_steps_fail_closed (test_modules.ModuleTests) ... ok
+test_module_requirement_edit_still_requires_review (test_modules.ModuleTests) ... ok
+test_planned_module_step_exposes_blocker_without_agent_calls (test_modules.ModuleTests) ... ok
+test_prompt_contains_module_and_exactly_selected_step (test_modules.ModuleTests) ... ok
+test_repository_plan_maps_all_module_steps_and_keeps_global_work (test_modules.ModuleTests) ... ok
+test_text_plan_cli_keeps_json_interface_and_marks_scope (test_modules.ModuleTests) ... ok
+test_allowed_source_change (test_policy.PolicyTests) ... ok
+test_contract_checker_lock_and_deleted_file_are_protected (test_policy.PolicyTests) ... ok
+test_scanner_distinguishes_comments_and_strings (test_policy.PolicyTests) ... ok
+test_scanner_flags_unfinished_unsafe_and_conditional_coverage (test_policy.PolicyTests) ... ok
+test_symlink_rejected_even_within_permitted_scope (test_policy.PolicyTests) ... ok
+test_untracked_outside_scope_rejected (test_policy.PolicyTests) ... ok
+test_both_large_streams_do_not_deadlock (test_process.ProcessTests) ... ok
+test_cancel_and_descendant_cleanup (test_process.ProcessTests) ... ok
+test_invalid_limits_and_argv (test_process.ProcessTests) ... ok
+test_large_logs_are_bounded (test_process.ProcessTests) ... ok
+test_large_stdin_unicode_and_shell_characters_are_data (test_process.ProcessTests) ... ok
+test_missing_and_nonexecutable (test_process.ProcessTests) ... ok
+test_nonzero_auth_permission_and_signal (test_process.ProcessTests) ... ok
+test_success_two_streams (test_process.ProcessTests) ... ok
+test_timeout (test_process.ProcessTests) ... ok
+test_actual_registry_structurally_valid (test_registry.RegistryTests) ... ok
+test_coverage_and_profile_mismatches_rejected (test_registry.RegistryTests) ... ok
+test_liveness_cannot_be_removed_to_get_full_pass (test_registry.RegistryTests) ... ok
+test_malformed_markdown_and_duplicate_obligations_rejected (test_registry.RegistryTests) ... ok
+test_review_status_is_separate_from_proof_completion (test_registry.RegistryTests) ... ok
+test_safety_cannot_inherit_liveness_assumption (test_registry.RegistryTests) ... ok
+test_unknown_assumption_is_rejected (test_registry.RegistryTests) ... ok
+test_unproved_checked_status_rejected (test_registry.RegistryTests) ... ok
+test_empty_test_selection_missing_entrypoint_and_tool_fail (test_revision.RevisionTests) ... ok
+test_failed_correctness_check_defers_benchmark_and_keeps_repair_routing (test_revision.RevisionTests) ... ok
+test_fault_feedback_preserves_trace_seed_states_and_reproduction (test_revision.RevisionTests) ... ok
+test_fixture_mode_does_not_authorize_an_arbitrary_executable (test_revision.RevisionTests) ... ok
+test_interrupted_plan_resumes_same_candidate_and_rechecks_changes (test_revision.RevisionTests) ... ok
+test_measurements_without_threshold_and_noisy_samples_are_not_pass (test_revision.RevisionTests) ... ok
+test_negative_compiler_failure_not_accepted_as_proof_failure (test_revision.RevisionTests) ... ok
+test_ordinary_repair_cannot_weaken_checker (test_revision.RevisionTests) ... ok
+test_planned_task_blocks_before_generation (test_revision.RevisionTests) ... ok
+test_proof_failure_and_solver_timeout_keep_uncertainty (test_revision.RevisionTests) ... ok
+test_real_slice_consumer_rejects_weakened_postcondition_and_stronger_precondition (test_revision.RevisionTests) ... ok
+test_real_tests_without_proof_targets_complete (test_revision.RevisionTests) ... ok
+test_resume_rejects_mutation_between_independent_checks (test_revision.RevisionTests) ... ok
+test_runtime_cfg_binding_is_not_proof_source_but_proof_cfg_still_requires_review (test_revision.RevisionTests) ... ok
+test_simulated_check_cannot_close_obligation (test_revision.RevisionTests) ... ok
+test_task_binding_ignores_unrelated_prose_but_tracks_code_and_checker (test_revision.RevisionTests) ... ok
+test_typecheck_only_completes_without_theorem (test_revision.RevisionTests) ... ok
+test_typecheck_plus_installed_real_verus_proof_and_current_evidence (test_revision.RevisionTests) ... ok
+test_unrelated_real_smoke_cannot_close_named_source_obligation (test_revision.RevisionTests) ... ok
+test_build_only_check_cannot_close_proof_task (test_scheduler.SchedulerTests) ... ok
+test_claimed_success_fails_and_identical_failure_stops_early (test_scheduler.SchedulerTests) ... ok
+test_dependency_not_complete_blocks (test_scheduler.SchedulerTests) ... ok
+test_disabled_bootstrap_and_strict_isolation_block (test_scheduler.SchedulerTests) ... ok
+test_duplicate_unknown_and_cycle_dependencies (test_scheduler.SchedulerTests) ... ok
+test_fake_end_to_end_evidence_and_repeated_run_unique (test_scheduler.SchedulerTests) ... ok
+test_missing_example_inside_stale_and_wrong_scope_approvals (test_scheduler.SchedulerTests) ... ok
+test_missing_input_and_invalid_profile (test_scheduler.SchedulerTests) ... ok
+test_old_controller_evidence_invalidated_by_input_change (test_scheduler.SchedulerTests) ... ok
+test_one_call_budget_and_zero_budget (test_scheduler.SchedulerTests) ... ok
+test_plan_validate_and_dry_run_never_launch_codex (test_scheduler.SchedulerTests) ... ok
+test_prompt_is_plain_markdown_and_includes_real_diagnostics (test_scheduler.SchedulerTests) ... ok
+test_protected_candidate_mutation_requires_review (test_scheduler.SchedulerTests) ... ok
+test_content_untracked_mode_delete_rename (test_workspace.WorkspaceTests) ... ok
+test_copy_preserves_source_and_refuses_existing_destination (test_workspace.WorkspaceTests) ... ok
+test_nested_reserved_names_are_still_in_manifest (test_workspace.WorkspaceTests) ... ok
+test_path_traversal_absolute_backslash_and_root_rejected (test_workspace.WorkspaceTests) ... ok
+test_snapshot_binding_invalidates_changed_input (test_workspace.WorkspaceTests) ... ok
+test_symlink_escape_and_input_validation (test_workspace.WorkspaceTests) ... ok
+
+----------------------------------------------------------------------
+Ran 88 tests in 23.642s
+
+OK
+
+EXIT 0; ELAPSED 23.927s
+
+COMMAND ["python3", "-m", "orchestrator", "doctor"]
+{
+  "run_id": "20261027T064315Z-4790a2cb42ac",
+  "status": "PARTIAL",
+  "tools": {
+    "python": {
+      "status": "AVAILABLE",
+      "version": "3.10.12",
+      "executable": "/usr/bin/python3"
+    },
+    "codex": {
+      "status": "READY",
+      "version": "codex-cli 0.162.0-alpha.17.2"
+    },
+    "rustc": {
+      "status": "AVAILABLE",
+      "version": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+      "executable": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "configured_tool_environment": {
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+      }
+    },
+    "cargo": {
+      "status": "AVAILABLE",
+      "version": "cargo 1.92.0 (344c4567c 2025-10-21)",
+      "executable": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "configured_tool_environment": {
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+      }
+    },
+    "verus": {
+      "status": "AVAILABLE",
+      "version": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu",
+      "executable": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "configured_tool_environment": {
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+      }
+    },
+    "z3": {
+      "status": "AVAILABLE",
+      "version": "Z3 version 4.12.5 - 64 bit",
+      "executable": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+      "configured_tool_environment": {
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+      }
+    },
+    "verus-tla": {
+      "status": "BLOCKED",
+      "version": null,
+      "reason": "no configured locally checked compatible source/toolchain combination"
+    }
+  },
+  "meaning": "read-only local capability observations; no Codex exec or mathematical proof"
+}
+
+EXIT 0; ELAPSED 0.379s
+
+COMMAND ["python3", "crates/raft-verified/check.py", "test"]
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running unittests src/lib.rs (target/debug/deps/raft_verified-7061c45fddf45f90)
+
+running 2 tests
+test tests::exhaustion_never_reuses_a_token ... ok
+test tests::completions_distinguish_incarnation_kind_and_duplicate ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/reconcile.rs (target/debug/deps/reconcile-20ea4cda379a87b4)
+
+running 11 tests
+test all_matching_entries_are_unchanged ... ok
+test appends_at_log_end_and_initializes_empty_log ... ok
+test appends_missing_suffix_after_matching_entries ... ok
+test conflict_copies_complete_incoming_command ... ok
+test empty_append_preserves_matching_tail ... ok
+test invalid_predecessors_leave_log_unchanged ... ok
+test first_entry_can_conflict_and_suffix_can_shrink ... ok
+test matching_term_retains_existing_command_as_model_requires ... ok
+test shorter_matching_input_preserves_tail ... ok
+test replaces_from_first_conflict_only ... ok
+test zero_and_end_predecessors_accept_empty_input ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/replay_cases.rs (target/debug/deps/replay_cases-f3d00735e9842713)
+
+running 2 tests
+test malformed_or_empty_traces_do_not_pass ... ok
+test saved_empty_duplicate_and_conflicting_append_trace_replays ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests raft_verified
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+EXIT 0; ELAPSED 0.139s
+
+COMMAND ["python3", "-m", "orchestrator", "verify", "--profile", "reconcile-proof"]
+{
+  "schema_version": "1",
+  "check_id": "reconcile-proof",
+  "run_id": "20261027T064316Z-37b530440f6c",
+  "check_kind": "local-correspondence",
+  "profile_id": "reconcile-proof",
+  "purpose": "proof",
+  "required": true,
+  "expected_targets": [
+    "check_reconcile_contract",
+    "reconcile_log"
+  ],
+  "expected_obligation_ids": [
+    "LOCAL-RECONCILE"
+  ],
+  "entrypoints": [
+    "crates/raft-proofs/reconcile.rs",
+    "crates/raft-proofs/reconcile_lemmas.rs",
+    "crates/raft-verified/src/reconcile.rs",
+    "crates/raft-spec/src/lib.rs",
+    "crates/raft-spec/src/reconcile_view.rs"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "PASS",
+  "argv": [
+    "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+    "--crate-type",
+    "lib",
+    "--no-cheating",
+    "--output-json",
+    "--time-expanded",
+    "--triggers-mode",
+    "silent",
+    "crates/raft-proofs/reconcile.rs"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus",
+  "input_manifest_digest": "df5cbb87fca4fea16310096223db942a930d22842940a43bcc2207c21edec37a",
+  "tool_versions": {
+    "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+  },
+  "started_at": "2026-10-27T06:43:16.445749+00:00",
+  "finished_at": "2026-10-27T06:43:18.527360+00:00",
+  "exit_code": 0,
+  "stdout_digest": "12ec491118dace82e1abde21b30ab18c09092461e36a45d73d4d33643e6a8b3e",
+  "stderr_digest": "1cf2abba78f27d4ead2b9d2462e04fbc146e9bd2b2ebd57f25ab66e43050e51c",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261027T064316Z-37b530440f6c/reconcile-proof.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261027T064316Z-37b530440f6c/reconcile-proof.stderr.log"
+  ],
+  "obligation_ids_checked": [
+    "LOCAL-RECONCILE"
+  ],
+  "coverage_findings": [
+    "complete Verus entrypoint verified; reviewed target mapping binds its function contracts to local obligations"
+  ],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "tool_environment": {
+    "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+    "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+  },
+  "function_results": {
+    "reconcile::reconcile::RequestId::clone": true,
+    "reconcile::reconcile::reconcile_log": true,
+    "reconcile::reconcile::ReconcileError::clone": true,
+    "reconcile::reconcile::Command::clone": true,
+    "reconcile::reconcile::Entry::clone": true,
+    "reconcile::check_reconcile_contract": true,
+    "reconcile::reconcile_lemmas::merged_empty_preserves_log": true,
+    "reconcile::reconcile_lemmas::merged_matching_preserves_log": true
+  },
+  "entire_crate_checked": true,
+  "verification_summary": {
+    "verified": 9,
+    "errors": 0
+  },
+  "reason": "profile checks passed locally; no full Raft acceptance"
+}
+
+EXIT 0; ELAPSED 2.252s
+SIMULATED launcher dispatch {"args": [], "result": {"argv": ["-m", "orchestrator", "run-plan", "--tasks", "REPLICATION-RECONCILE", "REPLICATION-PROOF", "REPLICATION-REPLAY", "INTEGRATION-MEASURE", "--dry-run"], "cwd": "/home/nitro/Desktop/raft_verus", "bytecode": "1"}}
+SIMULATED launcher dispatch {"args": ["preview"], "result": {"argv": ["-m", "orchestrator", "run-plan", "--tasks", "REPLICATION-RECONCILE", "REPLICATION-PROOF", "REPLICATION-REPLAY", "INTEGRATION-MEASURE", "--dry-run"], "cwd": "/home/nitro/Desktop/raft_verus", "bytecode": "1"}}
+SIMULATED launcher dispatch {"args": ["run"], "result": {"argv": ["-m", "orchestrator", "run-plan", "--tasks", "REPLICATION-RECONCILE", "REPLICATION-PROOF", "REPLICATION-REPLAY", "INTEGRATION-MEASURE", "--execute-codex", "--approval-file", "/tmp/raft-launcher-check-cisa5x_c/approval with spaces.json"], "cwd": "/home/nitro/Desktop/raft_verus", "bytecode": "1"}}
+SIMULATED launcher dispatch {"args": ["resume", "plan-123"], "result": {"argv": ["-m", "orchestrator", "resume", "--run-id", "plan-123", "--execute-codex", "--approval-file", "/tmp/raft-launcher-check-cisa5x_c/approval with spaces.json"], "cwd": "/home/nitro/Desktop/raft_verus", "bytecode": "1"}}
+SIMULATED launcher dispatch {"args": ["report", "plan-123"], "result": {"argv": ["-m", "orchestrator", "report", "--run-id", "plan-123"], "cwd": "/home/nitro/Desktop/raft_verus", "bytecode": "1"}}
+PASS: five launcher dispatch cases and four invalid invocations, all through a local fake Python subprocess; no generation.
+PASS: prepared DRAFT approval is rejected for all four real task scopes by unchanged approval validation.

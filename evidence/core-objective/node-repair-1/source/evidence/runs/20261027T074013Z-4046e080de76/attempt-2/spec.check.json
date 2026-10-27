@@ -1,0 +1,59 @@
+{
+  "schema_version": "1",
+  "check_id": "spec",
+  "run_id": "20261027T074013Z-4046e080de76",
+  "check_kind": "candidate-model-typecheck",
+  "profile_id": "spec",
+  "purpose": "typecheck",
+  "required": true,
+  "expected_targets": [
+    "init",
+    "next",
+    "election_safety",
+    "log_matching"
+  ],
+  "expected_obligation_ids": [],
+  "entrypoints": [
+    "crates/raft-spec/src/lib.rs"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "TYPECHECKED",
+  "argv": [
+    "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+    "--crate-type",
+    "lib",
+    "crates/raft-spec/src/lib.rs"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-1/source/evidence/runs/20261027T074013Z-4046e080de76/candidate",
+  "input_manifest_digest": "2a2b6f6dc1904052fd953385a813cb973bfc0cfa686e88541c15036ce8dc3266",
+  "tool_versions": {
+    "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+  },
+  "started_at": "2026-10-27T07:40:23.957674+00:00",
+  "finished_at": "2026-10-27T07:40:26.082222+00:00",
+  "exit_code": 0,
+  "stdout_digest": "ac38eb7ec194153b4a9c8a0fe622fb1451adbaf12e25b4e6ceea174956f16b4b",
+  "stderr_digest": "ab507bb3fbc38736dbf1494d1a02b35892063775901550f08a959750d015e2de",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-1/source/evidence/runs/20261027T074013Z-4046e080de76/attempt-2/spec.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-1/source/evidence/runs/20261027T074013Z-4046e080de76/attempt-2/spec.stderr.log"
+  ],
+  "obligation_ids_checked": [],
+  "coverage_findings": [
+    "definitions typechecked; zero Raft proof obligations are discharged"
+  ],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "tool_environment": {
+    "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+    "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+  },
+  "verification_summary": {
+    "verified": 0,
+    "errors": 0
+  },
+  "proof_result": "NOT_RUN",
+  "reason": "candidate definitions checked; no mathematical theorem acceptance"
+}

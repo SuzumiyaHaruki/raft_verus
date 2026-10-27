@@ -1,0 +1,47 @@
+{
+  "schema_version": "1",
+  "check_id": "interface-check",
+  "run_id": "20261027T053536Z-dfcf59b15908",
+  "check_kind": "build-only",
+  "profile_id": "interface-check",
+  "purpose": "build",
+  "required": true,
+  "expected_targets": [
+    "raft-verified"
+  ],
+  "expected_obligation_ids": [],
+  "entrypoints": [
+    "crates/raft-verified/src/lib.rs",
+    "crates/raft-verified/src/reconcile.rs",
+    "crates/raft-verified/check.py"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "PASS",
+  "argv": [
+    "python3",
+    "crates/raft-verified/check.py",
+    "build"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus",
+  "input_manifest_digest": "da488b6d56cba718f9f36069cdfbb79f6adb871cdb609186be92d67ea1237f5e",
+  "tool_versions": {},
+  "started_at": "2026-10-27T05:35:36.614861+00:00",
+  "finished_at": "2026-10-27T05:35:37.034905+00:00",
+  "exit_code": 0,
+  "stdout_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_digest": "86deaf37b8238d3cc415ef54db2a4b05edb9ef15f31e30f6dc1c0262ea8f672a",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261027T053536Z-dfcf59b15908/interface-check.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261027T053536Z-dfcf59b15908/interface-check.stderr.log"
+  ],
+  "obligation_ids_checked": [],
+  "coverage_findings": [
+    "build/test only; no mathematical proof"
+  ],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "tool_environment": {},
+  "reason": "profile checks passed locally; no full Raft acceptance"
+}

@@ -1,6 +1,6 @@
 # Raft proof checklist
 
-Status: DRAFT. Every obligation below is OPEN. No evidence has been accepted as a completed Raft proof.
+Status: DRAFT. Every global obligation below is OPEN. Local operation proofs have a separate, bounded meaning; no local result completes the cluster safety/liveness claim.
 
 Read requirements.md, properties.md, assumptions.md, io.md and trust.md for target definitions, assumptions and TCB. This checklist is the source for dependency and coverage checks. Edit plain Markdown; no separate JSON registry is maintained. Lists within table cells are comma-separated; use `-` for an empty list.
 
@@ -67,11 +67,11 @@ Every obligation row covers its listed source/symbols under the full profile. Th
 
 ## Completion limits
 
-- No executable step implementation exists; token helpers do not replace the protocol core.
+- The executable reconciliation operation is a local building block. No complete node/event coordinator exists; its local proof does not replace full handler or cluster refinement.
 - Verify all actual entrypoints, event/error branches, build configuration and transitive dependencies. Counts alone do not establish symbol coverage.
 - Tick, Stutter, Drop and Duplicate are part of step; arbitrary packet consumption models reordering and retention models delay.
 - Full acceptance requires all obligations, including liveness and refinement. Do not delete targets to obtain a pass.
-- The incremental tasks and future simulation/mutation coverage are described in proofs.md#incremental-work.
+- Bounded tasks and missing milestone prerequisites are described in [roadmap.md](roadmap.md).
 
 ## Dependency graph
 
@@ -165,29 +165,35 @@ Internal L-COMMIT lemmas may use a stable leader, but the top-level chain must f
 Full claims also need PO-COMPOSITION to combine local correspondences into an actual cluster execution, PO-LIVE-REFINEMENT to exclude infinite unobservable internal stuttering and preserve fairness, and PO-COVERAGE to cover all formal entrypoints/branches. A handler's postcondition alone establishes only a local result.
 
 
-## Incremental work
+## Local reconciliation result
 
-```mermaid
-flowchart LR
-    T01[T01 Model review] --> T02[T02 Representation and initialization]
-    T02 --> T03[T03 Events and external actions]
-    T03 --> T04[T04 Safety and composition]
-    T04 --> T05[T05 Election liveness]
-    T05 --> T06[T06 Commitment and delivery]
-    T06 --> T07[T07 Liveness refinement]
-    T07 --> T08[T08 Independent full recheck]
-```
+`LOCAL-RECONCILE` means that the executable `reconcile_log` in `crates/raft-verified/src/reconcile.rs` meets its bounds/error contract and corresponds to the existing `merged` relation. The proof entrypoint is `crates/raft-proofs/reconcile.rs`; its selected profile and expected targets are execution metadata in `workflow.toml`. Actual tool output supplies the result, not this prose or the presence of a function name.
 
-| Task | Concrete output | Checking boundary |
+This result preserves the prefix before replacement and the tail of an empty or shorter matching request. Term equality is the model's matching test, so the operation retains old command contents for equal-term overlaps even if incoming contents differ. It does not prove that such different contents are reachable or establish global log matching. Future handlers must establish their message-term, predecessor-term, commit and durability guards. No new environmental assumption is needed merely to describe this local operation.
+
+A successful local proof contributes to later PO-AUX-INDEX, PO-REPRESENTATION and PO-REFINE-STEP work; it closes none of their complete obligations. The specification stays DRAFT even if this local theorem is actually checked. Human approval, local checking and full coverage are different facts.
+
+## Requirement-to-source map
+
+Formal definitions remain in source; this map points to them rather than redefining the mathematics in task prose. All cluster definitions below are in `crates/raft-spec/src/lib.rs` unless stated otherwise. Intended global proofs are unfinished.
+
+| Requirement | Formal definition | Intended proof / present boundary |
 |---|---|---|
-| T01-MODEL | Review model branches/fairness, propose revisions separately, prove Init nonemptiness and inductive invariants | Definition checks do not prove theorems; protected model changes need approval |
-| T02-REFINE-INIT | Rust container/integer views, checked conversions, fresh/recovery representation | No arbitrary corrupt recovery or implicitly infinite counters |
-| T03-REFINE-STEP | Event and I/O coordination implementation; tokens, errors and crash-visible order | Each external action maps to model steps; simulation and runtime share the core |
-| T04-SAFETY | Quorum intersection, voting, freshness, log matching, current-term commitment and global safety | Separate S-* evidence; no A-L-* in the safety chain |
-| T05-ELECTION | Election under explicit timeout windows, message bounds and external term restrictions | Do not assume a stable leader |
-| T06-PROGRESS | Retried/fairly served requests eventually commit; per-node delivery in Q | Accepted is not commitment; delivery is not application |
-| T07-LIVE-REFINE | Finite internal execution, blocking actions, fairness/resource correspondence | Abstract liveness does not automatically transfer to implementation |
-| T08-INTEGRATION | Independent full recheck of all entrypoints, Next/executable branches and top-level theorems | Currently BLOCKED by open obligations, missing implementation and isolation |
+| Reconcile at the first conflicting or missing entry; preserve a matching tail | `merged`; executable contract in `crates/raft-verified/src/reconcile.rs` | `crates/raft-proofs/reconcile.rs`, LOCAL-RECONCILE; only this operation |
+| One historical elected leader per term | `election_safety` | PO-S-ELECTION, using term/vote and quorum invariants |
+| A continuing leader preserves its existing log | `leader_append_only` | PO-S-APPEND, using the relevant transition cases |
+| Equal index/term implies equal prefixes | `log_matching` | PO-S-LOG, using an inductive log invariant |
+| Later leaders retain earlier committed entries | `leader_completeness` | PO-S-COMPLETE, with vote freshness and current-term commitment |
+| Ordered consistent committed delivery and honest errors | `delivery_consistency`, `interface_safety` | PO-DELIVERY and PO-S-INTERFACE, plus executable I/O refinement |
+| Consistent host application by log position | `application_safety` | PO-S-APPLY under A-S-APP |
+| Eventually a persistent leader under stated conditions | `valid_trace`, `l_election` | PO-L-ELECTION; environmental predicate encoding and proof still missing |
+| Every eligible retried request eventually commits | `valid_trace`, `l_commit` | PO-L-COMMIT after election progress and fair request service |
+| Each eligible committed position is eventually delivered | `valid_trace`, `l_deliver` | PO-L-DELIVER after replication and delivery service |
+| Real executions preserve model safety and progress | `observation_refines`, `step`, `valid_trace` plus future executable views | PO-REPRESENTATION, PO-IO, PO-REFINE-STEP, PO-COMPOSITION, PO-LIVE-REFINEMENT; the observation projection alone is insufficient |
+
+## Regression work
+
+The runnable task sequence and the old-to-new task mapping are in [roadmap.md](roadmap.md). The first replay uses only the local reconciliation operation; the broader scenario coverage below is planned.
 
 A future deterministic simulator must use the same executable core and control clocks, messages and I/O completions through an event queue. Record seeds and event sequences. Property tests must cover 1/3/5 nodes, varied finite identities, retry/replay, partition healing, lost/duplicate/late messages, crashes around every persistence boundary, disk failure, unknown senders, wrong-incarnation completions, duplicate acknowledgments, indices and u64 limits. These Raft simulations have not been run.
 
@@ -204,3 +210,5 @@ A future deterministic simulator must use the same executable core and control c
 | New proposals starve old requests; internal spinning | PO-L-COMMIT/PO-LIVE-REFINEMENT |
 
 Differential tests compare permitted external semantics/traces, not identical message sequences. Tests expose counterexamples/regressions; they do not replace proofs for arbitrary finite sizes and infinite traces. Positive/negative proof smoke checks close none of these Raft obligations.
+
+The draft LOCAL-NODE-INIT target checks `Node::new` against the represented fields of `fresh_node`, including success on every valid membership. Its protected consumer is `crates/raft-proofs/node_init.rs`; it imports the exact runtime source. A passing candidate does not close PO-INIT, PO-REPRESENTATION or PO-REFINE-INIT: cluster construction, pending I/O, peer state and whole-node refinement are absent. See STATE-INIT for the executable assignment and its independent checks.

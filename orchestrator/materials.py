@@ -1,5 +1,42 @@
-"""Read the small, human-edited Markdown proof checklist."""
+"""Read module assignments and the human-edited Markdown proof checklist."""
+import re
 from pathlib import Path
+
+
+def module_assignment(path: Path, step: str) -> tuple[str, str]:
+    """Shared module context plus exactly one `## Step: ...` section.
+
+    Steps use level-three subheadings. Fenced examples are not section markers.
+    This deliberately supports the repository's small Markdown convention only.
+    """
+    if not isinstance(step, str) or not step.strip() or "\n" in step:
+        raise ValueError("module assignment needs a step title")
+    lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
+    headings, fence = [], None
+    for index, line in enumerate(lines):
+        marker = re.match(r"^\s{0,3}(`{3,}|~{3,})", line)
+        if marker:
+            token = marker.group(1)
+            if fence is None:
+                fence = token
+            elif token[0] == fence[0] and len(token) >= len(fence):
+                fence = None
+            continue
+        if fence is None and line.startswith("## "):
+            headings.append((index, line[3:].strip()))
+    steps = [(index, title[6:]) for index, title in headings if title.startswith("Step: ")]
+    if len({title for _, title in steps}) != len(steps):
+        raise ValueError(f"{path.name}: duplicate step title")
+    matches = [index for index, title in steps if title == step]
+    if len(matches) != 1:
+        raise ValueError(f"{path.name}: missing step {step!r}")
+    start = matches[0]
+    end = next((index for index, _ in headings if index > start), len(lines))
+    context = "".join(lines[:steps[0][0]]).strip()
+    body = "".join(lines[start + 1:end]).strip()
+    if not context or not body:
+        raise ValueError(f"{path.name}: empty module context or step")
+    return context, f"## Step: {step}\n\n{body}\n"
 
 
 def table(path: Path, heading: str) -> list[dict]:

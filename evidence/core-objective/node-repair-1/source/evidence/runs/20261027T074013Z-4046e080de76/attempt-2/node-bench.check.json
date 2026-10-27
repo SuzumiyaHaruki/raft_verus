@@ -1,0 +1,136 @@
+{
+  "schema_version": "1",
+  "check_id": "node-bench",
+  "run_id": "20261027T074013Z-4046e080de76",
+  "check_kind": "core-microbenchmark",
+  "profile_id": "node-bench",
+  "purpose": "benchmark",
+  "required": true,
+  "expected_targets": [
+    "node construction cost at 1, 3, 5 and 31 members"
+  ],
+  "expected_obligation_ids": [],
+  "entrypoints": [
+    "crates/raft-verified/examples/initialize.rs",
+    "crates/raft-verified/check.py"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "MEASURED",
+  "argv": [
+    "python3",
+    "crates/raft-verified/check.py",
+    "node-bench"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-1/source/evidence/runs/20261027T074013Z-4046e080de76/candidate",
+  "input_manifest_digest": "14f0f51154f50289e4717e265f658602fcbeb69c5d50b72abf637bcb3964ca94",
+  "tool_versions": {},
+  "started_at": "2026-10-27T07:40:30.592104+00:00",
+  "finished_at": "2026-10-27T07:40:31.505131+00:00",
+  "exit_code": 0,
+  "stdout_digest": "0ad7a101580d01c70c48d0307046a853f31157af534d304676391fb555dc3ed5",
+  "stderr_digest": "9d045c11450092658f772e372013dca04fa1a14f6437106b6c88f3f661ea489c",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-1/source/evidence/runs/20261027T074013Z-4046e080de76/attempt-2/node-bench.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-1/source/evidence/runs/20261027T074013Z-4046e080de76/attempt-2/node-bench.stderr.log"
+  ],
+  "obligation_ids_checked": [],
+  "coverage_findings": [],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "tool_environment": {},
+  "measurements": [
+    {
+      "kind": "CORE_MICROBENCHMARK",
+      "result": "MEASURED",
+      "evidence_kind": "REAL_LOCAL",
+      "code_version": "DRAFT candidate bound by checker",
+      "source": "crates/raft-verified/src/node.rs",
+      "build_mode": "release",
+      "workload": "initialize_1_members",
+      "repetitions": 5,
+      "operations_per_sample": 1000,
+      "boundary": "membership allocation, validation, construction and destruction; includes loop/timer overhead",
+      "samples_ns_per_operation": [
+        139.599,
+        138.005,
+        138.128,
+        167.08,
+        120.665
+      ],
+      "threshold": null,
+      "reference_version": null,
+      "comparison": "INCONCLUSIVE_NO_REFERENCE"
+    },
+    {
+      "kind": "CORE_MICROBENCHMARK",
+      "result": "MEASURED",
+      "evidence_kind": "REAL_LOCAL",
+      "code_version": "DRAFT candidate bound by checker",
+      "source": "crates/raft-verified/src/node.rs",
+      "build_mode": "release",
+      "workload": "initialize_3_members",
+      "repetitions": 5,
+      "operations_per_sample": 1000,
+      "boundary": "membership allocation, validation, construction and destruction; includes loop/timer overhead",
+      "samples_ns_per_operation": [
+        123.976,
+        123.369,
+        123.038,
+        123.031,
+        123.124
+      ],
+      "threshold": null,
+      "reference_version": null,
+      "comparison": "INCONCLUSIVE_NO_REFERENCE"
+    },
+    {
+      "kind": "CORE_MICROBENCHMARK",
+      "result": "MEASURED",
+      "evidence_kind": "REAL_LOCAL",
+      "code_version": "DRAFT candidate bound by checker",
+      "source": "crates/raft-verified/src/node.rs",
+      "build_mode": "release",
+      "workload": "initialize_5_members",
+      "repetitions": 5,
+      "operations_per_sample": 1000,
+      "boundary": "membership allocation, validation, construction and destruction; includes loop/timer overhead",
+      "samples_ns_per_operation": [
+        182.209,
+        381.363,
+        123.731,
+        123.734,
+        111.935
+      ],
+      "threshold": null,
+      "reference_version": null,
+      "comparison": "INCONCLUSIVE_NO_REFERENCE"
+    },
+    {
+      "kind": "CORE_MICROBENCHMARK",
+      "result": "MEASURED",
+      "evidence_kind": "REAL_LOCAL",
+      "code_version": "DRAFT candidate bound by checker",
+      "source": "crates/raft-verified/src/node.rs",
+      "build_mode": "release",
+      "workload": "initialize_31_members",
+      "repetitions": 5,
+      "operations_per_sample": 1000,
+      "boundary": "membership allocation, validation, construction and destruction; includes loop/timer overhead",
+      "samples_ns_per_operation": [
+        751.68,
+        774.102,
+        679.886,
+        643.782,
+        663.508
+      ],
+      "threshold": null,
+      "reference_version": null,
+      "comparison": "INCONCLUSIVE_NO_REFERENCE"
+    }
+  ],
+  "performance_verdict": "INCONCLUSIVE",
+  "reference": "No approved reference threshold",
+  "reason": "measurement data recorded; no performance threshold or regression verdict"
+}

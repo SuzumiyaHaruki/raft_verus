@@ -1,0 +1,14 @@
+warning: autoderive Clone impl does not take the form Verus expects; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/reconcile.rs:15:10
+   |
+15 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/reconcile.rs:18:10
+   |
+18 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+warning: 2 warnings emitted
+

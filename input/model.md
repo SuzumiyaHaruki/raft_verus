@@ -1,6 +1,6 @@
 # DRAFT: model semantics and actual boundaries
 
-The candidate entrypoint is `crates/raft-spec/src/lib.rs`. Status: **PARTIAL**; all Raft proof obligations are **OPEN**. It defines a transition relation, not an executable Raft implementation. No protocol-correctness axiom or top-level safety predicate was inserted into `next` guards. After authorized tool installation, actual Verus type/mode checking returned `0 verified, 0 errors`; this proves no Raft theorem.
+The candidate entrypoint is `crates/raft-spec/src/lib.rs`. Status: **PARTIAL**; all 26 global Raft proof obligations are **OPEN**. It defines a transition relation, not an executable Raft implementation. No protocol-correctness axiom or top-level safety predicate was inserted into `next` guards. After authorized tool installation, actual Verus type/mode checking returned `0 verified, 0 errors`; this proves no Raft theorem.
 
 Membership is a parameterized nonempty finite `Set<nat>`; `majority` is strict. Logs are internally zero-based; protocol indices start at 1, with index 0/term 0 as a sentinel, not an entry. `initial(members)` constructs a fresh cluster and `three_node_initial()` instantiates `{0,1,2}`. Recovery reads only the node's own `disk`, not arbitrary caller-supplied abstract state. Refinement to the host input of Rust `Event::Recover` remains open.
 
@@ -36,7 +36,7 @@ Application safety relies on the explicit host transaction/cursor contract. Deli
 
 ## Refinement boundary
 
-All arrows below are planned obligations. Future executable code may use specification views; the specification must not depend on executable code. The candidate direction is `raft-proofs → raft-spec`, with `raft-verified` providing executable types. No cyclic crate dependencies or parallel Raft core are intended.
+The local reconciliation correspondence uses the actual executable source and the existing `merged` definition. The wider arrows below remain planned obligations. The abstract transition model stays independent of executable code. The protected representation adapter in `crates/raft-spec/src/reconcile_view.rs` connects executable entry types to that model inside the proof entrypoint. Runtime Cargo builds erase those ghost references. No cyclic Cargo dependency or parallel Raft core is introduced.
 
 ```mermaid
 flowchart TD
@@ -51,14 +51,14 @@ flowchart TD
 
 ## Explicit gaps and tool observations
 
-1. **Toolchain actually exercised:** initial absence is preserved in `evidence/model-checks.json`. Following user authorization, official Verus `0.2026.01.23.1650a05`, bundled vstd/Z3 4.12.5 and isolated Rust 1.92.0 were installed. Positive smoke returned `2 verified, 0 errors`; the negative example failed its actual postcondition. Model attempt 5 returned `0 verified, 0 errors`; the preceding API/trigger diagnostics remain recorded. The first downloaded `0.2026.10.26.d17fbd0` package had an incompatible bundled Z3 and was not used for acceptance. On 2026-10-27 the temporary tools directory was absent. The same release has since been restored under `/home/nitro/.local/share/raft-verus/`; current check results are in the review packet.
+1. **Local executable boundary:** `reconcile_log` uses `usize` predecessor positions and checked length arithmetic. A future handler must check conversion from protocol `u64`, predecessor/message terms, commit guards and persistence ordering. Rust `Vec` allocation failure may abort; this slice does not supply recoverable allocation failure or executable resource liveness. Actual local proof/build observations belong in the current review packet and `docs/tools.md`, not in model axioms.
 2. **Temporal library BLOCKED:** upstream `verus_temporal_logic` and `defs.rs` APIs (`Execution/TempPred/always/eventually/weak_fairness`) were read, but no compatible Verus/vstd/Rust integration was installed or verified. See [sources](../docs/sources.md); no fabricated pin.
 3. **Interface formalization PARTIAL:** Rust types cover timer generations, send completions, errors and unknown/duplicate completions. The model expands storage/application success, stopping on storage failure and ignoring old incarnations. Same-incarnation unknown/duplicate tokens, timer generations, malformed-message rejection and error returns need a concrete interface state machine. Invalid inputs cannot silently succeed.
 4. **Retry/scheduling PARTIAL:** resending AppendEntries replaces that peer's current RPC. Late failures do not backtrack progress, but liveness must prevent sends from continually displacing every useful response. Unlimited duplication of old same-term heartbeats can suppress elections; finite duplication/draining and outside-Q interference restrictions are necessary beyond higher-term limits. Cancellation, retry scheduling and resource fairness remain unformalized.
-5. **Resources PARTIAL:** spec `nat/Seq/Map` are not Rust `u64/Vec`. Recommend checked overflow/capacity and ResourceExhausted; safe stopping is not liveness. Only operation-token allocation overflow handling is implemented/tested. Terms, indices, allocation failure and durable incarnation freshness remain to implement.
+5. **Resources PARTIAL:** spec `nat/Seq/Map` are not Rust `u64/Vec`. Recommend checked overflow/capacity and ResourceExhausted; safe stopping is not liveness. Operation-token allocation checks and local reconciliation index/length checks are implemented. Handler-wide terms/indices, allocation failure and durable incarnation freshness remain to implement.
 6. **Induction/refinement OPEN:** no proof that Init/Next preserve protocol invariants or imply S/L targets; no actual Raft handler, simulator, cluster composition or infinite-trace liveness-preservation proof.
 
-Cargo builds only the candidate types and token helper. Three Verus entrypoints are checked separately; full remains incomplete. Cargo test success is not Verus/Raft proof success.
+The library now exposes local log reconciliation as well as the candidate types and token helper. The installed-Verus build path checks and compiles the same reconciliation source used by the runtime tests, replay and microbenchmark; see [workflow.md](../docs/workflow.md). The local proof entrypoint is `crates/raft-proofs/reconcile.rs`. Full Raft remains incomplete. Cargo test success and a local operation theorem do not establish cluster safety or liveness.
 
 
 See [tool setup](../docs/tools.md) for recorded commands, installation and provenance. This file describes model semantics and gaps only.

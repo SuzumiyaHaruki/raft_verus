@@ -1,0 +1,692 @@
+{
+  ".agents": {
+    "mode": 365,
+    "kind": "directory"
+  },
+  ".aws": {
+    "mode": 365,
+    "kind": "directory"
+  },
+  ".codex": {
+    "mode": 365,
+    "kind": "directory"
+  },
+  ".gitignore": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "3f2c89f7a6d4bd376c72ca300d2bcc23b0f88c0b8fde81d4e7a7223c4e849be9",
+    "size": 107
+  },
+  "AGENTS.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "fee1e6ffd1a3baa4137884ab6cc69daf6d5aa51bf3203f8d02e71ab509e6f684",
+    "size": 3287
+  },
+  "Cargo.lock": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "a440c119adb4ef540753b502e597215bea10b73b274d5bb78cdb8b5e5a24998f",
+    "size": 157
+  },
+  "Cargo.toml": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "f024b145cda3d9cd2300786cea04d4b2ce3a044ef28bf22b280383e50b07db6d",
+    "size": 231
+  },
+  "README.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "49d95623568a796cf7814080ea4c7f1294df84c888c4367a37c37dda9513a365",
+    "size": 8964
+  },
+  "crates": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "crates/proof-smoke": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "crates/proof-smoke/negative.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "e2c41c7bf0dd2e86f177656bd5d4bc5f3e27851b7f0328897d727e1b8f0eab1f",
+    "size": 233
+  },
+  "crates/proof-smoke/positive.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "eb780307a0be38c675e848880c2ba3038872937ef2da59362ee6e7d9be1a2168",
+    "size": 405
+  },
+  "crates/raft-proofs": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "crates/raft-proofs/README.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "d42cdaaa23cb8ddddbd5fd9ed9186cd781c2ff8d2377602b0275d06a3e4ec735",
+    "size": 3486
+  },
+  "crates/raft-proofs/node_init.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "fdabcc1c17c9ba99aa3b954a91af867a6d34ebdf32a78cd496cb1b6bb6b0b103",
+    "size": 679
+  },
+  "crates/raft-proofs/reconcile.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "0f9acb0b3525f3a763a4e208edf97282af1f258486cdd32d3b28acae4ecf329c",
+    "size": 1891
+  },
+  "crates/raft-proofs/reconcile_lemmas.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "57a975c7f8e1b3736dbaefeaa27b1f6359263d5ffd7df1ea2502c87cc7820c79",
+    "size": 827
+  },
+  "crates/raft-spec": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "crates/raft-spec/src": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "crates/raft-spec/src/lib.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "10cac62adddc8f0d6a88cb7142b1edc37f70baa3ec89a65bb5bd92a6614b68b6",
+    "size": 28184
+  },
+  "crates/raft-spec/src/node_init.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "e31cea4889211f70108936cac56f3dd435e801a076d964cde6b6e60f16771276",
+    "size": 1443
+  },
+  "crates/raft-spec/src/reconcile_view.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "ac0cfc0fcfe7a6898fbaf4b3f8845756c47c0d487bff042b29434e5dbba8fb5c",
+    "size": 723
+  },
+  "crates/raft-verified": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "crates/raft-verified/Cargo.toml": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "ce004ebe221e3b705b41ac2961acde87dd7c87c845ac84f65165b5f84653f8dd",
+    "size": 133
+  },
+  "crates/raft-verified/README.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "a76065f4cf2f7b6d41024627ad1f6ff5f8e58697b97d0531b27a1ecb4e6510a1",
+    "size": 2354
+  },
+  "crates/raft-verified/check.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "7c399da62054a34a56b518555e2911377ceacbb227e61f28019065abd24208db",
+    "size": 3095
+  },
+  "crates/raft-verified/examples": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "crates/raft-verified/examples/initialize.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "8ee10d19ec5d5fd456320d6914a68297c137e44b46ae9060c3fdecbfe523c70a",
+    "size": 2005
+  },
+  "crates/raft-verified/examples/measure_reconcile.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "dcdd9f8a77627e389dd952cbf67484d8935d88c1a79c6f0fa426b4ad04bc9e5f",
+    "size": 4081
+  },
+  "crates/raft-verified/examples/reconcile.trace": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "4d8237a522e113ee9fabc6c0f576c100c10be7826958d5172c267f06cfcedd50",
+    "size": 342
+  },
+  "crates/raft-verified/examples/replay.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "4ce4caf0b2950109b4ee0d49bc032772e9af6e2a6a190c7c83265f7d7e7116df",
+    "size": 4053
+  },
+  "crates/raft-verified/src": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "crates/raft-verified/src/lib.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "64a6f969657839e5c0bbb83e52baca59ccb170db50b89cb8f5613a67001123d0",
+    "size": 5972
+  },
+  "crates/raft-verified/src/node.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "5e275adbb88eb3922fb021e321612e776fd4cef5b4405d05a8450d5917282a15",
+    "size": 1985
+  },
+  "crates/raft-verified/src/reconcile.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "27b06c2bdca640546a0c7680fa88d3713a9791d533b3f10f4d60764a978a5d77",
+    "size": 5042
+  },
+  "crates/raft-verified/src/state.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "cce09ad59c517a001289a9931d03c9e4cd122f144706045eac72c4201822f162",
+    "size": 765
+  },
+  "crates/raft-verified/tests": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "crates/raft-verified/tests/node_init.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "54e857c3bc4794b8aed6154699c786b0b1b58288183bfc08dae12686f4e5c1c9",
+    "size": 1367
+  },
+  "crates/raft-verified/tests/reconcile.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "b43caa099085bf3d27bb9d45b7e8205defa2e324dc0a7d44986a4063c6f5f5c5",
+    "size": 3410
+  },
+  "crates/raft-verified/tests/replay_cases.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "fe91eec41f97731cd722b9093666bddd05901417328b5372ac8b36e5330b8fa6",
+    "size": 602
+  },
+  "docs": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "docs/sources.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "fec61bd4aeada52aa2cfa15c18c2e897745f3710c3e39651595b32237c2a4c62",
+    "size": 8191
+  },
+  "docs/tools.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "e6d03f4436e9016090acedf5fb7ee0003de3a7c643a3fb9f9bba82befa4525eb",
+    "size": 4980
+  },
+  "docs/workflow.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "de57eb11213c10f8bae3a3e6bc62031f227ccfe903958ec1fc7584552aeacc72",
+    "size": 18584
+  },
+  "experiment.sh": {
+    "mode": 500,
+    "kind": "file",
+    "digest": "eeefd765de9d554a40402176e72981ef24fb3c4f01203fc1e508e126bd51b5b4",
+    "size": 936
+  },
+  "input": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "input/assumptions.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "edbfad63e965b55503a165046302326e21c0dc31ed55644e07efe6b4732b8d81",
+    "size": 10573
+  },
+  "input/commitment.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "cf36c565bd4b7d0fe50bc00091d48ca255d98316f0aaa81a52a812826c46b7eb",
+    "size": 3313
+  },
+  "input/elections.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "80f031434243e9dd895baa9ea49079ee3b0538966c0b7666dcea512d3a259a7f",
+    "size": 4466
+  },
+  "input/instructions.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "9a397120a2a2e7dd04159595f7202c4fd2e2889abed3310e7ebf0ff6ad732bb7",
+    "size": 4523
+  },
+  "input/integration.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "d4895b29a71fcb48ecedcd20f2ea9b6bafcd5eb4b70cecb57adeb48cb5a7a561",
+    "size": 6205
+  },
+  "input/io.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "7d852196bd6511f6af06e66f214f187c126bd1116062af66095c4eb07b9e6ac0",
+    "size": 4652
+  },
+  "input/model.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "99acbec3440136096010e60df8f4c4ff7fbe9e7eeb305e7600fbeb32796bff0e",
+    "size": 9572
+  },
+  "input/progress.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "685de4c05baded257cc68ede456e363e0bc476ad21dc92f4e885b96aa5bc5ae3",
+    "size": 4909
+  },
+  "input/proofs.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "2c82019530d956e5a0f80db2d5efbc565ae0b2af67433f664c5e829a4b8c132e",
+    "size": 22218
+  },
+  "input/properties.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "c2ccedefeb8a06b57a004cc3a1d6d44f5d958311525993d1cad468b3465a2da9",
+    "size": 2355
+  },
+  "input/recovery.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "06266f184a76ebe5753cfd19e554606dac6d7146b181c0f41a29feabb4c313b3",
+    "size": 3427
+  },
+  "input/replication.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "0c471a017faf7d14087e515e0b8437e7d6400303346f05990d78736a7ec7c374",
+    "size": 8459
+  },
+  "input/requirements.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "34b044ffddb6c42b623fd5383886ef99cb09c93e384aeba8154247952e35d310",
+    "size": 2683
+  },
+  "input/roadmap.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "36c200e13516f485e9b382ea33d45e450364457983d0db5e64f1e15a09e933be",
+    "size": 6436
+  },
+  "input/runtime.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "1aae19711a5bb886810fc4232a7d3808e8accf7560894e761def9d918a1cb4bb",
+    "size": 3687
+  },
+  "input/state.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "8673177727a3b6d4f9e71e07e79f5dee44cc76520d84dd332d8f50ecb13a116c",
+    "size": 4475
+  },
+  "input/trust.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "a49178bfbeca3117bd41f782e1e3acfbf54a5e762487d0d91a780e253b8bf696",
+    "size": 2676
+  },
+  "orchestrator": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "orchestrator/__init__.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "417e2be13968e9aef03f0c843b0a012fa88f92a090d3e5b5538b938c961dc839",
+    "size": 91
+  },
+  "orchestrator/__main__.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
+    "size": 47
+  },
+  "orchestrator/__pycache__": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "orchestrator/__pycache__/__init__.cpython-310.pyc": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "d0d007483fdc45a81f0792e78e74043fd48f65b41a957ab7beb379dddf2c62e8",
+    "size": 248
+  },
+  "orchestrator/__pycache__/__main__.cpython-310.pyc": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "71ce0e1713b032ef53642ec07eb46a299896ef7663a4f318afaaf6779b67e81e",
+    "size": 199
+  },
+  "orchestrator/__pycache__/cli.cpython-310.pyc": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "7db3897860bbf854d775064dca728d42533a6c08a871345bb0e137f11eeb48ec",
+    "size": 10591
+  },
+  "orchestrator/__pycache__/codex_runner.cpython-310.pyc": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "923a7dacc01f8c576438f86cd4ebd833cfe9a7da631b8edd419f540e34481583",
+    "size": 4160
+  },
+  "orchestrator/__pycache__/config.cpython-310.pyc": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "7904b1e859146b1ae6fe5f7b799b5f29ef03b664ce14da8b9c92e03eac91dbfa",
+    "size": 3786
+  },
+  "orchestrator/__pycache__/evidence.cpython-310.pyc": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "dd8d65733439f927966377ba89c5de63d46cb7f7b4f9f11c7d479d44132af417",
+    "size": 2039
+  },
+  "orchestrator/__pycache__/feedback.cpython-310.pyc": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "0cf759a28990b3531e8f0a1738d1c1ecf961ce90934ffe2ad146a85778daf0f3",
+    "size": 4336
+  },
+  "orchestrator/__pycache__/materials.cpython-310.pyc": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "4ac81e90c99b1c1d6b0009bd17a3a9dda1e870723f2be80585fb2e0de71414ee",
+    "size": 3382
+  },
+  "orchestrator/__pycache__/policy.cpython-310.pyc": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "53a74b9eb740badeac49a0e38e2b8f492e79b07c16362bd80a9a80757c8103ea",
+    "size": 4919
+  },
+  "orchestrator/__pycache__/process.cpython-310.pyc": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "7c69a52bde587eb27be70d868837f9d8d0744ee95947b7297d6a5178a57042aa",
+    "size": 4226
+  },
+  "orchestrator/__pycache__/scheduler.cpython-310.pyc": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "0d4d3e70ffbf1965c673ba8d635ed9c6a1278316d8a4d4b9207666067a139f30",
+    "size": 25724
+  },
+  "orchestrator/__pycache__/schemas.cpython-310.pyc": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "9946efe99d48583a1d1512b3e309dbc38afb31c077a0b10495b9534474d9db58",
+    "size": 1801
+  },
+  "orchestrator/__pycache__/verifier_runner.cpython-310.pyc": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "d50f6cd361f068d457b2e42bb8b050a57b5f16770b85b23ca4577a95bbbf16a0",
+    "size": 13530
+  },
+  "orchestrator/__pycache__/workspace.cpython-310.pyc": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "d48484b94383557f480dd1ca8868f42a0c7afcbc33fddab375bce118041f5319",
+    "size": 4183
+  },
+  "orchestrator/cli.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "82b399126914079a834ed07703d77852d8937dfb2fe90628a9e167073a004a22",
+    "size": 12802
+  },
+  "orchestrator/codex_runner.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "bddfa7eb68a0b091d576a5673d2f1c64f879b9aa7c5176691d4110957af304ea",
+    "size": 6073
+  },
+  "orchestrator/config.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "401dc27d5d44cdba591e2efa8f24a8a407c3789753a81f74ae07d0d7677728f9",
+    "size": 4479
+  },
+  "orchestrator/evidence.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "23b4f8928738174516ece798638f5b384e3120d076d5588e86aee0bfd2cdfe60",
+    "size": 1583
+  },
+  "orchestrator/feedback.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "2d0c4e39a85f984a152dbe10108348c78a0fe8539c2d1b377c9f79d81a600116",
+    "size": 4489
+  },
+  "orchestrator/materials.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "a0dadc5736af88a3831f346e01b52d25e1c68a096af08448dc12bcfb083dbcf0",
+    "size": 4321
+  },
+  "orchestrator/policy.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "0b318bff0a631797942c010719a26236fe0f26766a6959f7ef480cc1828a9f3d",
+    "size": 5547
+  },
+  "orchestrator/process.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "e5491963a33fa9dd0b9b37d5bbcc2129bd20a08ecc6cdf05be5c9e2fcadc352c",
+    "size": 4072
+  },
+  "orchestrator/pyproject.toml": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "bbed01d9976eb7052c4df4bb7f59d09d01eb4ad42a027755067dcf3af37d7d61",
+    "size": 85
+  },
+  "orchestrator/scheduler.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "4ddca67ad8efb63fe1ce938b89b4e612b1acfe18daa1bab85afa482eba641dc4",
+    "size": 38512
+  },
+  "orchestrator/schemas.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "4d467acf71ef1a2da982e440b166e80fcff22d4456f087a6211744d1aae840a6",
+    "size": 1220
+  },
+  "orchestrator/setup.cfg": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "28e9f71bd2299b7bf6d5cf6bc13c2f0be3110f486254741071b2e021caed88d2",
+    "size": 418
+  },
+  "orchestrator/setup.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "76189f7511a9eb8dab0ccaf022097f598fa32c3026ce2c2174ea7e7c3fccc71e",
+    "size": 37
+  },
+  "orchestrator/tests": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "orchestrator/tests/fixtures": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "orchestrator/tests/fixtures/fake_codex.py": {
+    "mode": 509,
+    "kind": "file",
+    "digest": "e2badd2ecb940f4473bbb0c38a9f3627bf82ea5a228a627c24c95cf05e317d28",
+    "size": 3260
+  },
+  "orchestrator/tests/fixtures/fake_verifier.py": {
+    "mode": 509,
+    "kind": "file",
+    "digest": "6ca80aedb4e4f729f7aa8aa44f37438b6dcf816e94d1909fe97cf48f960f981e",
+    "size": 1001
+  },
+  "orchestrator/tests/fixtures/fake_verus.py": {
+    "mode": 509,
+    "kind": "file",
+    "digest": "a76009c299237086dc04df9008e41b22eba14ffa256886048d56bbef4e8a1107",
+    "size": 679
+  },
+  "orchestrator/tests/real_repair_demo.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "5288960fc127ee64bc4009868f7ad80d90591e9ace9cbb49873ce3ccdc13dae6",
+    "size": 5119
+  },
+  "orchestrator/tests/test_adapters.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "b8a0ec75acd22ede762593afa00b3155c130af4f596295ad4050ffe892801fea",
+    "size": 9079
+  },
+  "orchestrator/tests/test_modules.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "e44155512897da73780ebf4d2fe7805132fcb8d2b67b84ccb60e6b4f185d5150",
+    "size": 10572
+  },
+  "orchestrator/tests/test_node_contract.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "d3e77c8fd8e75d6b0a2b854838bd11b1271400f1cc3c528217c380e693b2a660",
+    "size": 1883
+  },
+  "orchestrator/tests/test_policy.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "208f7de2d8230ac1843108fb73771cd7aa1217efd941bd16df4dee1faeefdc55",
+    "size": 2594
+  },
+  "orchestrator/tests/test_process.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "f1d27c0c564ff4d4e52e8f55a53bc073d14cca5675f4264572173dc863689b92",
+    "size": 4229
+  },
+  "orchestrator/tests/test_registry.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "2014bd73133689a1c54bb4c90682624135b17588e65d392177fe8ad261fa4cb4",
+    "size": 3797
+  },
+  "orchestrator/tests/test_revision.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "5f89b50b5ed59e60d5bc76480abd4c1658c3de6fc8389621b246cb1eb25c9206",
+    "size": 22803
+  },
+  "orchestrator/tests/test_scheduler.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "a6bf49520fdd0d6e65812237c7779ccbe60c07dac0477f5cc8158be3cee53298",
+    "size": 10088
+  },
+  "orchestrator/tests/test_workspace.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "682afb31273b3e9b6886fd6e9e9ead894b8ab9e8e237e7e84a51cf2a4862f1a2",
+    "size": 3609
+  },
+  "orchestrator/verifier_runner.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "537689249ca7c6ed3a9239f5a599f5285209c2f2a2070f3507dd1346c6750ae1",
+    "size": 20850
+  },
+  "orchestrator/wire": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "orchestrator/wire/agent_report.schema.json": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "2dde1eb09de8f9016041fad4e7278d7ce29815d83895990dd32092b8b1e562f6",
+    "size": 1344
+  },
+  "orchestrator/wire/check_report.schema.json": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "4ca51246e0a9bc4bfa3da0822bc17215d13ad923d402bfcdc595478cb1c31376",
+    "size": 2270
+  },
+  "orchestrator/workspace.py": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "8c4fede17616e5979fe9c907160f02de6ba805c07f3b3d6f237f1f662b8f2233",
+    "size": 3775
+  },
+  "review": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "review/OPEN_DECISIONS.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "e3f90eb1b70ede53857d827e0d55bbb68087ce1060909046cb1a4084c069e1e3",
+    "size": 12757
+  },
+  "review/REQUIREMENTS_TRACEABILITY.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "560bd6bf4a10087af662b22e4912d1d0439fc1b92750de32deaf437973f09c08",
+    "size": 9984
+  },
+  "review/REVIEW_PACKET.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "c6f477d01c53e7802900c26b93102cd02102474c42d681a556b508ffaa722499",
+    "size": 6333
+  },
+  "review/REVISION_PLAN.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "de8119319db3aa843bf8b57017a38a00615142e02e8e12ffec29882b3cac0648",
+    "size": 1102
+  },
+  "review/measurements": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "review/measurements/reconciliation.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "a12679d937cf7578b29515eaef9ff76b3528f6f14803f3ea4fc24b7f2efefad9",
+    "size": 3554
+  },
+  "workflow.toml": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "bae565ed217075729b442c355c95e8ccf83ecc6ddedf9191ec299faa9428d8fa",
+    "size": 20676
+  }
+}

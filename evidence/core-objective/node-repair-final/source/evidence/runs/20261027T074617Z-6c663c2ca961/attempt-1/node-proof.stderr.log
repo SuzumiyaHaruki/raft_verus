@@ -1,0 +1,35 @@
+warning: autoderive Clone impl does not take the form Verus expects; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/reconcile.rs:15:10
+   |
+15 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/reconcile.rs:18:10
+   |
+18 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> crates/raft-proofs/../raft-verified/src/state.rs:6:10
+  |
+6 | #[derive(Clone, Debug, Eq, PartialEq)]
+  |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/state.rs:19:10
+   |
+19 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+error: postcondition not satisfied
+  --> crates/raft-proofs/../raft-verified/src/node.rs:10:17
+   |
+10 |         ensures init_result(result, id, members@),
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+53 |         Ok(n)
+   |         ----- at the end of the function body
+
+error: aborting due to 1 previous error; 4 warnings emitted
+

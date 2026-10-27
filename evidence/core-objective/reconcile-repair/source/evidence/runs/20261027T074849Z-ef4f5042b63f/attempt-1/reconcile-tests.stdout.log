@@ -1,0 +1,53 @@
+
+running 2 tests
+test tests::completions_distinguish_incarnation_kind_and_duplicate ... ok
+test tests::exhaustion_never_reuses_a_token ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 11 tests
+test all_matching_entries_are_unchanged ... ok
+test appends_at_log_end_and_initializes_empty_log ... ok
+test empty_append_preserves_matching_tail ... FAILED
+test conflict_copies_complete_incoming_command ... ok
+test appends_missing_suffix_after_matching_entries ... ok
+test invalid_predecessors_leave_log_unchanged ... ok
+test first_entry_can_conflict_and_suffix_can_shrink ... ok
+test replaces_from_first_conflict_only ... ok
+test matching_term_retains_existing_command_as_model_requires ... ok
+test shorter_matching_input_preserves_tail ... FAILED
+test zero_and_end_predecessors_accept_empty_input ... FAILED
+
+failures:
+
+---- empty_append_preserves_matching_tail stdout ----
+
+thread 'empty_append_preserves_matching_tail' (236) panicked at crates/raft-verified/tests/reconcile.rs:19:5:
+assertion `left == right` failed
+  left: [Entry { term: 1, command: Noop }]
+ right: [Entry { term: 1, command: Noop }, Entry { term: 2, command: Noop }, Entry { term: 3, command: Noop }]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- shorter_matching_input_preserves_tail stdout ----
+
+thread 'shorter_matching_input_preserves_tail' (241) panicked at crates/raft-verified/tests/reconcile.rs:26:5:
+assertion `left == right` failed
+  left: [Entry { term: 1, command: Noop }, Entry { term: 2, command: Noop }, Entry { term: 3, command: Noop }]
+ right: [Entry { term: 1, command: Noop }, Entry { term: 2, command: Noop }, Entry { term: 3, command: Noop }, Entry { term: 4, command: Noop }]
+
+---- zero_and_end_predecessors_accept_empty_input stdout ----
+
+thread 'zero_and_end_predecessors_accept_empty_input' (242) panicked at crates/raft-verified/tests/reconcile.rs:82:9:
+assertion `left == right` failed
+  left: []
+ right: [Entry { term: 1, command: Noop }, Entry { term: 2, command: Noop }, Entry { term: 3, command: Noop }]
+
+
+failures:
+    empty_append_preserves_matching_tail
+    shorter_matching_input_preserves_tail
+    zero_and_end_predecessors_accept_empty_input
+
+test result: FAILED. 8 passed; 3 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

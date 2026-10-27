@@ -9,7 +9,9 @@ import stat
 from pathlib import Path, PurePosixPath
 
 # Controller evidence and raw agent reports are never verifier source inputs.
-DEFAULT_EXCLUDES = {".git", "evidence", ".agent-output", "__pycache__", "target"}
+DEFAULT_EXCLUDES = {".git", "evidence", ".agent-output", "__pycache__", "target", "Agent.md"}
+# A scripted solution is controller test data, never an experiment's answer key.
+DEFAULT_EXCLUDES.add("orchestrator/tests/fixtures/node_init_solution.rs")
 
 
 def digest_bytes(data: bytes) -> str:
@@ -77,7 +79,8 @@ def create_candidate(source: Path, destination: Path) -> Path:
     if unsafe:
         raise ValueError(f"candidate copy refuses symlinks/special files: {unsafe}")
     def ignore(directory, names):
-        return set(names) & DEFAULT_EXCLUDES if Path(directory) == source else set()
+        prefix = Path(directory).relative_to(source)
+        return {name for name in names if (prefix / name).as_posix() in DEFAULT_EXCLUDES}
     shutil.copytree(source, destination, ignore=ignore)
     return destination
 

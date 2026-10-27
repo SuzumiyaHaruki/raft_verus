@@ -12,7 +12,7 @@ if '--version' in args:
     print('codex-cli FIXTURE')
     sys.exit(0)
 if '--help' in args:
-    print('--ask-for-approval --sandbox --json --output-schema --output-last-message --model --skip-git-repo-check')
+    print('--ask-for-approval --sandbox --json --output-schema --output-last-message --model --config --skip-git-repo-check --add-dir')
     sys.exit(0)
 
 prompt = sys.stdin.read()
@@ -24,6 +24,10 @@ except json.JSONDecodeError:
         if line.startswith('FIXTURE_JSON='):
             options = json.loads(line.removeprefix('FIXTURE_JSON='))
 scenario = options.get('scenario', 'ok')
+if options.get('expect_model'):
+    assert args[args.index('--model') + 1] == options['expect_model']
+if options.get('expect_effort'):
+    assert args[args.index('--config') + 1] == 'model_reasoning_effort=' + json.dumps(options['expect_effort'])
 if options.get('stdin_copy'):
     Path(options['stdin_copy']).write_text(prompt)
 if scenario in ('timeout', 'child'):
@@ -49,6 +53,10 @@ else:
 
 if options.get('write_path'):
     Path(options['write_path']).write_text(options.get('write_text', 'candidate'))
+if options.get('build_fixture'):
+    build = Path(os.environ['CARGO_TARGET_DIR'])
+    build.mkdir(parents=True, exist_ok=True)
+    (build/'fixture-build-output').write_text('SIMULATED local agent build artifact')
 report_path = Path(args[args.index('--output-last-message') + 1])
 if scenario == 'symlink_report_dir':
     outside = report_path.parent.parent.parent/'outside-report'

@@ -24,6 +24,10 @@ python3 -m orchestrator verify --profile spec
 python3 -m orchestrator verify --profile full
 ```
 
+For the shared executable slice, use `python3 crates/raft-verified/check.py build|test|proof|replay|bench` (choose one command, not the literal alternatives). The wrapper passes the installed `libvstd.rlib`, its macro dependencies and matching Rust 1.92 to child processes. Cargo expands the Verus macro with proofs erased; the verifier checks the same source with proofs retained. Plain Cargo under the user's Rust 1.88 cannot load those precompiled macros. No system toolchain changes or downloads are performed by these commands. See the exact [build path](../crates/raft-proofs/README.md).
+
+`python3 -m orchestrator verify --profile reconcile-proof` additionally requests Verus JSON timing details. Local obligation attribution requires the actual `reconcile::check_reconcile_contract` proof caller to appear successfully verified in an entire-crate run. Aggregate counts and source-name matches are insufficient. The tool/checking policy remains DRAFT for human review.
+
 Positive smoke checks the tool on a small proof. Negative smoke must reject an incorrect postcondition. `spec` only typechecks the candidate model and closes no Raft obligation. `full` is blocked by unfinished implementation, proofs and formal isolation. The [review packet](../review/REVIEW_PACKET.md) separates actual results from open work.
 
 ## Why the previous installation was missing

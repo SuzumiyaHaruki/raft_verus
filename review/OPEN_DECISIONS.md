@@ -2,6 +2,8 @@
 
 Status: DRAFT. All ten recommendations await human review; none is approved. Approver and approval time: none.
 
+The requested maintenance revision activates STATE-INIT as a draft generation experiment. Review its candidate API, independent targets and results after delivery; activation approves no Raft semantics. RUNTIME-PERSIST still lacks its executable representation and checks. Real adapters and temporal proofs remain open.
+
 | ID | Topic | Status |
 |---|---|---|
 | ADR-01 | Events/effects and coordinator boundary | DRAFT |
@@ -13,7 +15,7 @@ Status: DRAFT. All ten recommendations await human review; none is approved. App
 | ADR-07 | Storage, network and TCB | DRAFT |
 | ADR-08 | Verus, temporal library and entrypoints | DRAFT |
 | ADR-09 | Isolation and local mode | DRAFT |
-| ADR-10 | External approval and content binding | DRAFT |
+| ADR-10 | Evidence binding and review after delivery | DRAFT |
 
 ## ADR-01: Events/effects and coordinator boundary
 
@@ -23,7 +25,7 @@ Rationale: Crashes may occur between writes, sends and callbacks; the library mu
 
 Alternatives: Put coordination in the host, expanding external assumptions; or use blocking I/O, which still needs intermediate-crash semantics.
 
-Impact: Determines PO-IO/PO-REFINE-STEP and host duties. Only types/token helpers exist in bootstrap; no step implementation.
+Impact: Determines PO-IO/PO-REFINE-STEP and host duties. A local suffix-reconciliation operation and token helpers exist; there is still no step implementation.
 
 Definition: [related material](../input/io.md). This candidate may be revised; it is not an approved baseline.
 
@@ -123,14 +125,26 @@ Impact: TCB-HOST/CHECKER; formal full acceptance remains blocked by isolation ga
 
 Definition: [related material](../docs/workflow.md). This candidate may be revised; it is not an approved baseline.
 
-## ADR-10: External approval and content binding
+## ADR-10: Evidence binding and review after delivery
 
-Recommendation: A human records approval outside the workspace in a restricted location, binding contract, protected manifest, checker policy, toolchain, trust-manifest digests and task scope. Bootstrap creates only an obviously invalid template; ordinary repairs cannot modify these inputs.
+User clarification: Review delivered code with the assistant; do not require an approval file inside start/resume. This approves no Raft semantics or correctness.
 
-Rationale: Concrete failure: replace untracked source or checker/tool paths around verification and reuse a historical PASS. Commit IDs and filenames need not identify the checked contents. Git omits worktree/external tools; versions can remain unchanged; primary keys identify records only; database transactions/uniqueness constraints do not cover files and subprocesses; types/ordinary tests do not bind approved bytes to checked bytes. Use digests and candidates only for required approval/evidence binding, plus permission boundaries.
+Recommendation: Retain existing evidence bindings and separate candidates. Review results after delivery; do not regenerate signatures or add runtime checkpoints.
 
-Alternatives: Put all inputs in a human-controlled immutable image identified by an external signature. Local draft checks may run without approval but cannot produce formal acceptance.
+Rationale: A historical PASS can be reused after uncommitted source/checker changes. Git omits worktree/external tools; versions/keys do not identify content; database transactions/uniqueness do not cover files/processes; types/tests do not record exact inputs of past checks. Existing bindings associate evidence with those inputs.
 
-Impact: Changes to source/configuration/transitive dependencies/toolchain/TCB/scope require review. Digests are not identity authentication. Without real isolation, do not claim secure freezing or add unrelated gates.
+Alternative: Rerun every check instead of reusing evidence. Same-user isolation and complete correctness remain open. See [the workflow](../docs/workflow.md).
 
-Definition: [related material](../orchestrator/wire/approval.example.json). This candidate may be revised; it is not an approved baseline.
+## Review items introduced by this revision
+
+All remain recommendations, not approvals:
+
+| Existing decision | Concrete item to review | Recommendation and current limit |
+|---|---|---|
+| ADR-01 / ADR-03 | Reconciliation API and numeric/resource boundary | Use the shared `reconcile_log` after term/predecessor validation. Invalid indices and representable-length overflow return errors without mutation. Future callers must check `u64` to `usize` conversion and committed-prefix compatibility. `Vec` allocation can still abort; do not claim recoverable allocation failure or resource liveness. |
+| ADR-07 / ADR-08 | Shared Cargo/Verus build and local proof target | Use the installed macro erasure with matching child Rust 1.92. Keep `merged` unchanged. A protected proof caller demands the original relation even if an editable implementation contract is weakened. Derived non-Copy Clone contracts are unavailable; the verified operation does not invoke Clone. |
+| ADR-09 / ADR-10 | Revised local acceptance and resumable candidates | Review delivered task/check definitions separately from semantic claims. Typecheck/test/measurement completion need not close a theorem; real whole-crate function-attributed proof evidence can close only its local target. No hostile-process isolation or whole-project acceptance is claimed. |
+| ADR-01 / ADR-02 / ADR-03 | Initial Node API | Recommend `Node::new(id, members)` for genuinely fresh storage only. Accept arbitrary ordering, reject duplicates/unknown identity/empty membership; preserve IDs and order. Incarnation zero is not a recovery allocator. Pending I/O and peer state are future extensions to the same Node. No behavior is approved by this task. |
+| ADR-08 / ADR-10 | Initialization correspondence and experiment | Recommend the protected `init_result` consumer of the shared constructor. It checks initial represented fields and demands success on all valid memberships; it is not full node/cluster refinement. The source seed must fail, offline scripted repairs are SIMULATED generation, and only their actual checking is REAL_LOCAL. Narrow the existing reconciliation test profile to its original 15 regressions; the node profile runs all 23. Review the exact added ghost-only import allowance, which imports a specification and does not alter executable code. |
+
+The fixture repair demonstration used no live agent session. The configured experiment requires an explicit launch; the ten technical decisions remain DRAFT.

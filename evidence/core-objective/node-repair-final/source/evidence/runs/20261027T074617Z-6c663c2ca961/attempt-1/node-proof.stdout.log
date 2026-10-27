@@ -1,0 +1,300 @@
+{
+  "verification-results": {
+    "encountered-error": true,
+    "encountered-vir-error": false,
+    "success": false,
+    "verified": 13,
+    "errors": 1,
+    "is-verifying-entire-crate": true
+  },
+  "times-ms": {
+    "verus-build": {
+      "profile": "release",
+      "version": "0.2026.01.23.1650a05"
+    },
+    "num-threads": 3,
+    "total": 1400,
+    "estimated-cpu-time": 2284,
+    "rust": {
+      "total": 165,
+      "init-and-types": 109,
+      "trait-conflicts": 56,
+      "compile": 0
+    },
+    "verification": {
+      "total": 1203,
+      "vir": {
+        "total": 445,
+        "hir": 39,
+        "import": 215,
+        "rust-to-vir": 74
+      }
+    },
+    "total-verify": 1613,
+    "total-verify-module-times": [
+      {
+        "module": "reconcile",
+        "time": 374
+      },
+      {
+        "module": "node",
+        "time": 354
+      },
+      {
+        "module": "",
+        "time": 335
+      },
+      {
+        "module": "model",
+        "time": 319
+      },
+      {
+        "module": "state",
+        "time": 136
+      },
+      {
+        "module": "initialization",
+        "time": 57
+      },
+      {
+        "module": "representation",
+        "time": 35
+      }
+    ],
+    "air": {
+      "total": 814,
+      "module-times": [
+        {
+          "module": "",
+          "time": 247
+        },
+        {
+          "module": "node",
+          "time": 239
+        },
+        {
+          "module": "reconcile",
+          "time": 118
+        },
+        {
+          "module": "model",
+          "time": 102
+        },
+        {
+          "module": "state",
+          "time": 71
+        },
+        {
+          "module": "initialization",
+          "time": 22
+        },
+        {
+          "module": "representation",
+          "time": 12
+        }
+      ]
+    },
+    "smt": {
+      "total": 261,
+      "smt-init": 75,
+      "smt-init-module-times": [
+        {
+          "module": "",
+          "time": 21,
+          "time-micros": 21460,
+          "rlimit-count": 8720
+        },
+        {
+          "module": "node",
+          "time": 19,
+          "time-micros": 19893,
+          "rlimit-count": 182209
+        },
+        {
+          "module": "reconcile",
+          "time": 19,
+          "time-micros": 19228,
+          "rlimit-count": 1425206
+        },
+        {
+          "module": "state",
+          "time": 15,
+          "time-micros": 15396,
+          "rlimit-count": 80922
+        },
+        {
+          "module": "model",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "initialization",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "representation",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        }
+      ],
+      "smt-run": 186,
+      "smt-run-module-times": [
+        {
+          "module": "reconcile",
+          "time": 153,
+          "time-micros": 153695,
+          "rlimit-count": 1425206,
+          "function-breakdown": [
+            {
+              "function": "node_init::reconcile::RequestId::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 147,
+              "rlimit-count": 8474,
+              "success": true
+            },
+            {
+              "function": "node_init::reconcile::Entry::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 641,
+              "rlimit-count": 376,
+              "success": true
+            },
+            {
+              "function": "node_init::reconcile::reconcile_log",
+              "mode:": "exec",
+              "time": 152,
+              "time-micros": 152566,
+              "rlimit-count": 1329077,
+              "success": true
+            },
+            {
+              "function": "node_init::reconcile::Command::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 252,
+              "rlimit-count": 87168,
+              "success": true
+            },
+            {
+              "function": "node_init::reconcile::ReconcileError::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 86,
+              "rlimit-count": 111,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "node",
+          "time": 28,
+          "time-micros": 28646,
+          "rlimit-count": 182209,
+          "function-breakdown": [
+            {
+              "function": "node_init::state::Node::new",
+              "mode:": "exec",
+              "time": 28,
+              "time-micros": 28646,
+              "rlimit-count": 182209,
+              "success": false
+            }
+          ]
+        },
+        {
+          "module": "state",
+          "time": 3,
+          "time-micros": 3257,
+          "rlimit-count": 80922,
+          "function-breakdown": [
+            {
+              "function": "node_init::state::DurableState::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 155,
+              "rlimit-count": 7134,
+              "success": true
+            },
+            {
+              "function": "node_init::state::InitError::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 206,
+              "rlimit-count": 591,
+              "success": true
+            },
+            {
+              "function": "node_init::state::Node::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 418,
+              "rlimit-count": 539,
+              "success": true
+            },
+            {
+              "function": "node_init::state::Role::clone",
+              "mode:": "exec",
+              "time": 2,
+              "time-micros": 2477,
+              "rlimit-count": 72658,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "",
+          "time": 0,
+          "time-micros": 436,
+          "rlimit-count": 8720,
+          "function-breakdown": [
+            {
+              "function": "node_init::check_node_init",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 436,
+              "rlimit-count": 8720,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "model",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "initialization",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "representation",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        }
+      ]
+    }
+  },
+  "verus": {
+    "profile": "release",
+    "version": "0.2026.01.23.1650a05",
+    "platform": {
+      "os": "linux",
+      "arch": "x86_64"
+    },
+    "toolchain": "1.92.0-x86_64-unknown-linux-gnu",
+    "commit": "1650a05d64219fdd1d150f32d0d7d5b19b8defcd"
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "status": "DRAFT_NOT_APPROVED",
+  "approval_bindings_candidate": {
+    "contract_digest": "411a038513bd83afa5af12684497e73d915b764326f0674f241f2f3753527384",
+    "protected_manifest_digest": "01418175444b6734566d966b98d90979dbeb8809bdba653afcb20cc95319b758",
+    "checker_policy_digest": "07e48b64ff4219626205b77e6f692492c2a44ad2961dee9f4cd132dbed2eb612",
+    "toolchain_manifest_digest": "8d209f94029742bc3c5107e5d318ad7cdc4e832802e3b55b9183d4e458d78745",
+    "trust_baseline_digest": "e03452b28e91636cc9132c4bbc17530e5175ba57d4b9d77245306e49f26c985e"
+  },
+  "tasks": [
+    {
+      "id": "T01-RECONCILE",
+      "dependency_ids": [],
+      "input_fingerprint": "37541f27870c3efaf69f14b0da30949834e2994052f732e467b4a86c78683d41",
+      "stage": "ready",
+      "blocked_reason": "",
+      "permitted_change_paths": [
+        "crates/raft-verified/src/reconcile.rs"
+      ],
+      "check_profile_ids": [
+        "interface-check",
+        "reconcile-tests",
+        "reconcile-replay",
+        "reconcile-proof",
+        "reconcile-bench"
+      ],
+      "executable": false
+    },
+    {
+      "id": "T02-RECONCILE-PROOF",
+      "dependency_ids": [
+        "T01-RECONCILE"
+      ],
+      "input_fingerprint": "570ec390c0f99c19280afa22793162a4b4eeb99371e9aa04ddfb62a918fe8296",
+      "stage": "ready",
+      "blocked_reason": "",
+      "permitted_change_paths": [
+        "crates/raft-proofs/reconcile_lemmas.rs"
+      ],
+      "check_profile_ids": [
+        "spec",
+        "reconcile-proof"
+      ],
+      "executable": false
+    },
+    {
+      "id": "T03-REPLAY",
+      "dependency_ids": [
+        "T01-RECONCILE"
+      ],
+      "input_fingerprint": "4a9eda865f348861eb8431959a41cc38c7759f7bda933911321d59b9571ed0fb",
+      "stage": "ready",
+      "blocked_reason": "",
+      "permitted_change_paths": [
+        "crates/raft-verified/tests/replay_cases.rs"
+      ],
+      "check_profile_ids": [
+        "reconcile-tests",
+        "reconcile-replay"
+      ],
+      "executable": false
+    },
+    {
+      "id": "T04-MEASURE",
+      "dependency_ids": [
+        "T01-RECONCILE",
+        "T03-REPLAY"
+      ],
+      "input_fingerprint": "bf96cbf8ebb97a33aeb9d0a080aae65d73a250737767b9eedb8128df27d6192b",
+      "stage": "ready",
+      "blocked_reason": "",
+      "permitted_change_paths": [
+        "review/measurements/"
+      ],
+      "check_profile_ids": [
+        "reconcile-bench"
+      ],
+      "executable": false
+    },
+    {
+      "id": "T05-VOTE",
+      "dependency_ids": [
+        "T02-RECONCILE-PROOF"
+      ],
+      "input_fingerprint": null,
+      "stage": "planned",
+      "blocked_reason": "Review node initialization, vote persistence and term-transition contracts; add independently reviewed election checks before execution.",
+      "permitted_change_paths": [
+        "crates/raft-verified/src/vote.rs",
+        "crates/raft-proofs/vote.rs"
+      ],
+      "check_profile_ids": [],
+      "executable": false
+    },
+    {
+      "id": "T06-FOLLOWER-APPEND",
+      "dependency_ids": [
+        "T05-VOTE",
+        "T03-REPLAY"
+      ],
+      "input_fingerprint": null,
+      "stage": "planned",
+      "blocked_reason": "Node state and persistence coordinator are absent; local append correspondence and delayed-completion oracles must be reviewed.",
+      "permitted_change_paths": [
+        "crates/raft-verified/src/append.rs",
+        "crates/raft-proofs/append.rs"
+      ],
+      "check_profile_ids": [],
+      "executable": false
+    },
+    {
+      "id": "T07-COMMIT",
+      "dependency_ids": [
+        "T06-FOLLOWER-APPEND"
+      ],
+      "input_fingerprint": null,
+      "stage": "planned",
+      "blocked_reason": "Leader replication tracking and delivery coordinator are absent; bounded commit checks are not configured.",
+      "permitted_change_paths": [
+        "crates/raft-verified/src/commit.rs",
+        "crates/raft-proofs/commit.rs"
+      ],
+      "check_profile_ids": [],
+      "executable": false
+    },
+    {
+      "id": "T08-ELECTION-PROGRESS",
+      "dependency_ids": [
+        "T05-VOTE"
+      ],
+      "input_fingerprint": null,
+      "stage": "planned",
+      "blocked_reason": "Election core, temporal environment predicates, compatible temporal lemmas and fairness correspondence remain unfinished.",
+      "permitted_change_paths": [
+        "crates/raft-proofs/election_progress.rs"
+      ],
+      "check_profile_ids": [],
+      "executable": false
+    }
+  ]
+}

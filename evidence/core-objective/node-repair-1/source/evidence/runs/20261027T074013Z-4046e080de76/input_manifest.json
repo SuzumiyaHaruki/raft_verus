@@ -1,0 +1,88 @@
+{
+  "input/model.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "99acbec3440136096010e60df8f4c4ff7fbe9e7eeb305e7600fbeb32796bff0e",
+    "size": 9572
+  },
+  "input/io.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "7d852196bd6511f6af06e66f214f187c126bd1116062af66095c4eb07b9e6ac0",
+    "size": 4652
+  },
+  "crates/raft-verified/src": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "crates/raft-verified/src/lib.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "64a6f969657839e5c0bbb83e52baca59ccb170db50b89cb8f5613a67001123d0",
+    "size": 5972
+  },
+  "crates/raft-verified/src/node.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "13bde3e802250932d4498ffc1eb9909413667016b9e5cf3e1afe16e59e07d9db",
+    "size": 544
+  },
+  "crates/raft-verified/src/reconcile.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "27b06c2bdca640546a0c7680fa88d3713a9791d533b3f10f4d60764a978a5d77",
+    "size": 5042
+  },
+  "crates/raft-verified/src/state.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "cce09ad59c517a001289a9931d03c9e4cd122f144706045eac72c4201822f162",
+    "size": 765
+  },
+  "crates/raft-verified/tests/node_init.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "54e857c3bc4794b8aed6154699c786b0b1b58288183bfc08dae12686f4e5c1c9",
+    "size": 1367
+  },
+  "crates/raft-spec/src": {
+    "mode": 509,
+    "kind": "directory"
+  },
+  "crates/raft-spec/src/lib.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "10cac62adddc8f0d6a88cb7142b1edc37f70baa3ec89a65bb5bd92a6614b68b6",
+    "size": 28184
+  },
+  "crates/raft-spec/src/node_init.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "e31cea4889211f70108936cac56f3dd435e801a076d964cde6b6e60f16771276",
+    "size": 1443
+  },
+  "crates/raft-spec/src/reconcile_view.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "ac0cfc0fcfe7a6898fbaf4b3f8845756c47c0d487bff042b29434e5dbba8fb5c",
+    "size": 723
+  },
+  "crates/raft-proofs/node_init.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "fdabcc1c17c9ba99aa3b954a91af867a6d34ebdf32a78cd496cb1b6bb6b0b103",
+    "size": 679
+  },
+  "crates/raft-verified/examples/initialize.rs": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "b8e853793b21064bf10262ef09db708cf1d1c2b4101ca468a9f9a5ce6f64bae7",
+    "size": 1826
+  },
+  "input/state.md": {
+    "mode": 436,
+    "kind": "file",
+    "digest": "8673177727a3b6d4f9e71e07e79f5dee44cc76520d84dd332d8f50ecb13a116c",
+    "size": 4475
+  }
+}

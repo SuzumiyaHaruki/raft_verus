@@ -1,0 +1,68 @@
+{
+  "id": "STATE-INIT",
+  "goal": "## Step: Initialize node state\n\nStage: READY for generation, not implemented or proved in the source checkout.\n\nImplement `Node::new(id: u64, members: Vec<u64>) -> Result<Node, InitError>` in\n`crates/raft-verified/src/node.rs`, with its Verus annotations and loop proofs in\nthe same file. The current reject-all seed is deliberately incomplete and cannot\npass this task. Do not copy the offline controller fixture as generated work.\n\nAccept every nonempty, duplicate-free membership containing the local ID,\nregardless of input order, including one node and `u64::MAX` IDs. Preserve the\nmember order and values. Reject empty lists, duplicate peers and absent IDs with\n`InvalidMembership`. Initialize term/positions/incarnation/serial to zero, no vote,\nempty log, Follower role and deadline 1, matching the existing `fresh_node` fields.\nThis constructor is only for a genuinely fresh identity/storage image; never use\nit to bypass recovery or reuse incarnation zero. Allocation follows Rust Vec's\nexisting abort behavior; no resource-liveness claim is made. API recommendations\nremain DRAFT under ADR-01/02/03 for review after delivery.\n\nThe protected `crates/raft-spec/src/node_init.rs` specifies valid membership and\n`init_result`. It demands success for every valid input, so rejecting all inputs\ncannot prove the target vacuously. `crates/raft-proofs/node_init.rs` calls the exact\nconstructor source compiled by Cargo; weakening its annotation or strengthening\nits precondition cannot satisfy the independent caller. This checks only the\nrepresented initial fields, not whole-node/cluster refinement or runtime behavior.\nNo semantic model, oracle or checking-policy edit is part of this task.\n\nDevelop code and proof together. A simple duplicate scan is sufficient initially;\nuse invariants to relate the scanned prefix to membership validity. Compare test\nfailures and failed proof goals, retain failed approaches in the report, and\nrepair within this file. Check all existing executable regressions as well.\n\n```sh\npython3 crates/raft-verified/check.py build\npython3 crates/raft-verified/check.py test\npython3 crates/raft-verified/check.py node-replay\npython3 crates/raft-verified/check.py node-proof\npython3 crates/raft-verified/check.py proof\npython3 crates/raft-verified/check.py node-bench\n```\n\nThe controller also typechecks the candidate model; that closes no theorem.\nIt measures initialization only after required correctness checks pass. The\nreplay constructs independent initial states, not a cluster fault experiment.\nReport results, design/complexity and remaining gaps using the existing agent\nreport. Passing closes only LOCAL-NODE-INIT on this candidate. Next development\nextends the same Node with pending writes and completion handling in RUNTIME-PERSIST;\nits currently missing oracles and representation must be supplied before execution.\n",
+  "module_document": "input/state.md",
+  "step_title": "Initialize node state",
+  "module_context": "# Node state and initialization\n\nStatus: DRAFT. Module: INCOMPLETE; initial-state types and independent checks exist; constructor generation is pending.\n\n## Responsibility and connections\n\nRepresent a fixed-membership Raft node throughout its lifetime: follower,\ncandidate and leader roles; durable term, vote and log; volatile commit/delivery\npositions; election votes, peer replication progress and pending operations.\nThis state is shared by [elections](elections.md), [replication](replication.md)\nand [commitment](commitment.md). The [runtime](runtime.md) serializes events;\n[recovery](recovery.md) reconstructs state after a crash.\n\nThe shared types are in `crates/raft-verified/src/state.rs`, re-exported by the\nlibrary. `Node` currently represents identity, membership, hard state, role,\ncommit/delivery/application positions, incarnation, serial and deadline. Pending\nI/O, peer progress and recovery will extend this same type. They are not represented\nby fictitious constant fields in a claimed complete refinement. The model's\n`fresh_node`, `initial`, `init` and `well_formed` remain unchanged.\n\n## Module completion\n\nFresh construction, role-specific fields and recovered construction have explicit\nbounds and representations. Every handler uses this state; no parallel test-only\nnode exists. Tests cover legal/invalid membership, initial state and index/resource\nboundaries. Actual proofs establish initialization and representation and supply\nthe invariant required by handlers. PO-INIT, PO-REPRESENTATION, PO-REFINE-INIT and\nindex/token lemmas in [proofs.md](proofs.md) remain open until checked.",
+  "kind": "implementation",
+  "status": "ready",
+  "blocked_reason": "",
+  "dependency_ids": [],
+  "contract_digest": "3605691393c24f496ce07959fd3d668b73b1809158aaa187b49ed77128011e09",
+  "input_paths": [
+    "input/model.md",
+    "input/io.md",
+    "crates/raft-verified/src",
+    "crates/raft-verified/tests/node_init.rs",
+    "crates/raft-spec/src",
+    "crates/raft-proofs/node_init.rs",
+    "crates/raft-verified/examples/initialize.rs",
+    "input/state.md"
+  ],
+  "permitted_change_paths": [
+    "crates/raft-verified/src/node.rs"
+  ],
+  "forbidden_change_paths": [
+    "AGENTS.md",
+    "Cargo.toml",
+    "Cargo.lock",
+    "input",
+    "workflow.toml",
+    "crates/raft-spec",
+    "crates/proof-smoke",
+    "crates/raft-proofs/reconcile.rs",
+    "crates/raft-proofs/node_init.rs",
+    "crates/raft-verified/src/state.rs",
+    "crates/raft-verified/tests/node_init.rs",
+    "orchestrator",
+    "crates/raft-verified/check.py",
+    "crates/raft-verified/tests/reconcile.rs",
+    "crates/raft-verified/examples",
+    "evidence",
+    ".git",
+    ".agent-output"
+  ],
+  "expected_outputs": [
+    "crates/raft-verified/src/node.rs"
+  ],
+  "target_obligation_ids": [
+    "LOCAL-NODE-INIT"
+  ],
+  "check_profile_ids": [
+    "interface-check",
+    "node-tests",
+    "node-replay",
+    "spec",
+    "node-proof",
+    "reconcile-proof",
+    "node-bench"
+  ],
+  "prompt_template": "input/state.md",
+  "budget": {
+    "max_agent_calls": 2,
+    "max_repair_rounds": 1,
+    "call_timeout_seconds": 300,
+    "task_timeout_seconds": 1200,
+    "max_log_bytes": 1048576
+  }
+}

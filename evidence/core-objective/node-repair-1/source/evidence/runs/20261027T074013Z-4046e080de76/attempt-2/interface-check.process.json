@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "python3",
+    "crates/raft-verified/check.py",
+    "build"
+  ],
+  "status": "COMPLETED",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "    Checking raft-verified v0.0.0 (/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-1/source/evidence/runs/20261027T074013Z-4046e080de76/candidate/crates/raft-verified)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.37s\n",
+  "stdout_truncated": false,
+  "stderr_truncated": false,
+  "elapsed_seconds": 0.46565404499779106
+}

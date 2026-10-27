@@ -1,5 +1,29 @@
 # Requirements traceability — DRAFT
 
+## Current incremental revision
+
+The user's later clarification replaces the bootstrap runtime approval-file rule: human review follows code delivery. Local execution/resume requires an explicit launch but no approval artifact. `scheduler.py`, `cli.py`, `experiment.sh` and the revised offline tests implement that instruction. Historical R-08 below records the original behavior; it is no longer the current execution requirement.
+
+The subsequent user-requested module organization is implemented by eight module documents in `input/`, named-step selection in `materials.py`/`scheduler.py`, `plan --format text`, and `test_modules.py`. Old T files were removed and mapped in the roadmap. Step results cannot imply module completion. No semantic or global proof target changed; current checks are linked from the review packet.
+
+Source: Desktop `CODEX_RAFT_WORKFLOW_REVISION_REQUIREMENTS.md`, 310 lines, read in full. The prior bootstrap-only restriction is replaced only for this revision's authorized scope. Semantic decisions and all 26 global obligations remain open. Actual check outcomes and remaining limits are in [the review packet](REVIEW_PACKET.md).
+
+| Revision sections | Delivered paths and meaning |
+|---|---|
+| 2–5: readable assignments and separation | `AGENTS.md`, `README.md`, the eight module documents in `input/`, `input/roadmap.md`, `input/model.md`, `input/proofs.md`; complete module responsibilities, bounded internal steps and preserved global proof dependencies |
+| 6: bounded feedback and resume | `orchestrator/scheduler.py`, `feedback.py`, `cli.py`; one saved candidate, classified reproduction data and stale-input rechecking |
+| 7: local versus full acceptance | `verifier_runner.py`, `workflow.toml`; real typed outcomes, nonempty test selection, actual Verus function attribution and protected proof consumer |
+| 8–10: real slice and checking layers | `crates/raft-verified/src/reconcile.rs`, `tests/`, `examples/`, `check.py`; same executable body, explicit replay and repeated core measurements |
+| 10: formal correspondence | `crates/raft-spec/src/reconcile_view.rs`, `crates/raft-proofs/reconcile.rs`, `reconcile_lemmas.rs`; unchanged `merged` semantics, protected view/target and proved corollaries |
+| 10: failure and repair | `orchestrator/tests/real_repair_demo.py`; fixture-generated truncate-tail defect and repair, independent real Rust/Verus checks |
+| 9, 11: impact and controller regressions | `workflow.toml` scoped inputs, `orchestrator/tests/test_revision.py` and existing suites; changed source/checker invalidation, typecheck/test/proof/measurement and resume cases |
+| 12: delivery and review | `review/REVIEW_PACKET.md`, `review/OPEN_DECISIONS.md`, `docs/workflow.md`, `evidence/revision/commands.json`; actual results, pending decisions and later authorized commands |
+
+## Historical bootstrap traceability
+
+The following tables describe the original bootstrap delivery, not the new local slice's capabilities or its current test counts. Preserve their historical evidence.
+
+
 Statuses describe delivery depth, not mathematical conclusions. Original source: desktop `CODEX_RAFT_WORKFLOW_REQUIREMENTS.md` v0.1, 789 lines, read in full. No prior implementation required migration; four empty read-only directories were preserved. Bootstrap execution results below are historical; current layout and persistent-tool checks are recorded separately in the review packet.
 
 ## Deliverables
@@ -61,4 +85,4 @@ These are target definitions, not proved theorems; all remain OPEN. Conclusions 
 | Approval/DAG/budgets/repeated failures/stale evidence/default no-call/builds cannot close proofs | [test_scheduler.py](../orchestrator/tests/test_scheduler.py) |
 | Assumption/TCB references, top-level targets, coverage, unproved CHECKED status, safety relying on liveness | [test_registry.py](../orchestrator/tests/test_registry.py) |
 
-Deterministic Raft simulation, property tests, fault injection, protocol mutations and reference-implementation differential tests are NOT_RUN; see [proofs.md](../input/proofs.md).
+At bootstrap, deterministic Raft simulation, property tests, fault injection, protocol mutations and reference-implementation differential tests were NOT_RUN; see [proofs.md](../input/proofs.md).

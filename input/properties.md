@@ -2,7 +2,7 @@
 
 Status: DRAFT. Every target is OPEN. Definitions and typechecking are not proofs.
 
-Let `M` be nonempty finite membership and `σ : nat → GlobalState` an execution satisfying `init(σ(0)) ∧ ∀k. next(σ(k), σ(k+1))`. Ghost histories retain logical events across crashes. Protocol positions start at 1; 0 is a prefix sentinel. Actual commit transitions record `committed(i,e)` based on durable majority replication of a current-term entry. Commitment is not defined by future permanence.
+These targets apply to valid executions over a nonempty finite fixed membership. Their formal definitions live in `crates/raft-spec/src/lib.rs`; [proofs.md](proofs.md#requirement-to-source-map) maps the explanations to source and intended proofs. Ghost histories retain logical events across crashes. Protocol positions start at 1; 0 is a prefix sentinel. Commit transitions record actual durable-majority commitment of a current-term entry. Commitment is not defined by future permanence.
 
 ## Safety
 

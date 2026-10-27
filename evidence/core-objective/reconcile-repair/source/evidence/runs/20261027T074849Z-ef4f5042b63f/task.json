@@ -1,0 +1,64 @@
+{
+  "id": "REPLICATION-RECONCILE",
+  "goal": "## Step: Reconcile log contents\n\nStage: READY for local recheck or repair of the existing operation.\n\nUse `reconcile_log(log: &mut Vec<Entry>, previous: usize, incoming: Vec<Entry>)`\nin `crates/raft-verified/src/reconcile.rs`. Reject invalid predecessor/checked\nlength overflow without changing the log. Compare overlapping terms; at the first\nconflict or missing position replace the remaining suffix. Empty, fully matching\nor shorter matching requests preserve the existing tail. Same-term/different-payload\nentries retain the old entry under `merged`; changing comparison semantics needs\nreview. Protocol positions use zero as the prefix sentinel; stored entries use\nzero-based offsets. The future caller checks u64-to-usize conversion, message and\npredecessor terms, committed-prefix compatibility and durability ordering.\n\nEdit only the shared executable source. Preserve the protected view, proof caller\nand regression oracles. Rust tests, replay, benchmarks and Verus must use this same\noperation. Vec allocation may abort; no recoverable-OOM or resource-liveness claim\nis made. Read the slice tests and `crates/raft-verified/check.py` before editing.\n\nRun `python3 -m orchestrator verify --profile interface-check`, then profiles\n`reconcile-tests`, `reconcile-replay`, `reconcile-proof` and `reconcile-bench`.\nFinish only when all required checks succeed for their respective purposes on\nunchanged code. Missing tools or checks block completion; failed semantics or\nprotected-target changes require review, not weakened expectations.\n",
+  "module_document": "input/replication.md",
+  "step_title": "Reconcile log contents",
+  "module_context": "# Log replication\n\nStatus: DRAFT. Module: INCOMPLETE. Only log-suffix reconciliation and its local\nproof/tests/replay are implemented; follower and leader protocol paths are absent.\n\n## Responsibility and connections\n\nImplement the full replication exchange over successive requests: leader proposal\nappend and persistence, per-peer AppendEntries generation, heartbeat/retry service,\nfollower term/predecessor validation, log reconciliation, durable replies and\nleader response processing/backtracking. Maintain current-term peer progress and\nsupply validated durable match positions to [commitment](commitment.md).\n\n[Elections](elections.md) establishes roles; [state](state.md) stores logs/progress;\n[runtime](runtime.md) orders writes and messages. Use existing MessageBody variants\nand the model's `propose`, `send_append`, `merged`, `receive_append`,\n`receive_append_response`, `higher_term`, `storage_ack` and `flush_message`.\nRead [model.md](model.md), [io.md](io.md) and the executable library first. Multi-entry\nAppendEntries is required; snapshots and performance pipelining remain excluded.\n\n## Module completion\n\nBoth sides of replication run through the node dispatcher and handle stale terms,\nfailed predecessor checks, duplicates, reordered responses and retries. Tests cover\nempty heartbeats, matching tails, conflicts, missing suffixes, committed-prefix\nprotection, durable response timing and leader changes. Cluster fault scenarios\nuse these actual handlers. Prove local correspondence and supporting log/term\ninvariants feeding S-APPEND, S-LOG and S-COMPLETE; global composition remains required.\n`LOCAL-RECONCILE` proves only the helper's relation to `merged`. Passing the ready\nsteps below leaves this module incomplete while protocol paths are missing.",
+  "kind": "implementation",
+  "status": "ready",
+  "blocked_reason": "",
+  "dependency_ids": [],
+  "contract_digest": "0c5f818cd220f655434c4c7ee60556effbd1d71881a9a7e48b38ecc78cbab7b8",
+  "input_paths": [
+    "Cargo.toml",
+    "Cargo.lock",
+    "crates/raft-verified/Cargo.toml",
+    "input/model.md",
+    "input/io.md",
+    "crates/raft-verified/src",
+    "crates/raft-verified/tests",
+    "crates/raft-spec/src/lib.rs",
+    "input/replication.md"
+  ],
+  "permitted_change_paths": [
+    "crates/raft-verified/src/reconcile.rs"
+  ],
+  "forbidden_change_paths": [
+    "AGENTS.md",
+    "Cargo.toml",
+    "Cargo.lock",
+    "input",
+    "workflow.toml",
+    "crates/raft-spec",
+    "crates/proof-smoke",
+    "crates/raft-proofs/reconcile.rs",
+    "crates/raft-proofs/node_init.rs",
+    "crates/raft-verified/src/state.rs",
+    "crates/raft-verified/tests/node_init.rs",
+    "orchestrator",
+    "crates/raft-verified/check.py",
+    "crates/raft-verified/tests/reconcile.rs",
+    "crates/raft-verified/examples",
+    "evidence",
+    ".git",
+    ".agent-output"
+  ],
+  "expected_outputs": [
+    "crates/raft-verified/src/reconcile.rs"
+  ],
+  "target_obligation_ids": [
+    "LOCAL-RECONCILE"
+  ],
+  "check_profile_ids": [
+    "reconcile-tests",
+    "reconcile-proof"
+  ],
+  "prompt_template": "input/replication.md",
+  "budget": {
+    "max_agent_calls": 2,
+    "max_repair_rounds": 1,
+    "call_timeout_seconds": 300,
+    "task_timeout_seconds": 1200,
+    "max_log_bytes": 1048576
+  }
+}

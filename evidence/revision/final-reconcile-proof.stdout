@@ -1,0 +1,80 @@
+{
+  "schema_version": "1",
+  "check_id": "reconcile-proof",
+  "run_id": "20261027T053859Z-185a6fa07265",
+  "check_kind": "local-correspondence",
+  "profile_id": "reconcile-proof",
+  "purpose": "proof",
+  "required": true,
+  "expected_targets": [
+    "check_reconcile_contract",
+    "reconcile_log"
+  ],
+  "expected_obligation_ids": [
+    "LOCAL-RECONCILE"
+  ],
+  "entrypoints": [
+    "crates/raft-proofs/reconcile.rs",
+    "crates/raft-proofs/reconcile_lemmas.rs",
+    "crates/raft-verified/src/reconcile.rs",
+    "crates/raft-spec/src/lib.rs",
+    "crates/raft-spec/src/reconcile_view.rs"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "PASS",
+  "argv": [
+    "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+    "--crate-type",
+    "lib",
+    "--no-cheating",
+    "--output-json",
+    "--time-expanded",
+    "--triggers-mode",
+    "silent",
+    "crates/raft-proofs/reconcile.rs"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus",
+  "input_manifest_digest": "190df918533fc798aca1ca7b999d76a85309799050f11bb01dc6dfa6d969e4a6",
+  "tool_versions": {
+    "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+  },
+  "started_at": "2026-10-27T05:38:59.692459+00:00",
+  "finished_at": "2026-10-27T05:39:02.128469+00:00",
+  "exit_code": 0,
+  "stdout_digest": "3ae9a5d46aad08debdc4d9a16c5eeff91d9b3e6398334954e8b8b163897242d4",
+  "stderr_digest": "1cf2abba78f27d4ead2b9d2462e04fbc146e9bd2b2ebd57f25ab66e43050e51c",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261027T053859Z-185a6fa07265/reconcile-proof.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261027T053859Z-185a6fa07265/reconcile-proof.stderr.log"
+  ],
+  "obligation_ids_checked": [
+    "LOCAL-RECONCILE"
+  ],
+  "coverage_findings": [
+    "complete Verus entrypoint verified; reviewed target mapping binds its function contracts to local obligations"
+  ],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "tool_environment": {
+    "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+    "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+  },
+  "function_results": {
+    "reconcile::reconcile::RequestId::clone": true,
+    "reconcile::reconcile::reconcile_log": true,
+    "reconcile::reconcile::Entry::clone": true,
+    "reconcile::reconcile::Command::clone": true,
+    "reconcile::reconcile::ReconcileError::clone": true,
+    "reconcile::check_reconcile_contract": true,
+    "reconcile::reconcile_lemmas::merged_matching_preserves_log": true,
+    "reconcile::reconcile_lemmas::merged_empty_preserves_log": true
+  },
+  "entire_crate_checked": true,
+  "verification_summary": {
+    "verified": 9,
+    "errors": 0
+  },
+  "reason": "profile checks passed locally; no full Raft acceptance"
+}

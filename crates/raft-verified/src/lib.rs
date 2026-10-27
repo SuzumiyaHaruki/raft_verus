@@ -1,4 +1,5 @@
-//! DRAFT interface vocabulary. No Raft node or `step` implementation is provided.
+//! DRAFT Raft interface and verified local log reconciliation.
+//! No complete Raft node or `step` implementation is provided.
 //! `u64` exhaustion must return an error; the unbounded model is not a resource proof.
 #![forbid(unsafe_code)]
 
@@ -6,30 +7,12 @@ pub type NodeId = u64;
 pub type Term = u64;
 pub type LogIndex = u64;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub struct RequestId {
-    pub client: u64,
-    pub sequence: u64,
-}
+pub mod reconcile;
+pub use reconcile::{reconcile_log, Command, Entry, ReconcileError, RequestId};
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum Command {
-    Client { request: RequestId, bytes: Vec<u8> },
-    Noop,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Entry {
-    pub term: Term,
-    pub command: Command,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct DurableState {
-    pub term: Term,
-    pub voted_for: Option<NodeId>,
-    pub log: Vec<Entry>,
-}
+pub mod state;
+pub mod node;
+pub use state::{DurableState, InitError, Node, Role};
 
 /// The host supplies a fresh incarnation on recovery; never reuse a live token.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

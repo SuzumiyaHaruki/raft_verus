@@ -1,0 +1,320 @@
+test_agent_claim_does_not_overrule_independent_failure (test_adapters.AdapterTests) ... ok
+test_agent_local_build_outputs_do_not_mutate_candidate_sources (test_adapters.AdapterTests) ... ok
+test_changes_during_check_invalidate_result (test_adapters.AdapterTests) ... ok
+test_checked_targets_cannot_be_unrelated (test_adapters.AdapterTests) ... ok
+test_cli_capability_discovery (test_adapters.AdapterTests) ... ok
+test_codex_success_is_candidate_only (test_adapters.AdapterTests) ... ok
+test_explicit_model_and_effort_reach_the_subprocess (test_adapters.AdapterTests) ... ok
+test_fake_verifier_pass_is_simulated (test_adapters.AdapterTests) ... ok
+test_invalid_model_settings_are_rejected (test_adapters.AdapterTests) ... ok
+test_missing_verifier (test_adapters.AdapterTests) ... ok
+test_negative_smoke_requires_actual_rejection (test_adapters.AdapterTests) ... ok
+test_protocol_errors (test_adapters.AdapterTests) ... ok
+test_real_schema_rejects_trusted_result_in_agent_report (test_adapters.AdapterTests) ... ok
+test_typecheck_is_separate_from_proof_pass (test_adapters.AdapterTests) ... ok
+test_unknown_event_preserved_with_warning (test_adapters.AdapterTests) ... ok
+test_unset_model_and_effort_do_not_override_codex_defaults (test_adapters.AdapterTests) ... ok
+test_verifier_failure_modes_never_pass (test_adapters.AdapterTests) ... ok
+test_zero_verification_is_not_a_proof_pass (test_adapters.AdapterTests) ... ok
+test_cli_model_override_is_visible_bound_and_does_not_enable_execution (test_modules.ModuleTests) ... ok
+test_fixture_plan_passes_only_selected_step (test_modules.ModuleTests) ... ERROR
+test_invalid_module_configuration_cannot_fall_back_to_legacy_task (test_modules.ModuleTests) ... ok
+test_misspelled_duplicate_and_empty_steps_fail_closed (test_modules.ModuleTests) ... ok
+test_module_requirement_edit_still_requires_review (test_modules.ModuleTests) ... ERROR
+test_planned_module_step_exposes_blocker_without_agent_calls (test_modules.ModuleTests) ... ok
+test_prompt_contains_module_and_exactly_selected_step (test_modules.ModuleTests) ... ok
+test_repository_plan_maps_all_module_steps_and_keeps_global_work (test_modules.ModuleTests) ... ok
+test_text_plan_cli_keeps_json_interface_and_marks_scope (test_modules.ModuleTests) ... ok
+test_allowed_source_change (test_policy.PolicyTests) ... ok
+test_contract_checker_lock_and_deleted_file_are_protected (test_policy.PolicyTests) ... ok
+test_scanner_distinguishes_comments_and_strings (test_policy.PolicyTests) ... ok
+test_scanner_flags_unfinished_unsafe_and_conditional_coverage (test_policy.PolicyTests) ... ok
+test_symlink_rejected_even_within_permitted_scope (test_policy.PolicyTests) ... ok
+test_untracked_outside_scope_rejected (test_policy.PolicyTests) ... ok
+test_both_large_streams_do_not_deadlock (test_process.ProcessTests) ... ok
+test_cancel_and_descendant_cleanup (test_process.ProcessTests) ... ok
+test_invalid_limits_and_argv (test_process.ProcessTests) ... ok
+test_large_logs_are_bounded (test_process.ProcessTests) ... ok
+test_large_stdin_unicode_and_shell_characters_are_data (test_process.ProcessTests) ... ok
+test_missing_and_nonexecutable (test_process.ProcessTests) ... ok
+test_nonzero_auth_permission_and_signal (test_process.ProcessTests) ... ok
+test_success_two_streams (test_process.ProcessTests) ... ok
+test_timeout (test_process.ProcessTests) ... ok
+test_actual_registry_structurally_valid (test_registry.RegistryTests) ... ok
+test_coverage_and_profile_mismatches_rejected (test_registry.RegistryTests) ... ok
+test_liveness_cannot_be_removed_to_get_full_pass (test_registry.RegistryTests) ... ok
+test_malformed_markdown_and_duplicate_obligations_rejected (test_registry.RegistryTests) ... ok
+test_review_status_is_separate_from_proof_completion (test_registry.RegistryTests) ... ok
+test_safety_cannot_inherit_liveness_assumption (test_registry.RegistryTests) ... ok
+test_unknown_assumption_is_rejected (test_registry.RegistryTests) ... ok
+test_unproved_checked_status_rejected (test_registry.RegistryTests) ... ok
+test_cli_task_plan_and_resume_need_no_review_file (test_revision.RevisionTests) ... ERROR
+test_disabled_or_unimplemented_isolation_stops_plan_before_checks (test_revision.RevisionTests) ... ok
+test_disabling_execution_also_stops_resume (test_revision.RevisionTests) ... ERROR
+test_empty_test_selection_missing_entrypoint_and_tool_fail (test_revision.RevisionTests) ... ok
+test_failed_correctness_check_defers_benchmark_and_keeps_repair_routing (test_revision.RevisionTests) ... ERROR
+test_fault_feedback_preserves_trace_seed_states_and_reproduction (test_revision.RevisionTests) ... ok
+test_fixture_mode_does_not_authorize_an_arbitrary_executable (test_revision.RevisionTests) ... ok
+test_interrupted_plan_resumes_same_candidate_and_rechecks_changes (test_revision.RevisionTests) ... ERROR
+test_measurements_without_threshold_and_noisy_samples_are_not_pass (test_revision.RevisionTests) ... ok
+test_negative_compiler_failure_not_accepted_as_proof_failure (test_revision.RevisionTests) ... ok
+test_ordinary_repair_cannot_weaken_checker (test_revision.RevisionTests) ... ERROR
+test_planned_task_blocks_before_generation (test_revision.RevisionTests) ... ok
+test_proof_failure_and_solver_timeout_keep_uncertainty (test_revision.RevisionTests) ... ok
+test_real_slice_consumer_rejects_weakened_postcondition_and_stronger_precondition (test_revision.RevisionTests) ... ok
+test_real_tests_without_proof_targets_complete (test_revision.RevisionTests) ... ERROR
+test_resume_rejects_mutation_between_independent_checks (test_revision.RevisionTests) ... ERROR
+test_runtime_cfg_binding_is_not_proof_source_but_proof_cfg_still_requires_review (test_revision.RevisionTests) ... ok
+test_simulated_check_cannot_close_obligation (test_revision.RevisionTests) ... ERROR
+test_task_binding_ignores_unrelated_prose_but_tracks_code_and_checker (test_revision.RevisionTests) ... ok
+test_typecheck_only_completes_without_theorem (test_revision.RevisionTests) ... ERROR
+test_typecheck_plus_installed_real_verus_proof_and_current_evidence (test_revision.RevisionTests) ... ERROR
+test_unrelated_real_smoke_cannot_close_named_source_obligation (test_revision.RevisionTests) ... ok
+test_build_only_check_cannot_close_proof_task (test_scheduler.SchedulerTests) ... ERROR
+test_claimed_success_fails_and_identical_failure_stops_early (test_scheduler.SchedulerTests) ... ERROR
+test_dependency_not_complete_blocks (test_scheduler.SchedulerTests) ... ok
+test_disabled_bootstrap_and_strict_isolation_block (test_scheduler.SchedulerTests) ... ok
+test_duplicate_unknown_and_cycle_dependencies (test_scheduler.SchedulerTests) ... ok
+test_explicit_run_needs_no_human_review_record (test_scheduler.SchedulerTests) ... ERROR
+test_fake_end_to_end_evidence_and_repeated_run_unique (test_scheduler.SchedulerTests) ... ERROR
+test_missing_input_and_invalid_profile (test_scheduler.SchedulerTests) ... ok
+test_old_controller_evidence_invalidated_by_input_change (test_scheduler.SchedulerTests) ... ok
+test_one_call_budget_and_zero_budget (test_scheduler.SchedulerTests) ... ERROR
+test_plan_validate_and_dry_run_never_launch_codex (test_scheduler.SchedulerTests) ... ok
+test_prompt_is_plain_markdown_and_includes_real_diagnostics (test_scheduler.SchedulerTests) ... ok
+test_protected_candidate_mutation_requires_review (test_scheduler.SchedulerTests) ... ERROR
+test_content_untracked_mode_delete_rename (test_workspace.WorkspaceTests) ... ok
+test_copy_preserves_source_and_refuses_existing_destination (test_workspace.WorkspaceTests) ... ok
+test_nested_reserved_names_are_still_in_manifest (test_workspace.WorkspaceTests) ... ok
+test_path_traversal_absolute_backslash_and_root_rejected (test_workspace.WorkspaceTests) ... ok
+test_snapshot_binding_invalidates_changed_input (test_workspace.WorkspaceTests) ... ok
+test_symlink_escape_and_input_validation (test_workspace.WorkspaceTests) ... ok
+
+======================================================================
+ERROR: test_fixture_plan_passes_only_selected_step (test_modules.ModuleTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_modules.py", line 87, in test_fixture_plan_passes_only_selected_step
+    result = run_plan(self.root, self.config, execute_codex=True, fixture_mode=True)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 608, in run_plan
+    result = run_task(root, config, key, True, cancel_event=cancel_event,
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 357, in run_task
+    if input_manifest(candidate, settings["protected_paths"]) != input_manifest(root, settings["protected_paths"]):
+NameError: name 'settings' is not defined
+
+======================================================================
+ERROR: test_module_requirement_edit_still_requires_review (test_modules.ModuleTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_modules.py", line 103, in test_module_requirement_edit_still_requires_review
+    result = run_task(self.root, self.config, 'fixture-task', execute_codex=True, fixture_mode=True)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 357, in run_task
+    if input_manifest(candidate, settings["protected_paths"]) != input_manifest(root, settings["protected_paths"]):
+NameError: name 'settings' is not defined
+
+======================================================================
+ERROR: test_cli_task_plan_and_resume_need_no_review_file (test_revision.RevisionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_revision.py", line 48, in test_cli_task_plan_and_resume_need_no_review_file
+    task = invoke(['run-task', '--task', self.task['id'], '--execute-codex'])
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_revision.py", line 42, in invoke
+    exit_code = main(['--root', str(self.root), *arguments])
+  File "/home/nitro/Desktop/raft_verus/orchestrator/cli.py", line 204, in main
+    result = run_task(root, config, args.task, args.execute_codex)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 357, in run_task
+    if input_manifest(candidate, settings["protected_paths"]) != input_manifest(root, settings["protected_paths"]):
+NameError: name 'settings' is not defined
+
+======================================================================
+ERROR: test_disabling_execution_also_stops_resume (test_revision.RevisionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_revision.py", line 68, in test_disabling_execution_also_stops_resume
+    first = run_plan(self.root, self.config, execute_codex=True)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 608, in run_plan
+    result = run_task(root, config, key, True, cancel_event=cancel_event,
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 357, in run_task
+    if input_manifest(candidate, settings["protected_paths"]) != input_manifest(root, settings["protected_paths"]):
+NameError: name 'settings' is not defined
+
+======================================================================
+ERROR: test_failed_correctness_check_defers_benchmark_and_keeps_repair_routing (test_revision.RevisionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_revision.py", line 208, in test_failed_correctness_check_defers_benchmark_and_keeps_repair_routing
+    result = self.execute()
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_scheduler.py", line 69, in execute
+    return run_task(self.root, self.config, self.task['id'], execute_codex=True)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 357, in run_task
+    if input_manifest(candidate, settings["protected_paths"]) != input_manifest(root, settings["protected_paths"]):
+NameError: name 'settings' is not defined
+
+======================================================================
+ERROR: test_interrupted_plan_resumes_same_candidate_and_rechecks_changes (test_revision.RevisionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_revision.py", line 230, in test_interrupted_plan_resumes_same_candidate_and_rechecks_changes
+    first = run_plan(self.root, self.config, ['second'], True, cancel_event=event, fixture_mode=True)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 608, in run_plan
+    result = run_task(root, config, key, True, cancel_event=cancel_event,
+  File "/usr/lib/python3.10/unittest/mock.py", line 1114, in __call__
+    return self._mock_call(*args, **kwargs)
+  File "/usr/lib/python3.10/unittest/mock.py", line 1118, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+  File "/usr/lib/python3.10/unittest/mock.py", line 1179, in _execute_mock_call
+    result = effect(*args, **kwargs)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_revision.py", line 226, in stop_after_first
+    result = original(*args, **kwargs)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 357, in run_task
+    if input_manifest(candidate, settings["protected_paths"]) != input_manifest(root, settings["protected_paths"]):
+NameError: name 'settings' is not defined
+
+======================================================================
+ERROR: test_ordinary_repair_cannot_weaken_checker (test_revision.RevisionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_revision.py", line 188, in test_ordinary_repair_cannot_weaken_checker
+    result = self.execute()
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_scheduler.py", line 69, in execute
+    return run_task(self.root, self.config, self.task['id'], execute_codex=True)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 357, in run_task
+    if input_manifest(candidate, settings["protected_paths"]) != input_manifest(root, settings["protected_paths"]):
+NameError: name 'settings' is not defined
+
+======================================================================
+ERROR: test_real_tests_without_proof_targets_complete (test_revision.RevisionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_revision.py", line 94, in test_real_tests_without_proof_targets_complete
+    result = self.execute()
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_scheduler.py", line 69, in execute
+    return run_task(self.root, self.config, self.task['id'], execute_codex=True)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 357, in run_task
+    if input_manifest(candidate, settings["protected_paths"]) != input_manifest(root, settings["protected_paths"]):
+NameError: name 'settings' is not defined
+
+======================================================================
+ERROR: test_resume_rejects_mutation_between_independent_checks (test_revision.RevisionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_revision.py", line 250, in test_resume_rejects_mutation_between_independent_checks
+    first = run_plan(self.root, self.config, execute_codex=True, fixture_mode=True)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 608, in run_plan
+    result = run_task(root, config, key, True, cancel_event=cancel_event,
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 357, in run_task
+    if input_manifest(candidate, settings["protected_paths"]) != input_manifest(root, settings["protected_paths"]):
+NameError: name 'settings' is not defined
+
+======================================================================
+ERROR: test_simulated_check_cannot_close_obligation (test_revision.RevisionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_revision.py", line 110, in test_simulated_check_cannot_close_obligation
+    result = self.execute()
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_scheduler.py", line 69, in execute
+    return run_task(self.root, self.config, self.task['id'], execute_codex=True)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 357, in run_task
+    if input_manifest(candidate, settings["protected_paths"]) != input_manifest(root, settings["protected_paths"]):
+NameError: name 'settings' is not defined
+
+======================================================================
+ERROR: test_typecheck_only_completes_without_theorem (test_revision.RevisionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_revision.py", line 103, in test_typecheck_only_completes_without_theorem
+    result = self.execute()
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_scheduler.py", line 69, in execute
+    return run_task(self.root, self.config, self.task['id'], execute_codex=True)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 357, in run_task
+    if input_manifest(candidate, settings["protected_paths"]) != input_manifest(root, settings["protected_paths"]):
+NameError: name 'settings' is not defined
+
+======================================================================
+ERROR: test_typecheck_plus_installed_real_verus_proof_and_current_evidence (test_revision.RevisionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_revision.py", line 281, in test_typecheck_plus_installed_real_verus_proof_and_current_evidence
+    result = self.execute()
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_scheduler.py", line 69, in execute
+    return run_task(self.root, self.config, self.task['id'], execute_codex=True)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 357, in run_task
+    if input_manifest(candidate, settings["protected_paths"]) != input_manifest(root, settings["protected_paths"]):
+NameError: name 'settings' is not defined
+
+======================================================================
+ERROR: test_build_only_check_cannot_close_proof_task (test_scheduler.SchedulerTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_scheduler.py", line 170, in test_build_only_check_cannot_close_proof_task
+    result = self.execute()
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_scheduler.py", line 69, in execute
+    return run_task(self.root, self.config, self.task['id'], execute_codex=True)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 357, in run_task
+    if input_manifest(candidate, settings["protected_paths"]) != input_manifest(root, settings["protected_paths"]):
+NameError: name 'settings' is not defined
+
+======================================================================
+ERROR: test_claimed_success_fails_and_identical_failure_stops_early (test_scheduler.SchedulerTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_scheduler.py", line 143, in test_claimed_success_fails_and_identical_failure_stops_early
+    result = self.execute()
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_scheduler.py", line 69, in execute
+    return run_task(self.root, self.config, self.task['id'], execute_codex=True)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 357, in run_task
+    if input_manifest(candidate, settings["protected_paths"]) != input_manifest(root, settings["protected_paths"]):
+NameError: name 'settings' is not defined
+
+======================================================================
+ERROR: test_explicit_run_needs_no_human_review_record (test_scheduler.SchedulerTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_scheduler.py", line 102, in test_explicit_run_needs_no_human_review_record
+    result = self.execute()
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_scheduler.py", line 69, in execute
+    return run_task(self.root, self.config, self.task['id'], execute_codex=True)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 357, in run_task
+    if input_manifest(candidate, settings["protected_paths"]) != input_manifest(root, settings["protected_paths"]):
+NameError: name 'settings' is not defined
+
+======================================================================
+ERROR: test_fake_end_to_end_evidence_and_repeated_run_unique (test_scheduler.SchedulerTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_scheduler.py", line 128, in test_fake_end_to_end_evidence_and_repeated_run_unique
+    first = self.execute()
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_scheduler.py", line 69, in execute
+    return run_task(self.root, self.config, self.task['id'], execute_codex=True)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 357, in run_task
+    if input_manifest(candidate, settings["protected_paths"]) != input_manifest(root, settings["protected_paths"]):
+NameError: name 'settings' is not defined
+
+======================================================================
+ERROR: test_one_call_budget_and_zero_budget (test_scheduler.SchedulerTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_scheduler.py", line 154, in test_one_call_budget_and_zero_budget
+    result = self.execute()
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_scheduler.py", line 69, in execute
+    return run_task(self.root, self.config, self.task['id'], execute_codex=True)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 357, in run_task
+    if input_manifest(candidate, settings["protected_paths"]) != input_manifest(root, settings["protected_paths"]):
+NameError: name 'settings' is not defined
+
+======================================================================
+ERROR: test_protected_candidate_mutation_requires_review (test_scheduler.SchedulerTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_scheduler.py", line 159, in test_protected_candidate_mutation_requires_review
+    result = self.execute()
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_scheduler.py", line 69, in execute
+    return run_task(self.root, self.config, self.task['id'], execute_codex=True)
+  File "/home/nitro/Desktop/raft_verus/orchestrator/scheduler.py", line 357, in run_task
+    if input_manifest(candidate, settings["protected_paths"]) != input_manifest(root, settings["protected_paths"]):
+NameError: name 'settings' is not defined
+
+----------------------------------------------------------------------
+Ran 91 tests in 17.975s
+
+FAILED (errors=18)

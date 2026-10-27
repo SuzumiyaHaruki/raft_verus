@@ -1,0 +1,8 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/build/debug/examples/initialize`
+
+thread 'main' (460) panicked at crates/raft-verified/examples/initialize.rs:27:13:
+assertion `left == right` failed
+  left: 1
+ right: 0
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

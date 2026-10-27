@@ -1,0 +1,54 @@
+{
+  "schema_version": "1",
+  "check_id": "node-replay",
+  "run_id": "20261027T074013Z-4046e080de76",
+  "check_kind": "initialization-scenario",
+  "profile_id": "node-replay",
+  "purpose": "test",
+  "required": true,
+  "expected_targets": [
+    "construct three independent nodes and reject an unknown identity"
+  ],
+  "expected_obligation_ids": [],
+  "entrypoints": [
+    "crates/raft-verified/examples/initialize.rs",
+    "crates/raft-verified/check.py"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "PASS",
+  "argv": [
+    "python3",
+    "crates/raft-verified/check.py",
+    "node-replay"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-1/source/evidence/runs/20261027T074013Z-4046e080de76/candidate",
+  "input_manifest_digest": "255f8abfddca10053eb2ad117c0290822fa248c7fa33f67d279f82bdc6f14bee",
+  "tool_versions": {},
+  "started_at": "2026-10-27T07:40:23.841174+00:00",
+  "finished_at": "2026-10-27T07:40:23.949580+00:00",
+  "exit_code": 0,
+  "stdout_digest": "5a02fe4668dbfb500313da1bbf407e2a0582e81bbd3ce0e4044e583efe99a995",
+  "stderr_digest": "118ef8eb1a7b4c013d7706e957bfc56e9b6c310db6692e68a3f3c76b15ef4179",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-1/source/evidence/runs/20261027T074013Z-4046e080de76/attempt-2/node-replay.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-1/source/evidence/runs/20261027T074013Z-4046e080de76/attempt-2/node-replay.stderr.log"
+  ],
+  "obligation_ids_checked": [],
+  "coverage_findings": [
+    "build/test only; no mathematical proof"
+  ],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "tool_environment": {},
+  "scenario": {
+    "seed": 0,
+    "trace_path": "crates/raft-verified/examples/initialize.rs",
+    "boundary": "Initial states only; no protocol messages, crash recovery or liveness claim.",
+    "saved_trace": "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-1/source/evidence/runs/20261027T074013Z-4046e080de76/attempt-2/node-replay.trace.json",
+    "state_observations": "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-1/source/evidence/runs/20261027T074013Z-4046e080de76/attempt-2/node-replay.stdout.log"
+  },
+  "tests_selected": 4,
+  "reason": "profile checks passed locally; no full Raft acceptance"
+}

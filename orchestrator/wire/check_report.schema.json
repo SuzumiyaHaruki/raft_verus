@@ -50,7 +50,8 @@
         "BLOCKED",
         "NOT_RUN",
         "ERROR",
-        "TYPECHECKED"
+        "TYPECHECKED",
+        "MEASURED"
       ]
     },
     "argv": {
@@ -123,7 +124,7 @@
       "type": "string"
     },
     "full_acceptance": {
-      "const": false
+      "type": "boolean"
     }
   },
   "additionalProperties": true

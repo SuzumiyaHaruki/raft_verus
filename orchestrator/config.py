@@ -12,16 +12,25 @@ except ImportError:
         from pip._vendor import tomli as tomllib
 
 
+def validate_codex_settings(settings: dict) -> None:
+    for key in ("model", "model_reasoning_effort"):
+        if key in settings and (not isinstance(settings[key], str) or not settings[key]
+                                or any(c.isspace() for c in settings[key])):
+            raise ValueError(f"codex.{key} must be a nonempty string without whitespace")
+
+
 def load_config(root: Path, path: str | Path = "workflow.toml") -> dict:
     location = Path(path)
     if not location.is_absolute():
         location = root / location
     config = tomllib.loads(location.read_text(encoding="utf-8"))
     config["_config_path"] = str(location.resolve())
+    validate_codex_settings(config.get("codex", {}))
     profiles = config.get("checks", config.get("profiles", []))
     if isinstance(profiles, dict):
         profiles = [dict(value, id=key) for key, value in profiles.items()]
     for profile in profiles:
+        profile.setdefault("purpose", "proof" if profile.get("adapter") != "command-text-v1" else "build")
         profile.setdefault("timeout_seconds", config.get("budget", {}).get("call_timeout_seconds", 120))
         profile.setdefault("max_log_bytes", config.get("budget", {}).get("max_log_bytes", 1048576))
         if profile.get("adapter") == "verus-calibrated-text-v1":
@@ -44,6 +53,10 @@ def load_config(root: Path, path: str | Path = "workflow.toml") -> dict:
             raise ValueError("unsafe check profile ID")
         if not profile.get("entrypoints") or not profile.get("expected_targets"):
             raise ValueError(f"profile {profile['id']} lacks targets or entrypoints")
+        if profile["purpose"] not in {"build", "typecheck", "test", "proof", "benchmark", "policy"}:
+            raise ValueError("invalid check purpose: " + profile["purpose"])
+        if profile.get("purpose") != "proof" and profile.get("expected_obligation_ids"):
+            raise ValueError("only a proof check may declare obligation coverage")
         if profile.get("adapter") not in {"fake-json-v1", "verus-calibrated-text-v1", "command-text-v1"}:
             raise ValueError(f"unknown checker adapter: {profile.get('adapter')}")
         for key in ("timeout_seconds", "max_log_bytes"):

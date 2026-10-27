@@ -1,0 +1,116 @@
+# Coding task instructions
+
+Status: DRAFT.
+
+Use English for instructions, source comments, diagnostics, reports and referenced material. Read the task's scoped context before editing. Preserve existing user work and stay within the supplied editable paths. Do not invoke Codex or another agent workflow recursively.
+
+The destination is a complete, continuously usable Raft library. Read the module's responsibility, connections and completion criteria, then implement the selected step within scope. Following the joint code/proof development idea in IDS (source S14 in docs/sources.md), pair each state, control-flow or handler change with its representation, invariant and local proof work. Run the relevant checks after each coherent edit, not only after finishing the implementation. Decompose a difficult proof into smaller obligations; preserve proved results and record unfinished dependencies as OPEN. Our Verus adaptation forbids `assume`, `admit`, trusted proof stubs and skipped verification even in intermediate accepted work. A partial project is allowed; an unfinished theorem is not a proof. Tests, replay, measurements and verification use the same executable logic. Keep formal definitions/proofs in Verus source and preserve target meaning and caller preconditions. Handlers must compose over repeated events; hard-coded exchanges do not establish Raft behavior. Other module steps do not expand this call's scope.
+
+Modules organize responsibilities, not independent runtime components. One node state and event/effect sequence couple term/role changes, logs, peer progress, commit/delivery positions and pending I/O. Before editing, identify connected handlers, caller obligations and shared invariants; read their contracts. Check relevant cross-module event sequences and dependent proofs when behavior changes. A higher-term message can affect election and replication work; a log change affects commitment/delivery bounds; recovery invalidates old callbacks across handlers. A local proof is conditional on its callers establishing its preconditions and preserving the shared invariant. Separate module passes cannot establish global Raft safety or liveness without composition and refinement. If a necessary coupled repair exceeds the supplied editable scope, preserve the diagnosis and request a revised scope instead of forcing an isolated fix or silently expanding the task.
+
+Run the relevant local checks and retain their actual output. Distinguish build, typecheck, functional/scenario test, proof and measurement results. Typechecking closes no theorem; finite scenarios do not prove liveness; measurements without a threshold are data. Keep global obligations open when only a local task is complete. Clearly separate fixture-generated candidates from real Rust/Verus checking.
+
+On failure, reproduce it and retain the failed command, goal, relevant source/invariant and diagnostics. A proof failure may indicate a code error, missing lemma, unsuitable representation or solver limit; it is not automatically a counterexample. Record attempted approaches and why they failed in the existing task report/feedback. Within scope, revise code, abstraction or proved auxiliary invariants together instead of retrying identical proof edits. A broader redesign becomes a concrete follow-up proposal with affected checks; preserve the candidate and user work. Missing tools do not justify changing semantics. Save fault seeds, traces and states. Measure an executable workload when available, without treating its results as proof; repeat comparable samples before claiming a regression.
+
+The protected model, requirements, assumptions, trusted boundaries, check definitions and existing test oracles are outside ordinary repair scope. Explain a proposed change and return the scope conflict with the candidate for review after delivery. Do not insert approval files or interactive human checkpoints into the execution loop. New tests and harness changes are welcome as explicitly scoped development work. Preserve complete raw evidence; do not forward non-English raw logs to an LLM. Label any English explanation and point to the unchanged original.
+
+Return the required CLI report with changed files, actual commands/results and remaining module/project gaps. Your report is a candidate claim; independent checks determine only selected-step completion. A step or plan passing does not mean its module or Raft is complete. Never approve specifications, merge a candidate or publish automatically.
+
+
+Module context: input/state.md
+
+# Node state and initialization
+
+Status: DRAFT. Module: INCOMPLETE; initial-state types and independent checks exist; constructor generation is pending.
+
+## Responsibility and connections
+
+Represent a fixed-membership Raft node throughout its lifetime: follower,
+candidate and leader roles; durable term, vote and log; volatile commit/delivery
+positions; election votes, peer replication progress and pending operations.
+This state is shared by [elections](elections.md), [replication](replication.md)
+and [commitment](commitment.md). The [runtime](runtime.md) serializes events;
+[recovery](recovery.md) reconstructs state after a crash.
+
+The shared types are in `crates/raft-verified/src/state.rs`, re-exported by the
+library. `Node` currently represents identity, membership, hard state, role,
+commit/delivery/application positions, incarnation, serial and deadline. Pending
+I/O, peer progress and recovery will extend this same type. They are not represented
+by fictitious constant fields in a claimed complete refinement. The model's
+`fresh_node`, `initial`, `init` and `well_formed` remain unchanged.
+
+## Module completion
+
+Fresh construction, role-specific fields and recovered construction have explicit
+bounds and representations. Every handler uses this state; no parallel test-only
+node exists. Tests cover legal/invalid membership, initial state and index/resource
+boundaries. Actual proofs establish initialization and representation and supply
+the invariant required by handlers. PO-INIT, PO-REPRESENTATION, PO-REFINE-INIT and
+index/token lemmas in [proofs.md](proofs.md) remain open until checked.
+
+Execute only the selected step below within its editable scope. The module responsibilities describe the destination, not extra work for this call. Passing this step does not complete the module or the Raft project.
+
+
+Task: STATE-INIT
+
+## Step: Initialize node state
+
+Stage: READY for generation, not implemented or proved in the source checkout.
+
+Implement `Node::new(id: u64, members: Vec<u64>) -> Result<Node, InitError>` in
+`crates/raft-verified/src/node.rs`, with its Verus annotations and loop proofs in
+the same file. The current reject-all seed is deliberately incomplete and cannot
+pass this task. Do not copy the offline controller fixture as generated work.
+
+Accept every nonempty, duplicate-free membership containing the local ID,
+regardless of input order, including one node and `u64::MAX` IDs. Preserve the
+member order and values. Reject empty lists, duplicate peers and absent IDs with
+`InvalidMembership`. Initialize term/positions/incarnation/serial to zero, no vote,
+empty log, Follower role and deadline 1, matching the existing `fresh_node` fields.
+This constructor is only for a genuinely fresh identity/storage image; never use
+it to bypass recovery or reuse incarnation zero. Allocation follows Rust Vec's
+existing abort behavior; no resource-liveness claim is made. API recommendations
+remain DRAFT under ADR-01/02/03 for review after delivery.
+
+The protected `crates/raft-spec/src/node_init.rs` specifies valid membership and
+`init_result`. It demands success for every valid input, so rejecting all inputs
+cannot prove the target vacuously. `crates/raft-proofs/node_init.rs` calls the exact
+constructor source compiled by Cargo; weakening its annotation or strengthening
+its precondition cannot satisfy the independent caller. This checks only the
+represented initial fields, not whole-node/cluster refinement or runtime behavior.
+No semantic model, oracle or checking-policy edit is part of this task.
+
+Develop code and proof together. A simple duplicate scan is sufficient initially;
+use invariants to relate the scanned prefix to membership validity. Compare test
+failures and failed proof goals, retain failed approaches in the report, and
+repair within this file. Check all existing executable regressions as well.
+
+```sh
+python3 crates/raft-verified/check.py build
+python3 crates/raft-verified/check.py test
+python3 crates/raft-verified/check.py node-replay
+python3 crates/raft-verified/check.py node-proof
+python3 crates/raft-verified/check.py proof
+python3 crates/raft-verified/check.py node-bench
+```
+
+The controller also typechecks the candidate model; that closes no theorem.
+It measures initialization only after required correctness checks pass. The
+replay constructs independent initial states, not a cluster fault experiment.
+Report results, design/complexity and remaining gaps using the existing agent
+report. Passing closes only LOCAL-NODE-INIT on this candidate. Next development
+extends the same Node with pending writes and completion handling in RUNTIME-PERSIST;
+its currently missing oracles and representation must be supplied before execution.
+
+
+Task stage: ready
+Read: input/model.md, input/io.md, crates/raft-verified/src, crates/raft-verified/tests/node_init.rs, crates/raft-spec/src, crates/raft-proofs/node_init.rs, crates/raft-verified/examples/initialize.rs, input/state.md
+May edit: crates/raft-verified/src/node.rs
+Must not edit: AGENTS.md, Cargo.toml, Cargo.lock, input, workflow.toml, crates/raft-spec, crates/proof-smoke, crates/raft-proofs/reconcile.rs, crates/raft-proofs/node_init.rs, crates/raft-verified/src/state.rs, crates/raft-verified/tests/node_init.rs, orchestrator, crates/raft-verified/check.py, crates/raft-verified/tests/reconcile.rs, crates/raft-verified/examples, evidence, .git, .agent-output
+Expected outputs: crates/raft-verified/src/node.rs
+Proof targets: LOCAL-NODE-INIT
+Independent checks: interface-check, node-tests, node-replay, spec, node-proof, reconcile-proof, node-bench
+
+For local Rust or check.py commands, use the explicit environment prefix CARGO_TARGET_DIR=/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-1/source/evidence/runs/20261027T074013Z-4046e080de76/attempt-1/agent-build PYTHONDONTWRITEBYTECODE=1 before the command. This controller-owned scratch directory is writable through --add-dir; the prefix also works when the Codex shell filters inherited environment variables.
+
+FIXTURE_JSON={"task_id": "STATE-INIT", "write_path": "crates/raft-verified/src/node.rs", "write_text": "//! SIMULATED offline generator output. Never supplied as experiment context.\nuse crate::state::{DurableState, InitError, Node, Role};\n#[cfg(verus_keep_ghost)]\nuse crate::initialization::init_result;\nuse vstd::prelude::*;\n\nverus! {\nimpl Node {\n    pub fn new(id: u64, members: Vec<u64>) -> (result: Result<Self, InitError>)\n        ensures init_result(result, id, members@),\n    {\n        let mut found = false;\n        let mut i: usize = 0;\n        while i < members.len()\n            invariant\n                i <= members.len(),\n                found == (exists |k: int| 0 <= k < i && members@[k] == id),\n                forall |a: int, b: int| 0 <= a < b < i ==> members@[a] != members@[b],\n            decreases members.len() - i,\n        {\n            let mut j: usize = 0;\n            while j < i\n                invariant\n                    i < members.len(), j <= i,\n                    forall |a: int| 0 <= a < j ==> members@[a] != members@[i as int],\n                decreases i - j,\n            {\n                if members[j] == members[i] {\n                    return Err(InitError::InvalidMembership);\n                }\n                j += 1;\n            }\n            if members[i] == id { found = true; }\n            i += 1;\n        }\n        if !found { return Err(InitError::InvalidMembership); }\n        proof {\n            assert forall |a: int, b: int| 0 <= a < members.len() && 0 <= b < members.len()\n                && a != b implies members@[a] != members@[b] by {\n                if a < b {} else { assert(b < a); }\n            };\n        }\n        let n = Node {\n            id, members,\n            hard: DurableState { term: 1, voted_for: None, log: Vec::new() },\n            role: Role::Follower,\n            commit: 0, delivered: 0, application_cursor: 0,\n            incarnation: 0, serial: 0, deadline: 1,\n        };\n        proof {\n            assert(crate::representation::log_view(n.hard.log@) =~= Seq::empty());\n        }\n        Ok(n)\n    }\n}\n}\n"}

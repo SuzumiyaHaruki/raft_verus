@@ -1,0 +1,230 @@
+{
+  "status": "PASS",
+  "generation_kind": "SIMULATED",
+  "check_evidence_kind": "REAL_LOCAL",
+  "full_acceptance": false,
+  "meaning": "Scripted wrong initial term defect rejected, scripted repair rechecked; no live Codex session.",
+  "source_copy": "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source",
+  "controller_run": "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961",
+  "controller_conclusion": {
+    "run_id": "20261027T074617Z-6c663c2ca961",
+    "task_id": "STATE-INIT",
+    "status": "PASSED",
+    "agent_calls": 2,
+    "completion_scope": "STEP_ONLY",
+    "module_document": "input/state.md",
+    "codex_request": {
+      "model": "gpt-6.1-sol",
+      "model_reasoning_effort": "high"
+    },
+    "history": [
+      "PENDING",
+      "READY",
+      "RUNNING",
+      "CHECKING",
+      "NEEDS_REPAIR",
+      "RUNNING",
+      "CHECKING",
+      "PASSED"
+    ],
+    "evidence_kind": "REAL_LOCAL",
+    "full_acceptance": false,
+    "generation_kind": "SIMULATED",
+    "obligation_ids_checked": [
+      "LOCAL-NODE-INIT",
+      "LOCAL-RECONCILE"
+    ],
+    "input_fingerprint": "b45091e0ef08b6a5a929716f132bbd001b04cdf9f93de30f0877d8fd96533557",
+    "current_fingerprint": "372a16fa1dfa7857f7469f24210b6a8627ba4ef7043462a835b7a73cf8106622",
+    "candidate_path": "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/candidate",
+    "deferred_checks": [
+      {
+        "profile_id": "node-bench",
+        "attempt": 1,
+        "reason": "required correctness check failed; repair before measuring performance"
+      }
+    ],
+    "check_evidence_kind": "REAL_LOCAL",
+    "failed_attempts": [
+      {
+        "number": 1,
+        "summary": "SIMULATED fixture candidate",
+        "changed_paths": [
+          "crates/raft-verified/src/node.rs"
+        ],
+        "results": "interface-check=PASS, node-tests=FAIL, node-replay=FAIL, spec=TYPECHECKED, node-proof=FAIL, reconcile-proof=PASS",
+        "artifacts": "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1"
+      }
+    ],
+    "reason": "local task checks passed; candidate awaits human integration"
+  },
+  "checks": [
+    {
+      "profile_id": "interface-check",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "obligation_ids_checked": [],
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/interface-check.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/interface-check.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "node-proof",
+      "result": "FAIL",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": {
+        "verified": 13,
+        "errors": 1
+      },
+      "obligation_ids_checked": [],
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-proof.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-proof.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "node-replay",
+      "result": "FAIL",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "obligation_ids_checked": [],
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-replay.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-replay.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "node-tests",
+      "result": "FAIL",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "obligation_ids_checked": [],
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-tests.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-tests.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "reconcile-proof",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": {
+        "verified": 9,
+        "errors": 0
+      },
+      "obligation_ids_checked": [
+        "LOCAL-RECONCILE"
+      ],
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/reconcile-proof.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/reconcile-proof.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "spec",
+      "result": "TYPECHECKED",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": {
+        "verified": 0,
+        "errors": 0
+      },
+      "obligation_ids_checked": [],
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/spec.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/spec.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "interface-check",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "obligation_ids_checked": [],
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-2/interface-check.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-2/interface-check.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "node-bench",
+      "result": "MEASURED",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "obligation_ids_checked": [],
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-2/node-bench.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-2/node-bench.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "node-proof",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": {
+        "verified": 14,
+        "errors": 0
+      },
+      "obligation_ids_checked": [
+        "LOCAL-NODE-INIT"
+      ],
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-2/node-proof.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-2/node-proof.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "node-replay",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "obligation_ids_checked": [],
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-2/node-replay.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-2/node-replay.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "node-tests",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "obligation_ids_checked": [],
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-2/node-tests.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-2/node-tests.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "reconcile-proof",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": {
+        "verified": 9,
+        "errors": 0
+      },
+      "obligation_ids_checked": [
+        "LOCAL-RECONCILE"
+      ],
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-2/reconcile-proof.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-2/reconcile-proof.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "spec",
+      "result": "TYPECHECKED",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": {
+        "verified": 0,
+        "errors": 0
+      },
+      "obligation_ids_checked": [],
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-2/spec.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-2/spec.stderr.log"
+      ]
+    }
+  ]
+}

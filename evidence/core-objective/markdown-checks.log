@@ -1,0 +1,24 @@
+test_cli_model_override_is_visible_bound_and_does_not_enable_execution (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_fixture_plan_passes_only_selected_step (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_invalid_module_configuration_cannot_fall_back_to_legacy_task (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_launcher_defaults_to_missing_node_work_with_no_generation (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_misspelled_duplicate_and_empty_steps_fail_closed (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_module_requirement_edit_still_requires_review (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_planned_module_step_exposes_blocker_without_agent_calls (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_prompt_contains_module_and_exactly_selected_step (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_repair_prompt_preserves_prior_approaches_and_independent_results (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_repository_plan_maps_all_module_steps_and_keeps_global_work (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_text_plan_cli_keeps_json_interface_and_marks_scope (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_actual_registry_structurally_valid (orchestrator.tests.test_registry.RegistryTests) ... ok
+test_coverage_and_profile_mismatches_rejected (orchestrator.tests.test_registry.RegistryTests) ... ok
+test_liveness_cannot_be_removed_to_get_full_pass (orchestrator.tests.test_registry.RegistryTests) ... ok
+test_malformed_markdown_and_duplicate_obligations_rejected (orchestrator.tests.test_registry.RegistryTests) ... ok
+test_review_status_is_separate_from_proof_completion (orchestrator.tests.test_registry.RegistryTests) ... ok
+test_safety_cannot_inherit_liveness_assumption (orchestrator.tests.test_registry.RegistryTests) ... ok
+test_unknown_assumption_is_rejected (orchestrator.tests.test_registry.RegistryTests) ... ok
+test_unproved_checked_status_rejected (orchestrator.tests.test_registry.RegistryTests) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 5.129s
+
+OK

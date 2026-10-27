@@ -1,0 +1,347 @@
+$ python3 -m orchestrator validate
+{
+  "status": "PASS",
+  "check_kind": "STRUCTURAL_ONLY",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "errors": [],
+  "meaning": "Markdown references and configuration checks only; no proof obligation closed"
+}
+EXIT=0
+
+$ ./experiment.sh
+{
+  "status": "DRY_RUN",
+  "agent_calls": 0,
+  "resume_id": null,
+  "completion_scope": "SELECTED_STEPS_ONLY",
+  "full_acceptance": false,
+  "codex_request": {
+    "model": "gpt-6.1-sol",
+    "model_reasoning_effort": "high"
+  },
+  "tasks": [
+    "STATE-INIT"
+  ]
+}
+EXIT=0
+
+$ python3 -m orchestrator verify --profile interface-check
+{
+  "schema_version": "1",
+  "check_id": "interface-check",
+  "run_id": "20261027T074618Z-e508c37e5f48",
+  "check_kind": "build-only",
+  "profile_id": "interface-check",
+  "purpose": "build",
+  "required": true,
+  "expected_targets": [
+    "raft-verified"
+  ],
+  "expected_obligation_ids": [],
+  "entrypoints": [
+    "crates/raft-verified/src/lib.rs",
+    "crates/raft-verified/src/reconcile.rs",
+    "crates/raft-verified/check.py"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "PASS",
+  "argv": [
+    "python3",
+    "crates/raft-verified/check.py",
+    "build"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus",
+  "input_manifest_digest": "a4f755a65169e4f988676cb1813b697bb877c41e026cf646822c75eaa98624df",
+  "tool_versions": {},
+  "started_at": "2026-10-27T07:46:18.599950+00:00",
+  "finished_at": "2026-10-27T07:46:18.785349+00:00",
+  "exit_code": 0,
+  "stdout_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_digest": "345769d81b8a0d4f43d02fc94c8f45dddff4460f77ea3efeab3c845bd8db69de",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261027T074618Z-e508c37e5f48/interface-check.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261027T074618Z-e508c37e5f48/interface-check.stderr.log"
+  ],
+  "obligation_ids_checked": [],
+  "coverage_findings": [
+    "build/test only; no mathematical proof"
+  ],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "tool_environment": {},
+  "reason": "profile checks passed locally; no full Raft acceptance"
+}
+EXIT=0
+
+$ python3 -m orchestrator verify --profile reconcile-tests
+{
+  "schema_version": "1",
+  "check_id": "reconcile-tests",
+  "run_id": "20261027T074618Z-2a51a464036a",
+  "check_kind": "functional-tests",
+  "profile_id": "reconcile-tests",
+  "purpose": "test",
+  "required": true,
+  "expected_targets": [
+    "reconciliation edge cases and interface regressions"
+  ],
+  "expected_obligation_ids": [],
+  "entrypoints": [
+    "Cargo.toml",
+    "Cargo.lock",
+    "crates/raft-verified/Cargo.toml",
+    "crates/raft-verified/src/lib.rs",
+    "crates/raft-verified/src/reconcile.rs",
+    "crates/raft-verified/tests/reconcile.rs",
+    "crates/raft-verified/tests/replay_cases.rs",
+    "crates/raft-verified/examples/replay.rs",
+    "crates/raft-verified/examples/reconcile.trace",
+    "crates/raft-verified/check.py"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "PASS",
+  "argv": [
+    "python3",
+    "crates/raft-verified/check.py",
+    "test",
+    "--lib",
+    "--test",
+    "reconcile",
+    "--test",
+    "replay_cases"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus",
+  "input_manifest_digest": "9bcdbc90aba199a514523e6d6a7956a951774a0fbae13932cc6cae7164114c66",
+  "tool_versions": {},
+  "started_at": "2026-10-27T07:46:18.864553+00:00",
+  "finished_at": "2026-10-27T07:46:19.560991+00:00",
+  "exit_code": 0,
+  "stdout_digest": "fd49675d8a586902cee2d50c8c21441b57e864689ba021a507f89ebf4bc89b6e",
+  "stderr_digest": "5188b63fb7b053bb000ddaa7cfb814469518316f3cd06acd096d6d1e915d94b9",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261027T074618Z-2a51a464036a/reconcile-tests.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261027T074618Z-2a51a464036a/reconcile-tests.stderr.log"
+  ],
+  "obligation_ids_checked": [],
+  "coverage_findings": [
+    "build/test only; no mathematical proof"
+  ],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "tool_environment": {},
+  "tests_selected": 15,
+  "reason": "profile checks passed locally; no full Raft acceptance"
+}
+EXIT=0
+
+$ python3 -m orchestrator verify --profile node-tests
+{
+  "schema_version": "1",
+  "check_id": "node-tests",
+  "run_id": "20261027T074619Z-e6ae49b7f5ab",
+  "check_kind": "functional-tests",
+  "profile_id": "node-tests",
+  "purpose": "test",
+  "required": true,
+  "expected_targets": [
+    "node initialization and existing runtime regressions"
+  ],
+  "expected_obligation_ids": [],
+  "entrypoints": [
+    "crates/raft-verified/tests/node_init.rs",
+    "crates/raft-verified/check.py"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "FAIL",
+  "argv": [
+    "python3",
+    "crates/raft-verified/check.py",
+    "test"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus",
+  "input_manifest_digest": "933b6be83ea64f47f0ef46e4cfcbad2895c76b72180d94b0c2c0ebea964af604",
+  "tool_versions": {},
+  "started_at": "2026-10-27T07:46:19.641558+00:00",
+  "finished_at": "2026-10-27T07:46:20.967345+00:00",
+  "exit_code": 101,
+  "stdout_digest": "12d5122c5620925f61b14a73e890ba2a0e8edfe2848ab7456231347c64bc1ce7",
+  "stderr_digest": "74638b1a8df4201d5d1655a49187ef3fc0a737800919e6bb1e705e5a160e2df1",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261027T074619Z-e6ae49b7f5ab/node-tests.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261027T074619Z-e6ae49b7f5ab/node-tests.stderr.log"
+  ],
+  "obligation_ids_checked": [],
+  "coverage_findings": [],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "tool_environment": {},
+  "reason": "configured build/test success evidence absent"
+}
+EXIT=1
+
+$ python3 -m orchestrator verify --profile node-proof
+{
+  "schema_version": "1",
+  "check_id": "node-proof",
+  "run_id": "20261027T074621Z-e4316d9dda4a",
+  "check_kind": "local-correspondence",
+  "profile_id": "node-proof",
+  "purpose": "proof",
+  "required": true,
+  "expected_targets": [
+    "check_node_init",
+    "new"
+  ],
+  "expected_obligation_ids": [
+    "LOCAL-NODE-INIT"
+  ],
+  "entrypoints": [
+    "crates/raft-proofs/node_init.rs",
+    "crates/raft-verified/src/node.rs",
+    "crates/raft-verified/src/state.rs",
+    "crates/raft-verified/src/reconcile.rs",
+    "crates/raft-spec/src/lib.rs",
+    "crates/raft-spec/src/reconcile_view.rs",
+    "crates/raft-spec/src/node_init.rs"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "FAIL",
+  "argv": [
+    "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+    "--crate-type",
+    "lib",
+    "--no-cheating",
+    "--output-json",
+    "--time-expanded",
+    "--triggers-mode",
+    "silent",
+    "crates/raft-proofs/node_init.rs"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus",
+  "input_manifest_digest": "7baf5d4793a66be7c6fccac97175a59f941f619b1440a5aaec69ca70d952d6c8",
+  "tool_versions": {
+    "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+  },
+  "started_at": "2026-10-27T07:46:21.082560+00:00",
+  "finished_at": "2026-10-27T07:46:22.310103+00:00",
+  "exit_code": 1,
+  "stdout_digest": "46c4fb91d6410727bfb814b49e5ecf5b3b8b734bbf7fd335abaa9cdc4c33a02b",
+  "stderr_digest": "2f329f3e8f64b19a818b2b20230f4d1e8ce58f1ecb0c207804805dddcd839bbc",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261027T074621Z-e4316d9dda4a/node-proof.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261027T074621Z-e4316d9dda4a/node-proof.stderr.log"
+  ],
+  "obligation_ids_checked": [],
+  "coverage_findings": [],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "tool_environment": {
+    "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+    "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+  },
+  "function_results": {
+    "node_init::reconcile::reconcile_log": true,
+    "node_init::reconcile::Entry::clone": true,
+    "node_init::reconcile::Command::clone": true,
+    "node_init::reconcile::RequestId::clone": true,
+    "node_init::reconcile::ReconcileError::clone": true,
+    "node_init::state::Node::new": false,
+    "node_init::state::Role::clone": true,
+    "node_init::state::InitError::clone": true,
+    "node_init::state::DurableState::clone": true,
+    "node_init::state::Node::clone": true,
+    "node_init::check_node_init": true
+  },
+  "entire_crate_checked": true,
+  "verification_summary": {
+    "verified": 11,
+    "errors": 1
+  },
+  "reason": "Verus reported rejection or insufficient checked definitions"
+}
+EXIT=1
+
+$ python3 -m orchestrator verify --profile full
+{
+  "schema_version": "1",
+  "check_id": "full",
+  "run_id": "20261027T074622Z-bd3cabb0be5f",
+  "check_kind": "full-raft-verification",
+  "profile_id": "full",
+  "purpose": "proof",
+  "required": true,
+  "expected_targets": [
+    "all-exec-refinement",
+    "all-safety",
+    "all-liveness",
+    "liveness-preservation"
+  ],
+  "expected_obligation_ids": [
+    "PO-INIT",
+    "PO-AUX-INDEX",
+    "PO-AUX-TERM",
+    "PO-AUX-VOTE",
+    "PO-AUX-COMMIT",
+    "PO-AUX-TOKEN",
+    "PO-REQUEST",
+    "PO-RECOVERY",
+    "PO-STEP",
+    "PO-DELIVERY",
+    "PO-S-ELECTION",
+    "PO-S-APPEND",
+    "PO-S-LOG",
+    "PO-S-COMPLETE",
+    "PO-S-INTERFACE",
+    "PO-S-APPLY",
+    "PO-REPRESENTATION",
+    "PO-REFINE-INIT",
+    "PO-IO",
+    "PO-REFINE-STEP",
+    "PO-COMPOSITION",
+    "PO-L-ELECTION",
+    "PO-L-COMMIT",
+    "PO-L-DELIVER",
+    "PO-LIVE-REFINEMENT",
+    "PO-COVERAGE"
+  ],
+  "entrypoints": [
+    "crates/raft-spec/src/lib.rs",
+    "crates/raft-verified/src/lib.rs",
+    "crates/raft-proofs/README.md"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "BLOCKED",
+  "argv": [
+    "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+    "--crate-type",
+    "lib",
+    "crates/raft-proofs/src/lib.rs"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus",
+  "input_manifest_digest": "fe63639a754c5863bf64f67941772809c01cbc91694a41b9027fc2674ff1a21e",
+  "tool_versions": {},
+  "started_at": "2026-10-27T07:46:22.419002+00:00",
+  "finished_at": "2026-10-27T07:46:22.419232+00:00",
+  "exit_code": null,
+  "stdout_digest": null,
+  "stderr_digest": null,
+  "evidence_paths": [],
+  "obligation_ids_checked": [],
+  "coverage_findings": [],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "reason": "planned proof entrypoint is not implemented: crates/raft-proofs/src/lib.rs"
+}
+EXIT=1
+

@@ -1,0 +1,26 @@
+PASS: paragraph reflow preserves words and fenced blocks.
+Inspected 30 maintained Markdown files; reflowed 23.
+docs/tools.md
+docs/sources.md
+docs/workflow.md
+README.md
+AGENTS.md
+input/progress.md
+input/state.md
+input/roadmap.md
+input/replication.md
+input/proofs.md
+input/trust.md
+input/integration.md
+input/commitment.md
+input/elections.md
+input/runtime.md
+input/recovery.md
+review/REVISION_PLAN.md
+Agent.md
+review/OPEN_DECISIONS.md
+review/REQUIREMENTS_TRACEABILITY.md
+review/REVIEW_PACKET.md
+crates/raft-verified/README.md
+crates/raft-proofs/README.md
+Backup: /tmp/raft-markdown-paragraphs-tiwu441g/markdown.tar.gz

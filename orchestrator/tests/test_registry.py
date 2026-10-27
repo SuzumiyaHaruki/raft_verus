@@ -42,12 +42,12 @@ class RegistryTests(unittest.TestCase):
         self.change_row('PO-INIT', 'Assumptions', 'UNKNOWN')
         self.assertEqual(validate_repository(self.root, self.config)['status'], 'FAIL')
 
-    def test_each_contract_document_must_remain_draft(self):
+    def test_review_status_is_separate_from_proof_completion(self):
         path = self.root/'input/requirements.md'
         path.write_text(path.read_text().replace('Status: DRAFT.', 'Status: APPROVED.'))
         result = validate_repository(self.root, self.config)
-        self.assertEqual(result['status'], 'FAIL')
-        self.assertIn('requirements.md must remain DRAFT', result['errors'])
+        self.assertFalse(any('must remain DRAFT' in error for error in result['errors']))
+        self.assertFalse(result['full_acceptance'])
 
     def test_safety_cannot_inherit_liveness_assumption(self):
         self.change_row('PO-INIT', 'Assumptions', 'A-L-HOST')
@@ -66,7 +66,7 @@ class RegistryTests(unittest.TestCase):
         self.assertEqual(validate_repository(self.root, self.config)['status'], 'FAIL')
 
     def test_coverage_and_profile_mismatches_rejected(self):
-        self.config['profiles'][-1]['expected_obligation_ids'] = []
+        next(profile for profile in self.config['profiles'] if profile['id'] == 'full')['expected_obligation_ids'] = []
         self.assertEqual(validate_repository(self.root, self.config)['status'], 'FAIL')
 
     def test_malformed_markdown_and_duplicate_obligations_rejected(self):

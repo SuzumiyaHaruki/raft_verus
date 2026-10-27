@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "python3",
+    "crates/raft-verified/check.py",
+    "node-replay"
+  ],
+  "status": "COMPLETED",
+  "exit_code": 0,
+  "stdout": "node=1 role=Follower term=0 log_length=0\nnode=2 role=Follower term=0 log_length=0\nnode=3 role=Follower term=0 log_length=0\nNODE_REPLAY_PASS steps=4\n",
+  "stderr": "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s\n     Running `/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-1/source/evidence/runs/20261027T074013Z-4046e080de76/attempt-2/build/debug/examples/initialize`\n",
+  "stdout_truncated": false,
+  "stderr_truncated": false,
+  "elapsed_seconds": 0.08497843299846863
+}

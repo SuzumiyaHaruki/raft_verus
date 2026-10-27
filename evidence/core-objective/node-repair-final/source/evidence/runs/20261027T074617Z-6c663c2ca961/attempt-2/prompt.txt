@@ -1,0 +1,422 @@
+# Coding task instructions
+
+Status: DRAFT.
+
+Use English for instructions, source comments, diagnostics, reports and referenced material. Read the task's scoped context before editing. Preserve existing user work and stay within the supplied editable paths. Do not invoke Codex or another agent workflow recursively.
+
+The destination is a complete, continuously usable Raft library. Read the module's responsibility, connections and completion criteria, then implement the selected step within scope. Following the joint code/proof development idea in IDS (source S14 in docs/sources.md), pair each state, control-flow or handler change with its representation, invariant and local proof work. Run the relevant checks after each coherent edit, not only after finishing the implementation. Decompose a difficult proof into smaller obligations; preserve proved results and record unfinished dependencies as OPEN. Our Verus adaptation forbids `assume`, `admit`, trusted proof stubs and skipped verification even in intermediate accepted work. A partial project is allowed; an unfinished theorem is not a proof. Tests, replay, measurements and verification use the same executable logic. Keep formal definitions/proofs in Verus source and preserve target meaning and caller preconditions. Handlers must compose over repeated events; hard-coded exchanges do not establish Raft behavior. Other module steps do not expand this call's scope.
+
+Modules organize responsibilities, not independent runtime components. One node state and event/effect sequence couple term/role changes, logs, peer progress, commit/delivery positions and pending I/O. Before editing, identify connected handlers, caller obligations and shared invariants; read their contracts. Check relevant cross-module event sequences and dependent proofs when behavior changes. A higher-term message can affect election and replication work; a log change affects commitment/delivery bounds; recovery invalidates old callbacks across handlers. A local proof is conditional on its callers establishing its preconditions and preserving the shared invariant. Separate module passes cannot establish global Raft safety or liveness without composition and refinement. If a necessary coupled repair exceeds the supplied editable scope, preserve the diagnosis and request a revised scope instead of forcing an isolated fix or silently expanding the task.
+
+Run the relevant local checks and retain their actual output. Distinguish build, typecheck, functional/scenario test, proof and measurement results. Typechecking closes no theorem; finite scenarios do not prove liveness; measurements without a threshold are data. Keep global obligations open when only a local task is complete. Clearly separate fixture-generated candidates from real Rust/Verus checking.
+
+On failure, reproduce it and retain the failed command, goal, relevant source/invariant and diagnostics. A proof failure may indicate a code error, missing lemma, unsuitable representation or solver limit; it is not automatically a counterexample. Record attempted approaches and why they failed in the existing task report/feedback. Within scope, revise code, abstraction or proved auxiliary invariants together instead of retrying identical proof edits. A broader redesign becomes a concrete follow-up proposal with affected checks; preserve the candidate and user work. Missing tools do not justify changing semantics. Save fault seeds, traces and states. Measure an executable workload when available, without treating its results as proof; repeat comparable samples before claiming a regression.
+
+The protected model, requirements, assumptions, trusted boundaries, check definitions and existing test oracles are outside ordinary repair scope. Explain a proposed change and return the scope conflict with the candidate for review after delivery. Do not insert approval files or interactive human checkpoints into the execution loop. New tests and harness changes are welcome as explicitly scoped development work. Preserve complete raw evidence; do not forward non-English raw logs to an LLM. Label any English explanation and point to the unchanged original.
+
+Return the required CLI report with changed files, actual commands/results and remaining module/project gaps. Your report is a candidate claim; independent checks determine only selected-step completion. A step or plan passing does not mean its module or Raft is complete. Never approve specifications, merge a candidate or publish automatically.
+
+
+Module context: input/state.md
+
+# Node state and initialization
+
+Status: DRAFT. Module: INCOMPLETE; initial-state types and independent checks exist; constructor generation is pending.
+
+## Responsibility and connections
+
+Represent a fixed-membership Raft node throughout its lifetime: follower,
+candidate and leader roles; durable term, vote and log; volatile commit/delivery
+positions; election votes, peer replication progress and pending operations.
+This state is shared by [elections](elections.md), [replication](replication.md)
+and [commitment](commitment.md). The [runtime](runtime.md) serializes events;
+[recovery](recovery.md) reconstructs state after a crash.
+
+The shared types are in `crates/raft-verified/src/state.rs`, re-exported by the
+library. `Node` currently represents identity, membership, hard state, role,
+commit/delivery/application positions, incarnation, serial and deadline. Pending
+I/O, peer progress and recovery will extend this same type. They are not represented
+by fictitious constant fields in a claimed complete refinement. The model's
+`fresh_node`, `initial`, `init` and `well_formed` remain unchanged.
+
+## Module completion
+
+Fresh construction, role-specific fields and recovered construction have explicit
+bounds and representations. Every handler uses this state; no parallel test-only
+node exists. Tests cover legal/invalid membership, initial state and index/resource
+boundaries. Actual proofs establish initialization and representation and supply
+the invariant required by handlers. PO-INIT, PO-REPRESENTATION, PO-REFINE-INIT and
+index/token lemmas in [proofs.md](proofs.md) remain open until checked.
+
+Execute only the selected step below within its editable scope. The module responsibilities describe the destination, not extra work for this call. Passing this step does not complete the module or the Raft project.
+
+
+Task: STATE-INIT
+
+## Step: Initialize node state
+
+Stage: READY for generation, not implemented or proved in the source checkout.
+
+Implement `Node::new(id: u64, members: Vec<u64>) -> Result<Node, InitError>` in
+`crates/raft-verified/src/node.rs`, with its Verus annotations and loop proofs in
+the same file. The current reject-all seed is deliberately incomplete and cannot
+pass this task. Do not copy the offline controller fixture as generated work.
+
+Accept every nonempty, duplicate-free membership containing the local ID,
+regardless of input order, including one node and `u64::MAX` IDs. Preserve the
+member order and values. Reject empty lists, duplicate peers and absent IDs with
+`InvalidMembership`. Initialize term/positions/incarnation/serial to zero, no vote,
+empty log, Follower role and deadline 1, matching the existing `fresh_node` fields.
+This constructor is only for a genuinely fresh identity/storage image; never use
+it to bypass recovery or reuse incarnation zero. Allocation follows Rust Vec's
+existing abort behavior; no resource-liveness claim is made. API recommendations
+remain DRAFT under ADR-01/02/03 for review after delivery.
+
+The protected `crates/raft-spec/src/node_init.rs` specifies valid membership and
+`init_result`. It demands success for every valid input, so rejecting all inputs
+cannot prove the target vacuously. `crates/raft-proofs/node_init.rs` calls the exact
+constructor source compiled by Cargo; weakening its annotation or strengthening
+its precondition cannot satisfy the independent caller. This checks only the
+represented initial fields, not whole-node/cluster refinement or runtime behavior.
+No semantic model, oracle or checking-policy edit is part of this task.
+
+Develop code and proof together. A simple duplicate scan is sufficient initially;
+use invariants to relate the scanned prefix to membership validity. Compare test
+failures and failed proof goals, retain failed approaches in the report, and
+repair within this file. Check all existing executable regressions as well.
+
+```sh
+python3 crates/raft-verified/check.py build
+python3 crates/raft-verified/check.py test
+python3 crates/raft-verified/check.py node-replay
+python3 crates/raft-verified/check.py node-proof
+python3 crates/raft-verified/check.py proof
+python3 crates/raft-verified/check.py node-bench
+```
+
+The controller also typechecks the candidate model; that closes no theorem.
+It measures initialization only after required correctness checks pass. The
+replay constructs independent initial states, not a cluster fault experiment.
+Report results, design/complexity and remaining gaps using the existing agent
+report. Passing closes only LOCAL-NODE-INIT on this candidate. Next development
+extends the same Node with pending writes and completion handling in RUNTIME-PERSIST;
+its currently missing oracles and representation must be supplied before execution.
+
+
+Task stage: ready
+Read: input/model.md, input/io.md, crates/raft-verified/src, crates/raft-verified/tests/node_init.rs, crates/raft-spec/src, crates/raft-proofs/node_init.rs, crates/raft-verified/examples/initialize.rs, input/state.md
+May edit: crates/raft-verified/src/node.rs
+Must not edit: AGENTS.md, Cargo.toml, Cargo.lock, input, workflow.toml, crates/raft-spec, crates/proof-smoke, crates/raft-proofs/reconcile.rs, crates/raft-proofs/node_init.rs, crates/raft-verified/src/state.rs, crates/raft-verified/tests/node_init.rs, orchestrator, crates/raft-verified/check.py, crates/raft-verified/tests/reconcile.rs, crates/raft-verified/examples, evidence, .git, .agent-output
+Expected outputs: crates/raft-verified/src/node.rs
+Proof targets: LOCAL-NODE-INIT
+Independent checks: interface-check, node-tests, node-replay, spec, node-proof, reconcile-proof, node-bench
+
+Previous attempts (agent explanations are claims, not evidence):
+- Attempt 1: SIMULATED fixture candidate
+  Changed: crates/raft-verified/src/node.rs
+  Independent results: interface-check=PASS, node-tests=FAIL, node-replay=FAIL, spec=TYPECHECKED, node-proof=FAIL, reconcile-proof=PASS
+  Saved patch and raw logs: /home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1
+
+Actual independent feedback:
+- interface-check: PASS: profile checks passed locally; no full Raft acceptance
+- node-tests: FAIL: configured build/test success evidence absent
+Category: functional
+Action: repair
+Diagnosis: Reproduce the build or test failure, preserve the regression, and repair within the declared scope.
+Task goal: ## Step: Initialize node state
+
+Stage: READY for generation, not implemented or proved in the source checkout.
+
+Implement `Node::new(id: u64, members: Vec<u64>) -> Result<Node, InitError>` in
+`crates/raft-verified/src/node.rs`, with its Verus annotations and loop proofs in
+the same file. The current reject-all seed is deliberately incomplete and cannot
+pass this task. Do not copy the offline controller fixture as generated work.
+
+Accept every nonempty, duplicate-free membership containing the local ID,
+regardless of input order, including one node and `u64::MAX` IDs. Preserve the
+member order and values. Reject empty lists, duplicate peers and absent IDs with
+`InvalidMembership`. Initialize term/positions/incarnation/serial to zero, no vote,
+empty log, Follower role and deadline 1, matching the existing `fresh_node` fields.
+This constructor is only for a genuinely fresh identity/storage image; never use
+it to bypass recovery or reuse incarnation zero. Allocation follows Rust Vec's
+existing abort behavior; no resource-liveness claim is made. API recommendations
+remain DRAFT under ADR-01/02/03 for review after delivery.
+
+The protected `crates/raft-spec/src/node_init.rs` specifies valid membership and
+`init_result`. It demands success for every valid input, so rejecting all inputs
+cannot prove the target vacuously. `crates/raft-proofs/node_init.rs` calls the exact
+constructor source compiled by Cargo; weakening its annotation or strengthening
+its precondition cannot satisfy the independent caller. This checks only the
+represented initial fields, not whole-node/cluster refinement or runtime behavior.
+No semantic model, oracle or checking-policy edit is part of this task.
+
+Develop code and proof together. A simple duplicate scan is sufficient initially;
+use invariants to relate the scanned prefix to membership validity. Compare test
+failures and failed proof goals, retain failed approaches in the report, and
+repair within this file. Check all existing executable regressions as well.
+
+```sh
+python3 crates/raft-verified/check.py build
+python3 crates/raft-verified/check.py test
+python3 crates/raft-verified/check.py node-replay
+python3 crates/raft-verified/check.py node-proof
+python3 crates/raft-verified/check.py proof
+python3 crates/raft-verified/check.py node-bench
+```
+
+The controller also typechecks the candidate model; that closes no theorem.
+It measures initialization only after required correctness checks pass. The
+replay constructs independent initial states, not a cluster fault experiment.
+Report results, design/complexity and remaining gaps using the existing agent
+report. Passing closes only LOCAL-NODE-INIT on this candidate. Next development
+extends the same Node with pending writes and completion handling in RUNTIME-PERSIST;
+its currently missing oracles and representation must be supplied before execution.
+
+Candidate revision: 501104f506bdfa1f1daf9ca8318f4b2767defb586ffab2efc7978b623458f9a3
+Failed command: ["python3", "crates/raft-verified/check.py", "test"]
+Expected: Configured targets and required observations succeed
+Observed: configured build/test success evidence absent
+Reproduction: cd /home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/candidate && python3 crates/raft-verified/check.py test
+Artifact paths: ["/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-tests.stdout.log", "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-tests.stderr.log"]
+Error excerpt: /home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-tests.stdout.log:
+4: test tests::exhaustion_never_reuses_a_token ... ok
+5: 
+6: test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+7: 
+8: 
+9: running 8 tests
+10: test membership_order_is_not_a_precondition ... FAILED
+11: test maximum_identity_is_not_a_sentinel ... FAILED
+12: test nonadjacent_duplicate_peer ... ok
+13: test empty_membership ... ok
+14: test duplicate_identity ... ok
+15: test several_members ... FAILED
+16: test one_member ... FAILED
+17: test unknown_identity ... ok
+18: 
+19: failures:
+20: 
+21: ---- membership_order_is_not_a_precondition stdout ----
+22: 
+23: thread 'membership_order_is_not_a_precondition' (451) panicked at crates/raft-verified/tests/node_init.rs:9:5:
+24: assertion `left == right` failed
+25:   left: 1
+26:  right: 0
+27: note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+28: 
+29: ---- maximum_identity_is_not_a_sentinel stdout ----
+30: 
+31: thread 'maximum_identity_is_not_a_sentinel' (450) panicked at crates/raft-verified/tests/node_init.rs:9:5:
+32: assertion `left == right` failed
+33:   left: 1
+34:  right: 0
+35: 
+36: ---- several_members stdout ----
+37: 
+38: thread 'several_members' (454) panicked at crates/raft-verified/tests/node_init.rs:9:5:
+39: assertion `left == right` failed
+40:   left: 1
+41:  right: 0
+42: 
+43: ---- one_member stdout ----
+44: 
+45: thread 'one_member' (453) panicked at crates/raft-verified/tests/node_init.rs:9:5:
+46: assertion `left == right` failed
+47:   left: 1
+48:  right: 0
+49: 
+50: 
+51: failures:
+52:     maximum_identity_is_not_a_sentinel
+53:     membership_order_is_not_a_precondition
+54:     one_member
+55:     several_members
+56: 
+57: test result: FAILED. 4 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+58: 
+/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-tests.stderr.log:
+3:      Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/build/debug/deps/raft_verified-7061c45fddf45f90)
+4:      Running tests/node_init.rs (/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/build/debug/deps/node_init-e09bec45f082e884)
+5: error: test failed, to rerun pass `--test node_init`
+Editable scope: ["crates/raft-verified/src/node.rs"]
+Required reruns: ["interface-check", "node-tests", "node-replay", "spec", "node-proof", "reconcile-proof", "node-bench"]
+- node-replay: FAIL: configured build/test success evidence absent
+Category: scenario
+Action: repair
+Diagnosis: Replay the saved trace and inspect states. The core, adapter, scenario driver, or expected observation may be responsible.
+Task goal: ## Step: Initialize node state
+
+Stage: READY for generation, not implemented or proved in the source checkout.
+
+Implement `Node::new(id: u64, members: Vec<u64>) -> Result<Node, InitError>` in
+`crates/raft-verified/src/node.rs`, with its Verus annotations and loop proofs in
+the same file. The current reject-all seed is deliberately incomplete and cannot
+pass this task. Do not copy the offline controller fixture as generated work.
+
+Accept every nonempty, duplicate-free membership containing the local ID,
+regardless of input order, including one node and `u64::MAX` IDs. Preserve the
+member order and values. Reject empty lists, duplicate peers and absent IDs with
+`InvalidMembership`. Initialize term/positions/incarnation/serial to zero, no vote,
+empty log, Follower role and deadline 1, matching the existing `fresh_node` fields.
+This constructor is only for a genuinely fresh identity/storage image; never use
+it to bypass recovery or reuse incarnation zero. Allocation follows Rust Vec's
+existing abort behavior; no resource-liveness claim is made. API recommendations
+remain DRAFT under ADR-01/02/03 for review after delivery.
+
+The protected `crates/raft-spec/src/node_init.rs` specifies valid membership and
+`init_result`. It demands success for every valid input, so rejecting all inputs
+cannot prove the target vacuously. `crates/raft-proofs/node_init.rs` calls the exact
+constructor source compiled by Cargo; weakening its annotation or strengthening
+its precondition cannot satisfy the independent caller. This checks only the
+represented initial fields, not whole-node/cluster refinement or runtime behavior.
+No semantic model, oracle or checking-policy edit is part of this task.
+
+Develop code and proof together. A simple duplicate scan is sufficient initially;
+use invariants to relate the scanned prefix to membership validity. Compare test
+failures and failed proof goals, retain failed approaches in the report, and
+repair within this file. Check all existing executable regressions as well.
+
+```sh
+python3 crates/raft-verified/check.py build
+python3 crates/raft-verified/check.py test
+python3 crates/raft-verified/check.py node-replay
+python3 crates/raft-verified/check.py node-proof
+python3 crates/raft-verified/check.py proof
+python3 crates/raft-verified/check.py node-bench
+```
+
+The controller also typechecks the candidate model; that closes no theorem.
+It measures initialization only after required correctness checks pass. The
+replay constructs independent initial states, not a cluster fault experiment.
+Report results, design/complexity and remaining gaps using the existing agent
+report. Passing closes only LOCAL-NODE-INIT on this candidate. Next development
+extends the same Node with pending writes and completion handling in RUNTIME-PERSIST;
+its currently missing oracles and representation must be supplied before execution.
+
+Candidate revision: 501104f506bdfa1f1daf9ca8318f4b2767defb586ffab2efc7978b623458f9a3
+Failed command: ["python3", "crates/raft-verified/check.py", "node-replay"]
+Expected: Configured targets and required observations succeed
+Observed: configured build/test success evidence absent
+Reproduction: cd /home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/candidate && python3 crates/raft-verified/check.py node-replay
+Artifact paths: ["/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-replay.stdout.log", "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-replay.stderr.log"]
+Error excerpt: /home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-replay.stdout.log:
+
+/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-replay.stderr.log:
+2:      Running `/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/build/debug/examples/initialize`
+3: 
+4: thread 'main' (460) panicked at crates/raft-verified/examples/initialize.rs:27:13:
+5: assertion `left == right` failed
+6:   left: 1
+7:  right: 0
+8: note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+Editable scope: ["crates/raft-verified/src/node.rs"]
+Required reruns: ["interface-check", "node-tests", "node-replay", "spec", "node-proof", "reconcile-proof", "node-bench"]
+Scenario: {"seed": 0, "trace_path": "crates/raft-verified/examples/initialize.rs", "boundary": "Initial states only; no protocol messages, crash recovery or liveness claim.", "saved_trace": "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-replay.trace.json", "state_observations": "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-replay.stdout.log"}
+- spec: TYPECHECKED: candidate definitions checked; no mathematical theorem acceptance
+- node-proof: FAIL: Verus reported rejection or insufficient checked definitions
+Category: proof
+Action: repair
+Diagnosis: The goal was not established. Possible causes include code, a missing lemma or invariant, specification mismatch, or solver resources; this is not itself a counterexample.
+Task goal: ## Step: Initialize node state
+
+Stage: READY for generation, not implemented or proved in the source checkout.
+
+Implement `Node::new(id: u64, members: Vec<u64>) -> Result<Node, InitError>` in
+`crates/raft-verified/src/node.rs`, with its Verus annotations and loop proofs in
+the same file. The current reject-all seed is deliberately incomplete and cannot
+pass this task. Do not copy the offline controller fixture as generated work.
+
+Accept every nonempty, duplicate-free membership containing the local ID,
+regardless of input order, including one node and `u64::MAX` IDs. Preserve the
+member order and values. Reject empty lists, duplicate peers and absent IDs with
+`InvalidMembership`. Initialize term/positions/incarnation/serial to zero, no vote,
+empty log, Follower role and deadline 1, matching the existing `fresh_node` fields.
+This constructor is only for a genuinely fresh identity/storage image; never use
+it to bypass recovery or reuse incarnation zero. Allocation follows Rust Vec's
+existing abort behavior; no resource-liveness claim is made. API recommendations
+remain DRAFT under ADR-01/02/03 for review after delivery.
+
+The protected `crates/raft-spec/src/node_init.rs` specifies valid membership and
+`init_result`. It demands success for every valid input, so rejecting all inputs
+cannot prove the target vacuously. `crates/raft-proofs/node_init.rs` calls the exact
+constructor source compiled by Cargo; weakening its annotation or strengthening
+its precondition cannot satisfy the independent caller. This checks only the
+represented initial fields, not whole-node/cluster refinement or runtime behavior.
+No semantic model, oracle or checking-policy edit is part of this task.
+
+Develop code and proof together. A simple duplicate scan is sufficient initially;
+use invariants to relate the scanned prefix to membership validity. Compare test
+failures and failed proof goals, retain failed approaches in the report, and
+repair within this file. Check all existing executable regressions as well.
+
+```sh
+python3 crates/raft-verified/check.py build
+python3 crates/raft-verified/check.py test
+python3 crates/raft-verified/check.py node-replay
+python3 crates/raft-verified/check.py node-proof
+python3 crates/raft-verified/check.py proof
+python3 crates/raft-verified/check.py node-bench
+```
+
+The controller also typechecks the candidate model; that closes no theorem.
+It measures initialization only after required correctness checks pass. The
+replay constructs independent initial states, not a cluster fault experiment.
+Report results, design/complexity and remaining gaps using the existing agent
+report. Passing closes only LOCAL-NODE-INIT on this candidate. Next development
+extends the same Node with pending writes and completion handling in RUNTIME-PERSIST;
+its currently missing oracles and representation must be supplied before execution.
+
+Candidate revision: 501104f506bdfa1f1daf9ca8318f4b2767defb586ffab2efc7978b623458f9a3
+Failed command: ["/home/nitro/.local/share/raft-verus/verus-x86-linux/verus", "--crate-type", "lib", "--no-cheating", "--output-json", "--time-expanded", "--triggers-mode", "silent", "crates/raft-proofs/node_init.rs"]
+Expected: Configured targets and required observations succeed
+Observed: Verus reported rejection or insufficient checked definitions
+Reproduction: cd /home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/candidate && /home/nitro/.local/share/raft-verus/verus-x86-linux/verus --crate-type lib --no-cheating --output-json --time-expanded --triggers-mode silent crates/raft-proofs/node_init.rs
+Artifact paths: ["/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-proof.stdout.log", "/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-proof.stderr.log"]
+Error excerpt: /home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-proof.stdout.log:
+1: {
+2:   "verification-results": {
+3:     "encountered-error": true,
+4:     "encountered-vir-error": false,
+5:     "success": false,
+6:     "verified": 13,
+7:     "errors": 1,
+8:     "is-verifying-entire-crate": true
+9:   },
+10:   "times-ms": {
+11:     "verus-build": {
+183:             },
+184:             {
+185:               "function": "node_init::reconcile::ReconcileError::clone",
+186:               "mode:": "exec",
+187:               "time": 0,
+188:               "time-micros": 86,
+189:               "rlimit-count": 111,
+223:             },
+224:             {
+225:               "function": "node_init::state::InitError::clone",
+226:               "mode:": "exec",
+227:               "time": 0,
+228:               "time-micros": 206,
+229:               "rlimit-count": 591,
+/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-1/node-proof.stderr.log:
+23:    |          ^^^^^
+24: 
+25: error: postcondition not satisfied
+26:   --> crates/raft-proofs/../raft-verified/src/node.rs:10:17
+27:    |
+28: 10 |         ensures init_result(result, id, members@),
+29:    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+30: ...
+31: 53 |         Ok(n)
+32:    |         ----- at the end of the function body
+33: 
+34: error: aborting due to 1 previous error; 4 warnings emitted
+35: 
+Editable scope: ["crates/raft-verified/src/node.rs"]
+Required reruns: ["interface-check", "node-tests", "node-replay", "spec", "node-proof", "reconcile-proof", "node-bench"]
+Proof context: {"targets": ["check_node_init", "new"], "obligations": ["LOCAL-NODE-INIT"], "sources": ["crates/raft-proofs/node_init.rs", "crates/raft-verified/src/node.rs", "crates/raft-verified/src/state.rs", "crates/raft-verified/src/reconcile.rs", "crates/raft-spec/src/lib.rs", "crates/raft-spec/src/reconcile_view.rs", "crates/raft-spec/src/node_init.rs"]}
+- reconcile-proof: PASS: profile checks passed locally; no full Raft acceptance
+
+For local Rust or check.py commands, use the explicit environment prefix CARGO_TARGET_DIR=/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-2/agent-build PYTHONDONTWRITEBYTECODE=1 before the command. This controller-owned scratch directory is writable through --add-dir; the prefix also works when the Codex shell filters inherited environment variables.
+
+FIXTURE_JSON={"task_id": "STATE-INIT", "write_path": "crates/raft-verified/src/node.rs", "write_text": "//! SIMULATED offline generator output. Never supplied as experiment context.\nuse crate::state::{DurableState, InitError, Node, Role};\n#[cfg(verus_keep_ghost)]\nuse crate::initialization::init_result;\nuse vstd::prelude::*;\n\nverus! {\nimpl Node {\n    pub fn new(id: u64, members: Vec<u64>) -> (result: Result<Self, InitError>)\n        ensures init_result(result, id, members@),\n    {\n        let mut found = false;\n        let mut i: usize = 0;\n        while i < members.len()\n            invariant\n                i <= members.len(),\n                found == (exists |k: int| 0 <= k < i && members@[k] == id),\n                forall |a: int, b: int| 0 <= a < b < i ==> members@[a] != members@[b],\n            decreases members.len() - i,\n        {\n            let mut j: usize = 0;\n            while j < i\n                invariant\n                    i < members.len(), j <= i,\n                    forall |a: int| 0 <= a < j ==> members@[a] != members@[i as int],\n                decreases i - j,\n            {\n                if members[j] == members[i] {\n                    return Err(InitError::InvalidMembership);\n                }\n                j += 1;\n            }\n            if members[i] == id { found = true; }\n            i += 1;\n        }\n        if !found { return Err(InitError::InvalidMembership); }\n        proof {\n            assert forall |a: int, b: int| 0 <= a < members.len() && 0 <= b < members.len()\n                && a != b implies members@[a] != members@[b] by {\n                if a < b {} else { assert(b < a); }\n            };\n        }\n        let n = Node {\n            id, members,\n            hard: DurableState { term: 0, voted_for: None, log: Vec::new() },\n            role: Role::Follower,\n            commit: 0, delivered: 0, application_cursor: 0,\n            incarnation: 0, serial: 0, deadline: 1,\n        };\n        proof {\n            assert(crate::representation::log_view(n.hard.log@) =~= Seq::empty());\n        }\n        Ok(n)\n    }\n}\n}\n"}

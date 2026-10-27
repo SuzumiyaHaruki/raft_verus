@@ -1,21 +1,40 @@
-# DRAFT. English task text is in input/T*.md; do not launch real tasks during bootstrap.
+# DRAFT. Module assignments live in input/*.md; each task selects one named step.
+# Prepared for an explicitly started experiment. Review delivered code afterward.
 [workflow]
-allow_real_codex = false
+allow_real_codex = true
 isolation = "local-development"
-context = ["input/requirements.md", "input/properties.md", "input/assumptions.md", "input/io.md", "input/trust.md", "input/proofs.md", "input/model.md", "crates"]
-protected_paths = ["AGENTS.md", "Cargo.toml", "Cargo.lock", "input", "workflow.toml", "crates/raft-spec", "crates/proof-smoke", "orchestrator"]
+context = []
+protected_paths = ["AGENTS.md", "Cargo.toml", "Cargo.lock", "input", "workflow.toml", "crates/raft-spec", "crates/proof-smoke", "crates/raft-proofs/reconcile.rs", "crates/raft-proofs/node_init.rs", "crates/raft-verified/src/state.rs", "crates/raft-verified/tests/node_init.rs", "orchestrator", "crates/raft-verified/check.py", "crates/raft-verified/tests/reconcile.rs", "crates/raft-verified/examples"]
 
 [codex]
 executable = "codex"
 supported_versions = ["codex-cli 0.162.0-alpha.17.2"]
-# model = "your-configured-model"
+model = "gpt-6.1-sol"
+model_reasoning_effort = "high"
+# One-run overrides: python3 -m orchestrator --model gpt-6.1-sol --reasoning-effort high ...
 
 [budget]
 max_agent_calls = 3
 max_repair_rounds = 2
-call_timeout_seconds = 120
-task_timeout_seconds = 360
+call_timeout_seconds = 600
+task_timeout_seconds = 2400
 max_log_bytes = 1048576
+
+[budgets.proof]
+max_agent_calls = 3
+max_repair_rounds = 2
+call_timeout_seconds = 600
+task_timeout_seconds = 2400
+
+[budgets.benchmark]
+max_agent_calls = 2
+max_repair_rounds = 1
+call_timeout_seconds = 300
+task_timeout_seconds = 1200
+
+[local_obligations]
+LOCAL-NODE-INIT = "Every valid fixed membership constructs the initial node fields corresponding to fresh_node; invalid membership is rejected. Initialization only; no full node or cluster refinement."
+LOCAL-RECONCILE = "Executable log reconciliation corresponds to merged and preserves the prefix; not global log matching."
 
 [toolchain]
 lifecycle_status = "DRAFT"
@@ -44,6 +63,7 @@ run_metadata = "evidence/model-verus-runs-1.json"
 
 [checks.smoke-positive]
 kind = "proof-smoke"
+purpose = "proof"
 adapter = "verus-calibrated-text-v1"
 argv = ["/home/nitro/.local/share/raft-verus/verus-x86-linux/verus", "--crate-type", "lib", "crates/proof-smoke/positive.rs"]
 entrypoints = ["crates/proof-smoke/positive.rs"]
@@ -53,12 +73,14 @@ minimum_verified = 2
 
 [checks.smoke-negative]
 kind = "negative-proof-smoke"
+purpose = "proof"
 adapter = "verus-calibrated-text-v1"
 argv = ["/home/nitro/.local/share/raft-verus/verus-x86-linux/verus", "--crate-type", "lib", "crates/proof-smoke/negative.rs"]
 entrypoints = ["crates/proof-smoke/negative.rs"]
 expected_targets = ["wrong_increment"]
 expected_obligation_ids = []
 expect_rejection = true
+rejection_pattern = '(?s)error: postcondition not satisfied.*crates/proof-smoke/negative\.rs:[0-9]+:[0-9]+.*ensures result == n'
 
 [checks.spec]
 kind = "candidate-model-typecheck"
@@ -70,76 +92,345 @@ expected_targets = ["init", "next", "election_safety", "log_matching"]
 expected_obligation_ids = []
 
 [checks.interface-check]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified/Cargo.toml", "crates/raft-verified/src", "crates/raft-verified/check.py"]
 kind = "build-only"
+purpose = "build"
 adapter = "command-text-v1"
-argv = ["cargo", "check", "--locked", "--offline", "-p", "raft-verified"]
-entrypoints = ["crates/raft-verified/src/lib.rs"]
+argv = ["python3", "crates/raft-verified/check.py", "build"]
+entrypoints = ["crates/raft-verified/src/lib.rs", "crates/raft-verified/src/reconcile.rs", "crates/raft-verified/check.py"]
 expected_targets = ["raft-verified"]
 expected_obligation_ids = []
 success_pattern = "Finished.*dev"
 
 [checks.full]
 kind = "full-raft-verification"
+purpose = "proof"
 adapter = "verus-calibrated-text-v1"
 argv = ["/home/nitro/.local/share/raft-verus/verus-x86-linux/verus", "--crate-type", "lib", "crates/raft-proofs/src/lib.rs"]
 entrypoints = ["crates/raft-spec/src/lib.rs", "crates/raft-verified/src/lib.rs", "crates/raft-proofs/README.md"]
 planned_entrypoints = ["crates/raft-proofs/src/lib.rs"]
 expected_targets = ["all-exec-refinement", "all-safety", "all-liveness", "liveness-preservation"]
 expected_obligation_ids = ["PO-INIT", "PO-AUX-INDEX", "PO-AUX-TERM", "PO-AUX-VOTE", "PO-AUX-COMMIT", "PO-AUX-TOKEN", "PO-REQUEST", "PO-RECOVERY", "PO-STEP", "PO-DELIVERY", "PO-S-ELECTION", "PO-S-APPEND", "PO-S-LOG", "PO-S-COMPLETE", "PO-S-INTERFACE", "PO-S-APPLY", "PO-REPRESENTATION", "PO-REFINE-INIT", "PO-IO", "PO-REFINE-STEP", "PO-COMPOSITION", "PO-L-ELECTION", "PO-L-COMMIT", "PO-L-DELIVER", "PO-LIVE-REFINEMENT", "PO-COVERAGE"]
-blocked_reason = "Full Raft implementation/proofs, approved contract, temporal-library integration and strict OS isolation are absent. No full acceptance is available in this bootstrap."
+stage = "planned"
+contract_status = "DRAFT"
+required_isolation = "external"
 
-[tasks.T01-MODEL]
+[checks.reconcile-tests]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified/Cargo.toml", "crates/raft-verified/src", "crates/raft-verified/check.py", "crates/raft-verified/tests", "crates/raft-verified/examples/replay.rs", "crates/raft-verified/examples/reconcile.trace"]
+kind = "functional-tests"
+purpose = "test"
+adapter = "command-text-v1"
+argv = ["python3", "crates/raft-verified/check.py", "test", "--lib", "--test", "reconcile", "--test", "replay_cases"]
+entrypoints = ["Cargo.toml", "Cargo.lock", "crates/raft-verified/Cargo.toml", "crates/raft-verified/src/lib.rs", "crates/raft-verified/src/reconcile.rs", "crates/raft-verified/tests/reconcile.rs", "crates/raft-verified/tests/replay_cases.rs", "crates/raft-verified/examples/replay.rs", "crates/raft-verified/examples/reconcile.trace", "crates/raft-verified/check.py"]
+expected_targets = ["reconciliation edge cases and interface regressions"]
+expected_obligation_ids = []
+success_pattern = "test result: ok"
+timeout_seconds = 300
+
+[checks.reconcile-proof]
+source_inputs = ["crates/raft-proofs/reconcile.rs", "crates/raft-proofs/reconcile_lemmas.rs", "crates/raft-spec/src/lib.rs", "crates/raft-spec/src/reconcile_view.rs", "crates/raft-verified/src/reconcile.rs", "crates/raft-verified/src/lib.rs", "crates/raft-verified/check.py", "crates/raft-verified/Cargo.toml"]
+kind = "local-correspondence"
+purpose = "proof"
+adapter = "verus-calibrated-text-v1"
+argv = ["/home/nitro/.local/share/raft-verus/verus-x86-linux/verus", "--crate-type", "lib", "--no-cheating", "--output-json", "--time-expanded", "--triggers-mode", "silent", "crates/raft-proofs/reconcile.rs"]
+entrypoints = ["crates/raft-proofs/reconcile.rs", "crates/raft-proofs/reconcile_lemmas.rs", "crates/raft-verified/src/reconcile.rs", "crates/raft-spec/src/lib.rs", "crates/raft-spec/src/reconcile_view.rs"]
+proof_entrypoints = ["crates/raft-proofs/reconcile.rs", "crates/raft-verified/src/reconcile.rs"]
+expected_targets = ["check_reconcile_contract", "reconcile_log"]
+expected_obligation_ids = ["LOCAL-RECONCILE"]
+proof_targets = { LOCAL-RECONCILE = "reconcile::check_reconcile_contract" }
+minimum_verified = 1
+timeout_seconds = 300
+
+[checks.reconcile-replay]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified/Cargo.toml", "crates/raft-verified/src", "crates/raft-verified/check.py", "crates/raft-verified/examples/replay.rs", "crates/raft-verified/examples/reconcile.trace"]
+kind = "local-scenario"
+purpose = "test"
+adapter = "command-text-v1"
+argv = ["python3", "crates/raft-verified/check.py", "replay"]
+entrypoints = ["crates/raft-verified/src/reconcile.rs", "crates/raft-verified/examples/replay.rs", "crates/raft-verified/examples/reconcile.trace", "crates/raft-verified/check.py"]
+expected_targets = ["deterministic reconciliation replay"]
+scenario = { seed = 17, trace_path = "crates/raft-verified/examples/reconcile.trace", boundary = "Local log reconciliation only; no network, timer, crash or persistence simulation." }
+expected_obligation_ids = []
+success_pattern = "REPLAY_PASS"
+selected_count_pattern = "REPLAY_PASS.*steps=(?P<count>[0-9]+)"
+timeout_seconds = 300
+
+[checks.reconcile-bench]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified/Cargo.toml", "crates/raft-verified/src", "crates/raft-verified/check.py", "crates/raft-verified/examples/measure_reconcile.rs"]
+kind = "core-microbenchmark"
+purpose = "benchmark"
+adapter = "command-text-v1"
+argv = ["python3", "crates/raft-verified/check.py", "bench"]
+entrypoints = ["crates/raft-verified/src/reconcile.rs", "crates/raft-verified/examples/measure_reconcile.rs", "crates/raft-verified/check.py"]
+expected_targets = ["core reconciliation measurements at several log lengths"]
+expected_obligation_ids = []
+timeout_seconds = 300
+
+[checks.node-tests]
+kind = "functional-tests"
+purpose = "test"
+adapter = "command-text-v1"
+argv = ["python3", "crates/raft-verified/check.py", "test"]
+entrypoints = ["crates/raft-verified/tests/node_init.rs", "crates/raft-verified/check.py"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified"]
+expected_targets = ["node initialization and existing runtime regressions"]
+expected_obligation_ids = []
+success_pattern = "test result: ok"
+minimum_tests = 23
+
+[checks.node-proof]
+kind = "local-correspondence"
+purpose = "proof"
+adapter = "verus-calibrated-text-v1"
+argv = ["/home/nitro/.local/share/raft-verus/verus-x86-linux/verus", "--crate-type", "lib", "--no-cheating", "--output-json", "--time-expanded", "--triggers-mode", "silent", "crates/raft-proofs/node_init.rs"]
+entrypoints = ["crates/raft-proofs/node_init.rs", "crates/raft-verified/src/node.rs", "crates/raft-verified/src/state.rs", "crates/raft-verified/src/reconcile.rs", "crates/raft-spec/src/lib.rs", "crates/raft-spec/src/reconcile_view.rs", "crates/raft-spec/src/node_init.rs"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified", "crates/raft-spec", "crates/raft-proofs/node_init.rs"]
+proof_entrypoints = ["crates/raft-proofs/node_init.rs", "crates/raft-verified/src/node.rs"]
+expected_targets = ["check_node_init", "new"]
+expected_obligation_ids = ["LOCAL-NODE-INIT"]
+proof_targets = { LOCAL-NODE-INIT = "node_init::check_node_init" }
+minimum_verified = 1
+
+[checks.node-replay]
+kind = "initialization-scenario"
+purpose = "test"
+adapter = "command-text-v1"
+argv = ["python3", "crates/raft-verified/check.py", "node-replay"]
+entrypoints = ["crates/raft-verified/examples/initialize.rs", "crates/raft-verified/check.py"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified"]
+expected_targets = ["construct three independent nodes and reject an unknown identity"]
+expected_obligation_ids = []
+scenario = { seed = 0, trace_path = "crates/raft-verified/examples/initialize.rs", boundary = "Initial states only; no protocol messages, crash recovery or liveness claim." }
+success_pattern = "NODE_REPLAY_PASS"
+selected_count_pattern = "NODE_REPLAY_PASS steps=(?P<count>[0-9]+)"
+minimum_tests = 4
+
+[checks.node-bench]
+kind = "core-microbenchmark"
+purpose = "benchmark"
+adapter = "command-text-v1"
+argv = ["python3", "crates/raft-verified/check.py", "node-bench"]
+entrypoints = ["crates/raft-verified/examples/initialize.rs", "crates/raft-verified/check.py"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified"]
+expected_targets = ["node construction cost at 1, 3, 5 and 31 members"]
+expected_obligation_ids = []
+
+[tasks.REPLICATION-RECONCILE]
+module = "input/replication.md"
+step = "Reconcile log contents"
+status = "ready"
+kind = "implementation"
 after = []
-edit = ["crates/raft-proofs/", "review/proposals/"]
-outputs = ["review/proposals/T01-MODEL.md"]
-obligations = ["PO-INIT", "PO-STEP"]
-checks = ["spec"]
+context = ["Cargo.toml", "Cargo.lock", "crates/raft-verified/Cargo.toml", "input/model.md", "input/io.md", "crates/raft-verified/src", "crates/raft-verified/tests", "crates/raft-spec/src/lib.rs"]
+edit = ["crates/raft-verified/src/reconcile.rs"]
+outputs = ["crates/raft-verified/src/reconcile.rs"]
+obligations = []
+checks = ["interface-check", "reconcile-tests", "reconcile-replay", "reconcile-proof", "reconcile-bench"]
 
-[tasks.T02-REFINE-INIT]
-after = ["T01-MODEL"]
-edit = ["crates/raft-verified/", "crates/raft-proofs/"]
-outputs = ["crates/raft-verified/src/lib.rs", "crates/raft-proofs/src/refine_init.rs"]
-obligations = ["PO-REPRESENTATION", "PO-REFINE-INIT", "PO-RECOVERY"]
-checks = ["interface-check", "full"]
+[tasks.REPLICATION-PROOF]
+module = "input/replication.md"
+step = "Prove reconciliation correspondence"
+status = "ready"
+kind = "proof"
+after = ["REPLICATION-RECONCILE"]
+context = ["input/model.md", "input/proofs.md", "crates/raft-spec/src/lib.rs", "crates/raft-verified/src/reconcile.rs", "crates/raft-proofs"]
+edit = ["crates/raft-proofs/reconcile_lemmas.rs"]
+outputs = ["crates/raft-proofs/reconcile_lemmas.rs"]
+obligations = ["LOCAL-RECONCILE"]
+checks = ["spec", "reconcile-proof"]
 
-[tasks.T03-REFINE-STEP]
-after = ["T02-REFINE-INIT"]
-edit = ["crates/raft-verified/", "crates/raft-proofs/"]
-outputs = ["crates/raft-verified/src/lib.rs", "crates/raft-proofs/src/refine_step.rs"]
-obligations = ["PO-REFINE-STEP", "PO-IO", "PO-AUX-TOKEN", "PO-REQUEST"]
-checks = ["interface-check", "full"]
+[tasks.REPLICATION-REPLAY]
+module = "input/replication.md"
+step = "Replay reconciliation regressions"
+status = "ready"
+kind = "scenario"
+after = ["REPLICATION-RECONCILE"]
+context = ["input/model.md", "crates/raft-verified/src/reconcile.rs", "crates/raft-verified/tests", "crates/raft-verified/examples"]
+edit = ["crates/raft-verified/tests/replay_cases.rs"]
+outputs = ["crates/raft-verified/tests/replay_cases.rs"]
+obligations = []
+checks = ["reconcile-tests", "reconcile-replay"]
 
-[tasks.T04-SAFETY]
-after = ["T03-REFINE-STEP"]
-edit = ["crates/raft-proofs/"]
-outputs = ["crates/raft-proofs/src/safety.rs"]
-obligations = ["PO-S-ELECTION", "PO-S-APPEND", "PO-S-LOG", "PO-S-COMPLETE", "PO-S-INTERFACE", "PO-S-APPLY", "PO-COMPOSITION"]
-checks = ["full"]
+[tasks.INTEGRATION-MEASURE]
+module = "input/integration.md"
+step = "Measure reconciliation cost"
+status = "ready"
+kind = "benchmark"
+after = ["REPLICATION-RECONCILE", "REPLICATION-REPLAY", "REPLICATION-PROOF"]
+context = ["crates/raft-verified/src/reconcile.rs", "crates/raft-verified/check.py", "crates/raft-verified/examples/measure_reconcile.rs"]
+edit = ["review/measurements/"]
+outputs = ["review/measurements/reconciliation.md"]
+obligations = []
+checks = ["reconcile-bench"]
 
-[tasks.T05-ELECTION]
-after = ["T04-SAFETY"]
-edit = ["crates/raft-proofs/"]
-outputs = ["crates/raft-proofs/src/election.rs"]
-obligations = ["PO-L-ELECTION"]
-checks = ["full"]
+[tasks.STATE-INIT]
+module = "input/state.md"
+step = "Initialize node state"
+status = "ready"
+kind = "implementation"
+after = []
+context = ["input/model.md", "input/io.md", "crates/raft-verified/src", "crates/raft-verified/tests/node_init.rs", "crates/raft-spec/src", "crates/raft-proofs/node_init.rs", "crates/raft-verified/examples/initialize.rs"]
+edit = ["crates/raft-verified/src/node.rs"]
+outputs = ["crates/raft-verified/src/node.rs"]
+obligations = ["LOCAL-NODE-INIT"]
+checks = ["interface-check", "node-tests", "node-replay", "spec", "node-proof", "reconcile-proof", "node-bench"]
 
-[tasks.T06-PROGRESS]
-after = ["T05-ELECTION"]
-edit = ["crates/raft-proofs/"]
-outputs = ["crates/raft-proofs/src/progress.rs"]
-obligations = ["PO-L-COMMIT", "PO-L-DELIVER"]
-checks = ["full"]
+[tasks.RUNTIME-PERSIST]
+module = "input/runtime.md"
+step = "Coordinate persistence and completions"
+status = "planned"
+kind = "implementation"
+after = ["STATE-INIT"]
+blocked_reason = "Pending-write coordinator and real completion/crash-boundary test and proof profiles are missing."
 
-[tasks.T07-LIVE-REFINE]
-after = ["T06-PROGRESS"]
-edit = ["crates/raft-proofs/", "crates/raft-verified/"]
-outputs = ["crates/raft-proofs/src/live_refinement.rs"]
-obligations = ["PO-LIVE-REFINEMENT"]
-checks = ["full"]
+[tasks.ELECTION-TIMEOUT]
+module = "input/elections.md"
+step = "Start and retry elections"
+status = "planned"
+kind = "implementation"
+after = ["RUNTIME-PERSIST"]
+blocked_reason = "Election state/timer/request-generation paths and their independent checks are missing."
 
-[tasks.T08-INTEGRATION]
-after = ["T07-LIVE-REFINE"]
-edit = ["review/proposals/"]
-outputs = ["review/proposals/T08-INTEGRATION.md"]
-obligations = ["PO-COVERAGE"]
-checks = ["full"]
+[tasks.ELECTION-VOTE]
+module = "input/elections.md"
+step = "Process vote requests"
+status = "planned"
+kind = "implementation"
+after = ["RUNTIME-PERSIST"]
+blocked_reason = "Vote handler, durable-response tests and local correspondence profiles are missing."
+
+[tasks.ELECTION-RESPONSES]
+module = "input/elections.md"
+step = "Count votes and transition roles"
+status = "planned"
+kind = "implementation"
+after = ["ELECTION-TIMEOUT", "ELECTION-VOTE"]
+blocked_reason = "Vote-response/role-transition code, multi-term tests and quorum proofs are missing."
+
+[tasks.REPLICATION-FOLLOWER]
+module = "input/replication.md"
+step = "Integrate follower append handling"
+status = "planned"
+kind = "implementation"
+after = ["ELECTION-VOTE", "REPLICATION-PROOF"]
+blocked_reason = "Follower handler, predecessor/commit guards, durable reply scenarios and proof profiles are missing."
+
+[tasks.REPLICATION-LEADER]
+module = "input/replication.md"
+step = "Send proposals and replication requests"
+status = "planned"
+kind = "implementation"
+after = ["ELECTION-RESPONSES"]
+blocked_reason = "Leader proposal/heartbeat/retry service and local test/proof profiles are missing."
+
+[tasks.REPLICATION-RESPONSES]
+module = "input/replication.md"
+step = "Process replication responses"
+status = "planned"
+kind = "implementation"
+after = ["REPLICATION-FOLLOWER", "REPLICATION-LEADER"]
+blocked_reason = "Peer-progress/backtracking code, catch-up traces and local proof profiles are missing."
+
+[tasks.COMMITMENT-ADVANCE]
+module = "input/commitment.md"
+step = "Advance committed prefixes"
+status = "planned"
+kind = "implementation"
+after = ["REPLICATION-RESPONSES"]
+blocked_reason = "Commit code, majority/current-term regressions and correspondence checks are missing."
+
+[tasks.COMMITMENT-DELIVER]
+module = "input/commitment.md"
+step = "Deliver and acknowledge committed entries"
+status = "planned"
+kind = "implementation"
+after = ["COMMITMENT-ADVANCE"]
+blocked_reason = "Delivery/application coordinator, crash replay and independent proof profiles are missing."
+
+[tasks.RECOVERY-RESTART]
+module = "input/recovery.md"
+step = "Restore a crashed node"
+status = "planned"
+kind = "implementation"
+after = ["RUNTIME-PERSIST"]
+blocked_reason = "Concrete recovery/cursor handling, crash-boundary tests and proof profiles are missing."
+
+[tasks.RUNTIME-DISPATCH]
+module = "input/runtime.md"
+step = "Integrate the node dispatcher"
+status = "planned"
+kind = "implementation"
+after = ["ELECTION-RESPONSES", "REPLICATION-RESPONSES", "COMMITMENT-DELIVER", "RECOVERY-RESTART"]
+blocked_reason = "Complete handler set, public dispatcher, event/error coverage and integration profiles are missing."
+
+[tasks.RECOVERY-FAULTS]
+module = "input/recovery.md"
+step = "Exercise cluster fault histories"
+status = "planned"
+kind = "scenario"
+after = ["RUNTIME-DISPATCH"]
+blocked_reason = "Actual multi-node event driver, reproducible fault traces and independent scenario profiles are missing."
+
+[tasks.INTEGRATION-ADAPTERS]
+module = "input/integration.md"
+step = "Connect and test real host adapters"
+status = "planned"
+kind = "implementation"
+after = ["RUNTIME-DISPATCH"]
+blocked_reason = "Reviewed adapter choices, real network/storage/timer code and integration checks are missing."
+
+[tasks.INTEGRATION-SAFETY]
+module = "input/integration.md"
+step = "Compose global safety proofs"
+status = "planned"
+kind = "proof"
+after = ["RECOVERY-FAULTS", "REPLICATION-PROOF"]
+blocked_reason = "Inductive invariants, node/cluster refinement and global safety proofs are missing; select bounded lemma scopes before activation."
+
+[tasks.PROGRESS-ELECTION]
+module = "input/progress.md"
+step = "Establish persistent leader progress"
+status = "planned"
+kind = "proof"
+after = ["INTEGRATION-SAFETY"]
+blocked_reason = "Temporal premises, election-window/persistent-leader lemmas and compatible proof profiles are missing; narrow proof scope before activation."
+
+[tasks.PROGRESS-COMMIT]
+module = "input/progress.md"
+step = "Establish request commitment progress"
+status = "planned"
+kind = "proof"
+after = ["PROGRESS-ELECTION", "COMMITMENT-ADVANCE"]
+blocked_reason = "Fair request-service and replication/commit progress lemmas and actual proof profiles are missing."
+
+[tasks.PROGRESS-DELIVER]
+module = "input/progress.md"
+step = "Establish delivery progress"
+status = "planned"
+kind = "proof"
+after = ["PROGRESS-COMMIT", "COMMITMENT-DELIVER"]
+blocked_reason = "Catch-up/delivery progress lemmas and actual proof/scenario profiles are missing."
+
+[tasks.PROGRESS-REFINEMENT]
+module = "input/progress.md"
+step = "Transfer progress to executable code"
+status = "planned"
+kind = "proof"
+after = ["PROGRESS-DELIVER", "RUNTIME-DISPATCH"]
+blocked_reason = "Termination, external-wait/fairness transfer and finite-resource proofs are missing."
+
+[tasks.INTEGRATION-CLUSTER-MEASURE]
+module = "input/integration.md"
+step = "Measure integrated workloads"
+status = "planned"
+kind = "benchmark"
+after = ["INTEGRATION-ADAPTERS", "RECOVERY-FAULTS"]
+blocked_reason = "Runnable cluster/adapters, comparable workload harness and measurement profiles are missing."
+
+[tasks.INTEGRATION-FULL]
+module = "input/integration.md"
+step = "Review complete Raft coverage"
+status = "planned"
+kind = "implementation"
+after = ["INTEGRATION-SAFETY", "PROGRESS-REFINEMENT", "INTEGRATION-ADAPTERS", "INTEGRATION-CLUSTER-MEASURE"]
+blocked_reason = "Full proof entrypoint, complete final-candidate coverage and required human decisions remain missing."

@@ -1,0 +1,5 @@
+   Compiling raft-verified v0.0.0 (/home/nitro/Desktop/raft_verus/evidence/core-objective/reconcile-repair/source/evidence/runs/20261027T074849Z-ef4f5042b63f/candidate/crates/raft-verified)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.64s
+     Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/evidence/core-objective/reconcile-repair/source/evidence/runs/20261027T074849Z-ef4f5042b63f/attempt-1/build/debug/deps/raft_verified-7061c45fddf45f90)
+     Running tests/reconcile.rs (/home/nitro/Desktop/raft_verus/evidence/core-objective/reconcile-repair/source/evidence/runs/20261027T074849Z-ef4f5042b63f/attempt-1/build/debug/deps/reconcile-20ea4cda379a87b4)
+error: test failed, to rerun pass `--test reconcile`

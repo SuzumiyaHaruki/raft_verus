@@ -16,6 +16,9 @@ Source review date: 2026-10-26. References support design choices, not project c
 | S11 | [Anvil](https://github.com/anvil-verifier/anvil) | Build/proofs not independently checked; retained as a method reference, not evidence of verified Raft |
 | S12 | [LLMs for Verus](https://verus-lang.github.io/verus/guide/llmforverusproof.html) | Not independently read in full; no generated-code verification claim based on it |
 | S13 | [Ponytail AGENTS.md](https://github.com/DietrichGebert/ponytail/blob/main/AGENTS.md) | Read for minimal complete changes, reuse/standard library, boundary validation and actual checks; no code import |
+| S14 | [Inductive Deductive Synthesis: Enabling AI to Generate Formally Verified Systems](https://arxiv.org/html/2605.23109v1), Agarwal et al., 2026; sections 2–4, 6 and Appendix F consulted on 2026-10-27 | Joint incremental implementation/proof synthesis, diagnostic-guided redesign and performance feedback. Main distributed-system experiments use supplied Rocq KV specifications; this is not a demonstrated Rust/Verus Raft or liveness result. No code imported. |
+
+IDS leaves specification adequacy as an input problem. Its partial Rocq states may contain deferred holes, with a separate final audit; our Verus workflow keeps the existing no-assume/no-admit rule and reports unfinished obligations as OPEN. The prompt/roadmap adopt the joint-development method. Automated strategic search, the paper's agent architecture and Raft foundations are not implemented by that documentation change; no new agent platform or runtime review gate is introduced.
 
 ## verus-tla compatibility
 
@@ -32,3 +35,13 @@ Python uses installed jsonschema 3.2.0 beyond the standard library; TOML compati
 The authorized [official Verus release](https://github.com/verus-lang/verus/releases/tag/release%2F0.2026.01.23.1650a05) has commit `1650a05d64219fdd1d150f32d0d7d5b19b8defcd`, with bundled vstd and Z3 4.12.5. It was installed under `/tmp/raft-verus-tools/compatible/verus-x86-linux/`. Rust 1.92.0 came from `static.rust-lang.org` into isolated RUSTUP_HOME/CARGO_HOME. The first newer download was incompatible with Rust/system-library requirements; failures were preserved and system libc was not upgraded.
 
 Actual results: positive 2 verified/0 errors; negative 0 verified/1 error with exit 1; model 0 verified/0 errors, TYPECHECKED only. Collected license/source records are in [tools.md](tools.md) and `evidence/model-*`; a full transitive-license audit was NOT_RUN. These checks do not establish temporal-library compatibility. verus-tla remains uninstalled/unverified and ADR-08 remains DRAFT. The current persistent installation uses the same release; tool changes still require recalibration. Original raw evidence remains unchanged; non-English raw evidence must not be forwarded to LLMs as context.
+
+## Incremental revision observations (2026-10-27)
+
+The [official Codex CLI reference](https://developers.openai.com/codex/cli/reference/) was consulted for non-interactive invocation, then installed `codex exec --help` confirmed `--add-dir` and `--skip-git-repo-check`. These support a controller-owned external build directory and candidate copies without Git metadata. Only help was run; no live generation session was launched. The revised controller validates installed capabilities rather than assuming every CLI version supports them.
+
+Installed `verus --help` and actual JSON output confirmed entire-crate results and successful function attribution under `--output-json --time-expanded`. The protected local proof caller is checked against the same executable body used by runtime tests. Current results and limitations are in the review packet; these tool observations do not approve specifications or prove global Raft.
+
+## IDS-inspired workflow revision
+
+The [published synthesis implementation guide](https://github.com/skydiscover-ai/skydiscover/blob/main/skydiscover/synthesize/README.md) describes separate implementation, evaluation and critique roles and incremental formal code/proof synthesis. We reuse those ideas in one bounded serial controller: independent oracles, joint source/proof edits and previous-attempt feedback. No SkyDiscover dependency or multi-agent framework is installed. Our draft targets remain outside ordinary repair scope; target changes return to user review. The STATE-INIT demonstration exercises real Rust/Verus rejection and repair, not IDS reproduction, real model success, full refinement or Raft liveness.

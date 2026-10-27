@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "python3",
+    "crates/raft-verified/check.py",
+    "node-replay"
+  ],
+  "status": "COMPLETED",
+  "exit_code": 101,
+  "stdout": "",
+  "stderr": "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.02s\n     Running `/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-1/source/evidence/runs/20261027T074013Z-4046e080de76/attempt-1/build/debug/examples/initialize`\n\nthread 'main' (460) panicked at crates/raft-verified/examples/initialize.rs:25:13:\nassertion `left == right` failed\n  left: 1\n right: 0\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+  "stdout_truncated": false,
+  "stderr_truncated": false,
+  "elapsed_seconds": 0.13579136900079902
+}

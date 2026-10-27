@@ -2,6 +2,7 @@
 from __future__ import annotations
 import fnmatch
 import re
+from collections import Counter
 from pathlib import Path
 from .workspace import changed_paths, normalize_path
 
@@ -111,3 +112,25 @@ def scan_trust(root: Path, paths: list[str]) -> list[dict]:
                              "affected_theorems": "requires human mapping to obligations",
                              "alternative": "prove the fact or submit a separate reviewed TCB proposal"})
     return findings
+
+
+def new_trust_findings(reference: Path, candidate: Path, paths: list[str]) -> list[dict]:
+    """An unchanged reviewed construct is not a new trust proposal.
+
+    Compare complete masked lines and multiplicities, so moving a line does not
+    trigger review but adding another escape or changing its arguments does.
+    Independent Verus verification still uses the reviewed whole-file command.
+    """
+    def signature(root, finding):
+        lines = code_only((root / finding["path"]).read_text()).splitlines()
+        index = finding["line"] - 1
+        return finding["path"], finding["token"], "\n".join(lines[index:index + 2]).strip()
+    known = Counter(signature(reference, finding) for finding in scan_trust(reference, paths))
+    new = []
+    for finding in scan_trust(candidate, paths):
+        key = signature(candidate, finding)
+        if known[key]:
+            known[key] -= 1
+        else:
+            new.append(finding)
+    return new

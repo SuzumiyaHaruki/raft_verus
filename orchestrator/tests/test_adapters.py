@@ -5,6 +5,7 @@ import tempfile
 import unittest
 
 from orchestrator.codex_runner import discover_codex, run_codex
+from orchestrator.config import validate_codex_settings
 from orchestrator.verifier_runner import verify_profile
 
 REPO = Path(__file__).resolve().parents[2]
@@ -50,11 +51,44 @@ class AdapterTests(unittest.TestCase):
         self.assertIsNotNone(result['usage'])
         self.assertNotIn('result', result['agent_report'])
 
+    def test_explicit_model_and_effort_reach_the_subprocess(self):
+        settings = {'executable': str(FIXTURES/'fake_codex.py'),
+                    'supported_versions': ['codex-cli FIXTURE'],
+                    'model': 'gpt-6.1-sol', 'model_reasoning_effort': 'high'}
+        self.assertEqual(discover_codex(settings, self.candidate, self.evidence)['status'], 'READY')
+        result = run_codex(settings, self.candidate,
+            json.dumps({'expect_model': 'gpt-6.1-sol', 'expect_effort': 'high'}), SCHEMA, self.evidence)
+        self.assertEqual(result['status'], 'CANDIDATE', result)
+        self.assertEqual(result['model_requested'], 'gpt-6.1-sol')
+        self.assertEqual(result['reasoning_effort_requested'], 'high')
+        self.assertIsNone(result['model_resolved'])
+
+    def test_unset_model_and_effort_do_not_override_codex_defaults(self):
+        result = self.codex()
+        process = json.loads((self.evidence/'codex.process.json').read_text())
+        self.assertNotIn('--model', process['argv'])
+        self.assertNotIn('--config', process['argv'])
+        self.assertIsNone(result['model_requested'])
+        self.assertIsNone(result['reasoning_effort_requested'])
+
+    def test_invalid_model_settings_are_rejected(self):
+        for key in ('model', 'model_reasoning_effort'):
+            for value in ('', 'two words', '\nhigh', 1, True, None):
+                with self.subTest(key=key, value=value), self.assertRaises(ValueError):
+                    validate_codex_settings({key: value})
+
     def test_unknown_event_preserved_with_warning(self):
         result = self.codex('unknown')
         self.assertTrue(result['warnings'])
         self.assertTrue(any(e['type'] == 'future.event' for e in result['events']))
         self.assertNotEqual(result['status'], 'PASS')
+
+    def test_agent_local_build_outputs_do_not_mutate_candidate_sources(self):
+        result = run_codex({'executable': str(FIXTURES/'fake_codex.py')}, self.candidate,
+            json.dumps({'build_fixture': True}), SCHEMA, self.evidence)
+        self.assertEqual(result['status'], 'CANDIDATE')
+        self.assertTrue((self.evidence/'agent-build/fixture-build-output').is_file())
+        self.assertFalse((self.candidate/'target').exists())
 
     def test_protocol_errors(self):
         for scenario in ('broken_jsonl', 'missing', 'empty', 'bad_schema', 'symlink_report_dir'):
@@ -112,7 +146,8 @@ class AdapterTests(unittest.TestCase):
             argv=[str(FIXTURES/'fake_verus.py'), '--verified', str(verified), '--errors', str(errors)],
             calibration={'tool_version': 'verus FIXTURE 1',
                          'summary_pattern': r'fixture summary: (?P<verified>\d+) verified; (?P<errors>\d+) errors',
-                         'positive_evidence': 'SIMULATED_POSITIVE', 'negative_evidence': 'SIMULATED_NEGATIVE'})
+                         'positive_evidence': 'SIMULATED_POSITIVE', 'negative_evidence': 'SIMULATED_NEGATIVE'},
+            rejection_pattern=r'postcondition not satisfied: wrong_increment')
         profile.update(options)
         return profile
 

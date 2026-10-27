@@ -60,6 +60,19 @@ class WorkspaceTests(unittest.TestCase):
         path.write_text('must be checked')
         self.assertIn('src/evidence/hidden.rs', snapshot(self.source))
 
+    def test_maintenance_instructions_and_solution_are_not_candidate_context(self):
+        (self.source/'Agent.md').write_text('Maintenance-only instruction')
+        solution = self.source/'orchestrator/tests/fixtures/node_init_solution.rs'
+        solution.parent.mkdir(parents=True)
+        solution.write_text('Offline answer, never experiment input')
+        (self.source/'AGENTS.md').write_text('Shared safeguards')
+        destination = self.root/'candidate'
+        create_candidate(self.source, destination)
+        self.assertFalse((destination/'Agent.md').exists())
+        self.assertFalse((destination/solution.relative_to(self.source)).exists())
+        self.assertEqual((destination/'AGENTS.md').read_text(), 'Shared safeguards')
+        self.assertNotIn('Agent.md', snapshot(self.source))
+
 
 if __name__ == '__main__':
     unittest.main()

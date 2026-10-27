@@ -1,6 +1,5 @@
-"""Fixture approvals below exist only in temporary offline test directories."""
+"""Offline subprocess tests; human code review is not a runtime prerequisite."""
 import copy
-import datetime
 import json
 from pathlib import Path
 import shutil
@@ -9,8 +8,8 @@ import tempfile
 import unittest
 
 from orchestrator.evidence import create_run, write_json
-from orchestrator.scheduler import (approval_bindings, dependency_ready, plan, run_task,
-                                    task_fingerprint, task_order, validate_approval, validate_tasks, load_tasks, render_prompt)
+from orchestrator.scheduler import (dependency_ready, plan, run_task,
+                                    task_fingerprint, task_order, validate_tasks, load_tasks, render_prompt)
 from orchestrator.workspace import digest_bytes
 
 REPO = Path(__file__).resolve().parents[2]
@@ -45,7 +44,7 @@ class SchedulerTests(unittest.TestCase):
         self.task = dict(id='fixture-task', task_type='safety_lemma', goal='offline fixture',
                          dependency_ids=[], contract_digest=digest_bytes((self.root/'input/requirements.md').read_bytes()),
                          input_paths=['src/lib.rs'], permitted_change_paths=['src'], forbidden_change_paths=['input'],
-                         expected_outputs=['src/lib.rs'], target_obligation_ids=['PO-FIXTURE'], check_profile_ids=['fake'],
+                         expected_outputs=['src/lib.rs'], target_obligation_ids=[], check_profile_ids=['fake'],
                          prompt_template='input/fixture-task.md', budget=dict(self.budget),
                          human_review_triggers=['specification change'])
         self.save_task()
@@ -66,20 +65,8 @@ class SchedulerTests(unittest.TestCase):
         payload.update(options)
         (self.root/'input/fixture-task.md').write_text('FIXTURE_JSON='+json.dumps(payload)+'\n')
 
-    def approve_fixture(self, **changes):
-        # Never used with a real CLI: config points exclusively to executable fixtures.
-        approval = dict(approval_id='offline-test-record', approved_by='Offline unit test fixture',
-                        approved_at=datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                        lifecycle_status='HUMAN_APPROVED', is_template=False,
-                        approved_task_scope=[self.task['id']], **approval_bindings(self.root, self.config))
-        approval.update(changes)
-        path = self.outside/'fixture-approval.json'
-        path.write_text(json.dumps(approval))
-        return path
-
     def execute(self):
-        return run_task(self.root, self.config, self.task['id'], execute_codex=True,
-                        approval_file=self.approve_fixture())
+        return run_task(self.root, self.config, self.task['id'], execute_codex=True)
 
     def test_prompt_is_plain_markdown_and_includes_real_diagnostics(self):
         log = self.outside/'actual.stderr'
@@ -107,21 +94,18 @@ class SchedulerTests(unittest.TestCase):
     def test_plan_validate_and_dry_run_never_launch_codex(self):
         self.config['codex']['executable'] = '/no/real/codex'
         self.assertEqual(validate_tasks(self.root, [self.task], self.config), [])
-        self.assertEqual(plan(self.root, self.config)['status'], 'DRAFT_NOT_APPROVED')
+        self.assertEqual(plan(self.root, self.config)['status'], 'DRAFT')
         result = run_task(self.root, self.config, self.task['id'])
         self.assertEqual((result['status'], result['agent_calls']), ('DRY_RUN', 0))
 
-    def test_missing_example_inside_stale_and_wrong_scope_approvals(self):
-        with self.assertRaises(ValueError):
-            validate_approval(self.root, self.config, self.task, None)
-        for change in ({'is_template': True}, {'approval_id': 'EXAMPLE'},
-                       {'contract_digest': '0'*64}, {'approved_task_scope': ['different-task']}):
-            with self.subTest(change=change), self.assertRaises(ValueError):
-                validate_approval(self.root, self.config, self.task, self.approve_fixture(**change))
-        inside = self.root/'approval.json'
-        shutil.copyfile(self.approve_fixture(), inside)
-        with self.assertRaises(ValueError):
-            validate_approval(self.root, self.config, self.task, inside)
+    def test_explicit_run_needs_no_human_review_record(self):
+        result = self.execute()
+        self.assertEqual(result['status'], 'PASSED', result)
+        self.assertEqual(result['agent_calls'], 1)
+        self.assertEqual(result['generation_kind'], 'SIMULATED')
+        self.assertEqual((self.root/'input/requirements.md').read_text(),
+                         'Status: DRAFT. Offline fixture contract and TCB.')
+        self.assertFalse(result['full_acceptance'])
 
     def test_disabled_bootstrap_and_strict_isolation_block(self):
         self.config['workflow']['allow_real_codex'] = False
@@ -177,6 +161,8 @@ class SchedulerTests(unittest.TestCase):
         self.assertEqual((self.root/'input/requirements.md').read_text(), 'Status: DRAFT. Offline fixture contract and TCB.')
 
     def test_build_only_check_cannot_close_proof_task(self):
+        self.task['target_obligation_ids'] = ['PO-FIXTURE']
+        self.save_task()
         self.config['profiles'][0].update(adapter='command-text-v1',
             argv=[sys.executable, '-c', 'print("fixture build complete")'],
             success_pattern='fixture build complete', expected_obligation_ids=['PO-FIXTURE'],
