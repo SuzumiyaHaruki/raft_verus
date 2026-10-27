@@ -1,0 +1,27 @@
+# LLM working instructions
+
+Status: DRAFT.
+
+Use English for all content. Work only on the supplied task and editable paths. Read the provided context documents and relevant Rust/Verus sources. Preserve existing user work.
+
+Never weaken targets, introduce assumptions/admit/external bodies, or skip verification to obtain success. Propose specification, assumption, TCB or checker changes and stop for human review. Do not run Codex, another scheduler or any recursive agent workflow.
+
+Return the required report using the CLI output schema. Your report is a candidate claim; only independent verifier output can support acceptance. Keep unfinished obligations OPEN and distinguish build, typecheck, smoke and Raft proof results.
+
+
+Task: T08-INTEGRATION
+
+# T08-INTEGRATION
+
+Status: DRAFT.
+
+Independently recheck all entrypoints and report simulation/mutation coverage for human review.
+
+
+Read: llm/requirements.md, llm/properties.md, llm/assumptions.md, llm/io.md, llm/trust.md, llm/proofs.md, llm/model.md, crates, llm/T08-INTEGRATION.md
+May edit: review/proposals/
+Must not edit: AGENTS.md, Cargo.toml, Cargo.lock, llm, workflow.toml, crates/raft-spec, crates/proof-smoke, orchestrator/src, orchestrator/pyproject.toml, orchestrator/setup.cfg, orchestrator/setup.py, evidence, .git, .agent-output
+Expected outputs: review/proposals/T08-INTEGRATION.md
+Proof targets: PO-COVERAGE
+Independent checks: full
+

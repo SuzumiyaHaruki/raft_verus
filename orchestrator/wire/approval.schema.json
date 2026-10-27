@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "approval (DRAFT)",
+  "type": "object",
+  "required": [
+    "approval_id",
+    "approved_by",
+    "approved_at",
+    "contract_digest",
+    "protected_manifest_digest",
+    "checker_policy_digest",
+    "toolchain_manifest_digest",
+    "approved_task_scope",
+    "trust_baseline_digest",
+    "lifecycle_status",
+    "is_template"
+  ],
+  "properties": {
+    "approval_id": {
+      "type": "string"
+    },
+    "approved_by": {
+      "type": "string"
+    },
+    "approved_at": {
+      "type": "string"
+    },
+    "contract_digest": {
+      "type": "string"
+    },
+    "protected_manifest_digest": {
+      "type": "string"
+    },
+    "checker_policy_digest": {
+      "type": "string"
+    },
+    "toolchain_manifest_digest": {
+      "type": "string"
+    },
+    "approved_task_scope": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "trust_baseline_digest": {
+      "type": "string"
+    },
+    "lifecycle_status": {
+      "type": "string"
+    },
+    "is_template": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": true
+}

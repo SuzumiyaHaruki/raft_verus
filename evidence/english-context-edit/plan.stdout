@@ -1,0 +1,128 @@
+{
+  "status": "DRAFT_NOT_APPROVED",
+  "approval_bindings_candidate": {
+    "contract_digest": "d175b39d90f6976f2a2842e458af472ea4a4971b1b506ab91ebd083626899cc3",
+    "protected_manifest_digest": "c7c6caa6dae69dbab3947cb4164ea41647d352e040a9740e6ff0670e21ff1d84",
+    "checker_policy_digest": "63a9faf85c84857cedc653b574ab307a9dab77197f8e8e3d781c3bed1c0f1686",
+    "toolchain_manifest_digest": "b15666a7b98b1640d8c0f50c125eb3be0ea8590a3f24986bccf4ae2eed14f907",
+    "trust_baseline_digest": "d5fa9a7430fa79371179209050c7531430c026b19cd47a521bf541ae4c20fbbe"
+  },
+  "tasks": [
+    {
+      "id": "T01-MODEL",
+      "dependency_ids": [],
+      "input_fingerprint": "b8fae85f83e44fd2650e5306bb2393b55d32b9d5d0e03a6714974053846bc014",
+      "permitted_change_paths": [
+        "crates/raft-proofs/",
+        "review/proposals/"
+      ],
+      "check_profile_ids": [
+        "spec"
+      ],
+      "executable": false
+    },
+    {
+      "id": "T02-REFINE-INIT",
+      "dependency_ids": [
+        "T01-MODEL"
+      ],
+      "input_fingerprint": "7fdab4bd0fde964c3735dd41f45bc59ad89ae80d1c41b00c0155ef1b9fd38cdd",
+      "permitted_change_paths": [
+        "crates/raft-verified/",
+        "crates/raft-proofs/"
+      ],
+      "check_profile_ids": [
+        "interface-check",
+        "full"
+      ],
+      "executable": false
+    },
+    {
+      "id": "T03-REFINE-STEP",
+      "dependency_ids": [
+        "T02-REFINE-INIT"
+      ],
+      "input_fingerprint": "e38d4e266902392ab28cfc1ba2017e334816778b5e462ef5fd69d53dbe237007",
+      "permitted_change_paths": [
+        "crates/raft-verified/",
+        "crates/raft-proofs/"
+      ],
+      "check_profile_ids": [
+        "interface-check",
+        "full"
+      ],
+      "executable": false
+    },
+    {
+      "id": "T04-SAFETY",
+      "dependency_ids": [
+        "T03-REFINE-STEP"
+      ],
+      "input_fingerprint": "6c786a57866416c851e8130e46755079cb48e00e2e515aec6d9ab21be8adf10c",
+      "permitted_change_paths": [
+        "crates/raft-proofs/"
+      ],
+      "check_profile_ids": [
+        "full"
+      ],
+      "executable": false
+    },
+    {
+      "id": "T05-ELECTION",
+      "dependency_ids": [
+        "T04-SAFETY"
+      ],
+      "input_fingerprint": "29772b77c4fe4728ad722f67fcc0dce7527a24a50547fd862bb0af4380ce5317",
+      "permitted_change_paths": [
+        "crates/raft-proofs/"
+      ],
+      "check_profile_ids": [
+        "full"
+      ],
+      "executable": false
+    },
+    {
+      "id": "T06-PROGRESS",
+      "dependency_ids": [
+        "T05-ELECTION"
+      ],
+      "input_fingerprint": "41e142356c69a64f941827b2b56eeafce4aebc2280e2125eab3b2d7afb12b384",
+      "permitted_change_paths": [
+        "crates/raft-proofs/"
+      ],
+      "check_profile_ids": [
+        "full"
+      ],
+      "executable": false
+    },
+    {
+      "id": "T07-LIVE-REFINE",
+      "dependency_ids": [
+        "T06-PROGRESS"
+      ],
+      "input_fingerprint": "fe8bdaca62ae1ac7a2ea258ba5f2783d0bc7311a070abeccb1b9ab7ef43cb2d8",
+      "permitted_change_paths": [
+        "crates/raft-proofs/",
+        "crates/raft-verified/"
+      ],
+      "check_profile_ids": [
+        "full"
+      ],
+      "executable": false
+    },
+    {
+      "id": "T08-INTEGRATION",
+      "dependency_ids": [
+        "T07-LIVE-REFINE"
+      ],
+      "input_fingerprint": "0ec4d4ea1a32018573f52fc47316c742fe5e437a76ba74954098cf1170f643a5",
+      "permitted_change_paths": [
+        "review/proposals/"
+      ],
+      "check_profile_ids": [
+        "full"
+      ],
+      "executable": false
+    }
+  ]
+}

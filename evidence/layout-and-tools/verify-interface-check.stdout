@@ -1,0 +1,38 @@
+{
+  "schema_version": "1",
+  "check_id": "interface-check",
+  "run_id": "20261027T041952Z-076e44e79b85",
+  "check_kind": "build-only",
+  "profile_id": "interface-check",
+  "result": "PASS",
+  "argv": [
+    "cargo",
+    "check",
+    "--locked",
+    "--offline",
+    "-p",
+    "raft-verified"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus",
+  "input_manifest_digest": "3aa0ff936737280cf9e7086ff9ae98bdf5904a98f096445b32198ea1334fe801",
+  "tool_versions": {},
+  "started_at": "2026-10-27T04:19:52.191464+00:00",
+  "finished_at": "2026-10-27T04:19:52.339660+00:00",
+  "exit_code": 0,
+  "stdout_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_digest": "3338b1bcfacec3da7580acd77e3aa3cb9df9f298dec45558c528109e2488d27f",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261027T041952Z-076e44e79b85/interface-check.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261027T041952Z-076e44e79b85/interface-check.stderr.log"
+  ],
+  "obligation_ids_checked": [],
+  "coverage_findings": [
+    "build/test only; no mathematical proof"
+  ],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "tool_environment": {},
+  "reason": "profile checks passed locally; no full Raft acceptance"
+}

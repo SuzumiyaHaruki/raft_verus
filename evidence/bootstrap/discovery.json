@@ -1,0 +1,85 @@
+{
+  "lifecycle_status": "DRAFT",
+  "existing_repository": "No source files; four empty read-only directories preserved. git status exits 128, not a valid Git repository.",
+  "records": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "--version"
+      ],
+      "started_at": "2026-10-26T12:36:46.285474+00:00",
+      "finished_at": "2026-10-26T12:36:46.291429+00:00",
+      "exit_code": 0,
+      "evidence_kind": "REAL_TOOL_DISCOVERY",
+      "stdout": "python-version.stdout",
+      "stderr": "python-version.stderr"
+    },
+    {
+      "argv": [
+        "codex",
+        "--version"
+      ],
+      "started_at": "2026-10-26T12:36:46.291443+00:00",
+      "finished_at": "2026-10-26T12:36:46.340677+00:00",
+      "exit_code": 0,
+      "evidence_kind": "REAL_TOOL_DISCOVERY",
+      "stdout": "codex-version.stdout",
+      "stderr": "codex-version.stderr"
+    },
+    {
+      "argv": [
+        "codex",
+        "--help"
+      ],
+      "started_at": "2026-10-26T12:36:46.340697+00:00",
+      "finished_at": "2026-10-26T12:36:46.367184+00:00",
+      "exit_code": 0,
+      "evidence_kind": "REAL_TOOL_DISCOVERY",
+      "stdout": "codex-help.stdout",
+      "stderr": "codex-help.stderr"
+    },
+    {
+      "argv": [
+        "codex",
+        "exec",
+        "--help"
+      ],
+      "started_at": "2026-10-26T12:36:46.367202+00:00",
+      "finished_at": "2026-10-26T12:36:46.390031+00:00",
+      "exit_code": 0,
+      "evidence_kind": "REAL_TOOL_DISCOVERY",
+      "stdout": "codex-exec-help.stdout",
+      "stderr": "codex-exec-help.stderr"
+    },
+    {
+      "argv": [
+        "rustc",
+        "--version"
+      ],
+      "started_at": "2026-10-26T12:36:46.390048+00:00",
+      "finished_at": "2026-10-26T12:36:46.436572+00:00",
+      "exit_code": 0,
+      "evidence_kind": "REAL_TOOL_DISCOVERY",
+      "stdout": "rustc-version.stdout",
+      "stderr": "rustc-version.stderr"
+    },
+    {
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "started_at": "2026-10-26T12:36:46.436591+00:00",
+      "finished_at": "2026-10-26T12:36:46.455591+00:00",
+      "exit_code": 0,
+      "evidence_kind": "REAL_TOOL_DISCOVERY",
+      "stdout": "cargo-version.stdout",
+      "stderr": "cargo-version.stderr"
+    }
+  ],
+  "python_packages": {
+    "jsonschema": "3.2.0",
+    "pip": "22.0.2",
+    "setuptools": "59.6.0"
+  },
+  "real_codex_model_calls": 0
+}

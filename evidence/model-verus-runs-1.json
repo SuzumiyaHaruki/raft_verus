@@ -1,0 +1,68 @@
+[
+  {
+    "id": "positive-1",
+    "argv": [
+      "/tmp/raft-verus-tools/compatible/verus-x86-linux/verus",
+      "--crate-type",
+      "lib",
+      "crates/proof-smoke/positive.rs"
+    ],
+    "working_directory": "/home/nitro/Desktop/raft_verus",
+    "environment_overrides": {
+      "RUSTUP_HOME": "/tmp/raft-verus-tools/rustup",
+      "CARGO_HOME": "/tmp/raft-verus-tools/cargo"
+    },
+    "started_at": "2026-10-26T13:12:10.603248+00:00",
+    "finished_at": "2026-10-26T13:12:11.237487+00:00",
+    "exit_code": 0,
+    "stdout_path": "evidence/model-verus-positive-1.stdout.txt",
+    "stderr_path": "evidence/model-verus-positive-1.stderr.txt",
+    "evidence_kind": "REAL_LOCAL_DEVELOPMENT",
+    "stdout": "verification results:: 2 verified, 0 errors\n",
+    "stderr": ""
+  },
+  {
+    "id": "negative-1",
+    "argv": [
+      "/tmp/raft-verus-tools/compatible/verus-x86-linux/verus",
+      "--crate-type",
+      "lib",
+      "crates/proof-smoke/negative.rs"
+    ],
+    "working_directory": "/home/nitro/Desktop/raft_verus",
+    "environment_overrides": {
+      "RUSTUP_HOME": "/tmp/raft-verus-tools/rustup",
+      "CARGO_HOME": "/tmp/raft-verus-tools/cargo"
+    },
+    "started_at": "2026-10-26T13:12:10.605562+00:00",
+    "finished_at": "2026-10-26T13:12:11.115003+00:00",
+    "exit_code": 1,
+    "stdout_path": "evidence/model-verus-negative-1.stdout.txt",
+    "stderr_path": "evidence/model-verus-negative-1.stderr.txt",
+    "evidence_kind": "REAL_LOCAL_DEVELOPMENT",
+    "stdout": "verification results:: 0 verified, 1 errors\n",
+    "stderr": "error: postcondition not satisfied\n --> crates/proof-smoke/negative.rs:6:13\n  |\n6 |     ensures result == n,\n  |             ^^^^^^^^^^^ failed this postcondition\n7 | {\n8 |     n + 1\n  |     ----- at the end of the function body\n\nerror: aborting due to 1 previous error\n\n"
+  },
+  {
+    "id": "spec-1",
+    "argv": [
+      "/tmp/raft-verus-tools/compatible/verus-x86-linux/verus",
+      "--crate-type",
+      "lib",
+      "crates/raft-spec/src/lib.rs"
+    ],
+    "working_directory": "/home/nitro/Desktop/raft_verus",
+    "environment_overrides": {
+      "RUSTUP_HOME": "/tmp/raft-verus-tools/rustup",
+      "CARGO_HOME": "/tmp/raft-verus-tools/cargo"
+    },
+    "started_at": "2026-10-26T13:12:10.606965+00:00",
+    "finished_at": "2026-10-26T13:12:11.202847+00:00",
+    "exit_code": 1,
+    "stdout_path": "evidence/model-verus-spec-1.stdout.txt",
+    "stderr_path": "evidence/model-verus-spec-1.stderr.txt",
+    "evidence_kind": "REAL_LOCAL_DEVELOPMENT",
+    "stdout": "",
+    "stderr": "error: Could not automatically infer triggers for this quantifier.  Use #[trigger] annotations to manually mark trigger terms instead.\n   --> crates/raft-spec/src/lib.rs:454:8\n    |\n454 |       && (forall |i: int| 0 <= i < s.deliveries.len() ==> {\n    |  ________^\n455 | |         let d = s.deliveries[i];\n456 | |         d.index > 0 && command_origin(s, d.entry.command)\n457 | |         && exists |c: int| 0 <= c < s.commits.len() && d.index <= s.commits[c].prefix.len()\n458 | |             && s.commits[c].prefix[(d.index - 1) as int] == d.entry\n459 | |     })\n    | |______^\n\nerror: aborting due to 1 previous error\n\n"
+  }
+]

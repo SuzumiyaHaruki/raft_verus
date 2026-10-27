@@ -1,0 +1,12 @@
+error: Could not automatically infer triggers for this quantifier.  Use #[trigger] annotations to manually mark trigger terms instead.
+   --> crates/raft-spec/src/lib.rs:500:5
+    |
+500 | /     exists |c: int, i: int| 0 <= c < s.commits.len() && 0 <= i < s.commits[c].prefix.len()
+501 | |         && match s.commits[c].prefix[i].command {
+502 | |             Command::Client { request: found, value } => found == request && s.requests[request] == value,
+503 | |             Command::Noop => false,
+504 | |         }
+    | |_________^
+
+error: aborting due to 1 previous error
+

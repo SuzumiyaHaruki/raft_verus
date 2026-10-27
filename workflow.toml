@@ -1,0 +1,145 @@
+# DRAFT. English task text is in input/T*.md; do not launch real tasks during bootstrap.
+[workflow]
+allow_real_codex = false
+isolation = "local-development"
+context = ["input/requirements.md", "input/properties.md", "input/assumptions.md", "input/io.md", "input/trust.md", "input/proofs.md", "input/model.md", "crates"]
+protected_paths = ["AGENTS.md", "Cargo.toml", "Cargo.lock", "input", "workflow.toml", "crates/raft-spec", "crates/proof-smoke", "orchestrator"]
+
+[codex]
+executable = "codex"
+supported_versions = ["codex-cli 0.162.0-alpha.17.2"]
+# model = "your-configured-model"
+
+[budget]
+max_agent_calls = 3
+max_repair_rounds = 2
+call_timeout_seconds = 120
+task_timeout_seconds = 360
+max_log_bytes = 1048576
+
+[toolchain]
+lifecycle_status = "DRAFT"
+codex_observed = "codex-cli 0.162.0-alpha.17.2"
+verus = "0.2026.01.23.1650a05"
+verus_commit = "1650a05d64219fdd1d150f32d0d7d5b19b8defcd"
+verus_executable = "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus"
+z3_executable = "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3"
+rustc_executable = "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc"
+cargo_executable = "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo"
+rust_for_verus = "1.92.0-x86_64-unknown-linux-gnu"
+z3 = "4.12.5"
+verus_tla = "NOT_FOUND_NOT_COMPATIBILITY_CHECKED"
+python_minimum = "3.10"
+
+[toolchain.tool_env]
+RUSTUP_HOME = "/home/nitro/.local/share/raft-verus/rustup"
+CARGO_HOME = "/home/nitro/.local/share/raft-verus/cargo"
+
+[verus_calibration]
+tool_version = "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+summary_pattern = "(?m)^verification results:: (?P<verified>[0-9]+) verified, (?P<errors>[0-9]+) errors$"
+positive_evidence = "evidence/model-verus-positive-1.stdout.txt"
+negative_evidence = "evidence/model-verus-negative-1.stdout.txt"
+run_metadata = "evidence/model-verus-runs-1.json"
+
+[checks.smoke-positive]
+kind = "proof-smoke"
+adapter = "verus-calibrated-text-v1"
+argv = ["/home/nitro/.local/share/raft-verus/verus-x86-linux/verus", "--crate-type", "lib", "crates/proof-smoke/positive.rs"]
+entrypoints = ["crates/proof-smoke/positive.rs"]
+expected_targets = ["successor", "successor_is_larger", "increment"]
+expected_obligation_ids = []
+minimum_verified = 2
+
+[checks.smoke-negative]
+kind = "negative-proof-smoke"
+adapter = "verus-calibrated-text-v1"
+argv = ["/home/nitro/.local/share/raft-verus/verus-x86-linux/verus", "--crate-type", "lib", "crates/proof-smoke/negative.rs"]
+entrypoints = ["crates/proof-smoke/negative.rs"]
+expected_targets = ["wrong_increment"]
+expected_obligation_ids = []
+expect_rejection = true
+
+[checks.spec]
+kind = "candidate-model-typecheck"
+purpose = "typecheck"
+adapter = "verus-calibrated-text-v1"
+argv = ["/home/nitro/.local/share/raft-verus/verus-x86-linux/verus", "--crate-type", "lib", "crates/raft-spec/src/lib.rs"]
+entrypoints = ["crates/raft-spec/src/lib.rs"]
+expected_targets = ["init", "next", "election_safety", "log_matching"]
+expected_obligation_ids = []
+
+[checks.interface-check]
+kind = "build-only"
+adapter = "command-text-v1"
+argv = ["cargo", "check", "--locked", "--offline", "-p", "raft-verified"]
+entrypoints = ["crates/raft-verified/src/lib.rs"]
+expected_targets = ["raft-verified"]
+expected_obligation_ids = []
+success_pattern = "Finished.*dev"
+
+[checks.full]
+kind = "full-raft-verification"
+adapter = "verus-calibrated-text-v1"
+argv = ["/home/nitro/.local/share/raft-verus/verus-x86-linux/verus", "--crate-type", "lib", "crates/raft-proofs/src/lib.rs"]
+entrypoints = ["crates/raft-spec/src/lib.rs", "crates/raft-verified/src/lib.rs", "crates/raft-proofs/README.md"]
+planned_entrypoints = ["crates/raft-proofs/src/lib.rs"]
+expected_targets = ["all-exec-refinement", "all-safety", "all-liveness", "liveness-preservation"]
+expected_obligation_ids = ["PO-INIT", "PO-AUX-INDEX", "PO-AUX-TERM", "PO-AUX-VOTE", "PO-AUX-COMMIT", "PO-AUX-TOKEN", "PO-REQUEST", "PO-RECOVERY", "PO-STEP", "PO-DELIVERY", "PO-S-ELECTION", "PO-S-APPEND", "PO-S-LOG", "PO-S-COMPLETE", "PO-S-INTERFACE", "PO-S-APPLY", "PO-REPRESENTATION", "PO-REFINE-INIT", "PO-IO", "PO-REFINE-STEP", "PO-COMPOSITION", "PO-L-ELECTION", "PO-L-COMMIT", "PO-L-DELIVER", "PO-LIVE-REFINEMENT", "PO-COVERAGE"]
+blocked_reason = "Full Raft implementation/proofs, approved contract, temporal-library integration and strict OS isolation are absent. No full acceptance is available in this bootstrap."
+
+[tasks.T01-MODEL]
+after = []
+edit = ["crates/raft-proofs/", "review/proposals/"]
+outputs = ["review/proposals/T01-MODEL.md"]
+obligations = ["PO-INIT", "PO-STEP"]
+checks = ["spec"]
+
+[tasks.T02-REFINE-INIT]
+after = ["T01-MODEL"]
+edit = ["crates/raft-verified/", "crates/raft-proofs/"]
+outputs = ["crates/raft-verified/src/lib.rs", "crates/raft-proofs/src/refine_init.rs"]
+obligations = ["PO-REPRESENTATION", "PO-REFINE-INIT", "PO-RECOVERY"]
+checks = ["interface-check", "full"]
+
+[tasks.T03-REFINE-STEP]
+after = ["T02-REFINE-INIT"]
+edit = ["crates/raft-verified/", "crates/raft-proofs/"]
+outputs = ["crates/raft-verified/src/lib.rs", "crates/raft-proofs/src/refine_step.rs"]
+obligations = ["PO-REFINE-STEP", "PO-IO", "PO-AUX-TOKEN", "PO-REQUEST"]
+checks = ["interface-check", "full"]
+
+[tasks.T04-SAFETY]
+after = ["T03-REFINE-STEP"]
+edit = ["crates/raft-proofs/"]
+outputs = ["crates/raft-proofs/src/safety.rs"]
+obligations = ["PO-S-ELECTION", "PO-S-APPEND", "PO-S-LOG", "PO-S-COMPLETE", "PO-S-INTERFACE", "PO-S-APPLY", "PO-COMPOSITION"]
+checks = ["full"]
+
+[tasks.T05-ELECTION]
+after = ["T04-SAFETY"]
+edit = ["crates/raft-proofs/"]
+outputs = ["crates/raft-proofs/src/election.rs"]
+obligations = ["PO-L-ELECTION"]
+checks = ["full"]
+
+[tasks.T06-PROGRESS]
+after = ["T05-ELECTION"]
+edit = ["crates/raft-proofs/"]
+outputs = ["crates/raft-proofs/src/progress.rs"]
+obligations = ["PO-L-COMMIT", "PO-L-DELIVER"]
+checks = ["full"]
+
+[tasks.T07-LIVE-REFINE]
+after = ["T06-PROGRESS"]
+edit = ["crates/raft-proofs/", "crates/raft-verified/"]
+outputs = ["crates/raft-proofs/src/live_refinement.rs"]
+obligations = ["PO-LIVE-REFINEMENT"]
+checks = ["full"]
+
+[tasks.T08-INTEGRATION]
+after = ["T07-LIVE-REFINE"]
+edit = ["review/proposals/"]
+outputs = ["review/proposals/T08-INTEGRATION.md"]
+obligations = ["PO-COVERAGE"]
+checks = ["full"]

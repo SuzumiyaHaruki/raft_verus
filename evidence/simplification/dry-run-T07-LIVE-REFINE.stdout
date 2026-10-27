@@ -1,0 +1,10 @@
+{
+  "status": "DRY_RUN",
+  "task_id": "T07-LIVE-REFINE",
+  "agent_calls": 0,
+  "input_fingerprint": "f47e2d5e438b55d605b32db9dc572f674d0b81873f7510bf8c8fb0292893c0ad",
+  "check_profile_ids": [
+    "full"
+  ],
+  "approval": "NOT_CHECKED_NOT_EXECUTABLE"
+}

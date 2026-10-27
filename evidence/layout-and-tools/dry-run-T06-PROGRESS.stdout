@@ -1,0 +1,10 @@
+{
+  "status": "DRY_RUN",
+  "task_id": "T06-PROGRESS",
+  "agent_calls": 0,
+  "input_fingerprint": "147fdac9761ea6e18ec45c49e0ea87e1acfcda11bf62bd5ef866a21a10b7561b",
+  "check_profile_ids": [
+    "full"
+  ],
+  "approval": "NOT_CHECKED_NOT_EXECUTABLE"
+}

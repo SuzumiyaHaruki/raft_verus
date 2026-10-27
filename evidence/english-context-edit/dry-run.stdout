@@ -1,0 +1,10 @@
+{
+  "status": "DRY_RUN",
+  "task_id": "T01-MODEL",
+  "agent_calls": 0,
+  "input_fingerprint": "b8fae85f83e44fd2650e5306bb2393b55d32b9d5d0e03a6714974053846bc014",
+  "check_profile_ids": [
+    "spec"
+  ],
+  "approval": "NOT_CHECKED_NOT_EXECUTABLE"
+}

@@ -1,0 +1,10 @@
+{
+  "status": "DRY_RUN",
+  "task_id": "T04-SAFETY",
+  "agent_calls": 0,
+  "input_fingerprint": "2fb5be90835c819524b290f77ad430714df235e14a6d2ab527a87e1b8c132b41",
+  "check_profile_ids": [
+    "full"
+  ],
+  "approval": "NOT_CHECKED_NOT_EXECUTABLE"
+}

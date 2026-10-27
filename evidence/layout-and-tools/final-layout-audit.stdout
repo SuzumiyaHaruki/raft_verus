@@ -1,0 +1,3 @@
+PASS: input/ rename, flat Python package, active references and Markdown links; no stale authoring paths or Han text in maintained materials/prompts.
+PASS: 26 OPEN obligations, 49 coverage mappings, task scopes/checks/budgets and normative input documents preserved. Rust/Verus source changed only in a documentation path.
+PASS: original read-only directories preserved; configured tool executables exist in persistent user storage. Real generation remains disabled.

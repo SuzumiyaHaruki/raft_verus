@@ -1,0 +1,5 @@
+[workspace]
+members = ["crates/raft-verified"]
+resolver = "2"
+
+# DRAFT: Verus sources are separate direct-verifier entrypoints, not Cargo builds.

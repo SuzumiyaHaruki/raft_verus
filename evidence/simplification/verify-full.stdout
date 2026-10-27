@@ -1,0 +1,30 @@
+{
+  "schema_version": "1",
+  "check_id": "full",
+  "run_id": "20261027T030520Z-f51d713f7454",
+  "check_kind": "full-raft-verification",
+  "profile_id": "full",
+  "result": "BLOCKED",
+  "argv": [
+    "/tmp/raft-verus-tools/compatible/verus-x86-linux/verus",
+    "--crate-type",
+    "lib",
+    "crates/raft-proofs/src/lib.rs"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus",
+  "input_manifest_digest": "3b9a9958400fb7d049bc98439f69ab6cffcc1c76cae6ae5ae4107b71a9445174",
+  "tool_versions": {},
+  "started_at": "2026-10-27T03:05:20.935840+00:00",
+  "finished_at": "2026-10-27T03:05:20.935851+00:00",
+  "exit_code": null,
+  "stdout_digest": null,
+  "stderr_digest": null,
+  "evidence_paths": [],
+  "obligation_ids_checked": [],
+  "coverage_findings": [],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "reason": "Full Raft implementation/proofs, approved contract, temporal-library integration and strict OS isolation are absent. No full acceptance is available in this bootstrap."
+}

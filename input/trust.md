@@ -1,0 +1,16 @@
+# Trusted components
+
+Status: DRAFT. These are trusted boundaries, not proved protocol facts. Actual tool observations are historical; no candidate version is automatically approved.
+
+| ID | Trusted component | Claims and review |
+|---|---|---|
+| TCB-VERUS | Verus frontend, verification-condition generation and trusted implementation; doctor records the actual local version | All formal proofs. Review toolchain installation and versions |
+| TCB-VSTD | Trusted definitions, axioms and library proofs in the installed vstd; its version must match Verus | Proofs using vstd. Inspect local source and licenses |
+| TCB-SMT | The selected SMT solver and its Verus interface; unknown and timeout are not proofs | All SMT checks. Check versions and rejection of negative examples |
+| TCB-RUST | Rust compiler, linker, runtime and target semantics | Actual executable behavior. Toolchain manifest; no fabricated version pinning |
+| TCB-HOST | OS, process isolation, filesystem, hardware, clocks and declared resource limits | Integrity of actual execution and checking evidence. Local mode does not claim protection against same-UID tampering |
+| TCB-ADAPTERS | Actual network identity and codecs, stable storage and timer adapters; no implementation or external_body introduced in this bootstrap | A-S-ID/STORAGE/COMPLETION, A-L-*. Register and review concrete locations when introduced |
+| TCB-APPLICATION | Host application persistence and deduplication satisfying A-S-APP | S-APPLY only, not library-level delivery properties. Application not provided; composition obligations remain OPEN |
+| TCB-CHECKER | Candidate Python checker, schemas, configuration, approval storage and evidence records; not a mathematical axiom | Conclusion recording and coverage/approval decisions. Offline tests and human review in this bootstrap; no self-approval |
+
+No unapproved source trust entries are allowed. No new assume/admit/external_body is permitted to manufacture a proof. verus-tla compatibility is unverified; do not introduce a substitute axiom library. Tool provenance and limitations are in ../docs/tools.md and ../docs/sources.md.

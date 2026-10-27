@@ -1,0 +1,45 @@
+{
+  "schema_version": "1",
+  "check_id": "smoke-positive",
+  "run_id": "20261026T132705Z-2c1b78f7459f",
+  "check_kind": "proof-smoke",
+  "profile_id": "smoke-positive",
+  "result": "PASS",
+  "argv": [
+    "/tmp/raft-verus-tools/compatible/verus-x86-linux/verus",
+    "--crate-type",
+    "lib",
+    "crates/proof-smoke/positive.rs"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus",
+  "input_manifest_digest": "e4a88916b3dc0c349818f5527f64810340b3f5e640d3fad93d6541c0a32a4eda",
+  "tool_versions": {
+    "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+  },
+  "started_at": "2026-10-26T13:27:05.678349+00:00",
+  "finished_at": "2026-10-26T13:27:06.516928+00:00",
+  "exit_code": 0,
+  "stdout_digest": "eb489a3cdf1ba4a03ff3bd67b4faa07cde1814bf7fffb2e7cca399985d2f8959",
+  "stderr_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261026T132705Z-2c1b78f7459f/smoke-positive.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261026T132705Z-2c1b78f7459f/smoke-positive.stderr.log"
+  ],
+  "obligation_ids_checked": [],
+  "coverage_findings": [
+    "symbol coverage is manifest-based; summary counts cannot prove per-symbol coverage"
+  ],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "tool_environment": {
+    "RUSTUP_HOME": "/tmp/raft-verus-tools/rustup",
+    "CARGO_HOME": "/tmp/raft-verus-tools/cargo"
+  },
+  "verification_summary": {
+    "verified": 2,
+    "errors": 0
+  },
+  "reason": "profile checks passed locally; no full Raft acceptance"
+}

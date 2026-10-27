@@ -1,0 +1,20 @@
+{
+  "id": "spec-3",
+  "argv": [
+    "/tmp/raft-verus-tools/compatible/verus-x86-linux/verus",
+    "--crate-type",
+    "lib",
+    "crates/raft-spec/src/lib.rs"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus",
+  "environment_overrides": {
+    "RUSTUP_HOME": "/tmp/raft-verus-tools/rustup",
+    "CARGO_HOME": "/tmp/raft-verus-tools/cargo"
+  },
+  "started_at": "2026-10-26T13:13:16.803573+00:00",
+  "finished_at": "2026-10-26T13:13:17.608389+00:00",
+  "exit_code": 1,
+  "stdout_path": "evidence/model-verus-spec-3.stdout.txt",
+  "stderr_path": "evidence/model-verus-spec-3.stderr.txt",
+  "evidence_kind": "REAL_LOCAL_DEVELOPMENT"
+}

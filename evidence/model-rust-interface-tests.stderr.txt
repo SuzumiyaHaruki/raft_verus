@@ -1,0 +1,4 @@
+   Compiling raft-verified v0.0.0 (/home/nitro/Desktop/raft_verus/crates/raft-verified)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.49s
+     Running unittests src/lib.rs (target/debug/deps/raft_verified-08c62b104d2513d5)
+   Doc-tests raft_verified

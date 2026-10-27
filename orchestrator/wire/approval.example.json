@@ -1,0 +1,13 @@
+{
+  "approval_id": "EXAMPLE_NOT_APPROVED",
+  "approved_by": "EXAMPLE_HUMAN_REVIEW_REQUIRED",
+  "approved_at": "EXAMPLE_NOT_A_TIMESTAMP",
+  "contract_digest": "EXAMPLE_NOT_APPROVED",
+  "protected_manifest_digest": "EXAMPLE_NOT_APPROVED",
+  "checker_policy_digest": "EXAMPLE_NOT_APPROVED",
+  "toolchain_manifest_digest": "EXAMPLE_NOT_APPROVED",
+  "approved_task_scope": [],
+  "trust_baseline_digest": "EXAMPLE_NOT_APPROVED",
+  "lifecycle_status": "EXAMPLE_NOT_APPROVAL",
+  "is_template": true
+}

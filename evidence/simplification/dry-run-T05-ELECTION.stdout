@@ -1,0 +1,10 @@
+{
+  "status": "DRY_RUN",
+  "task_id": "T05-ELECTION",
+  "agent_calls": 0,
+  "input_fingerprint": "fa0a6e906b7c8c4c567d9aa28f9646a92d37ecbf2ea6236cee8edbaa01c4ef05",
+  "check_profile_ids": [
+    "full"
+  ],
+  "approval": "NOT_CHECKED_NOT_EXECUTABLE"
+}

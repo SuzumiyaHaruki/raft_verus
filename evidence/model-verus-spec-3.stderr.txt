@@ -1,0 +1,8 @@
+error: Could not automatically infer triggers for this quantifier.  Use #[trigger] annotations to manually mark trigger terms instead.
+   --> crates/raft-spec/src/lib.rs:473:5
+    |
+473 |     forall |time: nat| p(ex(time))
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 1 previous error
+

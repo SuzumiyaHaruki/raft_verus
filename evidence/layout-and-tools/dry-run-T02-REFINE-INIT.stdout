@@ -1,0 +1,11 @@
+{
+  "status": "DRY_RUN",
+  "task_id": "T02-REFINE-INIT",
+  "agent_calls": 0,
+  "input_fingerprint": "4ea8ac429dce462bd0ad539fbec74323acb368a0f4c99ca86a386edfa029eadb",
+  "check_profile_ids": [
+    "interface-check",
+    "full"
+  ],
+  "approval": "NOT_CHECKED_NOT_EXECUTABLE"
+}

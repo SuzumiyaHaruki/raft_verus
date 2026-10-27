@@ -1,0 +1,166 @@
+{
+  "lifecycle_status": "DRAFT",
+  "checks": [
+    {
+      "id": "rustc-version",
+      "argv": [
+        "rustc",
+        "--version"
+      ],
+      "working_directory": "/home/nitro/Desktop/raft_verus",
+      "evidence_kind": "REAL_LOCAL_DEVELOPMENT",
+      "started_at": "2026-10-26T12:46:16.145331+00:00",
+      "exit_code": 0,
+      "result": "PASS",
+      "stdout_path": "evidence/model-rustc-version.stdout.txt",
+      "stderr_path": "evidence/model-rustc-version.stderr.txt",
+      "finished_at": "2026-10-26T12:46:16.174881+00:00"
+    },
+    {
+      "id": "cargo-version",
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "working_directory": "/home/nitro/Desktop/raft_verus",
+      "evidence_kind": "REAL_LOCAL_DEVELOPMENT",
+      "started_at": "2026-10-26T12:46:16.174898+00:00",
+      "exit_code": 0,
+      "result": "PASS",
+      "stdout_path": "evidence/model-cargo-version.stdout.txt",
+      "stderr_path": "evidence/model-cargo-version.stderr.txt",
+      "finished_at": "2026-10-26T12:46:16.213063+00:00"
+    },
+    {
+      "id": "rust-interface-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--offline"
+      ],
+      "working_directory": "/home/nitro/Desktop/raft_verus",
+      "evidence_kind": "REAL_LOCAL_DEVELOPMENT",
+      "started_at": "2026-10-26T12:46:16.213085+00:00",
+      "exit_code": 0,
+      "result": "PASS",
+      "stdout_path": "evidence/model-rust-interface-tests.stdout.txt",
+      "stderr_path": "evidence/model-rust-interface-tests.stderr.txt",
+      "finished_at": "2026-10-26T12:46:16.790859+00:00"
+    },
+    {
+      "id": "rust-format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "working_directory": "/home/nitro/Desktop/raft_verus",
+      "evidence_kind": "REAL_LOCAL_DEVELOPMENT",
+      "started_at": "2026-10-26T12:46:16.790894+00:00",
+      "exit_code": 0,
+      "result": "PASS",
+      "stdout_path": "evidence/model-rust-format.stdout.txt",
+      "stderr_path": "evidence/model-rust-format.stderr.txt",
+      "finished_at": "2026-10-26T12:46:16.896329+00:00"
+    },
+    {
+      "id": "verus-version",
+      "argv": [
+        "verus",
+        "--version"
+      ],
+      "working_directory": "/home/nitro/Desktop/raft_verus",
+      "evidence_kind": "REAL_LOCAL_DEVELOPMENT",
+      "started_at": "2026-10-26T12:46:16.896363+00:00",
+      "exit_code": null,
+      "result": "NOT_RUN",
+      "blocker": "Executable not found in PATH",
+      "error": "[Errno 2] No such file or directory: 'verus'",
+      "finished_at": "2026-10-26T12:46:16.897710+00:00"
+    },
+    {
+      "id": "z3-version",
+      "argv": [
+        "z3",
+        "--version"
+      ],
+      "working_directory": "/home/nitro/Desktop/raft_verus",
+      "evidence_kind": "REAL_LOCAL_DEVELOPMENT",
+      "started_at": "2026-10-26T12:46:16.897724+00:00",
+      "exit_code": null,
+      "result": "NOT_RUN",
+      "blocker": "Executable not found in PATH",
+      "error": "[Errno 2] No such file or directory: 'z3'",
+      "finished_at": "2026-10-26T12:46:16.899533+00:00"
+    },
+    {
+      "id": "verus-smoke-positive",
+      "argv": [
+        "verus",
+        "--crate-type",
+        "lib",
+        "crates/proof-smoke/positive.rs"
+      ],
+      "working_directory": "/home/nitro/Desktop/raft_verus",
+      "evidence_kind": "REAL_LOCAL_DEVELOPMENT",
+      "started_at": "2026-10-26T12:46:16.899544+00:00",
+      "exit_code": null,
+      "result": "NOT_RUN",
+      "blocker": "Executable not found in PATH",
+      "error": "[Errno 2] No such file or directory: 'verus'",
+      "finished_at": "2026-10-26T12:46:16.900869+00:00",
+      "approved_contract": false
+    },
+    {
+      "id": "verus-smoke-negative",
+      "argv": [
+        "verus",
+        "--crate-type",
+        "lib",
+        "crates/proof-smoke/negative.rs"
+      ],
+      "working_directory": "/home/nitro/Desktop/raft_verus",
+      "evidence_kind": "REAL_LOCAL_DEVELOPMENT",
+      "started_at": "2026-10-26T12:46:16.900892+00:00",
+      "exit_code": null,
+      "result": "NOT_RUN",
+      "blocker": "Executable not found in PATH",
+      "error": "[Errno 2] No such file or directory: 'verus'",
+      "finished_at": "2026-10-26T12:46:16.902374+00:00",
+      "approved_contract": false
+    },
+    {
+      "id": "verus-model",
+      "argv": [
+        "verus",
+        "--crate-type",
+        "lib",
+        "crates/raft-spec/src/lib.rs"
+      ],
+      "working_directory": "/home/nitro/Desktop/raft_verus",
+      "evidence_kind": "REAL_LOCAL_DEVELOPMENT",
+      "started_at": "2026-10-26T12:46:16.902393+00:00",
+      "exit_code": null,
+      "result": "NOT_RUN",
+      "blocker": "Executable not found in PATH",
+      "error": "[Errno 2] No such file or directory: 'verus'",
+      "finished_at": "2026-10-26T12:46:16.903112+00:00",
+      "approved_contract": false
+    }
+  ],
+  "scope": "Rust types/token helper only; Raft model and smoke unverified",
+  "tool_discovery": {
+    "PATH": {
+      "rustc": "/home/nitro/.cargo/bin/rustc",
+      "cargo": "/home/nitro/.cargo/bin/cargo",
+      "verus": null,
+      "z3": null
+    },
+    "additional_search": "Filename searches under /home/nitro, /opt, /usr/local; targeted /home/nitro/verus, /home/nitro/bishe, /home/nitro/tools and /opt/verus. No Verus/vstd executable/artifact found. Some directories inaccessible; not an exhaustive absence claim."
+  },
+  "real_codex_exec_calls": 0,
+  "raft_obligations_proved": 0
+}
