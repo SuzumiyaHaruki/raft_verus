@@ -1,0 +1,10 @@
+/target/
+__pycache__/
+*.pyc
+*.egg-info/
+/.venv/
+/orchestrator/build/
+/evidence/runs/
+/evidence/workspaces/
+/evidence/next-revision/**/build/
+/evidence/next-revision/**/agent-build/

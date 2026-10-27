@@ -1,0 +1,47 @@
+{
+  "id": "second",
+  "goal": "Keep earlier behavior while adding B.",
+  "module_document": null,
+  "step_title": null,
+  "module_context": "",
+  "kind": "implementation",
+  "status": "ready",
+  "blocked_reason": "",
+  "dependency_ids": [
+    "fixture-task"
+  ],
+  "contract_digest": "f88f7f232ae391b80a129f1214fd3e93fa806e5f7d670ec56a71297affc134c2",
+  "input_paths": [
+    "input",
+    "src",
+    "input/second.md",
+    "input/fixture-task.md"
+  ],
+  "permitted_change_paths": [
+    "src"
+  ],
+  "forbidden_change_paths": [
+    "input",
+    "orchestrator",
+    "evidence",
+    ".git",
+    ".agent-output"
+  ],
+  "expected_outputs": [
+    "src/lib.rs"
+  ],
+  "target_obligation_ids": [],
+  "check_profile_ids": [
+    "actual-test"
+  ],
+  "prompt_template": "input/second.md",
+  "budget": {
+    "max_agent_calls": 3,
+    "max_repair_rounds": 2,
+    "call_timeout_seconds": 3,
+    "task_timeout_seconds": 15,
+    "max_log_bytes": 1048576,
+    "max_redesigns": 1,
+    "stalled_attempts": 2
+  }
+}

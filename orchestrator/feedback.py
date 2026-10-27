@@ -9,9 +9,18 @@ from pathlib import Path
 def classify(report: dict) -> dict:
     purpose = report.get("purpose", "proof")
     result = report.get("result")
+    if report.get("failure_stage") == "source-compilation":
+        return {"category": "compilation", "action": "repair", "diagnosis":
+                "Repair the generated source's syntax, types or Verus modes/visibility within scope. No proof ran; preserve the independent behavioral targets."}
+    if result == "TIMEOUT" and purpose == "proof":
+        return {"category": "proof-timeout", "action": "repair", "diagnosis":
+                "Inconclusive solver attempt: inspect complexity or redesign within the same bounded budget; do not infer a code defect or increase the configured limit."}
     if result in {"ERROR", "BLOCKED", "TIMEOUT", "NOT_RUN"}:
         return {"category": "infrastructure", "action": "stop", "diagnosis":
                 "Tool, configuration, resource, or protocol problem. Do not change Raft semantics; a solver timeout does not demonstrate a code bug."}
+    if purpose == "benchmark" and report.get("performance_verdict") == "REGRESSION":
+        return {"category": "performance", "action": "repair", "diagnosis":
+                "Profile this reproduced comparable regression and return a scoped optimization; rerun all affected correctness checks before measuring again."}
     if purpose == "benchmark":
         return {"category": "measurement", "action": "stop", "diagnosis":
                 "Repeat comparable measurements and inspect noise. Missing data or a slow sample is not a demonstrated algorithm regression."}

@@ -8,6 +8,7 @@ import time
 from pathlib import Path
 from .codex_runner import discover_codex, run_codex
 from .config import profile_by_id
+from .continuation import Budget, checkpoint, usage
 from .evidence import create_run, write_json, write_text
 from .feedback import classify, repair_context, render_context
 from .materials import module_assignment
@@ -72,6 +73,7 @@ def render_prompt(root: Path, task: dict, diagnostics=None) -> str:
                        ("Must not edit", "forbidden_change_paths"), ("Expected outputs", "expected_outputs"),
                        ("Proof targets", "target_obligation_ids"), ("Independent checks", "check_profile_ids")]:
         text += label + ": " + ", ".join(task[key]) + "\n"
+    text += "\nIn your summary, explain your representation, implementation contracts, invariants, their connection to the independent target, and why any earlier approach was abandoned. Redesign these together within the editable scope. Report implementation-specification edits as ordinary changed files; proposed_spec_changes is only for changes to protected behavioral requirements or environmental assumptions. Distinguish design hypotheses from checker observations.\n"
     if diagnostics:
         text += "\nPrevious attempts (agent explanations are claims, not evidence):\n"
         for item in diagnostics.get("attempts", []):
@@ -256,17 +258,20 @@ def codex_request(config: dict) -> dict:
     return {key: config.get("codex", {}).get(key) for key in ("model", "model_reasoning_effort")}
 
 
-def _save_patch(source: Path, candidate: Path, changes: list[str], directory: Path) -> None:
+def _save_patch(source: Path, candidate: Path, changes: list[str], directory: Path,
+                *, previous=None, filename="candidate.patch") -> None:
     patches = []
     for relative in changes:
         old, new = source / relative, candidate / relative
         try:
             before = old.read_text().splitlines(True) if old.is_file() and not old.is_symlink() else []
+            if previous is not None:
+                before = previous.get(relative, "").splitlines(True)
             after = new.read_text().splitlines(True) if new.is_file() and not new.is_symlink() else []
         except (UnicodeError, OSError):
             continue
         patches.extend(difflib.unified_diff(before, after, fromfile="a/" + relative, tofile="b/" + relative))
-    write_text(directory / "candidate.patch", "".join(patches))
+    write_text(directory / filename, "".join(patches))
 
 
 def execution_blocker(config: dict, fixture_mode: bool) -> str | None:
@@ -294,7 +299,8 @@ def generation_kind(config: dict, fixture_mode: bool) -> str:
 def run_task(root: Path, config: dict, task_id: str, execute_codex: bool = False,
              cancel_event=None, *,
              fixture_mode: bool = False, candidate_path: Path | None = None,
-             completed: dict | None = None) -> dict:
+             completed: dict | None = None, session=None, plan_usage=None,
+             save_session=None, affected_tasks=(), regression=False) -> dict:
     task_started = time.monotonic()
     root = Path(root).resolve()
     tasks = load_tasks(root, config)
@@ -312,7 +318,21 @@ def run_task(root: Path, config: dict, task_id: str, execute_codex: bool = False
                 "codex_request": codex_request(config),
                 "input_fingerprint": task_fingerprint(root, config, task),
                 "check_profile_ids": task["check_profile_ids"]}
+    if affected_tasks:
+        task = dict(task)
+        for field in ("permitted_change_paths", "check_profile_ids", "target_obligation_ids", "expected_outputs", "input_paths"):
+            task[field] = list(dict.fromkeys(task[field] + [p for other in affected_tasks for p in other[field]]))
+    task = dict(task)
+    task["check_profile_ids"] = sorted(task["check_profile_ids"], key=lambda key: profile_by_id(config, key).get("purpose") == "benchmark")
     run_id, directory = create_run(root, "task")
+    session = usage(task["budget"]) if session is None else session
+    def save():
+        temporary = directory / "continuation.tmp"
+        temporary.write_text(json.dumps(session, indent=2) + "\n", encoding="utf-8")
+        temporary.replace(directory / "continuation.json")
+        if save_session:
+            save_session()
+    account = Budget(session, plan_usage, save)
     conclusion = {"run_id": run_id, "task_id": task_id, "status": "PENDING", "agent_calls": 0,
                   "completion_scope": "STEP_ONLY", "module_document": task["module_document"],
                   "codex_request": codex_request(config),
@@ -332,6 +352,10 @@ def run_task(root: Path, config: dict, task_id: str, execute_codex: bool = False
     def finish(status, reason):
         transition(status)
         conclusion["reason"] = reason
+        conclusion["cumulative_usage"] = {key: value for key, value in session.items()
+                                          if key.endswith("_limit") or key in {"calls", "repairs", "redesigns", "active_seconds", "generation_kinds"}}
+        conclusion["attempts"] = session["attempts"]
+        save()
         write_json(directory / "conclusion.json", conclusion)
         return conclusion
 
@@ -346,16 +370,20 @@ def run_task(root: Path, config: dict, task_id: str, execute_codex: bool = False
         dependency_task = next(t for t in tasks if t["id"] == dependency)
         return (record.get("status") == "PASSED" and record.get("evidence_kind") == "REAL_LOCAL"
                 and record.get("current_fingerprint") == task_fingerprint(candidate_path, config, dependency_task))
-    if any(not ready(dep) for dep in task["dependency_ids"]):
+    if not regression and any(not ready(dep) for dep in task["dependency_ids"]):
         return finish("BLOCKED", "dependency lacks current matching real evidence")
     budget = task["budget"]
     if budget.get("max_agent_calls", 0) <= 0 or budget.get("task_timeout_seconds", 0) <= 0:
         return finish("BLOCKED", "task budget exhausted")
-    deadline = task_started + budget["task_timeout_seconds"]
+    if any(record["calls"] >= record["call_limit"] for record in account.records()):
+        return finish("FAILED", "cumulative call budget exhausted; resume does not replenish it")
+    deadline = task_started + account.remaining()
     if deadline <= time.monotonic():
         return finish("FAILED", "whole-task deadline expired during preparation")
     transition("READY")
+    reservation = account.reserve(min(45, account.remaining()))
     tool_info = discover_codex(config.get("codex", {}), root, directory, deadline)
+    account.settle(reservation)
     write_json(directory / "tool_versions.json", tool_info)
     if tool_info["status"] != "READY":
         return finish("BLOCKED", tool_info["reason"])
@@ -373,11 +401,19 @@ def run_task(root: Path, config: dict, task_id: str, execute_codex: bool = False
     before = snapshot(candidate, excludes={".agent-output"})
     write_json(directory / "candidate_before.json", before)
     protected = config["workflow"]["protected_paths"]
-    previous_failure = None
-    diagnostics = None
-    attempt_history = []
-    attempts = min(budget["max_agent_calls"], budget.get("max_repair_rounds", 0) + 1)
-    for attempt in range(attempts):
+    diagnostics = session["diagnostics"]
+    diagnostics["attempts"] = list(session["attempts"])
+    attempt_history = session["attempts"]
+    stall_limit = budget.get("stalled_attempts", 2)
+    while True:
+        mode = "initial" if session["calls"] == 0 else "repair"
+        if session["stalls"] >= stall_limit:
+            if session["redesigns"] >= session["redesign_limit"]:
+                return finish("FAILED", "repeated failing targets; bounded redesign allowance exhausted")
+            mode = "redesign"
+        if not account.can_call(mode):
+            return finish("FAILED", "cumulative agent/repair/time budget exhausted; resume does not replenish it")
+        attempt = session["calls"]
         remaining = deadline - time.monotonic()
         if remaining <= 0:
             return finish("FAILED", "whole-task time budget exhausted")
@@ -387,18 +423,35 @@ def run_task(root: Path, config: dict, task_id: str, execute_codex: bool = False
             return finish("REVIEW_REQUIRED", "source/checker inputs changed during task")
         iteration = directory / f"attempt-{attempt + 1}"
         iteration.mkdir(mode=0o700)
+        attempt_before = snapshot(candidate, excludes={".agent-output"})
+        previous_text = {}
+        for path, item in attempt_before.items():
+            if item["kind"] == "file" and matches(path, task["permitted_change_paths"]):
+                try:
+                    previous_text[path] = (candidate / path).read_text()
+                except UnicodeError:
+                    pass
         prompt = render_prompt(root, task, diagnostics)
+        if affected_tasks:
+            prompt += "\nRepair the current change while preserving completed work. Affected checks and authorized implementation/proof scopes are included above; do not regenerate earlier modules or change their oracles.\n"
+        if mode == "redesign":
+            prompt += "\nBOUNDED LOCAL REDESIGN: before editing, state in your summary the suspected cause, abandoned representation/invariant, one revised local design, first blocking obligation to test and affected checks. Read the retained attempts. Keep public behavior, targets and environmental premises fixed. A changed source alone is not progress.\n"
+        elif any(c.get("performance_verdict") == "REGRESSION" for c in diagnostics.get("checks", [])):
+            prompt += "\nBOUNDED OPTIMIZATION: profile the reproduced comparable regression, return a scoped patch and profiling explanation; preserve the configured performance rule. All affected correctness checks run before measurements.\n"
         build_path = (iteration / "agent-build").resolve()
         prompt += ("\nFor local Rust or check.py commands, use the explicit environment prefix "
                    + "CARGO_TARGET_DIR=" + shlex.quote(str(build_path)) + " PYTHONDONTWRITEBYTECODE=1 "
                    + "before the command. This controller-owned scratch directory is writable through --add-dir; "
                    + "the prefix also works when the Codex shell filters inherited environment variables.\n")
         if fixture_mode:
-            edits = config["codex"].get("fixture_edits", [])
+            edits = config["codex"].get("fixture_task_edits", {}).get(task_id, config["codex"].get("fixture_edits", []))
             options = {"task_id": task_id}
             if edits:
                 edit = edits[min(attempt, len(edits) - 1)]
-                options.update(write_path=edit["path"], write_text=edit["text"])
+                if "files" in edit:
+                    options["writes"] = edit["files"]
+                else:
+                    options.update(write_path=edit["path"], write_text=edit["text"])
             prompt += "\nFIXTURE_JSON=" + json.dumps(options) + "\n"
         write_text(iteration / "prompt.txt", prompt)
         runner_config = dict(config.get("codex", {}), call_timeout_seconds=min(budget["call_timeout_seconds"], remaining),
@@ -408,15 +461,24 @@ def run_task(root: Path, config: dict, task_id: str, execute_codex: bool = False
             report_path.unlink()
         transition("RUNNING")
         conclusion["agent_calls"] += 1
+        attempt_record = dict(number=attempt + 1, mode=mode, summary="Launched; report not yet received",
+            changed_paths=[], results="INTERRUPTED_OR_IN_FLIGHT", artifacts=str(iteration),
+            generation_kind=conclusion["generation_kind"])
+        attempt_history.append(attempt_record)
+        if conclusion["generation_kind"] not in session["generation_kinds"]:
+            session["generation_kinds"].append(conclusion["generation_kind"])
+        reservation = account.reserve(runner_config["call_timeout_seconds"], mode)
         generated = run_codex(runner_config, candidate, prompt,
                               wire_schema("agent_report"), iteration, cancel_event)
+        account.settle(reservation)
         if generated["status"] == "CANCELLED":
             return finish("CANCELLED", "agent process cancelled")
-        if generated["status"] in {"BLOCKED", "TIMEOUT", "LOG_LIMIT", "CLI_ERROR"}:
-            return finish("BLOCKED" if generated["status"] == "BLOCKED" else "FAILED", generated["status"])
+        if generated["status"] in {"BLOCKED", "TIMEOUT", "LOG_LIMIT", "CLI_ERROR", "PROTOCOL_ERROR"}:
+            return finish("BLOCKED" if generated["status"] in {"BLOCKED", "CLI_ERROR", "PROTOCOL_ERROR"} else "FAILED", generated["status"])
         transition("CHECKING")
         after = snapshot(candidate, excludes={".agent-output"})
         changes = changed_paths(before, after)
+        attempt_changes = changed_paths(attempt_before, after)
         findings = check_changes(before, after, task, protected) + new_trust_findings(root, candidate, changes)
         raw_dir = candidate / ".agent-output"
         if raw_dir.is_symlink() or (raw_dir.exists() and {p.name for p in raw_dir.iterdir()} != {"agent_report.json"}):
@@ -425,13 +487,14 @@ def run_task(root: Path, config: dict, task_id: str, execute_codex: bool = False
         write_json(iteration / "changed_paths.json", changes)
         write_json(iteration / "policy_findings.json", findings)
         _save_patch(root, candidate, changes, iteration)
+        _save_patch(root, candidate, attempt_changes, iteration, previous=previous_text, filename="attempt.patch")
         if findings:
             return finish("REVIEW_REQUIRED", "candidate violates modification or trust policy")
         report = generated.get("agent_report")
         if report and report["task_id"] != task_id:
             return finish("FAILED", "agent report belongs to another task")
         if report and (report["proposed_spec_changes"] or report["proposed_trust_changes"]):
-            return finish("REVIEW_REQUIRED", "agent proposed specification or trust changes")
+            return finish("REVIEW_REQUIRED", "agent proposed protected specification or trust changes")
         checks = []
         if generated["status"] == "CANDIDATE":
             missing = [p for p in task["expected_outputs"] if not checked_path(candidate, p).exists()]
@@ -450,8 +513,22 @@ def run_task(root: Path, config: dict, task_id: str, execute_codex: bool = False
                             "reason": "required correctness check failed; repair before measuring performance"})
                         continue
                     profile["timeout_seconds"] = min(profile.get("timeout_seconds", 120), remaining)
+                    reservation = account.reserve(profile["timeout_seconds"])
+                    profile["timeout_seconds"] = reservation[0]
                     checks.append(verify_profile(candidate, profile, iteration, run_id, cancel_event))
+                    account.settle(reservation)
+                    for other in affected_tasks:
+                        if identifier in other["check_profile_ids"] and checks[-1]["result"] not in {"PASS", "TYPECHECKED", "MEASURED"}:
+                            completed[other["id"]].update(status="INVALIDATED", current_fingerprint=None, caused_by=task_id)
+                            save()
                 diagnostics = {"checks": checks, "candidate_revision": digest_json(after)}
+                session["diagnostics"] = diagnostics
+                summary = (report or {}).get("summary", "No valid agent explanation")[:1200]
+                if re.search(r"[\u3400-\u9fff]", summary):
+                    summary = "Non-English explanation retained only in raw report."
+                attempt_record.update(summary=summary, changed_paths=attempt_changes,
+                    results=", ".join(f"{c['profile_id']}={c['result']}" for c in checks))
+                save()
                 conclusion["check_evidence_kind"] = "SIMULATED" if any(c["evidence_kind"] == "SIMULATED" for c in checks) else "REAL_LOCAL"
                 conclusion["evidence_kind"] = conclusion["check_evidence_kind"]
                 write_json(iteration / "feedback.json", [repair_context(task, check, digest_json(after)) for check in checks
@@ -462,6 +539,10 @@ def run_task(root: Path, config: dict, task_id: str, execute_codex: bool = False
                     return finish("CANCELLED", "checker process cancelled")
                 if snapshot(candidate, excludes={".agent-output"}) != after:
                     return finish("REVIEW_REQUIRED", "candidate changed across independent checks")
+                if input_bindings(root, config) != bindings:
+                    return finish("REVIEW_REQUIRED", "source/checker inputs changed during checking")
+                checkpoint(candidate, task, session, iteration, checks)
+                save()
                 required = [check for check in checks if check.get("required", True)]
                 if required and all(check["result"] in {"PASS", "TYPECHECKED", "MEASURED"} for check in required):
                     if input_bindings(root, config) != bindings:
@@ -475,8 +556,11 @@ def run_task(root: Path, config: dict, task_id: str, execute_codex: bool = False
                     if any(check["evidence_kind"] == "SIMULATED" for check in checks):
                         conclusion["evidence_kind"] = "SIMULATED"
                     conclusion["check_evidence_kind"] = conclusion["evidence_kind"]
+                    for other in affected_tasks:
+                        completed[other["id"]].update(status="PASSED", current_fingerprint=task_fingerprint(candidate, config, other),
+                            recheck_run_id=run_id, evidence_kind=conclusion["evidence_kind"])
                     return finish("PASSED", "local task checks passed; candidate awaits human integration")
-                if any(check["result"] in {"BLOCKED", "TIMEOUT", "ERROR"} for check in checks):
+                if any(check["result"] in {"BLOCKED", "ERROR"} for check in checks):
                     return finish("BLOCKED", "checker unavailable, uncertain, or protocol error")
                 if any(classify(check)["action"] == "review" for check in required if check["result"] != "PASS"):
                     return finish("REVIEW_REQUIRED", "checking policy or model conflict requires review")
@@ -484,23 +568,22 @@ def run_task(root: Path, config: dict, task_id: str, execute_codex: bool = False
                     return finish("BLOCKED", "measurement or infrastructure requires investigation, not automatic semantic repair")
         else:
             diagnostics = {"agent_protocol": generated}
-        summary = (report or {}).get("summary", "No valid agent explanation")[:1200]
-        if re.search(r"[\u3400-\u9fff]", summary):
-            summary = "Non-English agent explanation retained in the raw report; omitted from prompt."
-        attempt_history.append(dict(number=attempt + 1, summary=summary, changed_paths=changes,
-            results=", ".join(f"{c['profile_id']}={c['result']}" for c in checks) or generated["status"],
-            artifacts=str(iteration)))
+        attempt_record.update(changed_paths=attempt_changes, results=", ".join(f"{c['profile_id']}={c['result']}" for c in checks) or generated["status"])
         diagnostics["attempts"] = list(attempt_history)
-        conclusion["failed_attempts"] = list(attempt_history)
-        # Ignore run timestamps when identifying repeated failures.
-        signature = digest_json({"candidate": after, "results": [(c["profile_id"], c["result"], c["reason"]) for c in checks],
-                                 "protocol": generated["status"]})
-        if signature == previous_failure:
-            return finish("FAILED", "repeated identical failure without a candidate change")
-        previous_failure = signature
-        if attempt + 1 < attempts:
-            transition("NEEDS_REPAIR")
-    return finish("FAILED", "bounded agent/repair budget exhausted")
+        session["diagnostics"] = diagnostics
+        # Progress means removing a failing check/target, never just changing bytes.
+        failing = sorted(c["profile_id"] + ":" + target for c in checks
+            if c["result"] not in {"PASS", "TYPECHECKED", "MEASURED"}
+            for target in (c.get("failed_tests") or [name for name, passed in c.get("function_results", {}).items() if not passed]
+                           or c.get("expected_targets") or [c["result"]])) or [generated["status"]]
+        old_failures = set(session["failing"])
+        improved = old_failures and set(failing) < old_failures
+        session["stalls"] = 0 if improved else session["stalls"] + 1 if old_failures.intersection(failing) else 1
+        session["failing"] = failing
+        if mode == "redesign":
+            session["stalls"] = 0
+        save()
+        transition("NEEDS_REPAIR")
 
 
 def _save_plan_state(directory: Path, state: dict) -> None:
@@ -519,11 +602,27 @@ def run_plan(root: Path, config: dict, task_ids: list[str] | None = None,
     errors = validate_tasks(root, list(tasks.values()), config)
     if errors:
         return {"status": "BLOCKED", "errors": errors}
+    selected = set(task_ids or [key for key in tasks if tasks[key]["status"] == "ready"])
+    if selected - tasks.keys():
+        return {"status": "BLOCKED", "reason": "unknown selected task"}
+    def include(key):
+        for dependency in tasks[key]["dependency_ids"]:
+            if dependency not in selected:
+                selected.add(dependency)
+                include(dependency)
+    for key in list(selected):
+        include(key)
+    selected_order = [key for key in task_order(list(tasks.values())) if key in selected]
     if not execute_codex:
+        saved = {}
+        if resume_id:
+            if not re.fullmatch(r"[A-Za-z0-9_-]+", resume_id):
+                return {"status": "BLOCKED", "reason": "invalid plan run ID"}
+            saved = read_json(root / "evidence/runs" / resume_id / "plan-state.json")
         return {"status": "DRY_RUN", "agent_calls": 0, "resume_id": resume_id,
                 "completion_scope": "SELECTED_STEPS_ONLY", "full_acceptance": False,
                 "codex_request": codex_request(config),
-                "tasks": task_ids or [key for key in task_order(list(tasks.values())) if tasks[key]["status"] == "ready"]}
+                "tasks": saved.get("task_ids", selected_order), "saved_usage": saved.get("usage")}
     blocker = execution_blocker(config, fixture_mode)
     if blocker:
         return {"status": "BLOCKED", "reason": blocker, "agent_calls": 0, "full_acceptance": False}
@@ -537,27 +636,32 @@ def run_plan(root: Path, config: dict, task_ids: list[str] | None = None,
             return {"status": "BLOCKED", "reason": "saved candidate is missing or moved"}
         state["resume_count"] += 1
     else:
-        selected = set(task_ids or [key for key in tasks if tasks[key]["status"] == "ready"])
-        if selected - tasks.keys():
-            return {"status": "BLOCKED", "reason": "unknown selected task"}
-        # Include prerequisites; planned prerequisites remain explicit blockers.
-        def include(key):
-            for dependency in tasks[key]["dependency_ids"]:
-                if dependency not in selected:
-                    selected.add(dependency)
-                    include(dependency)
-        for key in list(selected):
-            include(key)
         run_id, directory = create_run(root, "plan")
         candidate = create_candidate(root, directory / "candidate")
         state = {"run_id": run_id, "status": "READY", "candidate_path": str(candidate.resolve()),
-                 "task_ids": [key for key in task_order(list(tasks.values())) if key in selected],
+                 "task_ids": selected_order,
                  "completed": {}, "task_runs": [], "resume_count": 0, "agent_calls": 0,
                  "full_acceptance": False, "generation_kind": generation_kind(config, fixture_mode)}
+    if "usage" not in state:
+        if state.get("agent_calls", 0):
+            return dict(state, status="BLOCKED", reason="legacy run lacks cumulative accounting; preserve it and start an explicitly budgeted new plan")
+        state["task_usage"] = {key: usage(tasks[key]["budget"]) for key in state["task_ids"]}
+        limits = config.get("plan_budget", {})
+        state["usage"] = usage(dict(max_agent_calls=limits.get("max_agent_calls", sum(r["call_limit"] for r in state["task_usage"].values())),
+            max_repair_rounds=sum(r["repair_limit"] for r in state["task_usage"].values()),
+            max_redesigns=sum(r["redesign_limit"] for r in state["task_usage"].values()),
+            task_timeout_seconds=limits.get("active_seconds", sum(r["seconds_limit"] for r in state["task_usage"].values()))))
+        state["generation_kinds"] = []
+    def save():
+        state["agent_calls"] = state["usage"]["calls"]
+        kinds = list(dict.fromkeys(k for record in state["task_usage"].values() for k in record["generation_kinds"]))
+        state["generation_kinds"] = kinds
+        state["generation_kind"] = kinds[0] if len(kinds) == 1 else "MIXED" if kinds else generation_kind(config, fixture_mode)
+        _save_plan_state(directory, state)
     def stop(status, reason):
         state.update(status=status, reason=reason, completion_scope="SELECTED_STEPS_ONLY",
                      module_completion="NOT_ASSESSED", codex_request=codex_request(config))
-        _save_plan_state(directory, state)
+        save()
         return state
     for key in state["task_ids"]:
         if key not in tasks:
@@ -569,7 +673,8 @@ def run_plan(root: Path, config: dict, task_ids: list[str] | None = None,
     if input_manifest(candidate, protected) != input_manifest(root, protected):
         return stop("REVIEW_REQUIRED", "saved candidate protected inputs changed; preserve work for review")
     if state.get("active_before") and state.get("active_task"):
-        active = tasks[state["active_task"]]
+        active = dict(tasks[state["active_task"]])
+        active["permitted_change_paths"] = state.get("active_scope", active["permitted_change_paths"])
         current = snapshot(candidate, excludes={".agent-output"})
         findings = check_changes(state["active_before"], current, active, protected)
         findings += new_trust_findings(root, candidate, changed_paths(state["active_before"], current))
@@ -584,7 +689,7 @@ def run_plan(root: Path, config: dict, task_ids: list[str] | None = None,
             task = tasks[key]
             record = state["completed"][key]
             current = task_fingerprint(candidate, config, task)
-            if record.get("current_fingerprint") == current:
+            if record.get("status") == "PASSED" and record.get("current_fingerprint") == current:
                 continue
             run_id, check_dir = create_run(root, "resume-check")
             group_before = snapshot(candidate, excludes={".agent-output"})
@@ -597,7 +702,12 @@ def run_plan(root: Path, config: dict, task_ids: list[str] | None = None,
                     record.setdefault("deferred_checks", []).append({"profile_id": identifier, "recheck_run_id": run_id,
                         "reason": "required correctness check failed; repair before measuring performance"})
                     continue
-                checks.append(verify_profile(candidate, profile, check_dir, run_id, cancel_event))
+                account = Budget(state["task_usage"][key], state["usage"], save)
+                if account.remaining() <= 0:
+                    return "cumulative active check budget exhausted"
+                reservation = account.reserve(profile.get("timeout_seconds", 120))
+                checks.append(verify_profile(candidate, dict(profile, timeout_seconds=reservation[0]), check_dir, run_id, cancel_event))
+                account.settle(reservation)
             if snapshot(candidate, excludes={".agent-output"}) != group_before:
                 record.update(status="REVIEW_REQUIRED", current_fingerprint=None, recheck_run_id=run_id)
                 write_json(check_dir / "conclusion.json", record)
@@ -612,29 +722,130 @@ def run_plan(root: Path, config: dict, task_ids: list[str] | None = None,
             record["evidence_kind"] = "SIMULATED" if any(c["evidence_kind"] == "SIMULATED" for c in checks) else "REAL_LOCAL"
             write_json(check_dir / "conclusion.json", record)
             if not valid:
-                return "changed candidate no longer satisfies completed task " + key + "; inspect the saved recheck before resuming"
+                state["regression"] = dict(task_id=key, checks=checks, caused_by=state.get("active_task", key))
+                save()
+                return "changed candidate no longer satisfies completed task " + key
         return None
 
+    def execute(key, regression=False):
+        affected = [tasks[k] for k in state["completed"] if k != key]
+        if key in state["completed"]:
+            state["completed"][key].update(status="INVALIDATED", current_fingerprint=None)
+        state["active_task"] = key
+        state["active_scope"] = list(dict.fromkeys(tasks[key]["permitted_change_paths"] +
+            [p for t in affected for p in t["permitted_change_paths"]]))
+        state["active_before"] = snapshot(candidate, excludes={".agent-output"})
+        if regression:
+            state["task_usage"][key]["diagnostics"] = dict(state["task_usage"][key]["diagnostics"],
+                checks=state["regression"]["checks"], candidate_revision=digest_json(state["active_before"]))
+        save()
+        result = run_task(root, config, key, True, cancel_event=cancel_event,
+            fixture_mode=fixture_mode, candidate_path=candidate, completed=state["completed"],
+            session=state["task_usage"][key], plan_usage=state["usage"], save_session=save,
+            affected_tasks=affected, regression=regression)
+        state["task_runs"].append(result.get("run_id"))
+        if result["status"] == "PASSED":
+            # run_task checked the union; the current record keeps its own input fingerprint.
+            result["current_fingerprint"] = task_fingerprint(candidate, config, tasks[key])
+            state["completed"][key] = result
+            state.pop("regression", None)
+        save()
+        return result
+
+    def refresh_or_repair():
+        reason = refresh_completed()
+        if reason and state.get("regression"):
+            culprit = state["regression"]["caused_by"]
+            result = execute(culprit, regression=True)
+            if result["status"] != "PASSED":
+                return result["status"], result.get("reason", reason)
+            reason = refresh_completed()
+        return ("BLOCKED", reason) if reason else None
+
+    problem = refresh_or_repair()
+    if problem:
+        return stop(*problem)
     for key in state["task_ids"]:
         if cancel_event is not None and cancel_event.is_set():
             return stop("CANCELLED", "plan cancelled; candidate and completed tasks preserved")
-        reason = refresh_completed()
-        if reason:
-            return stop("BLOCKED", reason)
         if state["completed"].get(key, {}).get("status") == "PASSED":
             continue
-        state["active_task"] = key
-        state["active_before"] = snapshot(candidate, excludes={".agent-output"})
-        _save_plan_state(directory, state)
-        result = run_task(root, config, key, True, cancel_event=cancel_event,
-                          fixture_mode=fixture_mode, candidate_path=candidate, completed=state["completed"])
-        state["task_runs"].append(result.get("run_id"))
-        state["agent_calls"] += result.get("agent_calls", 0)
+        # An interrupted later step can already have invalidated earlier evidence.
+        result = execute(key, regression=bool(state.get("regression")))
         if result["status"] != "PASSED":
             return stop(result["status"], result.get("reason", "task incomplete"))
-        state["completed"][key] = result
-        _save_plan_state(directory, state)
-    reason = refresh_completed()
-    if reason:
-        return stop("BLOCKED", reason)
+    problem = refresh_or_repair()
+    if problem:
+        return stop(*problem)
     return stop("PASSED", "selected local tasks complete in saved candidate; no source merge or full project acceptance")
+
+
+def edit_saved_plan(root, config, run_id, task_id, *, extend=None, rewind=None):
+    """Explicit budget extension or scoped rewind; neither command launches an agent."""
+    from .continuation import restore
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", run_id):
+        raise ValueError("invalid plan run ID")
+    directory = root / "evidence/runs" / run_id
+    state = read_json(directory / "plan-state.json")
+    candidate = directory / "candidate"
+    if candidate.is_symlink() or state["candidate_path"] != str(candidate.resolve()):
+        raise ValueError("candidate is not the saved controller workspace")
+    tasks = {t["id"]: t for t in load_tasks(root, config)}
+    record = state["task_usage"][task_id]
+    if extend is not None:
+        if any(type(v) is not int or v < 0 for v in extend.values()) or not any(extend.values()):
+            raise ValueError("extension requires nonnegative amounts, at least one positive")
+        for key, amount in extend.items():
+            if key not in {"call_limit", "repair_limit", "redesign_limit", "seconds_limit"}:
+                raise ValueError("unsupported budget extension")
+            record[key] += amount
+            state["usage"][key] += amount
+        from .evidence import utc_now
+        state.setdefault("extensions", []).append(dict(task_id=task_id, amounts=extend, at=utc_now()))
+        _save_plan_state(directory, state)
+        return dict(status="EXTENDED", run_id=run_id, task_id=task_id, usage=record, agent_calls=0)
+    saved = record["checkpoints"][rewind]
+    allowed = [p for key in state["task_ids"] for p in tasks[key]["permitted_change_paths"]]
+    for name in saved["files"]:
+        if not matches(name, allowed) or matches(name, config["workflow"]["protected_paths"]):
+            raise ValueError("checkpoint contains an unauthorized path")
+    if any(not matches(scope, allowed) or matches(scope, config["workflow"]["protected_paths"])
+           for scope in saved["editable_scope"]):
+        raise ValueError("checkpoint editable scope exceeds this plan")
+    checkpoint_path = Path(saved["path"])
+    if not checkpoint_path.resolve().is_relative_to((root / "evidence/runs").resolve()):
+        raise ValueError("checkpoint is outside controller evidence")
+    for item in snapshot(candidate).values():
+        if item["kind"] in {"symlink", "special"}:
+            raise ValueError("candidate contains an unsafe path")
+    rewind_id, artifacts = create_run(root, "rewind")
+    before = snapshot(candidate)
+    abandoned_paths = sorted(set(saved["files"]) | {p for p, v in before.items()
+        if v["kind"] == "file" and matches(p, saved["editable_scope"])})
+    _save_patch(checkpoint_path, candidate, abandoned_paths, artifacts)
+    restore(candidate, saved)
+    state["active_before"] = snapshot(candidate, excludes={".agent-output"})
+    state.setdefault("rewinds", []).append(dict(run_id=rewind_id, task_id=task_id, scope=rewind, checkpoint=saved))
+    for item in state["completed"].values():
+        item.update(status="INVALIDATED", current_fingerprint=None)
+    _save_plan_state(directory, state)
+    identifiers = list(dict.fromkeys(p for key in state["task_ids"] if key in state["completed"] or key == task_id
+                                     for p in tasks[key]["check_profile_ids"]))
+    checks = []
+    restored = snapshot(candidate, excludes={".agent-output"})
+    account = Budget(record, state["usage"], lambda: _save_plan_state(directory, state))
+    for identifier in identifiers:
+        profile = profile_by_id(config, identifier)
+        if profile.get("purpose") == "benchmark":
+            continue
+        if account.remaining() <= 0:
+            break
+        reservation = account.reserve(profile.get("timeout_seconds", 120))
+        checks.append(verify_profile(candidate, dict(profile, timeout_seconds=reservation[0]), artifacts, rewind_id))
+        account.settle(reservation)
+    if snapshot(candidate, excludes={".agent-output"}) != restored:
+        raise ValueError("candidate changed during rewind rechecks; completion remains invalidated")
+    result = dict(status="REWOUND", run_id=rewind_id, checks=checks, checked_scope=rewind,
+                  reason="saved scoped content restored; resume revalidates task completion", agent_calls=0)
+    write_json(artifacts / "conclusion.json", result)
+    return result

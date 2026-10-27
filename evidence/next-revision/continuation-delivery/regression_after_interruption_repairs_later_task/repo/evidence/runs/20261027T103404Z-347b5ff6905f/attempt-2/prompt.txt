@@ -1,0 +1,65 @@
+# Coding task instructions
+
+Status: DRAFT. Keep each Markdown prose paragraph on one physical line; preserve code blocks, tables and list structure.
+
+Use English for instructions, source comments, diagnostics, reports and referenced material. Read the task's scoped context before editing. Preserve existing user work and stay within the supplied editable paths. Do not invoke Codex or another agent workflow recursively.
+
+The destination is a complete, continuously usable Raft library. Read the module's responsibility, connections and completion criteria, then implement the selected step within scope. Following the joint code/proof development idea in IDS (source S14 in docs/sources.md), pair each state, control-flow or handler change with its representation, invariant and local proof work. Run the relevant checks after each coherent edit, not only after finishing the implementation. Decompose a difficult proof into smaller obligations; preserve proved results and record unfinished dependencies as OPEN. Our Verus adaptation forbids `assume`, `admit`, trusted proof stubs and skipped verification even in intermediate accepted work. A partial project is allowed; an unfinished theorem is not a proof. Tests, replay, measurements and verification use the same executable logic. Keep formal definitions/proofs in Verus source and preserve target meaning and caller preconditions. Handlers must compose over repeated events; hard-coded exchanges do not establish Raft behavior. Other module steps do not expand this call's scope.
+
+Modules organize responsibilities, not independent runtime components. One node state and event/effect sequence couple term/role changes, logs, peer progress, commit/delivery positions and pending I/O. Before editing, identify connected handlers, caller obligations and shared invariants; read their contracts. Check relevant cross-module event sequences and dependent proofs when behavior changes. A higher-term message can affect election and replication work; a log change affects commitment/delivery bounds; recovery invalidates old callbacks across handlers. A local proof is conditional on its callers establishing its preconditions and preserving the shared invariant. Separate module passes cannot establish global Raft safety or liveness without composition and refinement. If a necessary coupled repair exceeds the supplied editable scope, preserve the diagnosis and request a revised scope instead of forcing an isolated fix or silently expanding the task.
+
+Run the relevant local checks and retain their actual output. Distinguish build, typecheck, functional/scenario test, proof and measurement results. Typechecking closes no theorem; finite scenarios do not prove liveness; measurements without a threshold are data. Keep global obligations open when only a local task is complete. Clearly separate fixture-generated candidates from real Rust/Verus checking.
+
+On failure, reproduce it and retain the failed command, goal, relevant source/invariant and diagnostics. A proof failure may indicate a code error, missing lemma, unsuitable representation or solver limit; it is not automatically a counterexample. Record attempted approaches and why they failed in the existing task report/feedback. Within scope, revise code, abstraction or proved auxiliary invariants together instead of retrying identical proof edits. A broader redesign becomes a concrete follow-up proposal with affected checks; preserve the candidate and user work. Missing tools do not justify changing semantics. Save fault seeds, traces and states. Measure an executable workload when available, without treating its results as proof; repeat comparable samples before claiming a regression.
+
+The protected model, requirements, assumptions, trusted boundaries, check definitions and existing test oracles are outside ordinary repair scope. Explain a proposed change and return the scope conflict with the candidate for review after delivery. Do not insert approval files or interactive human checkpoints into the execution loop. New tests and harness changes are welcome as explicitly scoped development work. Preserve complete raw evidence; do not forward non-English raw logs to an LLM. Label any English explanation and point to the unchanged original.
+
+Return the required CLI report with changed files, actual commands/results and remaining module/project gaps. Your report is a candidate claim; independent checks determine only selected-step completion. A step or plan passing does not mean its module or Raft is complete. Never approve specifications, merge a candidate or publish automatically.
+
+
+Task: second
+
+Keep earlier behavior while adding B.
+
+Task stage: ready
+Read: input, src, input/second.md, input/fixture-task.md
+May edit: src
+Must not edit: input, orchestrator, evidence, .git, .agent-output
+Expected outputs: src/lib.rs
+Proof targets: 
+Independent checks: actual-test
+
+In your summary, name the attempted representation/invariant, blocking goal, code/proof change and why any earlier approach was abandoned. Distinguish your design hypothesis from checker observations.
+
+Previous attempts (agent explanations are claims, not evidence):
+- Attempt 1: Launched; report not yet received
+  Changed: (none)
+  Independent results: INTERRUPTED_OR_IN_FLIGHT
+  Saved patch and raw logs: /home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/regression_after_interruption_repairs_later_task/repo/evidence/runs/20261027T103404Z-6cce3535915e/attempt-1
+
+Actual independent feedback:
+- actual-test: FAIL: configured build/test success evidence absent
+Category: functional
+Action: repair
+Diagnosis: Reproduce the build or test failure, preserve the regression, and repair within the declared scope.
+Task goal: Keep earlier behavior while adding B.
+Candidate revision: 7e95d72a8b260c7d3e7253fec3f58a012f1adc8e3a067f9259531adb29fec3ef
+Failed command: ["/usr/bin/python3", "-c", "from pathlib import Path; assert \"candidate\" in Path(\"src/lib.rs\").read_text(); print(\"test result: ok. 1 passed\")"]
+Expected: Configured targets and required observations succeed
+Observed: configured build/test success evidence absent
+Reproduction: cd /home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/regression_after_interruption_repairs_later_task/repo/evidence/runs/20261027T103404Z-f341bee9f33c/candidate && /usr/bin/python3 -c 'from pathlib import Path; assert "candidate" in Path("src/lib.rs").read_text(); print("test result: ok. 1 passed")'
+Artifact paths: ["/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/regression_after_interruption_repairs_later_task/repo/evidence/runs/20261027T103404Z-4d6be7bf040d/actual-test.stdout.log", "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/regression_after_interruption_repairs_later_task/repo/evidence/runs/20261027T103404Z-4d6be7bf040d/actual-test.stderr.log"]
+Error excerpt: /home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/regression_after_interruption_repairs_later_task/repo/evidence/runs/20261027T103404Z-4d6be7bf040d/actual-test.stdout.log:
+
+/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/regression_after_interruption_repairs_later_task/repo/evidence/runs/20261027T103404Z-4d6be7bf040d/actual-test.stderr.log:
+1: Traceback (most recent call last):
+2:   File "<string>", line 1, in <module>
+3: AssertionError
+Editable scope: ["src"]
+Required reruns: ["actual-test"]
+
+Repair the current change while preserving completed work. Affected checks and authorized implementation/proof scopes are included above; do not regenerate earlier modules or change their oracles.
+
+For local Rust or check.py commands, use the explicit environment prefix CARGO_TARGET_DIR=/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/regression_after_interruption_repairs_later_task/repo/evidence/runs/20261027T103404Z-347b5ff6905f/attempt-2/agent-build PYTHONDONTWRITEBYTECODE=1 before the command. This controller-owned scratch directory is writable through --add-dir; the prefix also works when the Codex shell filters inherited environment variables.
+
+FIXTURE_JSON={"task_id": "second", "write_path": "src/lib.rs", "write_text": "fn candidate_with_B() {}"}

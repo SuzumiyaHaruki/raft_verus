@@ -1,6 +1,8 @@
-//! DRAFT shared initial node representation. Later handlers extend this state.
-use crate::reconcile::Entry;
+//! DRAFT observable state vocabulary. This is not the internal Node layout.
+use crate::types::Entry;
+use crate::io::{OperationId, Message};
 use vstd::prelude::*;
+pub use crate::node_state::Node;
 
 verus! {
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -17,7 +19,13 @@ pub enum Role { Follower, Candidate, Leader }
 pub enum InitError { InvalidMembership }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Node {
+pub struct PendingWrite {
+    pub operation: OperationId,
+    pub reply: Option<Message>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Observation {
     pub id: u64,
     pub members: Vec<u64>,
     pub hard: DurableState,
@@ -28,5 +36,7 @@ pub struct Node {
     pub incarnation: u64,
     pub serial: u64,
     pub deadline: u64,
+    pub pending_write: Option<PendingWrite>,
+    pub recovery_required: bool,
 }
 }

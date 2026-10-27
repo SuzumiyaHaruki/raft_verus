@@ -1,33 +1,51 @@
-# Rust Raft with Verus
+# Rust Raft generation with Verus
 
-Status: DRAFT. Use AI to develop one Rust Raft implementation in small steps, with Verus proofs of the same executable code, functional/fault tests and measurements. The existing log reconciliation helper works; a complete Raft node, cluster safety and conditional liveness remain unfinished.
+Status: DRAFT. The experiment starts without working Raft behavior. AI must generate one Rust Raft implementation and its Verus proofs incrementally, using functional/fault tests and measurements as independent feedback. Global safety, conditional liveness and implementation/cluster refinement remain open.
 
-The default experiment now generates **node initialization**, not another helper exercise. Shared state, eight independent initialization tests and a protected Verus target are supplied. `src/node.rs` is an explicit reject-all starting point: it builds, but intentionally fails initialization tests/proof until an agent implements it. A scripted offline run produces a checked candidate for workflow testing; it is not live AI output and is not automatically integrated. See [the review packet](review/REVIEW_PACKET.md) for actual files/results.
+The experiment supplies English requirements, observable types, behavioral targets, independent tests/proof callers, replay/measurement harnesses and the Python controller. The LLM generates executable logic **and its implementation-layer contracts, representation, invariants and proofs**. Independent callers require that generated design to satisfy the supplied behavioral targets. A proof of a self-written weak contract alone is insufficient. Read [the input boundary](input/starting-point.md) and [actual review results](review/REVIEW_PACKET.md).
 
-## Develop complete modules in checked steps
+`node.rs`, `reconcile.rs` and `persistence.rs` contain deliberately incorrect error-only seeds. `node_state.rs` is an editable starting representation; `contracts.rs` has vacuous local predicates that cannot satisfy the independent callers. The progress target has no supplied induction strategy. Offline solutions, historical evidence and maintenance-only `Agent.md` are excluded from candidates. Launch/resume never installs a solution.
 
-Start with [the module roadmap](input/roadmap.md): state, runtime, elections, replication, commitment, recovery, progress and integration. Each module has one English Markdown document describing its full responsibility, connections, completion criteria and internal steps. `workflow.toml` selects one named step for each bounded controller call. The prompt includes the module context and that step; it does not ask an agent to finish the entire module at once.
+## Incremental development
 
-STATE-INIT is ready for generation; four optional steps recheck delivered helper work, and 20 planned steps identify later implementation/proof work. Every module is still incomplete. Formal targets live in Verus source; specifications remain DRAFT and independent checks do not approve semantics.
+[The roadmap](input/roadmap.md) describes state, runtime, elections, replication, commitment, recovery, progress and integration. Each English module document explains its full responsibility, connections and bounded steps. The controller carries one generated candidate forward: generate code, local specifications and proofs, run independent checks, repair or redesign within cumulative budgets, then continue the selected plan. Previously completed tasks are rechecked. Human review is after delivery, with no approval file or interactive checkpoint inside the loop.
 
-These modules share one coupled node state and event/I/O sequence. Local contracts and proofs must compose through shared invariants and node/cluster refinement; separate module checks alone cannot establish Raft correctness. Cross-module effects and caller obligations are part of each scoped change.
+The default task is STATE-INIT. Selecting RUNTIME-PERSIST adds it after initialization; PROGRESS-FOUNDATION adds the early local progress proof. Four other ready steps cover generating/proving/replaying/measuring reconciliation; 19 later steps still lack runnable checks. No command currently produces a complete Raft. Every module remains incomplete.
+
+Initialization runs eight independent tests and its proof/replay without requiring future unfinished operations to pass. The generated `Node::view()` and `wf()` connect to protected targets over `Observation`; executable observation adapters are also checked. Later selected tasks rerun completed-task checks, including after a representation change.
 
 ```sh
 export PYTHONDONTWRITEBYTECODE=1
 python3 -m orchestrator validate
 python3 -m orchestrator plan --format text
-python3 -m orchestrator prompt --task STATE-INIT
-python3 -m orchestrator run-task --task STATE-INIT --dry-run
+./experiment.sh
+python3 -m orchestrator run-plan --tasks RUNTIME-PERSIST --dry-run
 python3 -m unittest discover -s orchestrator/tests -v
-python3 -m orchestrator verify --profile reconcile-tests
-python3 -m orchestrator verify --profile reconcile-proof
-python3 crates/raft-verified/check.py replay
-python3 -m orchestrator verify --profile reconcile-bench
 ```
 
-These commands do not start Codex generation. `validate` checks configuration and references. Tests exercise executable code; `spec` only typechecks the model; `reconcile-proof` checks the local operation against `merged`. Benchmark output is measurement data with no approved performance threshold. `full` reports missing whole-project proof and approval prerequisites.
+These commands do not start model generation. The default preview makes zero agent calls. Live generation requires an explicit command:
 
-The runtime and proof paths use the same `src/reconcile.rs`. The small `check.py` wrapper uses the already installed Verus macros and their matching Rust 1.92 only in child processes. It does not install tools or change the user's default Rust. Use this wrapper for Cargo build/test/replay/measurement; plain Cargo under an incompatible default compiler cannot load those macros. See [the build path](crates/raft-proofs/README.md) and [tool setup](docs/tools.md).
+```sh
+./experiment.sh run             # STATE-INIT only, gpt-6.1-sol / high
+./experiment.sh resume RUN_ID   # Continue the saved generated candidate
+./experiment.sh report RUN_ID   # Inspect results without generation
+python3 -m orchestrator run-plan --tasks RUNTIME-PERSIST --execute-codex
+```
+
+No real Codex task was run during maintenance. A new run copies the current scaffold; resume preserves the saved candidate rather than restarting from seeds. Manually replacing the source scaffold with an implementation changes the starting experiment and must be disclosed. Successful candidates are never automatically merged into this checkout.
+
+## Offline demonstrations and real checks
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 orchestrator/tests/real_repair_demo.py \
+  --task PROGRESS-FOUNDATION --redesign --output /tmp/raft-joint-design
+```
+
+Use a new output directory. This explicitly injects SIMULATED edits through a fake subprocess: an alternative Node layout/invariant, wrong initialization with a vacuous local contract, repair, a persistence defect and repair, then a progress proof. Real Rust/Verus checks must reject the defects and pass the repairs in the same candidate. No offline solution is included at candidate creation. This demonstrates the workflow and independent correspondence, not model capability. Omit `--redesign` for the starting layout; select `STATE-INIT` or `REPLICATION-RECONCILE` for their individual demonstrations.
+
+Direct checking uses `python3 crates/raft-verified/check.py build`, `test`, `node-proof`, `proof`, `persist-proof` or `progress-proof`. Build succeeds on the supplied scaffold; behavior tests and corresponding proofs intentionally fail until their implementations are generated. `spec` is only TYPECHECKED. Measurements are eligible only after the required correctness checks; there is no approved performance target.
+
+Cargo and Verus check the same executable source using the installed compatible toolchain selected in `workflow.toml`. No downloads or system-toolchain replacement occur. See [tools](docs/tools.md), [proof entrypoints](crates/raft-proofs/README.md) and [workflow](docs/workflow.md) for scope, budgets, history, regression repair, optional comparable measurements and commands.
 
 ## Actual directory layout
 
@@ -48,11 +66,11 @@ raft_verus/
 ├── crates/
 │   ├── raft-spec/src/        Candidate Verus states, transitions and properties
 │   ├── raft-verified/
-│   │   ├── src/              Shared node types, constructor seed and reconciliation
+│   │   ├── src/              Editable implementation/specification seeds and observable API
 │   │   ├── tests/            Functional regressions and local replay cases
 │   │   ├── examples/         Deterministic replay and core measurement programs
 │   │   └── check.py          Installed-tool build/run wrapper
-│   ├── raft-proofs/          Local proof entrypoint and build-path explanation
+│   ├── raft-proofs/          Protected consumers and editable auxiliary proof files
 │   └── proof-smoke/          Positive/negative verifier calibration samples
 ├── orchestrator/             Existing Python controller and CLI
 │   ├── wire/                 Internal agent/check subprocess report schemas
@@ -63,38 +81,6 @@ raft_verus/
 └── target/                   Generated Cargo artifacts
 ```
 
-The original read-only `.git`, `.agents`, `.codex` and `.aws` directories are preserved. This checkout's `.git` is empty; it is not a usable Git repository. Cargo manifests, `AGENTS.md` and `.gitignore` also live at the root. Generated caches and build metadata are not maintained input material.
+The maintenance workspace originally had empty read-only `.git`, `.agents`, `.codex` and `.aws` directories; those were preserved. That observation describes this local environment, not a normal GitHub clone. Cargo manifests, `AGENTS.md` and `.gitignore` also live at the root. Generated caches and build metadata are not maintained input material.
 
-## Controller use
-
-`orchestrator/` reuses bounded subprocess execution, candidate copies, independent checks. Human review happens after code delivery. Step completion, module completion and whole-project acceptance are separate. The controller reports only selected-step completion; it does not infer module completion from a passing plan. Failed checks produce focused reproduction feedback. A serial plan can retain one candidate across tasks and resume after interruption; it never merges candidate files into this checkout.
-
-The project defaults are now `gpt-6.1-sol` with `high` reasoning effort. The configuration switch permits an explicitly started experiment. Start and resume need no approval file or in-process human review. Review the delivered candidate and results afterward. No real agent has been started during this setup. Global Codex configuration and the system Rust toolchain are unchanged.
-
-```sh
-./experiment.sh                 # Preview; zero agent calls
-./experiment.sh run             # Generate and prove the initial Node constructor
-./experiment.sh resume RUN_ID   # Continue the saved experiment candidate
-./experiment.sh report RUN_ID   # Read saved results
-```
-
-The launcher selects STATE-INIT using `gpt-6.1-sol` / `high`, at most three calls and two repair rounds. Code and loop proofs are edited together in one candidate; tests, initial-state replay and actual Verus checking diagnose each attempt. Measurements run after required correctness checks pass. Failed approaches and independent results accompany the next repair prompt. No live generation was run while preparing this revision. See [the workflow guide](docs/workflow.md#configured-solhigh-experiment).
-
-The main `check.py test` command includes the intentionally failing initialization seed. The `reconcile-tests` profile selects the original 15 passing regressions. To demonstrate the new generation/repair path offline:
-
-```sh
-PYTHONDONTWRITEBYTECODE=1 python3 orchestrator/tests/real_repair_demo.py \
-  --task STATE-INIT --output /tmp/raft-node-demo
-```
-
-Use a new output directory. Scripted wrong-term code is rejected by real tests and Verus, then a scripted repair is rechecked. Both the candidate and raw evidence are retained; generation is labeled SIMULATED. This cannot show that a real model will succeed. RUNTIME-PERSIST remains the next development assignment after initialization, with its representation/checks still missing.
-
-Python 3.10+ on Linux/POSIX is supported. The installed `jsonschema` and TOML reader suffice; no new Python dependencies are required. Optional offline install:
-
-```sh
-python3 -m pip install --no-index --no-deps --no-build-isolation \
-  --target /tmp/raft-workflow-revision ./orchestrator
-PYTHONPATH=/tmp/raft-workflow-revision python3 -m orchestrator validate
-```
-
-All agent-facing material is English. Markdown explains one topic per file in `input/`; TOML contains execution settings. The small wire JSON schemas are machine reports, not a second author-maintained requirements registry.
+All LLM-facing material is English, with one physical line per Markdown prose paragraph. Python 3.10+ on Linux/POSIX is supported. Existing jsonschema and TOML support suffice; no new dependencies are required. Candidate copying and input exclusion prevent accidental answer inclusion, not hostile same-user access outside the candidate.

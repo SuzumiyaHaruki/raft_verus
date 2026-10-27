@@ -1,0 +1,282 @@
+[
+  {
+    "path": ".gitignore",
+    "before_lines": 12,
+    "after_lines": 14
+  },
+  {
+    "path": "AGENTS.md",
+    "before_lines": 19,
+    "after_lines": 19
+  },
+  {
+    "path": "Agent.md",
+    "before_lines": 17,
+    "after_lines": 17
+  },
+  {
+    "path": "README.md",
+    "before_lines": 90,
+    "after_lines": 86
+  },
+  {
+    "path": "crates/raft-proofs/README.md",
+    "before_lines": 18,
+    "after_lines": 18
+  },
+  {
+    "path": "crates/raft-proofs/node_init.rs",
+    "before_lines": 24,
+    "after_lines": 31
+  },
+  {
+    "path": "crates/raft-proofs/observation.rs",
+    "before_lines": 0,
+    "after_lines": 14
+  },
+  {
+    "path": "crates/raft-proofs/persistence.rs",
+    "before_lines": 49,
+    "after_lines": 56
+  },
+  {
+    "path": "crates/raft-proofs/persistence_lemmas.rs",
+    "before_lines": 27,
+    "after_lines": 27
+  },
+  {
+    "path": "crates/raft-proofs/progress.rs",
+    "before_lines": 23,
+    "after_lines": 28
+  },
+  {
+    "path": "crates/raft-proofs/progress_lemmas.rs",
+    "before_lines": 23,
+    "after_lines": 13
+  },
+  {
+    "path": "crates/raft-spec/src/node_init.rs",
+    "before_lines": 35,
+    "after_lines": 35
+  },
+  {
+    "path": "crates/raft-spec/src/persistence.rs",
+    "before_lines": 92,
+    "after_lines": 92
+  },
+  {
+    "path": "crates/raft-spec/src/progress.rs",
+    "before_lines": 30,
+    "after_lines": 30
+  },
+  {
+    "path": "crates/raft-verified/README.md",
+    "before_lines": 25,
+    "after_lines": 25
+  },
+  {
+    "path": "crates/raft-verified/examples/initialize.rs",
+    "before_lines": 33,
+    "after_lines": 33
+  },
+  {
+    "path": "crates/raft-verified/examples/persistence.rs",
+    "before_lines": 70,
+    "after_lines": 70
+  },
+  {
+    "path": "crates/raft-verified/src/contracts.rs",
+    "before_lines": 0,
+    "after_lines": 14
+  },
+  {
+    "path": "crates/raft-verified/src/lib.rs",
+    "before_lines": 20,
+    "after_lines": 21
+  },
+  {
+    "path": "crates/raft-verified/src/node.rs",
+    "before_lines": 18,
+    "after_lines": 16
+  },
+  {
+    "path": "crates/raft-verified/src/node_state.rs",
+    "before_lines": 0,
+    "after_lines": 26
+  },
+  {
+    "path": "crates/raft-verified/src/persistence.rs",
+    "before_lines": 41,
+    "after_lines": 42
+  },
+  {
+    "path": "crates/raft-verified/src/state.rs",
+    "before_lines": 41,
+    "after_lines": 42
+  },
+  {
+    "path": "crates/raft-verified/tests/node_init.rs",
+    "before_lines": 33,
+    "after_lines": 33
+  },
+  {
+    "path": "crates/raft-verified/tests/persistence.rs",
+    "before_lines": 97,
+    "after_lines": 98
+  },
+  {
+    "path": "docs/workflow.md",
+    "before_lines": 189,
+    "after_lines": 188
+  },
+  {
+    "path": "input/instructions.md",
+    "before_lines": 19,
+    "after_lines": 19
+  },
+  {
+    "path": "input/progress.md",
+    "before_lines": 53,
+    "after_lines": 53
+  },
+  {
+    "path": "input/replication.md",
+    "before_lines": 63,
+    "after_lines": 63
+  },
+  {
+    "path": "input/roadmap.md",
+    "before_lines": 64,
+    "after_lines": 64
+  },
+  {
+    "path": "input/runtime.md",
+    "before_lines": 33,
+    "after_lines": 33
+  },
+  {
+    "path": "input/starting-point.md",
+    "before_lines": 19,
+    "after_lines": 21
+  },
+  {
+    "path": "input/state.md",
+    "before_lines": 35,
+    "after_lines": 35
+  },
+  {
+    "path": "orchestrator/feedback.py",
+    "before_lines": 82,
+    "after_lines": 85
+  },
+  {
+    "path": "orchestrator/scheduler.py",
+    "before_lines": 851,
+    "after_lines": 851
+  },
+  {
+    "path": "orchestrator/tests/fixtures/node_init_solution.rs",
+    "before_lines": 57,
+    "after_lines": 55
+  },
+  {
+    "path": "orchestrator/tests/fixtures/solutions/README.md",
+    "before_lines": 7,
+    "after_lines": 7
+  },
+  {
+    "path": "orchestrator/tests/fixtures/solutions/contracts.rs",
+    "before_lines": 0,
+    "after_lines": 23
+  },
+  {
+    "path": "orchestrator/tests/fixtures/solutions/legacy_lib.rs",
+    "before_lines": 107,
+    "after_lines": 0
+  },
+  {
+    "path": "orchestrator/tests/fixtures/solutions/persistence.rs",
+    "before_lines": 63,
+    "after_lines": 64
+  },
+  {
+    "path": "orchestrator/tests/fixtures/solutions/persistence_lemmas.rs",
+    "before_lines": 27,
+    "after_lines": 27
+  },
+  {
+    "path": "orchestrator/tests/fixtures/solutions/progress_lemmas.rs",
+    "before_lines": 42,
+    "after_lines": 42
+  },
+  {
+    "path": "orchestrator/tests/fixtures/solutions/redesigned_state.rs",
+    "before_lines": 0,
+    "after_lines": 23
+  },
+  {
+    "path": "orchestrator/tests/real_repair_demo.py",
+    "before_lines": 139,
+    "after_lines": 180
+  },
+  {
+    "path": "orchestrator/tests/test_joint_design.py",
+    "before_lines": 0,
+    "after_lines": 90
+  },
+  {
+    "path": "orchestrator/tests/test_modules.py",
+    "before_lines": 189,
+    "after_lines": 191
+  },
+  {
+    "path": "orchestrator/tests/test_node_contract.py",
+    "before_lines": 57,
+    "after_lines": 63
+  },
+  {
+    "path": "orchestrator/tests/test_starting_point.py",
+    "before_lines": 101,
+    "after_lines": 106
+  },
+  {
+    "path": "orchestrator/tests/test_toolchain.py",
+    "before_lines": 68,
+    "after_lines": 71
+  },
+  {
+    "path": "orchestrator/verifier_runner.py",
+    "before_lines": 332,
+    "after_lines": 338
+  },
+  {
+    "path": "orchestrator/wire/agent_report.schema.json",
+    "before_lines": 72,
+    "after_lines": 73
+  },
+  {
+    "path": "review/OPEN_DECISIONS.md",
+    "before_lines": 164,
+    "after_lines": 154
+  },
+  {
+    "path": "review/REQUIREMENTS_TRACEABILITY.md",
+    "before_lines": 88,
+    "after_lines": 21
+  },
+  {
+    "path": "review/REVIEW_PACKET.md",
+    "before_lines": 75,
+    "after_lines": 72
+  },
+  {
+    "path": "review/REVISION_PLAN.md",
+    "before_lines": 9,
+    "after_lines": 0
+  },
+  {
+    "path": "workflow.toml",
+    "before_lines": 508,
+    "after_lines": 508
+  }
+]

@@ -1,0 +1,38 @@
+{
+  "behavioral_spec_changes_are_type_renames_only": {
+    "crates/raft-spec/src/node_init.rs": true,
+    "crates/raft-spec/src/persistence.rs": true,
+    "crates/raft-spec/src/progress.rs": true
+  },
+  "unchanged_inputs": [
+    "crates/raft-spec/src/lib.rs",
+    "crates/raft-spec/src/reconcile_view.rs",
+    "input/assumptions.md",
+    "input/properties.md",
+    "input/requirements.md",
+    "input/trust.md",
+    "input/proofs.md",
+    "crates/raft-verified/examples/persistence.trace",
+    "crates/raft-verified/examples/reconcile.trace",
+    "crates/raft-verified/tests/reconcile.rs",
+    "crates/raft-verified/tests/replay_cases.rs"
+  ],
+  "independent_test_case_counts": {
+    "node_init.rs": 8,
+    "persistence.rs": 6
+  },
+  "english_task_prompts": 26,
+  "ready_tasks": 7,
+  "planned_tasks": 19,
+  "candidate_excludes_offline_answers": true,
+  "active_constructor_body_remains_reject_all": true,
+  "removed_unused_token_fixture": true,
+  "removed_prescribed_induction_helper": true,
+  "global_obligations_unchanged_and_open": 26,
+  "readonly_metadata": {
+    ".git": [],
+    ".agents": [],
+    ".codex": [],
+    ".aws": []
+  }
+}

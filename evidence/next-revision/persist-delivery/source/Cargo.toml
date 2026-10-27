@@ -1,0 +1,6 @@
+[workspace]
+members = ["crates/raft-verified"]
+resolver = "2"
+
+# DRAFT: the shared executable uses installed Verus macro erasure for Cargo;
+# local proof entrypoints are checked directly by Verus. See crates/raft-proofs/README.md.

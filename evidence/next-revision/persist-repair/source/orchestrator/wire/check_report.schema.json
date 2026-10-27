@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "check_report (DRAFT)",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "check_id",
+    "run_id",
+    "check_kind",
+    "profile_id",
+    "result",
+    "argv",
+    "working_directory",
+    "input_manifest_digest",
+    "tool_versions",
+    "started_at",
+    "finished_at",
+    "exit_code",
+    "stdout_digest",
+    "stderr_digest",
+    "evidence_paths",
+    "obligation_ids_checked",
+    "coverage_findings",
+    "policy_findings",
+    "evidence_kind",
+    "contract_status",
+    "full_acceptance"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "check_id": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "check_kind": {
+      "type": "string"
+    },
+    "profile_id": {
+      "type": "string"
+    },
+    "result": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "TIMEOUT",
+        "BLOCKED",
+        "NOT_RUN",
+        "ERROR",
+        "TYPECHECKED",
+        "MEASURED"
+      ]
+    },
+    "argv": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "working_directory": {
+      "type": "string"
+    },
+    "input_manifest_digest": {
+      "type": "string"
+    },
+    "tool_versions": {
+      "type": "object"
+    },
+    "started_at": {
+      "type": "string"
+    },
+    "finished_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "exit_code": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "stdout_digest": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "stderr_digest": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "evidence_paths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "obligation_ids_checked": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "coverage_findings": {
+      "type": "array"
+    },
+    "policy_findings": {
+      "type": "array"
+    },
+    "evidence_kind": {
+      "enum": [
+        "REAL_LOCAL",
+        "SIMULATED"
+      ]
+    },
+    "contract_status": {
+      "type": "string"
+    },
+    "full_acceptance": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": true
+}

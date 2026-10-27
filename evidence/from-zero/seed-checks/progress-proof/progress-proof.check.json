@@ -1,0 +1,112 @@
+{
+  "schema_version": "1",
+  "check_id": "progress-proof",
+  "run_id": "local",
+  "check_kind": "verification",
+  "profile_id": "progress-proof",
+  "purpose": "proof",
+  "required": true,
+  "expected_targets": [
+    "check_local_progress",
+    "check_step",
+    "waiting_prefix",
+    "release_after_service"
+  ],
+  "expected_obligation_ids": [
+    "LOCAL-PROGRESS"
+  ],
+  "entrypoints": [
+    "crates/raft-proofs/progress.rs",
+    "crates/raft-proofs/progress_lemmas.rs",
+    "crates/raft-verified/src/persistence.rs",
+    "crates/raft-spec/src/persistence.rs",
+    "crates/raft-spec/src/progress.rs"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "FAIL",
+  "argv": [
+    "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+    "--crate-type",
+    "lib",
+    "--no-cheating",
+    "--output-json",
+    "--time-expanded",
+    "--triggers-mode",
+    "silent",
+    "crates/raft-proofs/progress.rs"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus",
+  "input_manifest_digest": "08ff76470ba0a2e91e92bac9c4bd86fff50c74a6cc694bf77c6b245f19034b39",
+  "tool_versions": {
+    "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+  },
+  "started_at": "2026-10-27T11:48:50.300333+00:00",
+  "finished_at": "2026-10-27T11:48:51.872641+00:00",
+  "exit_code": 1,
+  "stdout_digest": "222d3f2ef5420c2c8ff251a9f1b7837603ea882bf1d96c7e0f4004f308878e4a",
+  "stderr_digest": "9f3d41925e21a563fbe88c06a54f86852874b91cb7f1e0e47632fa3cb78fd8ea",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/from-zero/seed-checks/progress-proof/progress-proof.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/from-zero/seed-checks/progress-proof/progress-proof.stderr.log"
+  ],
+  "obligation_ids_checked": [],
+  "coverage_findings": [],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "resolved_toolchain": {
+    "paths": {
+      "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+      "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+      "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+    },
+    "missing": [],
+    "environment": {
+      "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+    }
+  },
+  "tool_environment": {
+    "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+    "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+    "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+    "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/workflow.toml"
+  },
+  "function_results": {
+    "progress::state::Node::complete_persist": false,
+    "progress::state::Node::step": false,
+    "progress::state::Node::submit_persist": false,
+    "progress::progress_lemmas::waiting_prefix": false,
+    "progress::progress_lemmas::release_after_service": false,
+    "progress::io::CompletionOutcome::clone": true,
+    "progress::io::InputError::clone": true,
+    "progress::io::MessageBody::clone": true,
+    "progress::io::Message::clone": true,
+    "progress::io::OperationId::clone": true,
+    "progress::io::Event::clone": true,
+    "progress::io::CompletionKind::clone": true,
+    "progress::io::Effect::clone": true,
+    "progress::check_local_progress": true,
+    "progress::check_step": true,
+    "progress::types::RequestId::clone": true,
+    "progress::types::Command::clone": true,
+    "progress::types::ReconcileError::clone": true,
+    "progress::types::Entry::clone": true,
+    "progress::state::Node::clone": true,
+    "progress::state::Role::clone": true,
+    "progress::state::PendingWrite::clone": true,
+    "progress::state::InitError::clone": true,
+    "progress::state::DurableState::clone": true
+  },
+  "entire_crate_checked": true,
+  "verification_summary": {
+    "verified": 19,
+    "errors": 5
+  },
+  "reason": "Verus reported rejection or insufficient checked definitions"
+}

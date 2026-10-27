@@ -23,11 +23,11 @@ fn main() {
         // Reproducible independent initial states; no protocol event/fault claim.
         for id in [1, 2, 3] {
             let n = Node::new(id, vec![1, 2, 3]).unwrap();
-            assert_eq!(n.role, Role::Follower);
-            assert_eq!(n.hard.term, 0);
-            println!("node={id} role=Follower term=0 log_length={}", n.hard.log.len());
+            assert_eq!(n.observe().role, Role::Follower);
+            assert_eq!(n.observe().hard.term, 0);
+            println!("node={id} role=Follower term=0 log_length={}", n.observe().hard.log.len());
         }
-        assert_eq!(Node::new(4, vec![1, 2, 3]), Err(InitError::InvalidMembership));
+        assert!(matches!(Node::new(4, vec![1, 2, 3]), Err(InitError::InvalidMembership)));
         println!("NODE_REPLAY_PASS steps=4");
     }
 }

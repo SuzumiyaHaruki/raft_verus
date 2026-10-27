@@ -151,7 +151,9 @@ class ModuleTests(unittest.TestCase):
                              {pair for pair in declared if pair[0] == document})
         indexed = {t['id']: t for t in tasks}
         self.assertEqual(indexed['STATE-INIT']['status'], 'ready')
-        self.assertEqual(indexed['STATE-INIT']['permitted_change_paths'], ['crates/raft-verified/src/node.rs'])
+        self.assertEqual(set(indexed['STATE-INIT']['permitted_change_paths']), {
+            'crates/raft-verified/src/node.rs', 'crates/raft-verified/src/node_state.rs',
+            'crates/raft-verified/src/contracts.rs'})
         self.assertIn('node-proof', indexed['STATE-INIT']['check_profile_ids'])
         self.assertIn('REPLICATION-PROOF', indexed['INTEGRATION-MEASURE']['dependency_ids'])
         self.assertIn('PROGRESS-REFINEMENT', indexed['INTEGRATION-FULL']['dependency_ids'])

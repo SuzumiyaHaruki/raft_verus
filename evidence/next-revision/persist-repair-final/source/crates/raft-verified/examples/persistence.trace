@@ -1,0 +1,15 @@
+# DRAFT coordinator/completion scenario. No crash recovery or cluster simulation.
+submit 1
+complete 0 0 Send Success WrongCompletionKind
+durable 0
+complete 1 0 Persist Success StaleCompletion
+complete 0 9 Persist Success UnknownOperation
+complete 0 0 Persist Success released
+complete 0 0 Persist Success UnknownOperation
+submit 2
+complete 0 0 Persist Success UnknownOperation
+durable 1
+complete 0 1 Persist Success released
+submit 3
+complete 0 2 Persist Unknown RecoveryRequired
+complete 0 2 Persist Success RecoveryRequired

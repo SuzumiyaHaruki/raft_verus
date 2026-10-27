@@ -12,6 +12,14 @@ Read [assumptions.md](assumptions.md), [properties.md](properties.md), [proofs.m
 
 Actual Verus entrypoints establish all three conditional-liveness targets and PO-LIVE-REFINEMENT under explicit non-circular premises. Safety proofs do not inherit A-L assumptions. Higher-term interference, old-message draining, persistence, request service, internal stuttering and resource bounds are accounted for. Finite post-fault scenarios check engineering behavior separately. One election window lemma does not finish election liveness, much less this module.
 
+## Step: Establish coordinator progress foundation
+
+Stage: READY after RUNTIME-PERSIST. Generate the missing proof bodies in `crates/raft-proofs/progress_lemmas.rs` against the protected `progress.rs` consumer and `raft-spec/src/progress.rs` target. The supplied target requires eventual release of the pending reply when a matching successful persistence callback receives service after finitely many rejected or unsupported events. `execution` relates successive observations by the independent transition relation; the checked actual `Node::step` preserves its generated representation invariant and establishes that relation through its view; `fair_completion` constrains event service and noninterference, never assumes the output. The host still owes actual durability before a successful notification. Identify the first failed induction step when revising the proof; do not strengthen premises or edit the target.
+
+Run `python3 crates/raft-verified/check.py progress-proof` or `python3 -m orchestrator verify --profile progress-proof`, then the persistence tests and replay on the shared initialized candidate. Use the installed Verus/vstd combination with unbounded `nat` traces and quantifiers; choose the needed auxiliary lemmas and induction strategy within the editable file; no waiting-prefix lemma skeleton is prescribed; no external temporal library is needed for this local encoding. The optional verus-tla library remains unavailable and uncalibrated. Check the generated coordinator handlers; this task does not prove termination of all future handlers or fair scheduling by an actual host.
+
+Retain global L-ELECTION, L-COMMIT, L-DELIVER and PO-LIVE-REFINEMENT. Finite counter/capacity sufficiency, competing protocol events, higher-term interference and transfer of fairness through real scheduling remain OPEN. Invalid events may delay service only finitely in this theorem; continuing storage failure or missing successful completion does not satisfy its premises.
+
 ## Step: Establish persistent leader progress
 
 Stage: PLANNED. Requires integrated election paths, fault scenarios and safety invariants.

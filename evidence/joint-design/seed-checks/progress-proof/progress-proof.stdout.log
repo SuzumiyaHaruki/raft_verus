@@ -1,0 +1,587 @@
+{
+  "verification-results": {
+    "encountered-error": true,
+    "encountered-vir-error": false,
+    "success": false,
+    "verified": 26,
+    "errors": 2,
+    "is-verifying-entire-crate": true
+  },
+  "times-ms": {
+    "verus-build": {
+      "profile": "release",
+      "version": "0.2026.01.23.1650a05"
+    },
+    "num-threads": 3,
+    "total": 1883,
+    "estimated-cpu-time": 2714,
+    "rust": {
+      "total": 409,
+      "init-and-types": 302,
+      "trait-conflicts": 106,
+      "compile": 0
+    },
+    "verification": {
+      "total": 1404,
+      "vir": {
+        "total": 856,
+        "hir": 130,
+        "import": 400,
+        "rust-to-vir": 118
+      }
+    },
+    "total-verify": 1314,
+    "total-verify-module-times": [
+      {
+        "module": "io",
+        "time": 206
+      },
+      {
+        "module": "",
+        "time": 153
+      },
+      {
+        "module": "model",
+        "time": 128
+      },
+      {
+        "module": "node_state",
+        "time": 116
+      },
+      {
+        "module": "state",
+        "time": 106
+      },
+      {
+        "module": "observation",
+        "time": 103
+      },
+      {
+        "module": "progress_lemmas",
+        "time": 103
+      },
+      {
+        "module": "types",
+        "time": 101
+      },
+      {
+        "module": "persistence",
+        "time": 94
+      },
+      {
+        "module": "initialization",
+        "time": 60
+      },
+      {
+        "module": "contracts",
+        "time": 53
+      },
+      {
+        "module": "persistence_spec",
+        "time": 36
+      },
+      {
+        "module": "progress_spec",
+        "time": 27
+      },
+      {
+        "module": "representation",
+        "time": 23
+      }
+    ],
+    "air": {
+      "total": 586,
+      "module-times": [
+        {
+          "module": "io",
+          "time": 92
+        },
+        {
+          "module": "",
+          "time": 77
+        },
+        {
+          "module": "node_state",
+          "time": 64
+        },
+        {
+          "module": "progress_lemmas",
+          "time": 58
+        },
+        {
+          "module": "state",
+          "time": 53
+        },
+        {
+          "module": "types",
+          "time": 52
+        },
+        {
+          "module": "observation",
+          "time": 50
+        },
+        {
+          "module": "persistence",
+          "time": 50
+        },
+        {
+          "module": "model",
+          "time": 33
+        },
+        {
+          "module": "initialization",
+          "time": 21
+        },
+        {
+          "module": "persistence_spec",
+          "time": 11
+        },
+        {
+          "module": "contracts",
+          "time": 10
+        },
+        {
+          "module": "progress_spec",
+          "time": 6
+        },
+        {
+          "module": "representation",
+          "time": 4
+        }
+      ]
+    },
+    "smt": {
+      "total": 195,
+      "smt-init": 156,
+      "smt-init-module-times": [
+        {
+          "module": "io",
+          "time": 50,
+          "time-micros": 50439,
+          "rlimit-count": 123145
+        },
+        {
+          "module": "state",
+          "time": 19,
+          "time-micros": 19389,
+          "rlimit-count": 89179
+        },
+        {
+          "module": "types",
+          "time": 19,
+          "time-micros": 19093,
+          "rlimit-count": 68613
+        },
+        {
+          "module": "node_state",
+          "time": 17,
+          "time-micros": 17738,
+          "rlimit-count": 94285
+        },
+        {
+          "module": "observation",
+          "time": 14,
+          "time-micros": 14149,
+          "rlimit-count": 62764
+        },
+        {
+          "module": "progress_lemmas",
+          "time": 12,
+          "time-micros": 12413,
+          "rlimit-count": 84048
+        },
+        {
+          "module": "",
+          "time": 11,
+          "time-micros": 11649,
+          "rlimit-count": 91502
+        },
+        {
+          "module": "persistence",
+          "time": 11,
+          "time-micros": 11210,
+          "rlimit-count": 71765
+        },
+        {
+          "module": "progress_spec",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "contracts",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "representation",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "persistence_spec",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "initialization",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "model",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        }
+      ],
+      "smt-run": 39,
+      "smt-run-module-times": [
+        {
+          "module": "",
+          "time": 11,
+          "time-micros": 11843,
+          "rlimit-count": 91502,
+          "function-breakdown": [
+            {
+              "function": "progress::check_step",
+              "mode:": "exec",
+              "time": 7,
+              "time-micros": 7300,
+              "rlimit-count": 84423,
+              "success": false
+            },
+            {
+              "function": "progress::check_local_progress",
+              "mode:": "proof",
+              "time": 4,
+              "time-micros": 4543,
+              "rlimit-count": 7079,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "io",
+          "time": 7,
+          "time-micros": 7282,
+          "rlimit-count": 123145,
+          "function-breakdown": [
+            {
+              "function": "progress::io::Event::clone",
+              "mode:": "exec",
+              "time": 3,
+              "time-micros": 3222,
+              "rlimit-count": 539,
+              "success": true
+            },
+            {
+              "function": "progress::io::CompletionKind::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 304,
+              "rlimit-count": 144,
+              "success": true
+            },
+            {
+              "function": "progress::io::OperationId::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 444,
+              "rlimit-count": 10470,
+              "success": true
+            },
+            {
+              "function": "progress::io::CompletionOutcome::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 243,
+              "rlimit-count": 621,
+              "success": true
+            },
+            {
+              "function": "progress::io::Message::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 92,
+              "rlimit-count": 2461,
+              "success": true
+            },
+            {
+              "function": "progress::io::InputError::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 266,
+              "rlimit-count": 4048,
+              "success": true
+            },
+            {
+              "function": "progress::io::Effect::clone",
+              "mode:": "exec",
+              "time": 1,
+              "time-micros": 1509,
+              "rlimit-count": 539,
+              "success": true
+            },
+            {
+              "function": "progress::io::MessageBody::clone",
+              "mode:": "exec",
+              "time": 1,
+              "time-micros": 1198,
+              "rlimit-count": 104323,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "progress_lemmas",
+          "time": 4,
+          "time-micros": 4781,
+          "rlimit-count": 84048,
+          "function-breakdown": [
+            {
+              "function": "progress::progress_lemmas::release_after_service",
+              "mode:": "proof",
+              "time": 4,
+              "time-micros": 4781,
+              "rlimit-count": 84048,
+              "success": false
+            }
+          ]
+        },
+        {
+          "module": "observation",
+          "time": 4,
+          "time-micros": 4718,
+          "rlimit-count": 62764,
+          "function-breakdown": [
+            {
+              "function": "progress::observation::check_observation_input",
+              "mode:": "exec",
+              "time": 1,
+              "time-micros": 1029,
+              "rlimit-count": 57446,
+              "success": true
+            },
+            {
+              "function": "progress::observation::check_observe",
+              "mode:": "exec",
+              "time": 3,
+              "time-micros": 3689,
+              "rlimit-count": 5318,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "node_state",
+          "time": 4,
+          "time-micros": 4539,
+          "rlimit-count": 94285,
+          "function-breakdown": [
+            {
+              "function": "progress::node_state::Node::from_observation",
+              "mode:": "exec",
+              "time": 1,
+              "time-micros": 1497,
+              "rlimit-count": 4134,
+              "success": true
+            },
+            {
+              "function": "progress::node_state::Node::observe",
+              "mode:": "exec",
+              "time": 2,
+              "time-micros": 2152,
+              "rlimit-count": 82078,
+              "success": true
+            },
+            {
+              "function": "progress::node_state::Node::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 890,
+              "rlimit-count": 8073,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "persistence",
+          "time": 3,
+          "time-micros": 3081,
+          "rlimit-count": 71765,
+          "function-breakdown": [
+            {
+              "function": "progress::node_state::Node::complete_persist",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 996,
+              "rlimit-count": 63425,
+              "success": true
+            },
+            {
+              "function": "progress::node_state::Node::submit_persist",
+              "mode:": "exec",
+              "time": 1,
+              "time-micros": 1319,
+              "rlimit-count": 6004,
+              "success": true
+            },
+            {
+              "function": "progress::node_state::Node::step",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 765,
+              "rlimit-count": 2336,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "types",
+          "time": 1,
+          "time-micros": 1582,
+          "rlimit-count": 68613,
+          "function-breakdown": [
+            {
+              "function": "progress::types::ReconcileError::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 813,
+              "rlimit-count": 111,
+              "success": true
+            },
+            {
+              "function": "progress::types::RequestId::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 338,
+              "rlimit-count": 6076,
+              "success": true
+            },
+            {
+              "function": "progress::types::Command::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 299,
+              "rlimit-count": 62050,
+              "success": true
+            },
+            {
+              "function": "progress::types::Entry::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 130,
+              "rlimit-count": 376,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "state",
+          "time": 1,
+          "time-micros": 1265,
+          "rlimit-count": 89179,
+          "function-breakdown": [
+            {
+              "function": "progress::state::InitError::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 478,
+              "rlimit-count": 171,
+              "success": true
+            },
+            {
+              "function": "progress::state::PendingWrite::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 269,
+              "rlimit-count": 567,
+              "success": true
+            },
+            {
+              "function": "progress::state::DurableState::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 256,
+              "rlimit-count": 7863,
+              "success": true
+            },
+            {
+              "function": "progress::state::Role::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 120,
+              "rlimit-count": 79979,
+              "success": true
+            },
+            {
+              "function": "progress::state::Observation::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 139,
+              "rlimit-count": 599,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "progress_spec",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "contracts",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "representation",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "persistence_spec",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "initialization",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "model",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        }
+      ]
+    }
+  },
+  "verus": {
+    "profile": "release",
+    "version": "0.2026.01.23.1650a05",
+    "platform": {
+      "os": "linux",
+      "arch": "x86_64"
+    },
+    "toolchain": "1.92.0-x86_64-unknown-linux-gnu",
+    "commit": "1650a05d64219fdd1d150f32d0d7d5b19b8defcd"
+  }
+}

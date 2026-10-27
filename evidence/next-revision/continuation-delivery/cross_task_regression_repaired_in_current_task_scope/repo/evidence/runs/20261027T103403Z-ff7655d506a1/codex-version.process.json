@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "/home/nitro/Desktop/raft_verus/orchestrator/tests/fixtures/fake_codex.py",
+    "--version"
+  ],
+  "status": "COMPLETED",
+  "exit_code": 0,
+  "stdout": "codex-cli FIXTURE\n",
+  "stderr": "",
+  "stdout_truncated": false,
+  "stderr_truncated": false,
+  "elapsed_seconds": 0.04345648999878904
+}

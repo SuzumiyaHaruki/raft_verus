@@ -2,7 +2,7 @@
 
 Status: DRAFT. All ten recommendations await human review; none is approved. Approver and approval time: none.
 
-The requested maintenance revision activates STATE-INIT as a draft generation experiment. Review its candidate API, independent targets and results after delivery; activation approves no Raft semantics. RUNTIME-PERSIST still lacks its executable representation and checks. Real adapters and temporal proofs remain open.
+The requested maintenance revision activates STATE-INIT as a draft generation experiment. Review its candidate API, independent targets and results after delivery; activation approves no Raft semantics. RUNTIME-PERSIST has observable types, independent behavioral targets/checks and editable implementation-contract seeds; executable behavior is for the experiment to generate. Real adapters and temporal proofs remain open.
 
 | ID | Topic | Status |
 |---|---|---|
@@ -25,9 +25,9 @@ Rationale: Crashes may occur between writes, sends and callbacks; the library mu
 
 Alternatives: Put coordination in the host, expanding external assumptions; or use blocking I/O, which still needs intermediate-crash semantics.
 
-Impact: Determines PO-IO/PO-REFINE-STEP and host duties. A local suffix-reconciliation operation and token helpers exist; there is still no step implementation.
+Impact: Determines PO-IO/PO-REFINE-STEP and host duties. Active source contains shared types and failing operation seeds; old maintenance implementations are retained only as excluded offline fixtures.
 
-Definition: [related material](../input/io.md). This candidate may be revised; it is not an approved baseline.
+Definition: [related material](../input/io.md). All remain DRAFT.
 
 ## ADR-02: Membership and cluster size
 
@@ -39,7 +39,7 @@ Alternatives: Explicitly restrict v1 to n>=3, or check one fixed n. Fixed-size c
 
 Impact: Determines the set domain and quorum lemmas for PO-INIT/PO-AUX-VOTE; test counts do not change theorem quantifiers.
 
-Definition: [related material](../input/requirements.md). This candidate may be revised; it is not an approved baseline.
+Definition: [related material](../input/requirements.md). All remain DRAFT.
 
 ## ADR-03: Numbers, tokens and resources
 
@@ -51,7 +51,7 @@ Alternatives: Use arbitrary-precision integers, still subject to allocation limi
 
 Impact: PO-REPRESENTATION/PO-AUX-TOKEN/PO-LIVE-REFINEMENT. Finite liveness budget B is not derived; unlimited resources are not promised.
 
-Definition: [related material](../input/assumptions.md). This candidate may be revised; it is not an approved baseline.
+Definition: [related material](../input/assumptions.md). All remain DRAFT.
 
 ## ADR-04: Non-circular conditional liveness
 
@@ -63,7 +63,7 @@ Alternatives: Require eventual synchrony of all nodes, or develop an almost-sure
 
 Impact: PO-L-ELECTION/COMMIT/DELIVER and fairness refinement. Environmental premises are not fully encoded as Verus trace predicates; D3 remains PARTIAL.
 
-Definition: [related material](../input/assumptions.md). This candidate may be revised; it is not an approved baseline.
+Definition: [related material](../input/assumptions.md). All remain DRAFT.
 
 ## ADR-05: Proposals, request identity and retries
 
@@ -75,7 +75,7 @@ Alternatives: Add library request deduplication/result caching, expanding code/p
 
 Impact: PO-REQUEST/PO-L-COMMIT and host retry contract. Eligibility must not assume eventual acceptance or success.
 
-Definition: [related material](../input/io.md). This candidate may be revised; it is not an approved baseline.
+Definition: [related material](../input/io.md). All remain DRAFT.
 
 ## ADR-06: Delivery, application and recovery
 
@@ -87,7 +87,7 @@ Alternatives: Add a library deduplication store/application engine, expanding sc
 
 Impact: Separate PO-DELIVERY/PO-S-INTERFACE from PO-S-APPLY. A-S-APP affects the latter only.
 
-Definition: [related material](../input/io.md). This candidate may be revised; it is not an approved baseline.
+Definition: [related material](../input/io.md). All remain DRAFT.
 
 ## ADR-07: Storage, network and TCB
 
@@ -99,7 +99,7 @@ Alternatives: Verify file/network adapters too, or remove crash recovery from sc
 
 Impact: PO-RECOVERY/PO-IO/PO-COMPOSITION and A-S-ID/STORAGE/COMPLETION. New trusted locations need review.
 
-Definition: [related material](../input/trust.md). This candidate may be revised; it is not an approved baseline.
+Definition: [related material](../input/trust.md). All remain DRAFT.
 
 ## ADR-08: Verus, temporal library and entrypoints
 
@@ -111,11 +111,11 @@ Alternatives: Start with transparent trace definitions and integrate the tempora
 
 Impact: PO-L-*/PO-COVERAGE. User-authorized official Verus 0.2026.01.23.1650a05, bundled vstd, isolated Rust 1.92.0 and Z3 4.12.5 were actually exercised. Smoke results matched expectations and spec was TYPECHECKED only. This combination remains unapproved; verus-tla compatibility is BLOCKED. Version observations are not approved pins. The temporary installation was absent on 2026-10-27; the same release was restored to a persistent user directory. See [tool setup and actual records](../docs/tools.md).
 
-Definition: [related material](../docs/sources.md). This candidate may be revised; it is not an approved baseline.
+Definition: [related material](../docs/sources.md). All remain DRAFT.
 
 ## ADR-09: Isolation and local mode
 
-Recommendation: Bootstrap evidence is local-development evidence. Formal execution needs separate permissions, a container or host sandbox so tasks cannot modify approvals, checker, toolchain or controller evidence, or read secrets.
+Recommendation: Bootstrap evidence is local-development evidence. Formal execution needs separate permissions, a container or host sandbox so tasks cannot modify the checker, toolchain or controller evidence, or read secrets.
 
 Rationale: Worktrees/directory copies share OS permissions; build scripts/tests execute host code. Digests cannot prevent same-UID checker modification.
 
@@ -123,7 +123,7 @@ Alternatives: Continue supervised candidate experiments on a trusted local host,
 
 Impact: TCB-HOST/CHECKER; formal full acceptance remains blocked by isolation gaps. Offline fixtures consume no real generation calls.
 
-Definition: [related material](../docs/workflow.md). This candidate may be revised; it is not an approved baseline.
+Definition: [related material](../docs/workflow.md). All remain DRAFT.
 
 ## ADR-10: Evidence binding and review after delivery
 
@@ -135,16 +135,20 @@ Rationale: A historical PASS can be reused after uncommitted source/checker chan
 
 Alternative: Rerun every check instead of reusing evidence. Same-user isolation and complete correctness remain open. See [the workflow](../docs/workflow.md).
 
-## Review items introduced by this revision
+## Current implementation and checking choices
 
-All remain recommendations, not approvals:
+These concrete boundaries refine the existing decisions; none approves new semantics. Historical revision tables have been consolidated here; previous review packets remain in evidence.
 
-| Existing decision | Concrete item to review | Recommendation and current limit |
-|---|---|---|
-| ADR-01 / ADR-03 | Reconciliation API and numeric/resource boundary | Use the shared `reconcile_log` after term/predecessor validation. Invalid indices and representable-length overflow return errors without mutation. Future callers must check `u64` to `usize` conversion and committed-prefix compatibility. `Vec` allocation can still abort; do not claim recoverable allocation failure or resource liveness. |
-| ADR-07 / ADR-08 | Shared Cargo/Verus build and local proof target | Use the installed macro erasure with matching child Rust 1.92. Keep `merged` unchanged. A protected proof caller demands the original relation even if an editable implementation contract is weakened. Derived non-Copy Clone contracts are unavailable; the verified operation does not invoke Clone. |
-| ADR-09 / ADR-10 | Revised local acceptance and resumable candidates | Review delivered task/check definitions separately from semantic claims. Typecheck/test/measurement completion need not close a theorem; real whole-crate function-attributed proof evidence can close only its local target. No hostile-process isolation or whole-project acceptance is claimed. |
-| ADR-01 / ADR-02 / ADR-03 | Initial Node API | Recommend `Node::new(id, members)` for genuinely fresh storage only. Accept arbitrary ordering, reject duplicates/unknown identity/empty membership; preserve IDs and order. Incarnation zero is not a recovery allocator. Pending I/O and peer state are future extensions to the same Node. No behavior is approved by this task. |
-| ADR-08 / ADR-10 | Initialization correspondence and experiment | Recommend the protected `init_result` consumer of the shared constructor. It checks initial represented fields and demands success on all valid memberships; it is not full node/cluster refinement. The source seed must fail, offline scripted repairs are SIMULATED generation, and only their actual checking is REAL_LOCAL. Narrow the existing reconciliation test profile to its original 15 regressions; the node profile runs all 23. Review the exact added ghost-only import allowance, which imports a specification and does not alter executable code. |
+| Decision | Recommendation and remaining limit |
+|---|---|
+| ADR-01 / ADR-02 / ADR-03 | Keep fresh-only `Node::new(id, members)` with arbitrary membership order, duplicate/empty/unknown-ID rejection and initial incarnation zero. Recovery must allocate fresh incarnations separately. Peer state remains a future extension. |
+| ADR-01 / ADR-03 | Call `reconcile_log` only after protocol term/predecessor validation. Preserve committed prefixes in future callers. Invalid indices and length overflow return unchanged input; Vec allocation can still abort, so no recoverable allocation or resource-liveness claim follows. |
+| ADR-01 / ADR-07 | Keep one pending write, Busy preservation, full token/kind/incarnation matching and no released reply on failed storage. NotPerformed and Unknown both fail-stop with distinct errors; direct known-failure retry semantics need joint storage/recovery review. |
+| ADR-01 / ADR-05 | Host snapshots `observe().hard` under the returned token before a successful callback. Arbitrary submitted images are not legal Raft transitions by themselves. Future handlers must prove authority/term/log legality; the full Effect/Send boundary remains open. |
+| ADR-08 / ADR-10 | Generate Node layout, view, representation invariant, local contracts and proofs together. Protected callers require original observation relations and actual outputs. The observation vocabulary and borrowed adapter interface remain supplied constraints. `from_observation` is a boundary-test adapter for every observable record, not recovery; `wf` must express representation consistency, while reachable-state invariants need separate proofs. Review this distinction and specification adequacy. |
+| ADR-07 / ADR-08 | Use matching installed Cargo/Verus tools on the same source. Public representation fields currently permit open Verus specifications; tests use the observation API. Generated layouts may reorganize those fields. Clone contract limitations and the unproved host/adapter boundary remain disclosed. |
+| ADR-08 | Use local spec_fn/nat traces for coordinator progress. External temporal-library compatibility, global interference/resource conditions and transfer of host fairness remain open. No fixed auxiliary induction helper is required. |
+| ADR-09 / ADR-10 | Keep independent tests and protected behavioral consumers, persistent budgets/history, bounded redesign and affected-task regressions. Local contract changes are ordinary edits; changed protected requirements/assumptions are proposals for review. Candidate source type/mode/visibility failures route to repair with proof NOT_RUN. No hostile-process isolation or whole-project acceptance is claimed. |
+| ADR-10 | Use real microbenchmarks as measurements until a comparable reference and explicit rule are chosen. No approved performance target or cluster measurement claim exists. |
 
-The fixture repair demonstration used no live agent session. The configured experiment requires an explicit launch; the ten technical decisions remain DRAFT.
+Active protocol bodies remain failing seeds; offline solutions and proof strategies are excluded SIMULATED fixtures. Independent test expectations are retained, now expressed through observations instead of internal fields. Review executable observation correspondence as well as the generated predicates: proof against a weak local contract alone is insufficient. Real Rust/Verus results are separate from generation provenance. Review occurs after delivery; there is no interactive approval checkpoint.

@@ -1,6 +1,8 @@
 # Executable Raft development
 
-Status: DRAFT. `reconcile_log` is the suffix operation intended for a future AppendEntries handler. The rest of the library still provides interface types and token helpers plus shared initial-state types; it is not a functioning Raft node. `node.rs` is the next generation task's reject-all seed. `check.py test` now includes eight initialization oracles, so it intentionally fails on that seed. Existing regressions remain available through the `reconcile-tests` profile. STATE-INIT candidates must pass all 23 tests, `node-proof`, `node-replay`, existing reconciliation proofs and `node-bench`. The offline repair command and actual candidate are linked in the root review packet.
+Status: DRAFT. The experiment starts with failing protocol bodies and generates Rust code plus implementation-layer Verus contracts and proofs. `src/state.rs`, `types.rs` and `io.rs` provide observable vocabulary; `node_state.rs` supplies an editable Node layout, view, representation invariant and adapters. `contracts.rs` supplies vacuous local predicates that must be replaced or reorganized to satisfy the independent consumers. No successful constructor/coordinator is silently installed.
+
+`check.py build` succeeds on the scaffold; behavioral tests and corresponding independent proofs fail until generation. STATE-INIT checks eight initialization cases, its proof and replay. RUNTIME-PERSIST adds six tests, proof and replay over the same Node; reconciliation has 13 operation/replay cases. Tests use `observe()`, not internal fields. `from_observation()` is only the disclosed boundary-test adapter, including serial exhaustion; it does not implement recovery. Completed selected tasks are rechecked after representation/contract changes. See [inputs](../../input/starting-point.md) and [actual results](../../review/REVIEW_PACKET.md).
 
 From the repository root:
 

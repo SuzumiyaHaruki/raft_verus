@@ -1,0 +1,28 @@
+[
+  {
+    "category": "functional",
+    "action": "repair",
+    "diagnosis": "Reproduce the build or test failure, preserve the regression, and repair within the declared scope.",
+    "task_goal": "FIXTURE_JSON={\"task_id\": \"fixture-task\"}\n",
+    "candidate_revision": "4b7d3072f1204ce5a521e5370d37223541d328beb95d8f21181830f0be922262",
+    "failed_command": [
+      "/usr/bin/python3",
+      "-c",
+      "from pathlib import Path; assert \"candidate\" in Path(\"src/lib.rs\").read_text(); print(\"test result: ok. 1 passed\")"
+    ],
+    "expected": "Configured targets and required observations succeed",
+    "observed": "configured build/test success evidence absent",
+    "reproduction": "cd /home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/exhaustion_resume_and_explicit_extension/repo/evidence/runs/20261027T101829Z-a4b1202f9516/candidate && /usr/bin/python3 -c 'from pathlib import Path; assert \"candidate\" in Path(\"src/lib.rs\").read_text(); print(\"test result: ok. 1 passed\")'",
+    "artifact_paths": [
+      "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/exhaustion_resume_and_explicit_extension/repo/evidence/runs/20261027T101829Z-4a5435c14adf/attempt-1/actual-test.stdout.log",
+      "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/exhaustion_resume_and_explicit_extension/repo/evidence/runs/20261027T101829Z-4a5435c14adf/attempt-1/actual-test.stderr.log"
+    ],
+    "error_excerpt": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/exhaustion_resume_and_explicit_extension/repo/evidence/runs/20261027T101829Z-4a5435c14adf/attempt-1/actual-test.stdout.log:\n\n/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/exhaustion_resume_and_explicit_extension/repo/evidence/runs/20261027T101829Z-4a5435c14adf/attempt-1/actual-test.stderr.log:\n1: Traceback (most recent call last):\n2:   File \"<string>\", line 1, in <module>\n3: AssertionError",
+    "editable_scope": [
+      "src"
+    ],
+    "required_reruns": [
+      "actual-test"
+    ]
+  }
+]

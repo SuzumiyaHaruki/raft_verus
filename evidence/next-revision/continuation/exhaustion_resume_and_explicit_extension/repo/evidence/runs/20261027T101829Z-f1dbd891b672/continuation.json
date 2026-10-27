@@ -1,0 +1,115 @@
+{
+  "calls": 2,
+  "repairs": 1,
+  "redesigns": 0,
+  "active_seconds": 0.39959260598698165,
+  "call_limit": 2,
+  "repair_limit": 1,
+  "redesign_limit": 1,
+  "seconds_limit": 15,
+  "attempts": [
+    {
+      "number": 1,
+      "mode": "initial",
+      "summary": "SIMULATED fixture candidate",
+      "changed_paths": [
+        "src/lib.rs"
+      ],
+      "results": "actual-test=FAIL",
+      "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/exhaustion_resume_and_explicit_extension/repo/evidence/runs/20261027T101829Z-4a5435c14adf/attempt-1",
+      "generation_kind": "SIMULATED"
+    },
+    {
+      "number": 2,
+      "mode": "repair",
+      "summary": "SIMULATED fixture candidate",
+      "changed_paths": [
+        "src/lib.rs"
+      ],
+      "results": "actual-test=FAIL",
+      "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/exhaustion_resume_and_explicit_extension/repo/evidence/runs/20261027T101829Z-4a5435c14adf/attempt-2",
+      "generation_kind": "SIMULATED"
+    }
+  ],
+  "diagnostics": {
+    "checks": [
+      {
+        "schema_version": "1",
+        "check_id": "actual-test",
+        "run_id": "20261027T101829Z-4a5435c14adf",
+        "check_kind": "verification",
+        "profile_id": "actual-test",
+        "purpose": "test",
+        "required": true,
+        "expected_targets": [
+          "candidate source regression"
+        ],
+        "expected_obligation_ids": [],
+        "entrypoints": [
+          "src/lib.rs"
+        ],
+        "expected_behavior": "Configured targets and required observations succeed",
+        "result": "FAIL",
+        "argv": [
+          "/usr/bin/python3",
+          "-c",
+          "from pathlib import Path; assert \"candidate\" in Path(\"src/lib.rs\").read_text(); print(\"test result: ok. 1 passed\")"
+        ],
+        "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/exhaustion_resume_and_explicit_extension/repo/evidence/runs/20261027T101829Z-a4b1202f9516/candidate",
+        "input_manifest_digest": "667ebaf20fb73d21d966863462d2d73cb7c484b197909bdbc6e04382a6a5ff85",
+        "tool_versions": {},
+        "started_at": "2026-10-27T10:18:29.505260+00:00",
+        "finished_at": "2026-10-27T10:18:29.620662+00:00",
+        "exit_code": 1,
+        "stdout_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_digest": "09a596a85bd2c6b81ed1c4f1519e29c8f5cdb5b6a1f7e3b5bde6b48fad697970",
+        "evidence_paths": [
+          "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/exhaustion_resume_and_explicit_extension/repo/evidence/runs/20261027T101829Z-4a5435c14adf/attempt-2/actual-test.stdout.log",
+          "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/exhaustion_resume_and_explicit_extension/repo/evidence/runs/20261027T101829Z-4a5435c14adf/attempt-2/actual-test.stderr.log"
+        ],
+        "obligation_ids_checked": [],
+        "coverage_findings": [],
+        "policy_findings": [],
+        "evidence_kind": "REAL_LOCAL",
+        "contract_status": "DRAFT",
+        "full_acceptance": false,
+        "tool_environment": {},
+        "failed_tests": [],
+        "reason": "configured build/test success evidence absent"
+      }
+    ],
+    "candidate_revision": "01014b5b51aaf7508c083375c813de727a29f307464d6f72e3bb1496cdeae022",
+    "attempts": [
+      {
+        "number": 1,
+        "mode": "initial",
+        "summary": "SIMULATED fixture candidate",
+        "changed_paths": [
+          "src/lib.rs"
+        ],
+        "results": "actual-test=FAIL",
+        "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/exhaustion_resume_and_explicit_extension/repo/evidence/runs/20261027T101829Z-4a5435c14adf/attempt-1",
+        "generation_kind": "SIMULATED"
+      },
+      {
+        "number": 2,
+        "mode": "repair",
+        "summary": "SIMULATED fixture candidate",
+        "changed_paths": [
+          "src/lib.rs"
+        ],
+        "results": "actual-test=FAIL",
+        "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/exhaustion_resume_and_explicit_extension/repo/evidence/runs/20261027T101829Z-4a5435c14adf/attempt-2",
+        "generation_kind": "SIMULATED"
+      }
+    ]
+  },
+  "stalls": 2,
+  "failing": [
+    "actual-test:candidate source regression"
+  ],
+  "checkpoints": {},
+  "generation_kinds": [
+    "SIMULATED"
+  ]
+}

@@ -112,8 +112,14 @@ def verify_profile(root: str | Path, profile: dict, evidence_dir: str | Path,
             return finish("BLOCKED", "required external checker isolation is not implemented by this local controller")
     environment = {key: os.environ[key] for key in ("PATH", "HOME", "USER", "LANG", "LC_ALL", "RUSTUP_HOME", "CARGO_HOME", "LD_LIBRARY_PATH") if key in os.environ}
     overrides = profile.get("tool_env", {})
-    if not isinstance(overrides, dict) or any(key not in {"PATH", "RUSTUP_HOME", "CARGO_HOME"} or not isinstance(value, str) for key, value in overrides.items()):
-        return finish("ERROR", "tool_env permits only configured PATH/RUSTUP_HOME/CARGO_HOME strings")
+    if not isinstance(overrides, dict) or any(key not in {"PATH", "RUSTUP_HOME", "CARGO_HOME", "RAFT_TOOLCHAIN_ROOT", "RAFT_WORKFLOW_CONFIG"} or not isinstance(value, str) for key, value in overrides.items()):
+        return finish("ERROR", "tool_env permits only configured tool selection strings")
+    selected = profile.get("resolved_toolchain")
+    if selected:
+        report["resolved_toolchain"] = selected
+        missing = [p for p in selected["paths"].values() if not Path(p).is_file()]
+        if missing:
+            return finish("BLOCKED", "missing configured tools: " + ", ".join(missing))
     environment.update(overrides)
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
     report["tool_environment"] = overrides
@@ -194,6 +200,12 @@ def verify_profile(root: str | Path, profile: dict, evidence_dir: str | Path,
             if "--output-json" in argv:
                 parsed = json.loads(result.stdout)
                 summary = parsed["verification-results"]
+                if (result.exit_code != 0 and summary.get("errors", 0) == 0 and
+                        (summary.get("encountered-error") is True or summary.get("encountered-vir-error") is True)
+                        and re.search(r"(?m)^error(?:\[E\d+\])?:", result.stderr)):
+                    report["failure_stage"] = "source-compilation"
+                    report["proof_result"] = "NOT_RUN"
+                    return finish("FAIL", "candidate syntax, types or Verus modes/visibility rejected before proof; repair the source")
                 verified, errors = summary["verified"], summary["errors"]
                 if type(verified) is not int or type(errors) is not int or verified < 0 or errors < 0:
                     raise ValueError("invalid Verus JSON verification counts")
@@ -256,7 +268,8 @@ def verify_profile(root: str | Path, profile: dict, evidence_dir: str | Path,
                     return (lines[index].strip() == "#[cfg(verus_keep_ghost)]"
                             and index + 1 < len(lines) and lines[index + 1].strip() in
                             {"use crate::model;", "use crate::representation::log_view;",
-                             "use crate::initialization::init_result;"})
+                             "use crate::initialization::init_result;",
+                             "use crate::persistence_spec::{issue_result, complete_result, dispatch_result};"})
                 findings = [finding for finding in findings if not ghost_model_import(finding)]
                 if findings:
                     report["policy_findings"].extend(findings)
@@ -268,6 +281,8 @@ def verify_profile(root: str | Path, profile: dict, evidence_dir: str | Path,
                 report["coverage_findings"].append("complete Verus entrypoint verified; reviewed target mapping binds its function contracts to local obligations")
         else:
             pattern = profile.get("success_pattern")
+            if report["purpose"] == "test":
+                report["failed_tests"] = re.findall(r"(?m)^test (\S+) \.\.\. FAILED$", text)
             if result.exit_code != 0 or (report["purpose"] != "benchmark" and not pattern) or (pattern and not re.search(pattern, text)):
                 return finish("FAIL", "configured build/test success evidence absent")
             if report["purpose"] == "proof":
@@ -304,7 +319,14 @@ def verify_profile(root: str | Path, profile: dict, evidence_dir: str | Path,
                     if (not measurement.get("workload") or not isinstance(samples, list) or len(samples) < 2
                             or any(type(value) not in (int, float) or not math.isfinite(value) or value < 0 for value in samples)):
                         return finish("FAIL", "measurement requires an identified workload and repeated finite numeric samples")
-                return finish("MEASURED", "measurement data recorded; no performance threshold or regression verdict")
+                from .performance import compare
+                try:
+                    report.update(compare(measurements, profile.get("comparison"), root))
+                except (OSError, ValueError, KeyError, TypeError, StopIteration) as exc:
+                    return finish("BLOCKED", "incomparable measurements: " + str(exc))
+                if report["performance_verdict"] == "REGRESSION":
+                    return finish("FAIL", "reproduced comparable regression under the configured rule")
+                return finish("MEASURED", "measurement recorded; comparison: " + report["performance_verdict"])
             report["coverage_findings"].append("build/test only; no mathematical proof")
     except (ValueError, TypeError, KeyError, re.error) as exc:
         return finish("ERROR", str(exc))

@@ -1,0 +1,43 @@
+
+running 8 tests
+test empty_membership ... ok
+test maximum_identity_is_not_a_sentinel ... FAILED
+test duplicate_identity ... ok
+test nonadjacent_duplicate_peer ... ok
+test membership_order_is_not_a_precondition ... FAILED
+test unknown_identity ... ok
+test one_member ... FAILED
+test several_members ... FAILED
+
+failures:
+
+---- maximum_identity_is_not_a_sentinel stdout ----
+
+thread 'maximum_identity_is_not_a_sentinel' (105) panicked at crates/raft-verified/tests/node_init.rs:5:44:
+valid membership must construct a node: InvalidMembership
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- membership_order_is_not_a_precondition stdout ----
+
+thread 'membership_order_is_not_a_precondition' (106) panicked at crates/raft-verified/tests/node_init.rs:5:44:
+valid membership must construct a node: InvalidMembership
+
+---- one_member stdout ----
+
+thread 'one_member' (108) panicked at crates/raft-verified/tests/node_init.rs:5:44:
+valid membership must construct a node: InvalidMembership
+
+---- several_members stdout ----
+
+thread 'several_members' (109) panicked at crates/raft-verified/tests/node_init.rs:5:44:
+valid membership must construct a node: InvalidMembership
+
+
+failures:
+    maximum_identity_is_not_a_sentinel
+    membership_order_is_not_a_precondition
+    one_member
+    several_members
+
+test result: FAILED. 4 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

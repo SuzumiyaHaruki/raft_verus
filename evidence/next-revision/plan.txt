@@ -1,0 +1,89 @@
+DRAFT Raft development plan
+Step readiness is not module completion. Use an explicit launch to execute ready steps.
+Module completion: NOT_ASSESSED. Whole-project acceptance: incomplete.
+Requested model: gpt-6.1-sol; reasoning effort: high (not a resolved service result).
+
+input/state.md
+  [ready] STATE-INIT: Initialize node state
+
+input/runtime.md
+  [ready] RUNTIME-PERSIST: Coordinate persistence and completions
+    After: STATE-INIT
+  [planned] RUNTIME-DISPATCH: Integrate the node dispatcher
+    After: ELECTION-RESPONSES, REPLICATION-RESPONSES, COMMITMENT-DELIVER, RECOVERY-RESTART
+    Missing: Complete handler set, public dispatcher, event/error coverage and integration profiles are missing.
+
+input/elections.md
+  [planned] ELECTION-VOTE: Process vote requests
+    After: RUNTIME-PERSIST
+    Missing: Vote handler, durable-response tests and local correspondence profiles are missing.
+  [planned] ELECTION-TIMEOUT: Start and retry elections
+    After: RUNTIME-PERSIST
+    Missing: Election state/timer/request-generation paths and their independent checks are missing.
+  [planned] ELECTION-RESPONSES: Count votes and transition roles
+    After: ELECTION-TIMEOUT, ELECTION-VOTE
+    Missing: Vote-response/role-transition code, multi-term tests and quorum proofs are missing.
+
+input/replication.md
+  [ready] REPLICATION-RECONCILE: Reconcile log contents
+  [ready] REPLICATION-PROOF: Prove reconciliation correspondence
+    After: REPLICATION-RECONCILE
+  [planned] REPLICATION-FOLLOWER: Integrate follower append handling
+    After: ELECTION-VOTE, REPLICATION-PROOF
+    Missing: Follower handler, predecessor/commit guards, durable reply scenarios and proof profiles are missing.
+  [planned] REPLICATION-LEADER: Send proposals and replication requests
+    After: ELECTION-RESPONSES
+    Missing: Leader proposal/heartbeat/retry service and local test/proof profiles are missing.
+  [planned] REPLICATION-RESPONSES: Process replication responses
+    After: REPLICATION-FOLLOWER, REPLICATION-LEADER
+    Missing: Peer-progress/backtracking code, catch-up traces and local proof profiles are missing.
+  [ready] REPLICATION-REPLAY: Replay reconciliation regressions
+    After: REPLICATION-RECONCILE
+
+input/commitment.md
+  [planned] COMMITMENT-ADVANCE: Advance committed prefixes
+    After: REPLICATION-RESPONSES
+    Missing: Commit code, majority/current-term regressions and correspondence checks are missing.
+  [planned] COMMITMENT-DELIVER: Deliver and acknowledge committed entries
+    After: COMMITMENT-ADVANCE
+    Missing: Delivery/application coordinator, crash replay and independent proof profiles are missing.
+
+input/recovery.md
+  [planned] RECOVERY-RESTART: Restore a crashed node
+    After: RUNTIME-PERSIST
+    Missing: Concrete recovery/cursor handling, crash-boundary tests and proof profiles are missing.
+  [planned] RECOVERY-FAULTS: Exercise cluster fault histories
+    After: RUNTIME-DISPATCH
+    Missing: Actual multi-node event driver, reproducible fault traces and independent scenario profiles are missing.
+
+input/integration.md
+  [planned] INTEGRATION-ADAPTERS: Connect and test real host adapters
+    After: RUNTIME-DISPATCH
+    Missing: Reviewed adapter choices, real network/storage/timer code and integration checks are missing.
+  [planned] INTEGRATION-CLUSTER-MEASURE: Measure integrated workloads
+    After: INTEGRATION-ADAPTERS, RECOVERY-FAULTS
+    Missing: Runnable cluster/adapters, comparable workload harness and measurement profiles are missing.
+  [planned] INTEGRATION-SAFETY: Compose global safety proofs
+    After: RECOVERY-FAULTS, REPLICATION-PROOF
+    Missing: Inductive invariants, node/cluster refinement and global safety proofs are missing; select bounded lemma scopes before activation.
+  [planned] INTEGRATION-FULL: Review complete Raft coverage
+    After: INTEGRATION-SAFETY, PROGRESS-REFINEMENT, INTEGRATION-ADAPTERS, INTEGRATION-CLUSTER-MEASURE
+    Missing: Full proof entrypoint, complete final-candidate coverage and required human decisions remain missing.
+  [ready] INTEGRATION-MEASURE: Measure reconciliation cost
+    After: REPLICATION-RECONCILE, REPLICATION-REPLAY, REPLICATION-PROOF
+
+input/progress.md
+  [ready] PROGRESS-FOUNDATION: Establish coordinator progress foundation
+    After: RUNTIME-PERSIST
+  [planned] PROGRESS-ELECTION: Establish persistent leader progress
+    After: INTEGRATION-SAFETY, PROGRESS-FOUNDATION
+    Missing: Temporal premises, election-window/persistent-leader lemmas and compatible proof profiles are missing; narrow proof scope before activation.
+  [planned] PROGRESS-COMMIT: Establish request commitment progress
+    After: PROGRESS-ELECTION, COMMITMENT-ADVANCE
+    Missing: Fair request-service and replication/commit progress lemmas and actual proof profiles are missing.
+  [planned] PROGRESS-DELIVER: Establish delivery progress
+    After: PROGRESS-COMMIT, COMMITMENT-DELIVER
+    Missing: Catch-up/delivery progress lemmas and actual proof/scenario profiles are missing.
+  [planned] PROGRESS-REFINEMENT: Transfer progress to executable code
+    After: PROGRESS-DELIVER, RUNTIME-DISPATCH
+    Missing: Termination, external-wait/fairness transfer and finite-resource proofs are missing.

@@ -1,0 +1,60 @@
+{
+  "run_id": "20261027T103402Z-22cde75deb0b",
+  "task_id": "fixture-task",
+  "status": "FAILED",
+  "agent_calls": 0,
+  "completion_scope": "STEP_ONLY",
+  "module_document": null,
+  "codex_request": {
+    "model": null,
+    "model_reasoning_effort": null
+  },
+  "history": [
+    "PENDING",
+    "FAILED"
+  ],
+  "evidence_kind": "REAL_LOCAL",
+  "full_acceptance": false,
+  "generation_kind": "SIMULATED",
+  "obligation_ids_checked": [],
+  "input_fingerprint": "9d2ee8329c4c309465fcafa97e245835138bbee34b344d45106ec262451bc2b0",
+  "current_fingerprint": null,
+  "reason": "cumulative call budget exhausted; resume does not replenish it",
+  "cumulative_usage": {
+    "calls": 2,
+    "repairs": 1,
+    "redesigns": 0,
+    "active_seconds": 0.6435516899946379,
+    "call_limit": 2,
+    "repair_limit": 1,
+    "redesign_limit": 1,
+    "seconds_limit": 15,
+    "generation_kinds": [
+      "SIMULATED"
+    ]
+  },
+  "attempts": [
+    {
+      "number": 1,
+      "mode": "initial",
+      "summary": "SIMULATED fixture candidate",
+      "changed_paths": [
+        "src/lib.rs"
+      ],
+      "results": "actual-test=FAIL",
+      "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/exhaustion_resume_and_explicit_extension/repo/evidence/runs/20261027T103401Z-f2bbf61a2891/attempt-1",
+      "generation_kind": "SIMULATED"
+    },
+    {
+      "number": 2,
+      "mode": "repair",
+      "summary": "SIMULATED fixture candidate",
+      "changed_paths": [
+        "src/lib.rs"
+      ],
+      "results": "actual-test=FAIL",
+      "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/exhaustion_resume_and_explicit_extension/repo/evidence/runs/20261027T103401Z-f2bbf61a2891/attempt-2",
+      "generation_kind": "SIMULATED"
+    }
+  ]
+}

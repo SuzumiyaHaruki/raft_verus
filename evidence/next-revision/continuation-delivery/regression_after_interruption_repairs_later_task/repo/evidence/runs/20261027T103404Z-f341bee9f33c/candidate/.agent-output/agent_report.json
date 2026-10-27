@@ -1,0 +1,1 @@
+{"schema_version": "1", "task_id": "second", "claimed_outcome": "candidate_ready", "summary": "SIMULATED fixture candidate", "changed_files": ["src/lib.rs"], "attempted_obligation_ids": [], "commands_reported_by_agent": [], "proposed_spec_changes": [], "proposed_trust_changes": [], "blockers": []}

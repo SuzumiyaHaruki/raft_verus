@@ -26,10 +26,22 @@ def load_config(root: Path, path: str | Path = "workflow.toml") -> dict:
     config = tomllib.loads(location.read_text(encoding="utf-8"))
     config["_config_path"] = str(location.resolve())
     validate_codex_settings(config.get("codex", {}))
+    from .toolchain import resolve
+    selected = None
+    if "install_root" in config.get("toolchain", {}):
+        selected = resolve(config["toolchain"])
+        config["toolchain"]["resolved"] = selected
+        config["toolchain"]["tool_env"] = selected["environment"]
+        for name, path in selected["paths"].items():
+            config["toolchain"][name + "_executable"] = path
     profiles = config.get("checks", config.get("profiles", []))
     if isinstance(profiles, dict):
         profiles = [dict(value, id=key) for key, value in profiles.items()]
     for profile in profiles:
+        if selected:
+            profile["resolved_toolchain"] = selected
+            profile["argv"] = [part.replace("{verus}", selected["paths"]["verus"]) for part in profile["argv"]]
+            profile["tool_env"] = dict(selected["environment"], RAFT_WORKFLOW_CONFIG=str(location.resolve()))
         profile.setdefault("purpose", "proof" if profile.get("adapter") != "command-text-v1" else "build")
         profile.setdefault("timeout_seconds", config.get("budget", {}).get("call_timeout_seconds", 120))
         profile.setdefault("max_log_bytes", config.get("budget", {}).get("max_log_bytes", 1048576))
@@ -45,9 +57,12 @@ def load_config(root: Path, path: str | Path = "workflow.toml") -> dict:
         raise ValueError("missing or duplicate profile IDs")
     budget = config.get("budget", {})
     for key, value in budget.items():
-        minimum = 0 if key in {"max_agent_calls", "max_repair_rounds"} else 1
+        minimum = 0 if key in {"max_agent_calls", "max_repair_rounds", "max_redesigns"} else 1
         if type(value) is not int or value < minimum:
             raise ValueError(f"invalid budget value: {key}")
+    for key, value in config.get("plan_budget", {}).items():
+        if key not in {"max_agent_calls", "active_seconds"} or type(value) is not int or value < 0:
+            raise ValueError(f"invalid plan budget value: {key}")
     for profile in profiles:
         if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]*", str(profile.get("id", ""))):
             raise ValueError("unsafe check profile ID")

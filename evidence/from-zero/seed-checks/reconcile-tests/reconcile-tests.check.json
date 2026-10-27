@@ -1,0 +1,89 @@
+{
+  "schema_version": "1",
+  "check_id": "reconcile-tests",
+  "run_id": "local",
+  "check_kind": "functional-tests",
+  "profile_id": "reconcile-tests",
+  "purpose": "test",
+  "required": true,
+  "expected_targets": [
+    "reconciliation edge cases and replay regressions"
+  ],
+  "expected_obligation_ids": [],
+  "entrypoints": [
+    "Cargo.toml",
+    "Cargo.lock",
+    "crates/raft-verified/Cargo.toml",
+    "crates/raft-verified/src/lib.rs",
+    "crates/raft-verified/src/reconcile.rs",
+    "crates/raft-verified/tests/reconcile.rs",
+    "crates/raft-verified/tests/replay_cases.rs",
+    "crates/raft-verified/examples/replay.rs",
+    "crates/raft-verified/examples/reconcile.trace",
+    "crates/raft-verified/check.py"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "FAIL",
+  "argv": [
+    "python3",
+    "crates/raft-verified/check.py",
+    "test",
+    "--test",
+    "reconcile",
+    "--test",
+    "replay_cases"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus",
+  "input_manifest_digest": "4a44e45f10b6f77af3db1cbac215122bbf40d05be69062778645e56573bcfb09",
+  "tool_versions": {},
+  "started_at": "2026-10-27T11:48:47.051572+00:00",
+  "finished_at": "2026-10-27T11:48:47.694659+00:00",
+  "exit_code": 101,
+  "stdout_digest": "1c9e2df49926eb6c7e542114f1684384be4fde6b7e3dfd8e336dc56f81ee12e6",
+  "stderr_digest": "794549e07d705e95b0efd9f56ae01ed8f6ccf9a6beeeb40ed9e638b89625cb8b",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/from-zero/seed-checks/reconcile-tests/reconcile-tests.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/from-zero/seed-checks/reconcile-tests/reconcile-tests.stderr.log"
+  ],
+  "obligation_ids_checked": [],
+  "coverage_findings": [],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "resolved_toolchain": {
+    "paths": {
+      "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+      "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+      "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+    },
+    "missing": [],
+    "environment": {
+      "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+    }
+  },
+  "tool_environment": {
+    "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+    "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+    "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+    "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/workflow.toml"
+  },
+  "failed_tests": [
+    "all_matching_entries_are_unchanged",
+    "appends_at_log_end_and_initializes_empty_log",
+    "conflict_copies_complete_incoming_command",
+    "appends_missing_suffix_after_matching_entries",
+    "empty_append_preserves_matching_tail",
+    "matching_term_retains_existing_command_as_model_requires",
+    "first_entry_can_conflict_and_suffix_can_shrink",
+    "shorter_matching_input_preserves_tail",
+    "zero_and_end_predecessors_accept_empty_input",
+    "replaces_from_first_conflict_only"
+  ],
+  "reason": "configured build/test success evidence absent"
+}

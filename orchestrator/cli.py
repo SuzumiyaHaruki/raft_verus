@@ -26,9 +26,9 @@ def doctor(root: Path, config: dict) -> dict:
     tools["codex"] = codex
     toolchain = config.get("toolchain", {})
     overrides = toolchain.get("tool_env", {})
-    if not isinstance(overrides, dict) or any(key not in {"PATH", "RUSTUP_HOME", "CARGO_HOME"} or not isinstance(value, str)
+    if not isinstance(overrides, dict) or any(key not in {"PATH", "RUSTUP_HOME", "CARGO_HOME", "RAFT_TOOLCHAIN_ROOT", "RAFT_WORKFLOW_CONFIG"} or not isinstance(value, str)
                                             for key, value in overrides.items()):
-        raise ValueError("toolchain.tool_env permits only PATH/RUSTUP_HOME/CARGO_HOME strings")
+        raise ValueError("toolchain.tool_env permits only configured tool selection strings")
     environment = {key: os.environ[key] for key in ("PATH", "HOME", "USER", "LANG", "LC_ALL", "RUSTUP_HOME", "CARGO_HOME", "LD_LIBRARY_PATH")
                    if key in os.environ}
     environment.update(overrides)
@@ -41,6 +41,7 @@ def doctor(root: Path, config: dict) -> dict:
                        "version": result.stdout.strip() or None,
                        "executable": shutil.which(executable, path=environment.get("PATH")),
                        "configured_tool_environment": overrides}
+    tools["resolved_toolchain"] = toolchain.get("resolved", {})
     tools["verus-tla"] = {"status": "BLOCKED", "version": None,
                           "reason": "no configured locally checked compatible source/toolchain combination"}
     record = {"run_id": run_id, "status": "PARTIAL", "tools": tools,
@@ -169,6 +170,17 @@ def main(argv=None) -> int:
         batch_mode = batch.add_mutually_exclusive_group()
         batch_mode.add_argument("--dry-run", action="store_true")
         batch_mode.add_argument("--execute-codex", action="store_true")
+    extension = commands.add_parser("extend-plan")
+    extension.add_argument("--run-id", required=True)
+    extension.add_argument("--task", required=True)
+    extension.add_argument("--calls", type=int, default=0)
+    extension.add_argument("--repairs", type=int, default=0)
+    extension.add_argument("--redesigns", type=int, default=0)
+    extension.add_argument("--seconds", type=int, default=0)
+    rewind = commands.add_parser("rewind")
+    rewind.add_argument("--run-id", required=True)
+    rewind.add_argument("--task", required=True)
+    rewind.add_argument("--check", required=True)
     prompt = commands.add_parser("prompt")
     prompt.add_argument("--task", required=True)
     verify = commands.add_parser("verify")
@@ -205,6 +217,12 @@ def main(argv=None) -> int:
         elif args.command in {"run-plan", "resume"}:
             result = run_plan(root, config, getattr(args, "tasks", None), args.execute_codex,
                               resume_id=getattr(args, "run_id", None))
+        elif args.command in {"extend-plan", "rewind"}:
+            from .scheduler import edit_saved_plan
+            result = edit_saved_plan(root, config, args.run_id, args.task,
+                extend=dict(call_limit=args.calls, repair_limit=args.repairs, redesign_limit=args.redesigns,
+                            seconds_limit=args.seconds) if args.command == "extend-plan" else None,
+                rewind=getattr(args, "check", None))
         elif args.command == "verify":
             run_id, directory = create_run(root, "verify")
             result = verify_profile(root, profile_by_id(config, args.profile), directory, run_id)

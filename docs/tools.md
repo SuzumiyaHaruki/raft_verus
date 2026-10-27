@@ -4,7 +4,7 @@ Status: DRAFT. Tool installation is separate from approval of specifications or 
 
 ## Current installation
 
-The persistent directory is `/home/nitro/.local/share/raft-verus/`:
+On the maintenance host the persistent directory is `/home/nitro/.local/share/raft-verus/`. Other checkouts resolve their own configured installation:
 
 ```text
 raft-verus/
@@ -15,7 +15,9 @@ raft-verus/
 
 Verus is `0.2026.01.23.1650a05`, commit `1650a05d64219fdd1d150f32d0d7d5b19b8defcd`; bundled Z3 is 4.12.5. The required Rust is 1.92.0. CARGO_HOME is configured as a separate `cargo/` path under this directory; that directory is created only if a tool needs it. Actual version output and installation commands are in [installation records](../evidence/layout-and-tools/installation.json). The user's default Rust remains 1.88.0. No shell profile, global PATH, system libc or default toolchain was changed.
 
-`workflow.toml` uses the persistent executable paths and sets RUSTUP_HOME/CARGO_HOME for verifier subprocesses. From the repository root:
+`workflow.toml` is the single configuration source: `toolchain.install_root = "~/.local/share/raft-verus"` and `rust_for_verus` select Verus, its sibling vstd/Z3 and the matching isolated Rust directory. `orchestrator/toolchain.py` resolves this for both `check.py` and independent profiles. `RAFT_TOOLCHAIN_ROOT` overrides only the installation root, and `RAFT_WORKFLOW_CONFIG` selects an alternate TOML file for direct `check.py` calls. The controller forwards its effective configuration location and resolved installation to every check. The old RAFT_VERUS/RAFT_RUSTUP_HOME split overrides are no longer used. Commands print/store all resolved paths and missing dependencies; missing tools report BLOCKED. Quoted paths containing spaces work because subprocess argv is structured.
+
+For example, use `RAFT_TOOLCHAIN_ROOT="/path/with spaces/raft-verus" python3 crates/raft-verified/check.py persist-proof` and the same prefix with `python3 -m orchestrator verify --profile persist-proof`. Use `python3 -m orchestrator --config /path/workflow.toml doctor` for resolved paths and actual versions; help/version discovery does not validate model/account access. Settings apply only to child processes; no download, installer or global toolchain change is performed. From the repository root:
 
 ```sh
 python3 -m orchestrator verify --profile smoke-positive
@@ -54,4 +56,4 @@ CARGO_HOME=/home/nitro/.local/share/raft-verus/cargo \
 
 The [official release](https://github.com/verus-lang/verus/releases/tag/release/0.2026.01.23.1650a05) supplies the matching Verus/vstd pair. Its finite Map/Set API is the one used by the candidate model: `Map::new` takes a membership predicate and quorums use `members.filter(...)`. Earlier API/trigger failures remain in the historical evidence; no replacement axioms were introduced. The first newer release failed local system-library compatibility, so the already exercised compatible release was restored.
 
-Verus/vstd and Z3 use MIT licenses; isolated Rust generally uses MIT/Apache-2.0 with component-specific licenses. Original license files are retained in `evidence/model-verus-LICENSE.txt` and `evidence/model-z3-LICENSE.txt`. A full transitive-license audit is NOT_RUN. verus-tla compatibility and temporal proofs remain BLOCKED/OPEN. No tool source was copied into the Raft implementation.
+Verus/vstd and Z3 use MIT licenses; isolated Rust generally uses MIT/Apache-2.0 with component-specific licenses. Original license files are retained in `evidence/model-verus-LICENSE.txt` and `evidence/model-z3-LICENSE.txt`. A full transitive-license audit is NOT_RUN. External verus-tla integration and global temporal proofs remain BLOCKED/OPEN; the local coordinator progress encoding is checked directly with installed Verus/vstd. No tool source was copied into the Raft implementation.

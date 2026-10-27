@@ -50,6 +50,7 @@
       }
     },
     "proposed_spec_changes": {
+      "description": "Proposals to change protected behavioral requirements or assumptions. Editable implementation contracts, views and invariants belong in changed_files and summary instead.",
       "type": "array",
       "items": {
         "type": "string"

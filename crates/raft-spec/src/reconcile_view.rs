@@ -1,7 +1,7 @@
 //! DRAFT representation used by the independent local contract consumer.
 //! This preserves every entry term, command tag, request field and command byte.
 use crate::model;
-use crate::reconcile::{Command, Entry};
+use crate::types::{Command, Entry};
 use vstd::prelude::*;
 
 verus! {

@@ -3,6 +3,8 @@
 use vstd::prelude::*;
 #[path = "../raft-spec/src/lib.rs"]
 pub mod model;
+#[path = "../raft-verified/src/types.rs"]
+pub mod types;
 #[path = "../raft-verified/src/reconcile.rs"]
 pub mod reconcile;
 pub mod reconcile_lemmas;

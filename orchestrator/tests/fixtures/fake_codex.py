@@ -53,6 +53,8 @@ else:
 
 if options.get('write_path'):
     Path(options['write_path']).write_text(options.get('write_text', 'candidate'))
+for change in options.get('writes', []):
+    Path(change['path']).write_text(change['text'])
 if options.get('build_fixture'):
     build = Path(os.environ['CARGO_TARGET_DIR'])
     build.mkdir(parents=True, exist_ok=True)
@@ -73,7 +75,7 @@ else:
     report_path.write_text(json.dumps({
         'schema_version': '1', 'task_id': options.get('task_id', 'fixture-task'),
         'claimed_outcome': 'candidate_ready', 'summary': 'SIMULATED fixture candidate',
-        'changed_files': [options['write_path']] if options.get('write_path') else [],
+        'changed_files': ([options['write_path']] if options.get('write_path') else []) + [c['path'] for c in options.get('writes', [])],
         'attempted_obligation_ids': [], 'commands_reported_by_agent': [],
         'proposed_spec_changes': [], 'proposed_trust_changes': [], 'blockers': []
     }))

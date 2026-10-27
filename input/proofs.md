@@ -67,7 +67,7 @@ Every obligation row covers its listed source/symbols under the full profile. Th
 
 ## Completion limits
 
-- The executable reconciliation operation is a local building block. No complete node/event coordinator exists; its local proof does not replace full handler or cluster refinement.
+- The reconciliation target concerns a local building block whose executable body must be generated. No complete node/event coordinator exists; a local proof cannot replace full handler or cluster refinement.
 - Verify all actual entrypoints, event/error branches, build configuration and transitive dependencies. Counts alone do not establish symbol coverage.
 - Tick, Stutter, Drop and Duplicate are part of step; arbitrary packet consumption models reordering and retention models delay.
 - Full acceptance requires all obligations, including liveness and refinement. Do not delete targets to obtain a pass.
@@ -211,4 +211,6 @@ A future deterministic simulator must use the same executable core and control c
 
 Differential tests compare permitted external semantics/traces, not identical message sequences. Tests expose counterexamples/regressions; they do not replace proofs for arbitrary finite sizes and infinite traces. Positive/negative proof smoke checks close none of these Raft obligations.
 
-The draft LOCAL-NODE-INIT target checks `Node::new` against the represented fields of `fresh_node`, including success on every valid membership. Its protected consumer is `crates/raft-proofs/node_init.rs`; it imports the exact runtime source. A passing candidate does not close PO-INIT, PO-REPRESENTATION or PO-REFINE-INIT: cluster construction, pending I/O, peer state and whole-node refinement are absent. See STATE-INIT for the executable assignment and its independent checks.
+The draft LOCAL-NODE-INIT target checks `Node::new` against the represented fields of `fresh_node`, including success on every valid membership. Its protected consumer is `crates/raft-proofs/node_init.rs`; it imports the exact runtime source. A passing candidate does not close PO-INIT, PO-REPRESENTATION or PO-REFINE-INIT: cluster construction, peer state and whole-node refinement are absent; initialized pending I/O is now included. See STATE-INIT for the executable assignment and its independent checks.
+
+LOCAL-PERSIST and LOCAL-PERSIST-VIEW check the actual coordinator and its storage projection, including exact successful callback release and no release for wrong-kind/stale/unknown completions. The same partial dispatcher is exercised by the host driver. LOCAL-PROGRESS checks eventual release after fair service of a successful notification with explicit noninterference and actual dispatcher-step premises. These local targets discharge none of the global rows above: legal protocol callers, durable host behavior, recovery, full message/effect refinement, resources and global fairness transfer remain OPEN.

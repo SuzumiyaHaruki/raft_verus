@@ -65,11 +65,14 @@ class WorkspaceTests(unittest.TestCase):
         solution = self.source/'orchestrator/tests/fixtures/node_init_solution.rs'
         solution.parent.mkdir(parents=True)
         solution.write_text('Offline answer, never experiment input')
+        script = self.source/'orchestrator/tests/demo.py'
+        script.write_text('Inline solution in a maintenance script')
         (self.source/'AGENTS.md').write_text('Shared safeguards')
         destination = self.root/'candidate'
         create_candidate(self.source, destination)
         self.assertFalse((destination/'Agent.md').exists())
         self.assertFalse((destination/solution.relative_to(self.source)).exists())
+        self.assertFalse((destination/'orchestrator/tests').exists())
         self.assertEqual((destination/'AGENTS.md').read_text(), 'Shared safeguards')
         self.assertNotIn('Agent.md', snapshot(self.source))
 

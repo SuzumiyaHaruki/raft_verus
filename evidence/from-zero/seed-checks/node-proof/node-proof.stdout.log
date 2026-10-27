@@ -1,0 +1,386 @@
+{
+  "verification-results": {
+    "encountered-error": true,
+    "encountered-vir-error": false,
+    "success": false,
+    "verified": 18,
+    "errors": 1,
+    "is-verifying-entire-crate": true
+  },
+  "times-ms": {
+    "verus-build": {
+      "profile": "release",
+      "version": "0.2026.01.23.1650a05"
+    },
+    "num-threads": 3,
+    "total": 1805,
+    "estimated-cpu-time": 2495,
+    "rust": {
+      "total": 250,
+      "init-and-types": 145,
+      "trait-conflicts": 104,
+      "compile": 0
+    },
+    "verification": {
+      "total": 1484,
+      "vir": {
+        "total": 892,
+        "hir": 72,
+        "import": 451,
+        "rust-to-vir": 188
+      }
+    },
+    "total-verify": 1215,
+    "total-verify-module-times": [
+      {
+        "module": "io",
+        "time": 289
+      },
+      {
+        "module": "",
+        "time": 272
+      },
+      {
+        "module": "types",
+        "time": 210
+      },
+      {
+        "module": "node",
+        "time": 168
+      },
+      {
+        "module": "model",
+        "time": 111
+      },
+      {
+        "module": "state",
+        "time": 88
+      },
+      {
+        "module": "initialization",
+        "time": 52
+      },
+      {
+        "module": "representation",
+        "time": 22
+      }
+    ],
+    "air": {
+      "total": 748,
+      "module-times": [
+        {
+          "module": "io",
+          "time": 201
+        },
+        {
+          "module": "",
+          "time": 178
+        },
+        {
+          "module": "types",
+          "time": 159
+        },
+        {
+          "module": "node",
+          "time": 118
+        },
+        {
+          "module": "state",
+          "time": 45
+        },
+        {
+          "module": "model",
+          "time": 27
+        },
+        {
+          "module": "initialization",
+          "time": 11
+        },
+        {
+          "module": "representation",
+          "time": 5
+        }
+      ]
+    },
+    "smt": {
+      "total": 117,
+      "smt-init": 104,
+      "smt-init-module-times": [
+        {
+          "module": "io",
+          "time": 28,
+          "time-micros": 28980,
+          "rlimit-count": 123147
+        },
+        {
+          "module": "",
+          "time": 25,
+          "time-micros": 25742,
+          "rlimit-count": 9475
+        },
+        {
+          "module": "types",
+          "time": 22,
+          "time-micros": 22657,
+          "rlimit-count": 68613
+        },
+        {
+          "module": "node",
+          "time": 15,
+          "time-micros": 15268,
+          "rlimit-count": 109320
+        },
+        {
+          "module": "state",
+          "time": 11,
+          "time-micros": 11632,
+          "rlimit-count": 89659
+        },
+        {
+          "module": "representation",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "model",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "initialization",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        }
+      ],
+      "smt-run": 13,
+      "smt-run-module-times": [
+        {
+          "module": "io",
+          "time": 6,
+          "time-micros": 6674,
+          "rlimit-count": 123147,
+          "function-breakdown": [
+            {
+              "function": "node_init::io::Message::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 160,
+              "rlimit-count": 2461,
+              "success": true
+            },
+            {
+              "function": "node_init::io::CompletionKind::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 141,
+              "rlimit-count": 141,
+              "success": true
+            },
+            {
+              "function": "node_init::io::OperationId::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 197,
+              "rlimit-count": 10473,
+              "success": true
+            },
+            {
+              "function": "node_init::io::InputError::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 102,
+              "rlimit-count": 4048,
+              "success": true
+            },
+            {
+              "function": "node_init::io::MessageBody::clone",
+              "mode:": "exec",
+              "time": 1,
+              "time-micros": 1994,
+              "rlimit-count": 104355,
+              "success": true
+            },
+            {
+              "function": "node_init::io::Event::clone",
+              "mode:": "exec",
+              "time": 1,
+              "time-micros": 1667,
+              "rlimit-count": 539,
+              "success": true
+            },
+            {
+              "function": "node_init::io::CompletionOutcome::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 97,
+              "rlimit-count": 591,
+              "success": true
+            },
+            {
+              "function": "node_init::io::Effect::clone",
+              "mode:": "exec",
+              "time": 2,
+              "time-micros": 2313,
+              "rlimit-count": 539,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "node",
+          "time": 2,
+          "time-micros": 2848,
+          "rlimit-count": 109320,
+          "function-breakdown": [
+            {
+              "function": "node_init::state::Node::new",
+              "mode:": "exec",
+              "time": 2,
+              "time-micros": 2848,
+              "rlimit-count": 109320,
+              "success": false
+            }
+          ]
+        },
+        {
+          "module": "",
+          "time": 1,
+          "time-micros": 1578,
+          "rlimit-count": 9475,
+          "function-breakdown": [
+            {
+              "function": "node_init::check_node_init",
+              "mode:": "exec",
+              "time": 1,
+              "time-micros": 1578,
+              "rlimit-count": 9475,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "types",
+          "time": 1,
+          "time-micros": 1197,
+          "rlimit-count": 68613,
+          "function-breakdown": [
+            {
+              "function": "node_init::types::Entry::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 240,
+              "rlimit-count": 376,
+              "success": true
+            },
+            {
+              "function": "node_init::types::ReconcileError::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 146,
+              "rlimit-count": 111,
+              "success": true
+            },
+            {
+              "function": "node_init::types::RequestId::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 272,
+              "rlimit-count": 6076,
+              "success": true
+            },
+            {
+              "function": "node_init::types::Command::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 538,
+              "rlimit-count": 62050,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "state",
+          "time": 0,
+          "time-micros": 958,
+          "rlimit-count": 89659,
+          "function-breakdown": [
+            {
+              "function": "node_init::state::Node::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 172,
+              "rlimit-count": 623,
+              "success": true
+            },
+            {
+              "function": "node_init::state::PendingWrite::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 225,
+              "rlimit-count": 600,
+              "success": true
+            },
+            {
+              "function": "node_init::state::DurableState::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 270,
+              "rlimit-count": 7863,
+              "success": true
+            },
+            {
+              "function": "node_init::state::Role::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 162,
+              "rlimit-count": 79982,
+              "success": true
+            },
+            {
+              "function": "node_init::state::InitError::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 127,
+              "rlimit-count": 591,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "representation",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "model",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "initialization",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        }
+      ]
+    }
+  },
+  "verus": {
+    "profile": "release",
+    "version": "0.2026.01.23.1650a05",
+    "platform": {
+      "os": "linux",
+      "arch": "x86_64"
+    },
+    "toolchain": "1.92.0-x86_64-unknown-linux-gnu",
+    "commit": "1650a05d64219fdd1d150f32d0d7d5b19b8defcd"
+  }
+}

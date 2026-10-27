@@ -1,13 +1,11 @@
 //! SIMULATED offline generator output. Never supplied as experiment context.
-use crate::state::{DurableState, InitError, Node, Role};
-#[cfg(verus_keep_ghost)]
-use crate::initialization::init_result;
+use crate::state::{DurableState, InitError, Node, Observation, Role};
 use vstd::prelude::*;
 
 verus! {
 impl Node {
     pub fn new(id: u64, members: Vec<u64>) -> (result: Result<Self, InitError>)
-        ensures init_result(result, id, members@),
+        ensures crate::contracts::constructed(result, id, members@),
     {
         let mut found = false;
         let mut i: usize = 0;
@@ -40,17 +38,18 @@ impl Node {
                 if a < b {} else { assert(b < a); }
             };
         }
-        let n = Node {
+        let state = Observation {
             id, members,
             hard: DurableState { term: 0, voted_for: None, log: Vec::new() },
             role: Role::Follower,
             commit: 0, delivered: 0, application_cursor: 0,
             incarnation: 0, serial: 0, deadline: 1,
+            pending_write: None, recovery_required: false,
         };
         proof {
-            assert(crate::representation::log_view(n.hard.log@) =~= Seq::empty());
+            assert(crate::representation::log_view(state.hard.log@) =~= Seq::empty());
         }
-        Ok(n)
+        Ok(Node::from_observation(state))
     }
 }
 }

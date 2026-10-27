@@ -1,0 +1,472 @@
+{
+  "verification-results": {
+    "encountered-error": true,
+    "encountered-vir-error": false,
+    "success": false,
+    "verified": 24,
+    "errors": 3,
+    "is-verifying-entire-crate": true
+  },
+  "times-ms": {
+    "verus-build": {
+      "profile": "release",
+      "version": "0.2026.01.23.1650a05"
+    },
+    "num-threads": 3,
+    "total": 1339,
+    "estimated-cpu-time": 2026,
+    "rust": {
+      "total": 229,
+      "init-and-types": 154,
+      "trait-conflicts": 74,
+      "compile": 0
+    },
+    "verification": {
+      "total": 1055,
+      "vir": {
+        "total": 585,
+        "hir": 63,
+        "import": 323,
+        "rust-to-vir": 87
+      }
+    },
+    "total-verify": 1092,
+    "total-verify-module-times": [
+      {
+        "module": "",
+        "time": 286
+      },
+      {
+        "module": "persistence_lemmas",
+        "time": 157
+      },
+      {
+        "module": "model",
+        "time": 152
+      },
+      {
+        "module": "persistence",
+        "time": 146
+      },
+      {
+        "module": "io",
+        "time": 135
+      },
+      {
+        "module": "state",
+        "time": 81
+      },
+      {
+        "module": "types",
+        "time": 73
+      },
+      {
+        "module": "persistence_spec",
+        "time": 38
+      },
+      {
+        "module": "representation",
+        "time": 22
+      }
+    ],
+    "air": {
+      "total": 547,
+      "module-times": [
+        {
+          "module": "",
+          "time": 172
+        },
+        {
+          "module": "persistence",
+          "time": 85
+        },
+        {
+          "module": "persistence_lemmas",
+          "time": 68
+        },
+        {
+          "module": "io",
+          "time": 66
+        },
+        {
+          "module": "model",
+          "time": 57
+        },
+        {
+          "module": "state",
+          "time": 42
+        },
+        {
+          "module": "types",
+          "time": 37
+        },
+        {
+          "module": "persistence_spec",
+          "time": 10
+        },
+        {
+          "module": "representation",
+          "time": 4
+        }
+      ]
+    },
+    "smt": {
+      "total": 185,
+      "smt-init": 96,
+      "smt-init-module-times": [
+        {
+          "module": "",
+          "time": 23,
+          "time-micros": 23645,
+          "rlimit-count": 164954
+        },
+        {
+          "module": "persistence_lemmas",
+          "time": 20,
+          "time-micros": 20662,
+          "rlimit-count": 161827
+        },
+        {
+          "module": "io",
+          "time": 17,
+          "time-micros": 17460,
+          "rlimit-count": 123147
+        },
+        {
+          "module": "persistence",
+          "time": 15,
+          "time-micros": 15845,
+          "rlimit-count": 93464
+        },
+        {
+          "module": "state",
+          "time": 10,
+          "time-micros": 10573,
+          "rlimit-count": 89659
+        },
+        {
+          "module": "types",
+          "time": 8,
+          "time-micros": 8177,
+          "rlimit-count": 68613
+        },
+        {
+          "module": "representation",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "model",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "persistence_spec",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        }
+      ],
+      "smt-run": 89,
+      "smt-run-module-times": [
+        {
+          "module": "",
+          "time": 36,
+          "time-micros": 36066,
+          "rlimit-count": 164954,
+          "function-breakdown": [
+            {
+              "function": "persistence::check_complete",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 627,
+              "rlimit-count": 131576,
+              "success": true
+            },
+            {
+              "function": "persistence::check_storage_projection",
+              "mode:": "proof",
+              "time": 22,
+              "time-micros": 22622,
+              "rlimit-count": 1183,
+              "success": true
+            },
+            {
+              "function": "persistence::check_submit",
+              "mode:": "exec",
+              "time": 1,
+              "time-micros": 1643,
+              "rlimit-count": 13111,
+              "success": true
+            },
+            {
+              "function": "persistence::check_dispatch",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 838,
+              "rlimit-count": 1293,
+              "success": true
+            },
+            {
+              "function": "persistence::check_completion_projection",
+              "mode:": "proof",
+              "time": 10,
+              "time-micros": 10334,
+              "rlimit-count": 17791,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "persistence_lemmas",
+          "time": 27,
+          "time-micros": 27605,
+          "rlimit-count": 161827,
+          "function-breakdown": [
+            {
+              "function": "persistence::persistence_lemmas::submit_projection",
+              "mode:": "proof",
+              "time": 13,
+              "time-micros": 13499,
+              "rlimit-count": 12217,
+              "success": true
+            },
+            {
+              "function": "persistence::persistence_lemmas::completion_projection",
+              "mode:": "proof",
+              "time": 14,
+              "time-micros": 14106,
+              "rlimit-count": 149610,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "persistence",
+          "time": 21,
+          "time-micros": 21118,
+          "rlimit-count": 93464,
+          "function-breakdown": [
+            {
+              "function": "persistence::state::Node::step",
+              "mode:": "exec",
+              "time": 9,
+              "time-micros": 9871,
+              "rlimit-count": 6859,
+              "success": false
+            },
+            {
+              "function": "persistence::state::Node::submit_persist",
+              "mode:": "exec",
+              "time": 5,
+              "time-micros": 5492,
+              "rlimit-count": 80032,
+              "success": false
+            },
+            {
+              "function": "persistence::state::Node::complete_persist",
+              "mode:": "exec",
+              "time": 5,
+              "time-micros": 5754,
+              "rlimit-count": 6573,
+              "success": false
+            }
+          ]
+        },
+        {
+          "module": "io",
+          "time": 3,
+          "time-micros": 3155,
+          "rlimit-count": 123147,
+          "function-breakdown": [
+            {
+              "function": "persistence::io::CompletionOutcome::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 54,
+              "rlimit-count": 591,
+              "success": true
+            },
+            {
+              "function": "persistence::io::OperationId::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 426,
+              "rlimit-count": 10473,
+              "success": true
+            },
+            {
+              "function": "persistence::io::Effect::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 995,
+              "rlimit-count": 539,
+              "success": true
+            },
+            {
+              "function": "persistence::io::Message::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 89,
+              "rlimit-count": 2461,
+              "success": true
+            },
+            {
+              "function": "persistence::io::Event::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 700,
+              "rlimit-count": 539,
+              "success": true
+            },
+            {
+              "function": "persistence::io::CompletionKind::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 76,
+              "rlimit-count": 141,
+              "success": true
+            },
+            {
+              "function": "persistence::io::InputError::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 75,
+              "rlimit-count": 4048,
+              "success": true
+            },
+            {
+              "function": "persistence::io::MessageBody::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 736,
+              "rlimit-count": 104355,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "state",
+          "time": 0,
+          "time-micros": 993,
+          "rlimit-count": 89659,
+          "function-breakdown": [
+            {
+              "function": "persistence::state::InitError::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 121,
+              "rlimit-count": 591,
+              "success": true
+            },
+            {
+              "function": "persistence::state::Node::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 68,
+              "rlimit-count": 623,
+              "success": true
+            },
+            {
+              "function": "persistence::state::DurableState::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 363,
+              "rlimit-count": 7863,
+              "success": true
+            },
+            {
+              "function": "persistence::state::Role::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 371,
+              "rlimit-count": 79982,
+              "success": true
+            },
+            {
+              "function": "persistence::state::PendingWrite::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 68,
+              "rlimit-count": 600,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "types",
+          "time": 0,
+          "time-micros": 721,
+          "rlimit-count": 68613,
+          "function-breakdown": [
+            {
+              "function": "persistence::types::ReconcileError::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 73,
+              "rlimit-count": 111,
+              "success": true
+            },
+            {
+              "function": "persistence::types::Entry::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 89,
+              "rlimit-count": 376,
+              "success": true
+            },
+            {
+              "function": "persistence::types::Command::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 267,
+              "rlimit-count": 62050,
+              "success": true
+            },
+            {
+              "function": "persistence::types::RequestId::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 291,
+              "rlimit-count": 6076,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "representation",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "model",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "persistence_spec",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        }
+      ]
+    }
+  },
+  "verus": {
+    "profile": "release",
+    "version": "0.2026.01.23.1650a05",
+    "platform": {
+      "os": "linux",
+      "arch": "x86_64"
+    },
+    "toolchain": "1.92.0-x86_64-unknown-linux-gnu",
+    "commit": "1650a05d64219fdd1d150f32d0d7d5b19b8defcd"
+  }
+}

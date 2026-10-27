@@ -1,0 +1,125 @@
+{
+  "schema_version": "1",
+  "check_id": "persist-proof",
+  "run_id": "20261027T102947Z-7a4e1934b33c",
+  "check_kind": "verification",
+  "profile_id": "persist-proof",
+  "purpose": "proof",
+  "required": true,
+  "expected_targets": [
+    "check_submit",
+    "check_complete",
+    "check_dispatch",
+    "check_storage_projection",
+    "check_completion_projection",
+    "completion_projection"
+  ],
+  "expected_obligation_ids": [
+    "LOCAL-PERSIST",
+    "LOCAL-PERSIST-VIEW"
+  ],
+  "entrypoints": [
+    "crates/raft-proofs/persistence.rs",
+    "crates/raft-proofs/persistence_lemmas.rs",
+    "crates/raft-verified/src/persistence.rs",
+    "crates/raft-verified/src/state.rs",
+    "crates/raft-verified/src/io.rs",
+    "crates/raft-spec/src/persistence.rs"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "PASS",
+  "argv": [
+    "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+    "--crate-type",
+    "lib",
+    "--no-cheating",
+    "--output-json",
+    "--time-expanded",
+    "--triggers-mode",
+    "silent",
+    "crates/raft-proofs/persistence.rs"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus",
+  "input_manifest_digest": "ee22268d2276d9d6c3fdb04f2ebcf22ff14ed8815eb1d8ceebeb9adc0d52beee",
+  "tool_versions": {
+    "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+  },
+  "started_at": "2026-10-27T10:29:47.839229+00:00",
+  "finished_at": "2026-10-27T10:29:50.331814+00:00",
+  "exit_code": 0,
+  "stdout_digest": "50b0734ec99c0a0b7cb14d9eb65856adab29e840d0dff5ab4520995fa9ef9848",
+  "stderr_digest": "c030e723a7f9888a039ee0dbcc449f829fc40408a3bf75c367c89b860050d24d",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261027T102947Z-7a4e1934b33c/persist-proof.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261027T102947Z-7a4e1934b33c/persist-proof.stderr.log"
+  ],
+  "obligation_ids_checked": [
+    "LOCAL-PERSIST",
+    "LOCAL-PERSIST-VIEW"
+  ],
+  "coverage_findings": [
+    "complete Verus entrypoint verified; reviewed target mapping binds its function contracts to local obligations"
+  ],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "resolved_toolchain": {
+    "paths": {
+      "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+      "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+      "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+    },
+    "missing": [],
+    "environment": {
+      "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+    }
+  },
+  "tool_environment": {
+    "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+    "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+    "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+    "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/workflow.toml"
+  },
+  "function_results": {
+    "persistence::reconcile::Entry::clone": true,
+    "persistence::reconcile::reconcile_log": true,
+    "persistence::reconcile::ReconcileError::clone": true,
+    "persistence::reconcile::RequestId::clone": true,
+    "persistence::reconcile::Command::clone": true,
+    "persistence::persistence_lemmas::completion_projection": true,
+    "persistence::persistence_lemmas::submit_projection": true,
+    "persistence::check_storage_projection": true,
+    "persistence::check_dispatch": true,
+    "persistence::check_submit": true,
+    "persistence::check_completion_projection": true,
+    "persistence::check_complete": true,
+    "persistence::state::Node::complete_persist": true,
+    "persistence::state::Node::submit_persist": true,
+    "persistence::state::Node::step": true,
+    "persistence::io::MessageBody::clone": true,
+    "persistence::io::Message::clone": true,
+    "persistence::io::OperationId::clone": true,
+    "persistence::io::Effect::clone": true,
+    "persistence::io::CompletionKind::clone": true,
+    "persistence::io::CompletionOutcome::clone": true,
+    "persistence::io::Event::clone": true,
+    "persistence::io::InputError::clone": true,
+    "persistence::state::Node::clone": true,
+    "persistence::state::InitError::clone": true,
+    "persistence::state::Role::clone": true,
+    "persistence::state::DurableState::clone": true,
+    "persistence::state::PendingWrite::clone": true
+  },
+  "entire_crate_checked": true,
+  "verification_summary": {
+    "verified": 29,
+    "errors": 0
+  },
+  "reason": "profile checks passed locally; no full Raft acceptance"
+}

@@ -10,8 +10,8 @@ from pathlib import Path, PurePosixPath
 
 # Controller evidence and raw agent reports are never verifier source inputs.
 DEFAULT_EXCLUDES = {".git", "evidence", ".agent-output", "__pycache__", "target", "Agent.md"}
-# A scripted solution is controller test data, never an experiment's answer key.
-DEFAULT_EXCLUDES.add("orchestrator/tests/fixtures/node_init_solution.rs")
+# Offline tests contain complete solutions and scripted edits. None are agent input.
+DEFAULT_EXCLUDES.add("orchestrator/tests")
 
 
 def digest_bytes(data: bytes) -> str:

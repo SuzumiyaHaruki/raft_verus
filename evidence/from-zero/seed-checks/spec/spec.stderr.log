@@ -1,0 +1,194 @@
+note: automatically chose triggers for this expression:
+   --> crates/raft-spec/src/lib.rs:235:16
+    |
+235 |             && (forall |j: int| 0 <= j < incoming.len() ==> old[previous as int + j].term == incoming[j].term)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> crates/raft-spec/src/lib.rs:235:94
+    |
+235 |             && (forall |j: int| 0 <= j < incoming.len() ==> old[previous as int + j].term == incoming[j].term)
+    |                                                                                              ^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> crates/raft-spec/src/lib.rs:238:16
+    |
+238 |             && (forall |j: int| 0 <= j < k ==> previous + j < old.len() && old[previous as int + j].term == incoming[j].term)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> crates/raft-spec/src/lib.rs:238:109
+    |
+238 |             && (forall |j: int| 0 <= j < k ==> previous + j < old.len() && old[previous as int + j].term == incoming[j].term)
+    |                                                                                                             ^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> crates/raft-spec/src/lib.rs:237:12
+    |
+237 |           || exists |k: nat| k < incoming.len()
+    |  ____________^
+238 | |             && (forall |j: int| 0 <= j < k ==> previous + j < old.len() && old[previous as int + j].term == incoming[j].term)
+239 | |             && (previous + k >= old.len() || old[(previous + k) as int].term != incoming[k as int].term)
+240 | |             && result == old.take((previous + k) as int).add(incoming.subrange(k as int, incoming.len() as int))
+    | |________________________________________________________________________________________________________________^
+
+note:   trigger 1 of 1:
+   --> crates/raft-spec/src/lib.rs:239:81
+    |
+239 |             && (previous + k >= old.len() || old[(previous + k) as int].term != incoming[k as int].term)
+    |                                                                                 ^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> crates/raft-spec/src/lib.rs:413:12
+    |
+413 |         && (forall |i: int| 0 <= i < n.hard.log.len() ==> n.hard.log[i].term <= n.hard.term)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> crates/raft-spec/src/lib.rs:413:59
+    |
+413 |         && (forall |i: int| 0 <= i < n.hard.log.len() ==> n.hard.log[i].term <= n.hard.term)
+    |                                                           ^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> crates/raft-spec/src/lib.rs:417:5
+    |
+417 | /     forall |i: int, j: int| 0 <= i < s.elections.len() && 0 <= j < s.elections.len()
+418 | |         && s.elections[i].term == s.elections[j].term ==> s.elections[i].node == s.elections[j].node
+    | |____________________________________________________________________________________________________^
+
+note:   trigger 1 of 1:
+   --> crates/raft-spec/src/lib.rs:418:12
+    |
+418 |         && s.elections[i].term == s.elections[j].term ==> s.elections[i].node == s.elections[j].node
+    |            ^^^^^^^^^^^^^^         ^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> crates/raft-spec/src/lib.rs:421:5
+    |
+421 | /     forall |id: NodeId| s.members.contains(id) && t.members.contains(id)
+422 | |         && s.nodes[id].alive && s.nodes[id].role == Role::Leader && t.nodes[id].alive
+423 | |         ==> prefix(s.nodes[id].hard.log, t.nodes[id].hard.log)
+    | |______________________________________________________________^
+
+note:   trigger 1 of 2:
+   --> crates/raft-spec/src/lib.rs:421:25
+    |
+421 |     forall |id: NodeId| s.members.contains(id) && t.members.contains(id)
+    |                         ^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 2 of 2:
+   --> crates/raft-spec/src/lib.rs:421:51
+    |
+421 |     forall |id: NodeId| s.members.contains(id) && t.members.contains(id)
+    |                                                   ^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> crates/raft-spec/src/lib.rs:426:5
+    |
+426 | /     forall |i: int| 0 <= i < a.len() && i < b.len() && a[i].term == b[i].term
+427 | |         ==> a.take(i + 1) == b.take(i + 1)
+    | |__________________________________________^
+
+note:   trigger 1 of 2:
+   --> crates/raft-spec/src/lib.rs:426:56
+    |
+426 |     forall |i: int| 0 <= i < a.len() && i < b.len() && a[i].term == b[i].term
+    |                                                        ^^^^
+
+note:   trigger 2 of 2:
+   --> crates/raft-spec/src/lib.rs:426:69
+    |
+426 |     forall |i: int| 0 <= i < a.len() && i < b.len() && a[i].term == b[i].term
+    |                                                                     ^^^^
+
+note: automatically chose triggers for this expression:
+   --> crates/raft-spec/src/lib.rs:439:5
+    |
+439 | /     forall |i: int, j: int| 0 <= i < s.deliveries.len() && 0 <= j < s.deliveries.len()
+440 | |         && s.deliveries[i].index == s.deliveries[j].index ==> s.deliveries[i].entry == s.deliveries[j].entry
+    | |____________________________________________________________________________________________________________^
+
+note:   trigger 1 of 1:
+   --> crates/raft-spec/src/lib.rs:440:12
+    |
+440 |         && s.deliveries[i].index == s.deliveries[j].index ==> s.deliveries[i].entry == s.deliveries[j].entry
+    |            ^^^^^^^^^^^^^^^          ^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> crates/raft-spec/src/lib.rs:443:5
+    |
+443 | /     forall |i: int, j: int| 0 <= i < s.applications.len() && 0 <= j < s.applications.len()
+444 | |         && s.applications[i].index == s.applications[j].index ==> s.applications[i].entry.command == s.applications[j].entry.command
+    | |____________________________________________________________________________________________________________________________________^
+
+note:   trigger 1 of 1:
+   --> crates/raft-spec/src/lib.rs:444:12
+    |
+444 |         && s.applications[i].index == s.applications[j].index ==> s.applications[i].entry.command == s.applications[j].entry.command
+    |            ^^^^^^^^^^^^^^^^^          ^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> crates/raft-spec/src/lib.rs:457:12
+    |
+457 |           && exists |c: int| 0 <= c < s.commits.len() && d.index <= s.commits[c].prefix.len()
+    |  ____________^
+458 | |             && s.commits[c].prefix[(d.index - 1) as int] == d.entry
+    | |___________________________________________________________________^
+
+note:   trigger 1 of 1:
+   --> crates/raft-spec/src/lib.rs:457:67
+    |
+457 |         && exists |c: int| 0 <= c < s.commits.len() && d.index <= s.commits[c].prefix.len()
+    |                                                                   ^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> crates/raft-spec/src/lib.rs:460:8
+    |
+460 |       && (forall |i: int, j: int| 0 <= i < j < s.deliveries.len()
+    |  ________^
+461 | |         && s.deliveries[i].node == s.deliveries[j].node
+462 | |         && s.deliveries[i].incarnation == s.deliveries[j].incarnation
+463 | |         ==> s.deliveries[i].index < s.deliveries[j].index)
+    | |__________________________________________________________^
+
+note:   trigger 1 of 1:
+   --> crates/raft-spec/src/lib.rs:461:12
+    |
+461 |         && s.deliveries[i].node == s.deliveries[j].node
+    |            ^^^^^^^^^^^^^^^         ^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> crates/raft-spec/src/lib.rs:511:44
+    |
+511 |       eventually_from(ex, from, |s: Cluster| exists |i: int| 0 <= i < s.deliveries.len()
+    |  ____________________________________________^
+512 | |         && s.deliveries[i].node == node && s.deliveries[i].index == index && s.deliveries[i].entry == entry)
+    | |___________________________________________________________________________________________________________^
+
+note:   trigger 1 of 1:
+   --> crates/raft-spec/src/lib.rs:512:12
+    |
+512 |         && s.deliveries[i].node == node && s.deliveries[i].index == index && s.deliveries[i].entry == entry)
+    |            ^^^^^^^^^^^^^^^
+
+note: Verus printed one or more automatically chosen quantifier triggers
+      because it had low confidence in the chosen triggers.
+      To suppress these messages, do one of the following:
+        (1) manually annotate a single desired trigger using #[trigger]
+            (example: forall|i: int, j: int| f(i) && #[trigger] g(i) && #[trigger] h(j)),
+        (2) manually annotate multiple desired triggers using #![trigger ...]
+            (example: forall|i: int| #![trigger f(i)] #![trigger g(i)] f(i) && g(i)),
+        (3) accept the automatically chosen trigger using #![auto]
+            (example: forall|i: int, j: int| #![auto] f(i) && g(i) && h(j))
+        (4) use the --triggers-mode silent command-line option to suppress all printing of triggers.
+      (Note: triggers are used by the underlying SMT theorem prover to instantiate quantifiers;
+      the theorem prover instantiates a quantifier whenever some expression matches the
+      pattern specified by one of the quantifier's triggers.)
+   --> crates/raft-spec/src/lib.rs:511:44
+    |
+511 |       eventually_from(ex, from, |s: Cluster| exists |i: int| 0 <= i < s.deliveries.len()
+    |  ____________________________________________^
+512 | |         && s.deliveries[i].node == node && s.deliveries[i].index == index && s.deliveries[i].entry == entry)
+    | |___________________________________________________________________________________________________________^
+

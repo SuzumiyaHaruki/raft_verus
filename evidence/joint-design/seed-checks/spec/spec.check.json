@@ -1,0 +1,77 @@
+{
+  "schema_version": "1",
+  "check_id": "spec",
+  "run_id": "local",
+  "check_kind": "candidate-model-typecheck",
+  "profile_id": "spec",
+  "purpose": "typecheck",
+  "required": true,
+  "expected_targets": [
+    "init",
+    "next",
+    "election_safety",
+    "log_matching"
+  ],
+  "expected_obligation_ids": [],
+  "entrypoints": [
+    "crates/raft-spec/src/lib.rs"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "TYPECHECKED",
+  "argv": [
+    "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+    "--crate-type",
+    "lib",
+    "crates/raft-spec/src/lib.rs"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus/evidence/joint-design/seed-checks/candidate",
+  "input_manifest_digest": "35f60cf7daa0889606aa98d85cb53b400ce0156e708d81db547b3c79064d86f8",
+  "tool_versions": {
+    "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+  },
+  "started_at": "2026-10-27T12:37:32.336590+00:00",
+  "finished_at": "2026-10-27T12:37:34.090978+00:00",
+  "exit_code": 0,
+  "stdout_digest": "ac38eb7ec194153b4a9c8a0fe622fb1451adbaf12e25b4e6ceea174956f16b4b",
+  "stderr_digest": "ab507bb3fbc38736dbf1494d1a02b35892063775901550f08a959750d015e2de",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/joint-design/seed-checks/spec/spec.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/joint-design/seed-checks/spec/spec.stderr.log"
+  ],
+  "obligation_ids_checked": [],
+  "coverage_findings": [
+    "definitions typechecked; zero Raft proof obligations are discharged"
+  ],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "resolved_toolchain": {
+    "paths": {
+      "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+      "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+      "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+    },
+    "missing": [],
+    "environment": {
+      "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+    }
+  },
+  "tool_environment": {
+    "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+    "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+    "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+    "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/joint-design/seed-checks/candidate/workflow.toml"
+  },
+  "verification_summary": {
+    "verified": 0,
+    "errors": 0
+  },
+  "proof_result": "NOT_RUN",
+  "reason": "candidate definitions checked; no mathematical theorem acceptance"
+}

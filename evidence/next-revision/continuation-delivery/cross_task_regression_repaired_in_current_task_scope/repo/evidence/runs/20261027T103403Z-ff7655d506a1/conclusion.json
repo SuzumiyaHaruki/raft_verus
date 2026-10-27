@@ -1,0 +1,68 @@
+{
+  "run_id": "20261027T103403Z-ff7655d506a1",
+  "task_id": "second",
+  "status": "PASSED",
+  "agent_calls": 2,
+  "completion_scope": "STEP_ONLY",
+  "module_document": null,
+  "codex_request": {
+    "model": null,
+    "model_reasoning_effort": null
+  },
+  "history": [
+    "PENDING",
+    "READY",
+    "RUNNING",
+    "CHECKING",
+    "NEEDS_REPAIR",
+    "RUNNING",
+    "CHECKING",
+    "PASSED"
+  ],
+  "evidence_kind": "REAL_LOCAL",
+  "full_acceptance": false,
+  "generation_kind": "SIMULATED",
+  "obligation_ids_checked": [],
+  "input_fingerprint": "da160e12732673118127fc7875b32ee6c567689e5b0f2afcd90bce5c9bba8231",
+  "current_fingerprint": "4588cefd9f2379ee82dfe881c3898c6a364b43973317fbc309736f240cfbcbce",
+  "candidate_path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/cross_task_regression_repaired_in_current_task_scope/repo/evidence/runs/20261027T103403Z-3f29ab649daa/candidate",
+  "check_evidence_kind": "REAL_LOCAL",
+  "reason": "local task checks passed; candidate awaits human integration",
+  "cumulative_usage": {
+    "calls": 2,
+    "repairs": 1,
+    "redesigns": 0,
+    "active_seconds": 0.43630663299700245,
+    "call_limit": 3,
+    "repair_limit": 2,
+    "redesign_limit": 1,
+    "seconds_limit": 15,
+    "generation_kinds": [
+      "SIMULATED"
+    ]
+  },
+  "attempts": [
+    {
+      "number": 1,
+      "mode": "initial",
+      "summary": "SIMULATED fixture candidate",
+      "changed_paths": [
+        "src/lib.rs"
+      ],
+      "results": "actual-test=FAIL",
+      "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/cross_task_regression_repaired_in_current_task_scope/repo/evidence/runs/20261027T103403Z-ff7655d506a1/attempt-1",
+      "generation_kind": "SIMULATED"
+    },
+    {
+      "number": 2,
+      "mode": "repair",
+      "summary": "SIMULATED fixture candidate",
+      "changed_paths": [
+        "src/lib.rs"
+      ],
+      "results": "actual-test=PASS",
+      "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/cross_task_regression_repaired_in_current_task_scope/repo/evidence/runs/20261027T103403Z-ff7655d506a1/attempt-2",
+      "generation_kind": "SIMULATED"
+    }
+  ]
+}

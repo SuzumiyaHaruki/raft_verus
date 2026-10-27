@@ -1,0 +1,28 @@
+[
+  {
+    "category": "functional",
+    "action": "repair",
+    "diagnosis": "Reproduce the build or test failure, preserve the regression, and repair within the declared scope.",
+    "task_goal": "Develop the next behavior without discarding the existing candidate.",
+    "candidate_revision": "8bf2cca1aa61ff5d91ce6c2a36213026ac04edb3ee4e6dd65afdccca0890df9a",
+    "failed_command": [
+      "/usr/bin/python3",
+      "-c",
+      "from pathlib import Path; assert \"candidate\" in Path(\"src/lib.rs\").read_text(); print(\"test result: ok. 1 passed\")"
+    ],
+    "expected": "Configured targets and required observations succeed",
+    "observed": "configured build/test success evidence absent",
+    "reproduction": "cd /home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/cross_task_regression_repaired_in_current_task_scope/repo/evidence/runs/20261027T101830Z-cc3ead24e5fd/candidate && /usr/bin/python3 -c 'from pathlib import Path; assert \"candidate\" in Path(\"src/lib.rs\").read_text(); print(\"test result: ok. 1 passed\")'",
+    "artifact_paths": [
+      "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/cross_task_regression_repaired_in_current_task_scope/repo/evidence/runs/20261027T101830Z-20fcc7048712/attempt-1/actual-test.stdout.log",
+      "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/cross_task_regression_repaired_in_current_task_scope/repo/evidence/runs/20261027T101830Z-20fcc7048712/attempt-1/actual-test.stderr.log"
+    ],
+    "error_excerpt": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/cross_task_regression_repaired_in_current_task_scope/repo/evidence/runs/20261027T101830Z-20fcc7048712/attempt-1/actual-test.stdout.log:\n\n/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/cross_task_regression_repaired_in_current_task_scope/repo/evidence/runs/20261027T101830Z-20fcc7048712/attempt-1/actual-test.stderr.log:\n1: Traceback (most recent call last):\n2:   File \"<string>\", line 1, in <module>\n3: AssertionError",
+    "editable_scope": [
+      "src"
+    ],
+    "required_reruns": [
+      "actual-test"
+    ]
+  }
+]

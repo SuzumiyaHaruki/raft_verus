@@ -150,9 +150,9 @@ class RevisionTests(unittest.TestCase):
         proof = classify(dict(purpose='proof', result='FAIL'))
         timeout = classify(dict(purpose='proof', result='TIMEOUT'))
         self.assertIn('not itself a counterexample', proof['diagnosis'])
-        self.assertEqual(timeout['category'], 'infrastructure')
-        self.assertIn('does not demonstrate a code bug', timeout['diagnosis'])
-        self.assertEqual(timeout['action'], 'stop')
+        self.assertEqual(timeout['category'], 'proof-timeout')
+        self.assertIn('do not infer a code defect', timeout['diagnosis'])
+        self.assertEqual(timeout['action'], 'repair')
 
     def test_measurements_without_threshold_and_noisy_samples_are_not_pass(self):
         samples = {'kind': 'measurement', 'workload': 'core', 'samples_ns': [10, 2000, 11],
@@ -242,8 +242,9 @@ class RevisionTests(unittest.TestCase):
         self.assertEqual((self.root/'src/lib.rs').read_text(), 'fn candidate() {}')
         (candidate/'src/lib.rs').write_text('broken source')
         third = run_plan(self.root, self.config, execute_codex=True, resume_id=first['run_id'], fixture_mode=True)
-        self.assertEqual(third['status'], 'BLOCKED', third)
-        self.assertEqual(third['agent_calls'], 2)
+        self.assertEqual(third['status'], 'FAILED', third)
+        self.assertEqual(third['agent_calls'], 4)
+        self.assertEqual(third['completed'][self.task['id']]['status'], 'INVALIDATED')
 
     def test_resume_rejects_mutation_between_independent_checks(self):
         self.use_checks(self.real_test())
@@ -345,7 +346,7 @@ class RevisionTests(unittest.TestCase):
         for name in ('Cargo.toml', 'Cargo.lock'):
             shutil.copyfile(REPO/name, candidate/name)
         source = candidate/'crates/raft-verified/src/reconcile.rs'
-        original = source.read_text()
+        original = (REPO/'orchestrator/tests/fixtures/solutions/reconcile.rs').read_text()
         start = original.index('\n    ensures', original.index('pub fn reconcile_log'))
         end = original.index('\n{', start)
         cases = [original[:start] + '\n    ensures true,' + original[end:],

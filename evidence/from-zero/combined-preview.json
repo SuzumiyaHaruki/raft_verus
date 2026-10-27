@@ -1,0 +1,17 @@
+{
+  "status": "DRY_RUN",
+  "agent_calls": 0,
+  "resume_id": null,
+  "completion_scope": "SELECTED_STEPS_ONLY",
+  "full_acceptance": false,
+  "codex_request": {
+    "model": "gpt-6.1-sol",
+    "model_reasoning_effort": "high"
+  },
+  "tasks": [
+    "STATE-INIT",
+    "RUNTIME-PERSIST",
+    "PROGRESS-FOUNDATION"
+  ],
+  "saved_usage": null
+}

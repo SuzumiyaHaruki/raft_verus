@@ -1,0 +1,1695 @@
+--- a/.gitignore
++++ b/.gitignore
+@@ -8,3 +8,5 @@
+ /evidence/workspaces/
+ /evidence/next-revision/**/build/
+ /evidence/next-revision/**/agent-build/
++/evidence/from-zero/**/build/
++/evidence/from-zero/**/agent-build/
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -3,6 +3,8 @@
+ Maintenance agents: read `Agent.md` when present. Experiment candidates omit that file and follow their selected English assignment in `input/`.
+ 
+ Build an independent, fixed-membership Rust Raft library with Verus safety and conditional-liveness proofs. Read [README.md](README.md), the selected module assignment linked from [input/roadmap.md](input/roadmap.md) and [review/REVIEW_PACKET.md](review/REVIEW_PACKET.md). The next generation task builds shared node initialization; a complete Raft node is still unfinished.
++
++Start from the supplied scaffold described in [input/starting-point.md](input/starting-point.md). Real experiment code and proof strategies must be generated during the recorded run. Do not retrieve offline fixtures or prior implementations outside the candidate. Continue from the run's own checked code; never silently inject a maintenance solution.
+ 
+ - `crates/raft-verified` holds executable code, tests, replay and measurements; `crates/raft-spec` defines the candidate model; `crates/raft-proofs` and local proof blocks establish correspondence. Test and prove the same executable logic.
+ - `input/` explains requirements and complete modules with bounded steps; `workflow.toml` selects a module document, named step, scoped inputs, edits and independent checks. Reuse `orchestrator/`, standard libraries and existing interfaces. Do not build a generic orchestration framework.
+--- a/Agent.md
++++ b/Agent.md
+@@ -3,6 +3,8 @@
+ This file is for the agent maintaining this repository with the user. It is not experiment input; candidate copies and generated prompts must omit it.
+ 
+ Our goal is to use AI to build a Rust Raft implementation and use Verus throughout development to establish its safety and conditional liveness. We are studying whether the generated executable actually satisfies the intended requirements. A scheduler, passing tests, a typechecked model or an unrelated proved helper is not that result.
++
++The experimental starting point must contain no working Raft implementation or supplied proof strategy. Our maintenance role prepares English requirements, interfaces, formal targets, independent checks and the controller. Executable behavior and proof strategies are generated inside the experiment. Preserve offline solutions only as excluded SIMULATED fixtures; never preload them into a real candidate. Incremental development extends the AI's own saved candidate, not maintenance-written algorithms. State clearly that types, contracts and test oracles are supplied inputs, so this is not unconstrained synthesis from blank files.
+ 
+ Work in small increments of one coupled Raft implementation. For each increment, connect the natural-language requirement, formal target, actual executable body, representation relation and independent checks. Generate code and proof together; compare observed behavior with the target, diagnose failures, repair and rerun. Carry previous failed approaches forward so a new attempt can change its local design instead of repeating it. Preserve the target when changing representation or auxiliary invariants. Specification adequacy and global composition still need explicit arguments; local correctness does not imply cluster correctness.
+ 
+--- a/README.md
++++ b/README.md
+@@ -1,33 +1,55 @@
+-# Rust Raft with Verus
++# Rust Raft generation with Verus
+ 
+-Status: DRAFT. Use AI to develop one Rust Raft implementation in small steps, with Verus proofs of the same executable code, functional/fault tests and measurements. The existing log reconciliation helper works; a complete Raft node, cluster safety and conditional liveness remain unfinished.
++Status: DRAFT. The experiment starts without working Raft behavior. AI must generate one Rust Raft implementation and its Verus proofs incrementally, using functional/fault tests and measurements as independent feedback. Global safety, conditional liveness and implementation/cluster refinement remain open.
+ 
+-The default experiment now generates **node initialization**, not another helper exercise. Shared state, eight independent initialization tests and a protected Verus target are supplied. `src/node.rs` is an explicit reject-all starting point: it builds, but intentionally fails initialization tests/proof until an agent implements it. A scripted offline run produces a checked candidate for workflow testing; it is not live AI output and is not automatically integrated. See [the review packet](review/REVIEW_PACKET.md) for actual files/results.
++The supplied starting material is explicit: English requirements, shared data types, API signatures, candidate formal specifications, protected proof consumers, independent tests, replay/measurement harnesses and the Python controller. This is synthesis from specified interfaces, not synthesis from blank files. Read [the starting-point boundary](input/starting-point.md) and [the actual review results](review/REVIEW_PACKET.md).
+ 
+-## Develop complete modules in checked steps
++`node.rs`, `reconcile.rs` and `persistence.rs` contain deliberately incorrect error-only seeds. `progress_lemmas.rs` has target signatures with empty bodies. These are unfinished assignments and must fail their semantic checks. Former working implementations and the induction proof are preserved only as offline fixtures under `orchestrator/tests`; that entire directory, historical evidence and maintenance-only `Agent.md` are omitted from every fresh candidate copy. No solution overlay runs on launch or resume.
+ 
+-Start with [the module roadmap](input/roadmap.md): state, runtime, elections, replication, commitment, recovery, progress and integration. Each module has one English Markdown document describing its full responsibility, connections, completion criteria and internal steps. `workflow.toml` selects one named step for each bounded controller call. The prompt includes the module context and that step; it does not ask an agent to finish the entire module at once.
++## Incremental development
+ 
+-STATE-INIT remains the default generation task. A combined plan continues in the same candidate through RUNTIME-PERSIST and the early PROGRESS-FOUNDATION; four optional steps exercise delivered helper work, and 19 steps remain planned. Every module is still incomplete. Formal targets live in Verus source; specifications remain DRAFT and independent checks do not approve semantics.
++[The roadmap](input/roadmap.md) describes state, runtime, elections, replication, commitment, recovery, progress and integration. Each English module document explains its full responsibility, connections and bounded steps. The controller carries one generated candidate forward: generate code and proof, run independent checks, repair or redesign within cumulative budgets, then continue the selected plan. Previously completed tasks are rechecked. Human review is after delivery, with no approval file or interactive checkpoint inside the loop.
+ 
+-These modules share one coupled node state and event/I/O sequence. Local contracts and proofs must compose through shared invariants and node/cluster refinement; separate module checks alone cannot establish Raft correctness. Cross-module effects and caller obligations are part of each scoped change.
++The default task is STATE-INIT. Selecting RUNTIME-PERSIST adds it after initialization; PROGRESS-FOUNDATION adds the early local progress proof. Four other ready steps cover generating/proving/replaying/measuring reconciliation; 19 later steps still lack runnable checks. No command currently produces a complete Raft. Every module remains incomplete.
++
++Initialization runs all eight of its independent test cases and its own proof/replay, without requiring future unimplemented operations to pass. Shared data vocabulary lives in `types.rs`; initialization and persistence proof entrypoints import those types without importing the unrelated reconciliation body. This changes no target and uses no verification filter. Later selected tasks rerun completed-task checks through the existing controller.
+ 
+ ```sh
+ export PYTHONDONTWRITEBYTECODE=1
+ python3 -m orchestrator validate
+ python3 -m orchestrator plan --format text
+-python3 -m orchestrator prompt --task STATE-INIT
+-python3 -m orchestrator run-task --task STATE-INIT --dry-run
++./experiment.sh
++python3 -m orchestrator run-plan --tasks RUNTIME-PERSIST --dry-run
+ python3 -m unittest discover -s orchestrator/tests -v
+-python3 -m orchestrator verify --profile reconcile-tests
+-python3 -m orchestrator verify --profile reconcile-proof
+-python3 crates/raft-verified/check.py replay
+-python3 -m orchestrator verify --profile reconcile-bench
+ ```
+ 
+-These commands do not start Codex generation. `validate` checks configuration and references. Tests exercise executable code; `spec` only typechecks the model; `reconcile-proof` checks the local operation against `merged`. Benchmark output is measurement data with no approved performance threshold. `full` reports missing whole-project proof and approval prerequisites.
++These commands do not start model generation. The default preview makes zero agent calls. Live generation requires an explicit command:
+ 
+-The runtime and proof paths use the same `src/reconcile.rs`. The small `check.py` wrapper uses the already installed Verus macros and their matching Rust 1.92 only in child processes. It does not install tools or change the user's default Rust. Use this wrapper for Cargo build/test/replay/measurement; plain Cargo under an incompatible default compiler cannot load those macros. See [the build path](crates/raft-proofs/README.md) and [tool setup](docs/tools.md).
++```sh
++./experiment.sh run             # STATE-INIT only, gpt-6.1-sol / high
++./experiment.sh resume RUN_ID   # Continue the saved generated candidate
++./experiment.sh report RUN_ID   # Inspect results without generation
++python3 -m orchestrator run-plan --tasks RUNTIME-PERSIST --execute-codex
++```
++
++No real Codex task was run during maintenance. A new run copies the current scaffold; resume preserves the saved candidate rather than restarting from seeds. Manually replacing the source scaffold with an implementation changes the starting experiment and must be disclosed. Successful candidates are never automatically merged into this checkout.
++
++## Offline demonstrations and real checks
++
++```sh
++PYTHONDONTWRITEBYTECODE=1 python3 orchestrator/tests/real_repair_demo.py \
++  --task STATE-INIT --output /tmp/raft-init-from-zero
++PYTHONDONTWRITEBYTECODE=1 python3 orchestrator/tests/real_repair_demo.py \
++  --task RUNTIME-PERSIST --output /tmp/raft-persist-from-zero
++PYTHONDONTWRITEBYTECODE=1 python3 orchestrator/tests/real_repair_demo.py \
++  --task REPLICATION-RECONCILE --output /tmp/raft-reconcile-from-zero
++```
++
++Use new output directories. These demonstrations explicitly inject scripted candidate edits through a fake subprocess and label generation SIMULATED. Rust, replay and Verus checks actually execute; a controlled defect must be rejected before the repaired candidate passes. The fixture contents are never copied into the starting candidate. Demonstrations test the workflow and checker correspondence, not model capability or complete Raft correctness.
++
++Direct checking uses `python3 crates/raft-verified/check.py build`, `test`, `node-proof`, `proof`, `persist-proof` or `progress-proof`. Build succeeds on the supplied scaffold; behavior tests and corresponding proofs intentionally fail until their implementations are generated. `spec` is only TYPECHECKED. Measurements are eligible only after the required correctness checks; there is no approved performance target.
++
++Cargo and Verus check the same executable source using the installed compatible toolchain selected in `workflow.toml`. No downloads or system-toolchain replacement occur. See [tools](docs/tools.md), [proof entrypoints](crates/raft-proofs/README.md) and [workflow](docs/workflow.md) for scope, budgets, history, regression repair, optional comparable measurements and commands.
+ 
+ ## Actual directory layout
+ 
+@@ -48,7 +70,7 @@
+ ├── crates/
+ │   ├── raft-spec/src/        Candidate Verus states, transitions and properties
+ │   ├── raft-verified/
+-│   │   ├── src/              Shared node types, constructor seed and reconciliation
++│   │   ├── src/              Shared data types and failing executable seeds
+ │   │   ├── tests/            Functional regressions and local replay cases
+ │   │   ├── examples/         Deterministic replay and core measurement programs
+ │   │   └── check.py          Installed-tool build/run wrapper
+@@ -65,36 +87,4 @@
+ 
+ The maintenance workspace originally had empty read-only `.git`, `.agents`, `.codex` and `.aws` directories; those were preserved. That observation describes this local environment, not a normal GitHub clone. Cargo manifests, `AGENTS.md` and `.gitignore` also live at the root. Generated caches and build metadata are not maintained input material.
+ 
+-## Controller use
+-
+-`orchestrator/` reuses bounded subprocess execution, candidate copies, independent checks. Human review happens after code delivery. Step completion, module completion and whole-project acceptance are separate. The controller reports only selected-step completion; it does not infer module completion from a passing plan. Failed checks produce focused reproduction feedback. A serial plan can retain one candidate across tasks and resume after interruption; it never merges candidate files into this checkout.
+-
+-The project defaults are now `gpt-6.1-sol` with `high` reasoning effort. The configuration switch permits an explicitly started experiment. Start and resume need no approval file or in-process human review. Review the delivered candidate and results afterward. No real agent has been started during this setup. Global Codex configuration and the system Rust toolchain are unchanged.
+-
+-```sh
+-./experiment.sh                 # Preview; zero agent calls
+-./experiment.sh run             # Generate and prove the initial Node constructor
+-./experiment.sh resume RUN_ID   # Continue the saved experiment candidate
+-./experiment.sh report RUN_ID   # Read saved results
+-```
+-
+-The launcher selects STATE-INIT using `gpt-6.1-sol` / `high`, at most three calls and two repair rounds. Code and loop proofs are edited together in one candidate; tests, initial-state replay and actual Verus checking diagnose each attempt. Measurements run after required correctness checks pass. Cumulative budgets and prior design/check history survive resume. Persistent failing targets can trigger one bounded redesign; affected completed tasks are invalidated and rechecked during repair. Explicit budget extension and scoped rewind commands are described in docs/workflow.md. No live generation was run while preparing this revision. See [the workflow guide](docs/workflow.md#configured-solhigh-experiment).
+-
+-The main `check.py test` command includes the intentionally failing initialization seed. The `reconcile-tests` profile selects the original 15 passing regressions. To demonstrate the new generation/repair path offline:
+-
+-```sh
+-PYTHONDONTWRITEBYTECODE=1 python3 orchestrator/tests/real_repair_demo.py \
+-  --task STATE-INIT --output /tmp/raft-node-demo
+-```
+-
+-Use a new output directory. Scripted wrong-term code is rejected by real tests and Verus, then a scripted repair is rechecked. Both the candidate and raw evidence are retained; generation is labeled SIMULATED. This cannot show that a real model will succeed. RUNTIME-PERSIST now has a same-Node coordinator, protected targets/tests and a repeatable completion scenario. Run `python3 orchestrator/tests/real_repair_demo.py --task RUNTIME-PERSIST --output /tmp/raft-persist-demo` for a scripted STATE-INIT → persistence defect → repair demonstration with real checks. `python3 -m orchestrator run-plan --tasks RUNTIME-PERSIST --dry-run` previews the combined path; replacing `--dry-run` with `--execute-codex` explicitly starts the later real experiment. No manual solution copy or merge is needed between steps. PROGRESS-FOUNDATION can be selected similarly to include the early local progress proof. Global safety, liveness, legal handler calls, recovery and full dispatch remain open.
+-
+-Python 3.10+ on Linux/POSIX is supported. The installed `jsonschema` and TOML reader suffice; no new Python dependencies are required. Optional offline install:
+-
+-```sh
+-python3 -m pip install --no-index --no-deps --no-build-isolation \
+-  --target /tmp/raft-workflow-revision ./orchestrator
+-PYTHONPATH=/tmp/raft-workflow-revision python3 -m orchestrator validate
+-```
+-
+-All agent-facing material is English. Markdown explains one topic per file in `input/`; TOML contains execution settings. The small wire JSON schemas are machine reports, not a second author-maintained requirements registry.
++All LLM-facing material is English, with one physical line per Markdown prose paragraph. Python 3.10+ on Linux/POSIX is supported. Existing jsonschema and TOML support suffice; no new dependencies are required. Candidate copying and input exclusion prevent accidental answer inclusion, not hostile same-user access outside the candidate.
+--- a/crates/raft-proofs/README.md
++++ b/crates/raft-proofs/README.md
+@@ -1,15 +1,18 @@
+ # Local proof entrypoints
+ 
+-Status: DRAFT. `reconcile.rs` imports the existing candidate model and the exact `raft-verified/src/reconcile.rs` implementation. Its independently protected `check_reconcile_contract` delegates to the executable operation and establishes correspondence to `model::merged`, preservation of the prefix through `previous`, and unchanged state on reported input errors. The field-preserving representation is defined in `raft-spec/src/reconcile_view.rs`, outside ordinary repair scope. Weakening the executable's postcondition cannot satisfy this independent consumer. This reuses the existing protected checker boundary: finite runtime tests cannot establish this universal contract, and source versioning cannot establish that a changed annotation preserves its meaning. `reconcile_lemmas.rs` holds editable, proved consequences for empty and matching input; it adds no trusted assumption. The scan has a decreasing incoming-suffix length. These are local results; they do not close the complete handler, global safety or conditional-liveness obligations in [the proof checklist](../../input/proofs.md).
++Status: DRAFT. Independent consumers demand exact properties of the same executable source compiled by Cargo. Active executable bodies are intentionally incomplete seeds; local progress proof bodies are empty. Historical successful maintenance implementations are excluded offline fixtures, not the experiment starting point. See [the supplied inputs](../../input/starting-point.md).
+ 
+-Run `python3 crates/raft-verified/check.py proof` from the repository root. The command runs installed Verus with `--no-cheating`, without proof filtering. For runtime tests, `check.py test` gives Cargo the same installed release's vstd and macro library, plus its matching Rust 1.92 compiler and rustdoc in the child process environment. The Verus macro erases specifications and proof blocks; the executable body and types are the same source used by verification. There is no generated alternate Raft implementation. The existing system default remains unchanged. `workflow.toml` selects the installation for both paths; `RAFT_TOOLCHAIN_ROOT` can select another explicitly installed compatible root (see docs/tools.md); missing files produce BLOCKED instead of a pass.
++| Entrypoint | Required result | Command |
++|---|---|---|
++| `node_init.rs` | Every valid membership constructs the specified initial fields; invalid membership is rejected | `python3 crates/raft-verified/check.py node-proof` |
++| `reconcile.rs` | The actual operation satisfies `merged`, preserves its prefix and leaves input-error states unchanged | `python3 crates/raft-verified/check.py proof` |
++| `persistence.rs` | Actual submission/completion/partial dispatch contracts and successful-path storage projection | `python3 crates/raft-verified/check.py persist-proof` |
++| `progress.rs` | Conditional eventual reply release through the actual dispatcher contract | `python3 crates/raft-verified/check.py progress-proof` |
+ 
+-The operation compares terms, as `merged` does. It deliberately keeps the old command when overlapping terms match; the term-equality/log-content invariant needed by the eventual full protocol remains unproved. The future caller must check message and predecessor terms, committed-prefix constraints, conversion of wire `u64` indices into `usize`, and persistence/response timing. The function checks predecessor bounds and index-sum overflow itself. Rust Vec allocation failure can abort; this is not a fallible-allocation or resource-liveness proof.
++The first and third entrypoints import shared data vocabulary from `src/types.rs` without importing the unimplemented reconciliation operation. Each selected crate is checked completely with `--no-cheating`; there is no function filter or skipped body. Future integration must check composed handlers and full node/cluster refinement. Proving one selected entrypoint does not prove unrelated or missing operations.
+ 
+-The trusted runtime boundary includes Rust/LLVM and the installed Verus vstd contracts for Vec indexing, split_off, truncate and append. Clone derives support tests/workload construction; the verified operation never calls or assumes them. This Verus release warns that it does not attach contracts to the non-Copy Clone derives. No local proof depends on those missing contracts. `crates/proof-smoke` remains tool calibration, not Raft evidence.
++Contracts and consumers remain protected during ordinary generation. Weakening an executable postcondition or strengthening its precondition cannot satisfy the independent caller. This reuses the existing checker boundary: tests cannot establish the universal contract and versioning cannot establish the meaning of a changed annotation. Empty editable lemma bodies may discharge simple consequences through SMT automation; the nontrivial progress induction must be generated. No assumption, trusted body or axiom substitutes for a proof.
+ 
+-`node_init.rs` imports `src/node.rs` and the shared initial-state types, exactly as Cargo does. Its protected caller demands `init_result` for every input: valid membership must succeed with the fields of `fresh_node`; invalid membership must fail. The source reject-all seed intentionally fails. Run `check.py node-proof` in a generated candidate. This local initial-field relation now covers initially empty pending I/O and the clear fail-stop flag, but not missing peer state, and cannot discharge full node/cluster refinement. The checker permits only the exact listed ghost specification imports; executable conditional compilation remains rejected.
++The protected entry view preserves term, command tag, request identity and bytes. Reconciliation compares terms under `merged`; legality of caller transitions, committed-prefix protection and durable response timing remain separate obligations. Initialization relates represented fresh fields only. Persistence assumes truthful host durability notifications and legal Raft callers; it does not prove arbitrary term/log changes legal, error/recovery refinement or real storage. The local progress target explicitly assumes serviced successful completion and noninterference; global election, commitment, delivery and fairness transfer remain open.
+ 
+-`persistence.rs` consumes the exact `submit_persist`, `complete_persist` and partial `step` methods. Independent contracts cover fresh tokens, Busy/exhaustion without mutation, no reply before a matching successful callback, ignored stale/unknown/wrong-kind inputs and distinct fail-stop failure outcomes. Editable `persistence_lemmas.rs` connects submission and successful completion to the model storage projection. Host durability and legal election/replication caller transitions remain obligations; these local results do not prove arbitrary term/log updates legal, crash recovery or full I/O refinement. Run `check.py persist-proof`.
+-
+-`progress.rs` checks the same executable dispatcher and independently consumes the early trace theorem in `progress_lemmas.rs`. Under an actual dispatcher execution, a matching successful callback eventually serviced after only noninterfering events releases the retained reply. The theorem uses installed Verus/vstd with `spec_fn(nat)` traces and a decreasing prefix induction; no external temporal library or new axiom is used. It does not prove host fairness, successful I/O, capacity sufficiency, election, commitment, delivery or global progress refinement. Run `check.py progress-proof`.
++`check.py` supplies the installed release's vstd/macros and matching Rust compiler to Cargo. Macro erasure removes ghost/proof syntax from the same source checked by Verus. `workflow.toml` and an explicit `RAFT_TOOLCHAIN_ROOT` select tools in child processes; missing tools report BLOCKED and the system default is unchanged. Rust/LLVM, Verus/vstd/SMT and host assumptions remain in the TCB. Non-Copy Clone derives have no Verus contracts in this release; local proofs must not depend on those missing contracts. `proof-smoke` calibrates tools and proves no Raft property.
+--- a/crates/raft-proofs/node_init.rs
++++ b/crates/raft-proofs/node_init.rs
+@@ -2,8 +2,8 @@
+ use vstd::prelude::*;
+ #[path = "../raft-spec/src/lib.rs"]
+ pub mod model;
+-#[path = "../raft-verified/src/reconcile.rs"]
+-pub mod reconcile;
++#[path = "../raft-verified/src/types.rs"]
++pub mod types;
+ #[path = "../raft-spec/src/reconcile_view.rs"]
+ pub mod representation;
+ #[path = "../raft-verified/src/state.rs"]
+--- a/crates/raft-proofs/persistence.rs
++++ b/crates/raft-proofs/persistence.rs
+@@ -2,7 +2,7 @@
+ use vstd::prelude::*;
+ use crate::{state::*, io::*, persistence_spec::*};
+ #[path = "../raft-spec/src/lib.rs"] pub mod model;
+-#[path = "../raft-verified/src/reconcile.rs"] pub mod reconcile;
++#[path = "../raft-verified/src/types.rs"] pub mod types;
+ #[path = "../raft-spec/src/reconcile_view.rs"] pub mod representation;
+ #[path = "../raft-verified/src/state.rs"] pub mod state;
+ #[path = "../raft-verified/src/io.rs"] pub mod io;
+--- a/crates/raft-proofs/progress.rs
++++ b/crates/raft-proofs/progress.rs
+@@ -1,7 +1,7 @@
+ //! DRAFT independent early progress consumer over the actual dispatcher contract.
+ use vstd::prelude::*;
+ #[path = "../raft-spec/src/lib.rs"] pub mod model;
+-#[path = "../raft-verified/src/reconcile.rs"] pub mod reconcile;
++#[path = "../raft-verified/src/types.rs"] pub mod types;
+ #[path = "../raft-spec/src/reconcile_view.rs"] pub mod representation;
+ #[path = "../raft-verified/src/state.rs"] pub mod state;
+ #[path = "../raft-verified/src/io.rs"] pub mod io;
+--- a/crates/raft-proofs/progress_lemmas.rs
++++ b/crates/raft-proofs/progress_lemmas.rs
+@@ -1,4 +1,4 @@
+-//! DRAFT implementation progress foundation using Verus spec_fn/nat traces.
++//! DRAFT proof targets with empty bodies; no induction strategy is supplied.
+ use crate::{state::Node, io::*, persistence_spec::*, progress_spec::*};
+ use vstd::prelude::*;
+ verus! {
+@@ -9,22 +9,7 @@
+     ensures nodes(end) == nodes(start),
+     decreases end - start,
+ {
+-    if end > start {
+-        waiting_prefix(nodes, events, outputs, start, (end - 1) as nat);
+-        let i = (end - 1) as nat;
+-        assert(start <= i);
+-        assert(i + 1 == end);
+-        assert(forall |j: nat| j >= start ==> #[trigger] dispatch_result(nodes(j), nodes(j + 1), events(j), outputs(j)));
+-        assert(dispatch_result(nodes(i), nodes(i + 1), events(i), outputs(i)));
+-        assert(waiting_event(nodes(start), events(i)));
+-        match events(i) {
+-            Event::Complete { operation, kind, outcome } => {
+-                assert(completion_error(nodes(i), operation, kind).is_some());
+-                assert(complete_result(nodes(i), nodes(i + 1), operation, kind, outcome, outputs(i)));
+-            },
+-            _ => {},
+-        }
+-    }
++    // Proof strategy intentionally absent; the unchanged target must be established.
+ }
+ 
+ pub proof fn release_after_service(nodes: spec_fn(nat) -> Node, events: spec_fn(nat) -> Event,
+@@ -33,10 +18,6 @@
+         fair_completion(nodes(start), events, start, token),
+     ensures eventually_released(nodes, outputs, start),
+ {
+-    let k = choose |k: nat| k >= start && #[trigger] successful(events(k), token)
+-        && forall |i: nat| start <= i < k ==> #[trigger] waiting_event(nodes(start), events(i));
+-    waiting_prefix(nodes, events, outputs, start, k);
+-    assert(dispatch_result(nodes(k), nodes(k + 1), events(k), outputs(k)));
+-    assert(outputs(k) == Ok::<Option<Message>, InputError>(nodes(start).pending_write.unwrap().reply));
++    // Proof strategy intentionally absent; the unchanged target must be established.
+ }
+ }
+--- a/crates/raft-proofs/reconcile.rs
++++ b/crates/raft-proofs/reconcile.rs
+@@ -3,6 +3,8 @@
+ use vstd::prelude::*;
+ #[path = "../raft-spec/src/lib.rs"]
+ pub mod model;
++#[path = "../raft-verified/src/types.rs"]
++pub mod types;
+ #[path = "../raft-verified/src/reconcile.rs"]
+ pub mod reconcile;
+ pub mod reconcile_lemmas;
+--- a/crates/raft-spec/src/reconcile_view.rs
++++ b/crates/raft-spec/src/reconcile_view.rs
+@@ -1,7 +1,7 @@
+ //! DRAFT representation used by the independent local contract consumer.
+ //! This preserves every entry term, command tag, request field and command byte.
+ use crate::model;
+-use crate::reconcile::{Command, Entry};
++use crate::types::{Command, Entry};
+ use vstd::prelude::*;
+ 
+ verus! {
+--- a/crates/raft-verified/README.md
++++ b/crates/raft-verified/README.md
+@@ -1,6 +1,8 @@
+ # Executable Raft development
+ 
+-Status: DRAFT. `reconcile_log` is the suffix operation intended for a future AppendEntries handler. The rest of the library still provides interface types and token helpers plus shared initial-state types; it is not a functioning Raft node. `node.rs` is the next generation task's reject-all seed. `check.py test` now includes eight initialization oracles, so it intentionally fails on that seed. Existing regressions remain available through the `reconcile-tests` profile. STATE-INIT candidates must pass all 23 tests, `node-proof`, `node-replay`, existing reconciliation proofs and `node-bench`. The offline repair command and actual candidate are linked in the root review packet.
++Status: DRAFT. This is the experiment scaffold, with shared types, API contracts and intentionally incorrect bodies in `node.rs`, `reconcile.rs` and `persistence.rs`. No working Raft operation is supplied. AI generates executable code and proof together in a saved candidate. The previous unused OperationSequence helper and its two tests are preserved only as an excluded offline fixture. All independent initialization, reconciliation, replay and persistence integration oracles remain intact.
++
++`check.py build` should succeed on the scaffold. `test`, `proof`, `node-proof`, `persist-proof` and `progress-proof` must not be interpreted as passing before generation. STATE-INIT checks all eight initialization cases with `test --test node_init`, its local proof and replay; it does not require future operation tests to pass. RUNTIME-PERSIST then adds its six independent tests, proof and replay. Reconciliation has 13 operation/replay cases. Completed selected tasks are rechecked during continuation. See [the experiment inputs](../../input/starting-point.md) and [actual results](../../review/REVIEW_PACKET.md).
+ 
+ From the repository root:
+ 
+--- a/crates/raft-verified/src/io.rs
++++ b/crates/raft-verified/src/io.rs
+@@ -1,5 +1,5 @@
+ //! DRAFT shared event and completion vocabulary; same types in Cargo and Verus.
+-use crate::reconcile::{Entry, RequestId};
++use crate::types::{Entry, RequestId};
+ use crate::state::DurableState;
+ use vstd::prelude::*;
+ type NodeId = u64;
+--- a/crates/raft-verified/src/lib.rs
++++ b/crates/raft-verified/src/lib.rs
+@@ -1,4 +1,4 @@
+-//! DRAFT Raft interface and verified local log reconciliation.
++//! DRAFT experiment scaffold: data types, interfaces and intentionally incomplete bodies.
+ //! No complete Raft node or `step` implementation is provided.
+ //! `u64` exhaustion must return an error; the unbounded model is not a resource proof.
+ #![forbid(unsafe_code)]
+@@ -7,6 +7,7 @@
+ pub type Term = u64;
+ pub type LogIndex = u64;
+ 
++pub mod types;
+ pub mod reconcile;
+ pub use reconcile::{reconcile_log, Command, Entry, ReconcileError, RequestId};
+ 
+@@ -17,91 +18,3 @@
+ pub mod io;
+ pub mod persistence;
+ pub use io::*;
+-
+-/// Small runnable interface helper only; this is not a protocol handler.
+-#[derive(Debug)]
+-pub struct OperationSequence {
+-    incarnation: u64,
+-    next: Option<u64>,
+-}
+-
+-impl OperationSequence {
+-    pub fn new(incarnation: u64) -> Self {
+-        Self {
+-            incarnation,
+-            next: Some(0),
+-        }
+-    }
+-
+-    pub fn allocate(&mut self) -> Result<OperationId, InputError> {
+-        let sequence = self.next.ok_or(InputError::ResourceExhausted)?;
+-        self.next = sequence.checked_add(1);
+-        Ok(OperationId {
+-            incarnation: self.incarnation,
+-            sequence,
+-        })
+-    }
+-
+-    /// Match the full token and kind; duplicates become stale after removal.
+-    pub fn validate_completion(
+-        expected: Option<(OperationId, CompletionKind)>,
+-        received: OperationId,
+-        kind: CompletionKind,
+-    ) -> Result<(), InputError> {
+-        let (token, expected_kind) = expected.ok_or(InputError::UnknownOperation)?;
+-        if received != token {
+-            return Err(InputError::StaleCompletion);
+-        }
+-        if kind != expected_kind {
+-            return Err(InputError::WrongCompletionKind);
+-        }
+-        Ok(())
+-    }
+-}
+-
+-#[cfg(test)]
+-mod tests {
+-    use super::*;
+-
+-    #[test]
+-    fn completions_distinguish_incarnation_kind_and_duplicate() {
+-        let mut seq = OperationSequence::new(7);
+-        let token = seq.allocate().unwrap();
+-        assert_eq!(seq.allocate().unwrap().sequence, 1);
+-        let expected = Some((token, CompletionKind::Persist));
+-        assert_eq!(
+-            OperationSequence::validate_completion(expected, token, CompletionKind::Persist),
+-            Ok(())
+-        );
+-        assert_eq!(
+-            OperationSequence::validate_completion(
+-                expected,
+-                OperationId {
+-                    incarnation: 6,
+-                    ..token
+-                },
+-                CompletionKind::Persist
+-            ),
+-            Err(InputError::StaleCompletion)
+-        );
+-        assert_eq!(
+-            OperationSequence::validate_completion(expected, token, CompletionKind::Apply),
+-            Err(InputError::WrongCompletionKind)
+-        );
+-        assert_eq!(
+-            OperationSequence::validate_completion(None, token, CompletionKind::Persist),
+-            Err(InputError::UnknownOperation)
+-        );
+-    }
+-
+-    #[test]
+-    fn exhaustion_never_reuses_a_token() {
+-        let mut seq = OperationSequence {
+-            incarnation: 1,
+-            next: Some(u64::MAX),
+-        };
+-        assert_eq!(seq.allocate().unwrap().sequence, u64::MAX);
+-        assert_eq!(seq.allocate(), Err(InputError::ResourceExhausted));
+-        assert_eq!(seq.allocate(), Err(InputError::ResourceExhausted));
+-    }
+-}
+--- a/crates/raft-verified/src/persistence.rs
++++ b/crates/raft-verified/src/persistence.rs
+@@ -1,5 +1,5 @@
+-//! DRAFT one-write coordinator on the shared Node. No election/replication legality claim.
+-use crate::state::{DurableState, Node, PendingWrite};
++//! DRAFT unimplemented coordinator seed. Generate executable bodies and proofs in this file.
++use crate::state::{DurableState, Node};
+ use crate::io::*;
+ #[cfg(verus_keep_ghost)]
+ use crate::persistence_spec::{issue_result, complete_result, dispatch_result};
+@@ -12,52 +12,30 @@
+     pub fn submit_persist(&mut self, image: DurableState, reply: Option<Message>) -> (result: Result<OperationId, InputError>)
+         ensures issue_result(*old(self), *self, image, reply, result),
+     {
+-        if self.recovery_required { return Err(InputError::RecoveryRequired); }
+-        if self.pending_write.is_some() { return Err(InputError::Busy); }
+-        if self.serial == u64::MAX { return Err(InputError::ResourceExhausted); }
+-        let operation = OperationId { incarnation: self.incarnation, sequence: self.serial };
+-        self.serial = self.serial + 1;
+-        self.hard = image;
+-        self.pending_write = Some(PendingWrite { operation, reply });
+-        Ok(operation)
++        // Intentionally incomplete: this error does not satisfy the contract.
++        let _ = image;
++        let _ = reply;
++        Err(InputError::UnsupportedEvent)
+     }
+ 
+     pub fn complete_persist(&mut self, operation: OperationId, kind: CompletionKind, outcome: CompletionOutcome)
+         -> (result: Result<Option<Message>, InputError>)
+         ensures complete_result(*old(self), *self, operation, kind, outcome, result),
+     {
+-        if self.recovery_required { return Err(InputError::RecoveryRequired); }
+-        if operation.incarnation != self.incarnation { return Err(InputError::StaleCompletion); }
+-        let pending = match &self.pending_write {
+-            Some(p) => p,
+-            None => { return Err(InputError::UnknownOperation); }
+-        };
+-        if operation.incarnation != pending.operation.incarnation || operation.sequence != pending.operation.sequence {
+-            return Err(InputError::UnknownOperation);
+-        }
+-        if !matches!(kind, CompletionKind::Persist) { return Err(InputError::WrongCompletionKind); }
+-        let pending = self.pending_write.take().unwrap();
+-        match outcome {
+-            CompletionOutcome::Success => Ok(pending.reply),
+-            CompletionOutcome::NotPerformed => {
+-                self.recovery_required = true;
+-                Err(InputError::StorageFailure)
+-            },
+-            CompletionOutcome::Unknown => {
+-                self.recovery_required = true;
+-                Err(InputError::RecoveryRequired)
+-            },
+-        }
++        // Intentionally incomplete: this error does not satisfy the contract.
++        let _ = operation;
++        let _ = kind;
++        let _ = outcome;
++        Err(InputError::UnsupportedEvent)
+     }
+ 
+     /// Partial dispatcher shared by host drivers. Unsupported events never fake success.
+     pub fn step(&mut self, event: Event) -> (result: Result<Option<Message>, InputError>)
+         ensures dispatch_result(*old(self), *self, event, result),
+     {
+-        match event {
+-            Event::Complete { operation, kind, outcome } => self.complete_persist(operation, kind, outcome),
+-            _ => Err(InputError::UnsupportedEvent),
+-        }
++        // Intentionally incomplete: this error does not satisfy the contract.
++        let _ = event;
++        Err(InputError::UnsupportedEvent)
+     }
+ }
+ }
+--- a/crates/raft-verified/src/reconcile.rs
++++ b/crates/raft-verified/src/reconcile.rs
+@@ -1,4 +1,4 @@
+-//! DRAFT: local AppendEntries suffix reconciliation, not a complete handler.
++//! DRAFT unimplemented reconciliation seed; the experiment must generate the body and proof.
+ //! This exact executable source is erased by the Verus macro for Cargo and
+ //! checked with its contracts by crates/raft-proofs/reconcile.rs.
+ #[cfg(verus_keep_ghost)]
+@@ -7,20 +7,9 @@
+ use crate::representation::log_view;
+ use vstd::prelude::*;
+ 
++pub use crate::types::{RequestId, Command, Entry, ReconcileError};
++
+ verus! {
+-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+-pub struct RequestId { pub client: u64, pub sequence: u64 }
+-
+-// Clone is a runtime convenience and is not used by the verified operation.
+-#[derive(Clone, Debug, Eq, PartialEq)]
+-pub enum Command { Client { request: RequestId, bytes: Vec<u8> }, Noop }
+-
+-#[derive(Clone, Debug, Eq, PartialEq)]
+-pub struct Entry { pub term: u64, pub command: Command }
+-
+-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+-pub enum ReconcileError { InvalidIndex, ResourceExhausted }
+-
+ /// `previous` is the number of existing entries preceding the incoming entries.
+ /// The caller must separately check the predecessor term, message term, commit
+ /// constraints and durable response timing. Entries with equal terms retain the
+@@ -38,66 +27,9 @@
+                 && previous + incoming.len() > usize::MAX && log@ == old(log)@,
+         },
+ {
+-    if previous > log.len() {
+-        return Err(ReconcileError::InvalidIndex);
+-    }
+-    if incoming.len() > usize::MAX - previous {
+-        return Err(ReconcileError::ResourceExhausted);
+-    }
+-    let ghost original = log@;
+-    let mut k: usize = 0;
+-    while k < incoming.len()
+-        invariant
+-            log@ == original,
+-            original == old(log)@,
+-            previous <= log.len(),
+-            previous + k <= log.len(),
+-            previous + incoming.len() <= usize::MAX,
+-            k <= incoming.len(),
+-            forall |j: int| 0 <= j < k ==> previous + j < original.len()
+-                && original[previous as int + j].term == incoming@[j].term,
+-        decreases incoming.len() - k,
+-    {
+-        let index = previous + k;
+-        if index >= log.len() || log[index].term != incoming[k].term {
+-            proof {
+-                assert(index >= log_view(original).len()
+-                    || log_view(original)[index as int].term != log_view(incoming@)[k as int].term);
+-            }
+-            let ghost initial_incoming = incoming@;
+-            let mut remaining = incoming;
+-            let mut suffix = remaining.split_off(k);
+-            log.truncate(index);
+-            log.append(&mut suffix);
+-            proof {
+-                assert(log@ == original.take(index as int)
+-                    + initial_incoming.subrange(k as int, initial_incoming.len() as int));
+-                assert(log_view(log@) =~= log_view(original).take(index as int)
+-                    + log_view(initial_incoming).subrange(k as int, initial_incoming.len() as int));
+-                assert forall |j: int| 0 <= j < k implies
+-                    previous + j < log_view(original).len()
+-                    && log_view(original)[previous as int + j].term == log_view(initial_incoming)[j].term by {};
+-                assert(exists |w: nat| w == k && w < log_view(initial_incoming).len()
+-                    && (forall |j: int| 0 <= j < w ==> previous + j < log_view(original).len()
+-                        && log_view(original)[previous as int + j].term == log_view(initial_incoming)[j].term)
+-                    && (previous + w >= log_view(original).len()
+-                        || log_view(original)[(previous + w) as int].term != log_view(initial_incoming)[w as int].term)
+-                    && log_view(log@) == log_view(original).take((previous + w) as int)
+-                        + log_view(initial_incoming).subrange(w as int, log_view(initial_incoming).len() as int));
+-                assert(model::merged(log_view(original), previous as nat,
+-                    log_view(initial_incoming), log_view(log@)));
+-                assert(log@.take(previous as int) =~= original.take(previous as int));
+-            }
+-            return Ok(());
+-        }
+-        k += 1;
+-    }
+-    proof {
+-        assert(previous + incoming.len() <= original.len());
+-        assert forall |j: int| 0 <= j < incoming.len() implies
+-            log_view(original)[previous as int + j].term == log_view(incoming@)[j].term by {};
+-    }
+-    // MATCHING_TAIL: a wholly matching request, including empty, changes nothing.
+-    Ok(())
++    // Intentionally incomplete seed: independent tests and Verus must reject it.
++    let _ = previous;
++    let _ = incoming;
++    Err(ReconcileError::InvalidIndex)
+ }
+ }
+--- a/crates/raft-verified/src/state.rs
++++ b/crates/raft-verified/src/state.rs
+@@ -1,5 +1,5 @@
+ //! DRAFT shared initial node representation. Later handlers extend this state.
+-use crate::reconcile::Entry;
++use crate::types::Entry;
+ use crate::io::{OperationId, Message};
+ use vstd::prelude::*;
+ 
+--- /dev/null
++++ b/crates/raft-verified/src/types.rs
+@@ -0,0 +1,18 @@
++//! DRAFT shared data vocabulary only; no Raft behavior is supplied.
++use vstd::prelude::*;
++
++verus! {
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++pub struct RequestId { pub client: u64, pub sequence: u64 }
++
++// Clone is a runtime convenience and is not used by the verified operation.
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub enum Command { Client { request: RequestId, bytes: Vec<u8> }, Noop }
++
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub struct Entry { pub term: u64, pub command: Command }
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++pub enum ReconcileError { InvalidIndex, ResourceExhausted }
++
++}
+--- a/docs/workflow.md
++++ b/docs/workflow.md
+@@ -62,7 +62,7 @@
+ 
+ The launcher works from any current directory and selects STATE-INIT. It allows three agent calls, at most two repair rounds, 600 seconds per call and 2,400 seconds for the task. This is a bounded generation experiment, not the entire Raft project. The checked source seed intentionally rejects all memberships; the agent must implement the constructor and its proof together. Eight independent tests and a protected Verus caller prevent reject-all or weakened-contract acceptance. Ordinary repairs may edit only `crates/raft-verified/src/node.rs`.
+ 
+-The task runs build, all 23 runtime regressions, initial-state replay, model typechecking, the local initialization proof and existing reconciliation proof. Only after those pass does it measure constructor cost. TYPECHECKED is useful feedback but closes no obligation. A pass closes only the mapped local targets; whole-node refinement, cluster safety and conditional liveness remain open.
++The task runs build, all eight independent initialization cases, initial-state replay, model typechecking and the local initialization proof. Reconciliation and persistence are unimplemented future steps, so their checks are not initialization prerequisites. The controller reruns previously completed tasks during later steps. Only after those pass does it measure constructor cost. TYPECHECKED is useful feedback but closes no obligation. A pass closes only the mapped local targets; whole-node refinement, cluster safety and conditional liveness remain open.
+ 
+ ```sh
+ python3 -m orchestrator run-plan --tasks STATE-INIT --execute-codex
+@@ -71,7 +71,7 @@
+   --task STATE-INIT --output /tmp/raft-node-demo
+ ```
+ 
+-The last command uses only a scripted subprocess fixture plus real Rust/Verus, with a new output directory. It rejects a wrong initial term, repairs it and reruns the same independent targets. `Agent.md` and the scripted solution fixture are excluded from candidates and prompt inputs. This prevents accidental context mixing, not malicious access by a same-user process.
++The last command uses only a scripted subprocess fixture plus real Rust/Verus, with a new output directory. It rejects a wrong initial term, repairs it and reruns the same independent targets. `Agent.md`, historical evidence and the entire `orchestrator/tests` directory (including every solution and script) are excluded from candidates and input manifests. This prevents accidental context mixing, not malicious access by a same-user process.
+ 
+ The retry prompt retains prior attempt summaries (explicitly agent claims), changed files, independent outcomes and links to saved patches/raw diagnostics. Detailed repair context is included for failed checks. The existing call budget bounds history; no new agent hierarchy, score system or evidence format is needed. Within scope, change code and auxiliary invariants together. A target/assumption conflict is a recorded scope finding, not permission to weaken the target.
+ 
+@@ -119,7 +119,7 @@
+ 
+ ### Shared runtime and Verus source
+ 
+-`crates/raft-verified/src/reconcile.rs` contains the executable `reconcile_log`, its source contracts and local proof blocks. The protected view in `crates/raft-spec/src/reconcile_view.rs` preserves entry contents. The protected `crates/raft-proofs/reconcile.rs` caller independently requires the full original postcondition, so an editable implementation cannot pass by weakening its contract. Additional proved corollaries live in the separately editable `reconcile_lemmas.rs`. The ordinary library reexports that operation; Rust integration tests, the replay example and the measurement example call it. `crates/raft-proofs/reconcile.rs` imports the same source and the candidate model's `merged` relation. There is no separately maintained verification-only algorithm.
++`crates/raft-verified/src/reconcile.rs` contains the `reconcile_log` interface and source contract with an intentionally incomplete body. The experiment supplies the executable logic and local proof blocks. The protected view in `crates/raft-spec/src/reconcile_view.rs` preserves entry contents. The protected `crates/raft-proofs/reconcile.rs` caller independently requires the full original postcondition, so an editable implementation cannot pass by weakening its contract. Additional proved corollaries live in the separately editable `reconcile_lemmas.rs`. The ordinary library reexports that operation; Rust integration tests, the replay example and the measurement example call it. `crates/raft-proofs/reconcile.rs` imports the same source and the candidate model's `merged` relation. There is no separately maintained verification-only algorithm.
+ 
+ `crates/raft-verified/check.py` uses the installed Verus release's `libvstd.rlib` and macro dependencies with its matching Rust 1.92 toolchain in the child process. Cargo's Verus macro expansion erases ghost/proof syntax from the shared source; the Verus entrypoint checks that source with proofs retained. The wrapper configures `RUSTC` and library search paths locally, without changing the user's default toolchain or downloading tools. Missing installation files produce an explicit blocker. See `docs/tools.md` for installation provenance.
+ 
+--- a/input/instructions.md
++++ b/input/instructions.md
+@@ -3,6 +3,8 @@
+ Status: DRAFT. Keep each Markdown prose paragraph on one physical line; preserve code blocks, tables and list structure.
+ 
+ Use English for instructions, source comments, diagnostics, reports and referenced material. Read the task's scoped context before editing. Preserve existing user work and stay within the supplied editable paths. Do not invoke Codex or another agent workflow recursively.
++
++Read [starting-point.md](starting-point.md). A fresh experiment starts with data types, interfaces, formal targets and independent checks, but no working Raft operation or supplied proof strategy. Generate missing code and proofs; later tasks extend this run's own candidate. Do not retrieve implementations or offline solutions from outside the candidate. An intentionally failing seed is unfinished work, not evidence that its contract holds. Keep completed-task regressions passing without requiring future unfinished behavior to pass.
+ 
+ The destination is a complete, continuously usable Raft library. Read the module's responsibility, connections and completion criteria, then implement the selected step within scope. Following the joint code/proof development idea in IDS (source S14 in docs/sources.md), pair each state, control-flow or handler change with its representation, invariant and local proof work. Run the relevant checks after each coherent edit, not only after finishing the implementation. Decompose a difficult proof into smaller obligations; preserve proved results and record unfinished dependencies as OPEN. Our Verus adaptation forbids `assume`, `admit`, trusted proof stubs and skipped verification even in intermediate accepted work. A partial project is allowed; an unfinished theorem is not a proof. Tests, replay, measurements and verification use the same executable logic. Keep formal definitions/proofs in Verus source and preserve target meaning and caller preconditions. Handlers must compose over repeated events; hard-coded exchanges do not establish Raft behavior. Other module steps do not expand this call's scope.
+ 
+--- a/input/model.md
++++ b/input/model.md
+@@ -55,7 +55,7 @@
+ 2. **Temporal library BLOCKED:** upstream `verus_temporal_logic` and `defs.rs` APIs (`Execution/TempPred/always/eventually/weak_fairness`) were read, but no compatible Verus/vstd/Rust integration was installed or verified. See [sources](../docs/sources.md); no fabricated pin.
+ 3. **Interface formalization PARTIAL:** Rust types cover timer generations, send completions, errors and unknown/duplicate completions. The model expands storage/application success, stopping on storage failure and ignoring old incarnations. Same-incarnation unknown/duplicate tokens, timer generations, malformed-message rejection and error returns need a concrete interface state machine. Invalid inputs cannot silently succeed.
+ 4. **Retry/scheduling PARTIAL:** resending AppendEntries replaces that peer's current RPC. Late failures do not backtrack progress, but liveness must prevent sends from continually displacing every useful response. Unlimited duplication of old same-term heartbeats can suppress elections; finite duplication/draining and outside-Q interference restrictions are necessary beyond higher-term limits. Cancellation, retry scheduling and resource fairness remain unformalized.
+-5. **Resources PARTIAL:** spec `nat/Seq/Map` are not Rust `u64/Vec`. Recommend checked overflow/capacity and ResourceExhausted; safe stopping is not liveness. Operation-token allocation checks and local reconciliation index/length checks are implemented. Handler-wide terms/indices, allocation failure and durable incarnation freshness remain to implement.
++5. **Resources PARTIAL:** spec `nat/Seq/Map` are not Rust `u64/Vec`. Recommend checked overflow/capacity and ResourceExhausted; safe stopping is not liveness. Operation-token allocation and reconciliation index/length checks are specified by independent targets; the active executable seeds do not implement them. Handler-wide terms/indices, allocation failure and durable incarnation freshness remain to implement.
+ 6. **Induction/refinement OPEN:** no proof that Init/Next preserve protocol invariants or imply S/L targets; no actual Raft handler, simulator, cluster composition or infinite-trace liveness-preservation proof.
+ 
+ The library now exposes local log reconciliation as well as the candidate types and token helper. The installed-Verus build path checks and compiles the same reconciliation source used by the runtime tests, replay and microbenchmark; see [workflow.md](../docs/workflow.md). The local proof entrypoint is `crates/raft-proofs/reconcile.rs`. Full Raft remains incomplete. Cargo test success and a local operation theorem do not establish cluster safety or liveness.
+--- a/input/progress.md
++++ b/input/progress.md
+@@ -14,9 +14,9 @@
+ 
+ ## Step: Establish coordinator progress foundation
+ 
+-Stage: READY after RUNTIME-PERSIST. Develop or repair `crates/raft-proofs/progress_lemmas.rs` against the protected `progress.rs` consumer and `raft-spec/src/progress.rs` target. The supplied draft establishes eventual release of the pending reply when a matching successful persistence callback receives service after finitely many rejected or unsupported events. `execution` requires each transition to satisfy the actual `Node::step` contract; `fair_completion` constrains event service and noninterference, never assumes the output. The host still owes actual durability before a successful notification. Identify the first failed induction step when revising the proof; do not strengthen premises or edit the target.
++Stage: READY after RUNTIME-PERSIST. Generate the missing proof bodies in `crates/raft-proofs/progress_lemmas.rs` against the protected `progress.rs` consumer and `raft-spec/src/progress.rs` target. The supplied target requires eventual release of the pending reply when a matching successful persistence callback receives service after finitely many rejected or unsupported events. `execution` requires each transition to satisfy the actual `Node::step` contract; `fair_completion` constrains event service and noninterference, never assumes the output. The host still owes actual durability before a successful notification. Identify the first failed induction step when revising the proof; do not strengthen premises or edit the target.
+ 
+-Run `python3 crates/raft-verified/check.py progress-proof` or `python3 -m orchestrator verify --profile progress-proof`, then the persistence tests and replay on the shared initialized candidate. This exercises the installed Verus/vstd combination with unbounded `nat` traces, quantifiers and a decreasing prefix induction; no external temporal library is needed for this local encoding. The optional verus-tla library remains unavailable and uncalibrated. The straight-line coordinator handlers terminate; this is not a proof of terminating all future handlers or fair scheduling by an actual host.
++Run `python3 crates/raft-verified/check.py progress-proof` or `python3 -m orchestrator verify --profile progress-proof`, then the persistence tests and replay on the shared initialized candidate. Use the installed Verus/vstd combination with unbounded `nat` traces and quantifiers; develop the needed induction proof within the editable file; no external temporal library is needed for this local encoding. The optional verus-tla library remains unavailable and uncalibrated. Check the generated coordinator handlers; this task does not prove termination of all future handlers or fair scheduling by an actual host.
+ 
+ Retain global L-ELECTION, L-COMMIT, L-DELIVER and PO-LIVE-REFINEMENT. Finite counter/capacity sufficiency, competing protocol events, higher-term interference and transfer of fairness through real scheduling remain OPEN. Invalid events may delay service only finitely in this theorem; continuing storage failure or missing successful completion does not satisfy its premises.
+ 
+--- a/input/proofs.md
++++ b/input/proofs.md
+@@ -67,7 +67,7 @@
+ 
+ ## Completion limits
+ 
+-- The executable reconciliation operation is a local building block. No complete node/event coordinator exists; its local proof does not replace full handler or cluster refinement.
++- The reconciliation target concerns a local building block whose executable body must be generated. No complete node/event coordinator exists; a local proof cannot replace full handler or cluster refinement.
+ - Verify all actual entrypoints, event/error branches, build configuration and transitive dependencies. Counts alone do not establish symbol coverage.
+ - Tick, Stutter, Drop and Duplicate are part of step; arbitrary packet consumption models reordering and retention models delay.
+ - Full acceptance requires all obligations, including liveness and refinement. Do not delete targets to obtain a pass.
+--- a/input/replication.md
++++ b/input/replication.md
+@@ -1,6 +1,6 @@
+ # Log replication
+ 
+-Status: DRAFT. Module: INCOMPLETE. Only log-suffix reconciliation and its local proof/tests/replay are implemented; follower and leader protocol paths are absent.
++Status: DRAFT. Module: INCOMPLETE. Log-suffix reconciliation has an interface, contracts, independent tests and replay; its implementation and proof must be generated. Follower and leader protocol paths are absent.
+ 
+ ## Responsibility and connections
+ 
+@@ -14,9 +14,9 @@
+ 
+ ## Step: Reconcile log contents
+ 
+-Stage: READY for local recheck or repair of the existing operation.
++Stage: READY for generation from an intentionally incomplete error-only body.
+ 
+-Use `reconcile_log(log: &mut Vec<Entry>, previous: usize, incoming: Vec<Entry>)` in `crates/raft-verified/src/reconcile.rs`. Reject invalid predecessor/checked length overflow without changing the log. Compare overlapping terms; at the first conflict or missing position replace the remaining suffix. Empty, fully matching or shorter matching requests preserve the existing tail. Same-term/different-payload entries retain the old entry under `merged`; changing comparison semantics needs review. Protocol positions use zero as the prefix sentinel; stored entries use zero-based offsets. The future caller checks u64-to-usize conversion, message and predecessor terms, committed-prefix compatibility and durability ordering.
++Implement and prove `reconcile_log(log: &mut Vec<Entry>, previous: usize, incoming: Vec<Entry>)` in `crates/raft-verified/src/reconcile.rs`. Reject invalid predecessor/checked length overflow without changing the log. Compare overlapping terms; at the first conflict or missing position replace the remaining suffix. Empty, fully matching or shorter matching requests preserve the existing tail. Same-term/different-payload entries retain the old entry under `merged`; changing comparison semantics needs review. Protocol positions use zero as the prefix sentinel; stored entries use zero-based offsets. The future caller checks u64-to-usize conversion, message and predecessor terms, committed-prefix compatibility and durability ordering.
+ 
+ Edit only the shared executable source. Preserve the protected view, proof caller and regression oracles. Rust tests, replay, benchmarks and Verus must use this same operation. Vec allocation may abort; no recoverable-OOM or resource-liveness claim is made. Read the slice tests and `crates/raft-verified/check.py` before editing.
+ 
+--- a/input/requirements.md
++++ b/input/requirements.md
+@@ -4,7 +4,7 @@
+ 
+ The eventual target is a standalone Rust Raft library with fixed membership and a single-threaded event-driven core: elections, heartbeats, RequestVote/AppendEntries and responses, multi-entry replication, conflict truncation, commitment, ordered delivery and crash recovery under explicit stable-storage semantics. Membership is a parameterized nonempty finite set `M`; quorum `Q` satisfies `Q ⊆ M ∧ 2|Q| > |M|`. Recommend supporting one node. Tests with three or five nodes do not replace a proof for arbitrary finite size.
+ 
+-Development is organized around complete Raft modules, implemented through bounded checked steps inside each module. The repository contains a candidate model, interface types, a real log-suffix reconciliation operation and a Python checking/repair workflow. This operation is a building block for follower AppendEntries; it is not a complete Raft node or handler. No unimplemented `step` reports success. Tests, replay, measurement and Verus checking must use the same executable logic. The roadmap in [roadmap.md](roadmap.md) retains the complete safety and conditional-liveness goal.
++Development is organized around complete Raft modules, implemented through bounded checked steps inside each module. The experiment supplies a candidate model, interface types, independent oracles and a Python checking/repair workflow. Executable operation bodies and the nontrivial proof strategies must be generated from the scaffold described in [starting-point.md](starting-point.md). The reconciliation assignment is a building block for follower AppendEntries, not a complete node or handler. No unimplemented `step` reports success. Tests, replay, measurement and Verus checking must use the same executable logic. The roadmap in [roadmap.md](roadmap.md) retains the complete safety and conditional-liveness goal.
+ 
+ Excluded: dynamic membership, joint consensus, snapshots, log compaction, ReadIndex, lease reads, leader transfer, pre-vote, performance pipelining/optimized batching and database service. Multi-entry AppendEntries is basic functionality, not parallel pipelining. Without compaction, bounded space under unlimited execution is not promised.
+ 
+--- a/input/roadmap.md
++++ b/input/roadmap.md
+@@ -7,19 +7,19 @@
+ | Assignment | Complete responsibility | Current implementation |
+ |---|---|---|
+ | [state.md](state.md) | Shared node representation, membership, initialization and state invariants | Shared initial-state types; constructor seed awaits generation and independent checks |
+-| [runtime.md](runtime.md) | Serial event dispatch, persistence/completion ordering and timer/effect coordination | One-write coordinator, actual partial completion dispatcher and deterministic host driver; other events explicitly unsupported |
++| [runtime.md](runtime.md) | Serial event dispatch, persistence/completion ordering and timer/effect coordination | Coordinator/dispatcher signatures and failing seeds, independent checks and deterministic host driver; behavior awaits generation |
+ | [elections.md](elections.md) | Timeouts, vote requests/responses, quorum counting, leadership and step-down | Missing |
+-| [replication.md](replication.md) | Leader proposals/heartbeats/retries, follower append, responses and peer progress | Log reconciliation helper with local proof/tests/replay |
++| [replication.md](replication.md) | Leader proposals/heartbeats/retries, follower append, responses and peer progress | Reconciliation signature and failing seed, with local targets/tests/replay; behavior awaits generation |
+ | [commitment.md](commitment.md) | Durable-majority commit advancement and ordered delivery/application acknowledgment | Missing |
+ | [recovery.md](recovery.md) | Crash reconstruction, stale-event handling and deterministic cluster fault histories | Full recovery/fault driver missing |
+-| [progress.md](progress.md) | Conditional election, request-commit and delivery liveness, transferred to executable code | Early coordinator trace/progress foundation; global theorems and fairness transfer remain open |
++| [progress.md](progress.md) | Conditional election, request-commit and delivery liveness, transferred to executable code | Early coordinator trace/progress targets with empty proof bodies; global theorems and fairness transfer remain open |
+ | [integration.md](integration.md) | Runnable cluster/adapters, global safety/refinement, measurements and complete-project review | Core microbenchmark and local checking workflow only |
+ 
+ Each document states module behavior, interfaces to other modules, completion criteria and implementation/proof/test steps. Formal definitions remain in Verus source. The global obligations in [proofs.md](proofs.md) span modules; they are not a replacement for an implementation plan.
+ 
+ Modules are organizational boundaries. At runtime, a node has one coupled state machine: changing a term or role affects outstanding replication; changing a log constrains commit/delivery; recovery affects every pending token and timer. Shared invariants must survive the complete event/I/O sequence. Local contracts require their callers to establish the preconditions, and node/cluster refinement must connect all paths. Development dependencies describe the order of constructing code and proofs, not independent runtime services or a proof that behavior is acyclic. Relevant cross-module tests and dependent proofs accompany each change.
+ 
+-The architecture below is partially implemented at the completion boundary; other handlers remain planned:
++The architecture below is the intended destination; data types and interfaces are supplied, while executable behavior must be generated:
+ 
+ ```mermaid
+ flowchart LR
+@@ -42,7 +42,7 @@
+ 
+ `python3 -m orchestrator plan --format text` displays modules and steps together. Ready means local work has real scope/checks; planned means named prerequisites or checks are missing. Neither status is permission for real Codex generation. `run-plan` expands configured prerequisites and executes selected steps serially in one candidate. Its PASSED result concerns those steps only. Module completion is NOT_ASSESSED by the controller; a human reviews the module's full criteria and actual coverage. Full project acceptance still requires every safety/liveness and refinement obligation, approved semantics and the existing execution protections.
+ 
+-The default experiment selects STATE-INIT: generate the missing shared-node constructor and its proof, then run its independent tests, initial-state replay, actual Verus checks and construction measurements. The source seed is intentionally rejected; a fixture-generated passing candidate is only an offline workflow test. Four optional ready steps still exercise delivered reconciliation work. None of these completes a module, cluster safety or conditional liveness.
++Read [the experimental starting point](starting-point.md). The default experiment selects STATE-INIT: generate the missing shared-node constructor and its proof, then run its independent tests, initial-state replay, actual Verus checks and construction measurements. The source seed is intentionally rejected; a fixture-generated passing candidate is only an offline workflow test. Four optional ready steps generate, prove, replay and measure reconciliation. None of these completes a module, cluster safety or conditional liveness.
+ 
+ Select RUNTIME-PERSIST to carry a checked STATE-INIT candidate directly into the coordinator in one plan; integration into the source checkout is not a prerequisite. PROGRESS-FOUNDATION follows the coordinator before global safety integration. Continue growing that same Node through elections, both-side replication, commit/delivery and recovery. Develop each executable change with its view, invariants, tests and local proofs; implementation and proof are not separate phases. Integrate the growing dispatcher as handlers arrive. Tasks without real checks remain planned. IDS guides this method (docs/sources.md, S14); no full IDS agent framework is imported.
+ 
+--- a/input/runtime.md
++++ b/input/runtime.md
+@@ -1,6 +1,6 @@
+ # Event processing and I/O coordination
+ 
+-Status: DRAFT. Module: INCOMPLETE; one-write coordination and a partial completion dispatcher exist; elections, replication, application and recovery dispatch are incomplete.
++Status: DRAFT. Module: INCOMPLETE; interfaces and independent checks exist; coordinator, dispatcher and protocol behavior await generation.
+ 
+ ## Responsibility and connections
+ 
+@@ -14,7 +14,7 @@
+ 
+ ## Step: Coordinate persistence and completions
+ 
+-Stage: READY after STATE-INIT in the same saved candidate. Maintain, complete or repair `Node::submit_persist`, `Node::complete_persist` and `Node::step` in `crates/raft-verified/src/persistence.rs`, together with `crates/raft-proofs/persistence_lemmas.rs`. The supplied implementation is a DRAFT local increment, not a completed Raft service. Read `state.rs`, `io.rs` and the protected `raft-spec/src/persistence.rs` contracts and `raft-proofs/persistence.rs` consumers first. Ordinary attempts cannot change shared representation, independent targets/tests, the driver or checker configuration; propose a representation extension explicitly if it exceeds this scope.
++Stage: READY after STATE-INIT in the same saved candidate. Implement and prove `Node::submit_persist`, `Node::complete_persist` and `Node::step` in `crates/raft-verified/src/persistence.rs`, together with `crates/raft-proofs/persistence_lemmas.rs`. The supplied bodies are intentionally incomplete error-only seeds; no coordinator solution is included. Read `state.rs`, `io.rs` and the protected `raft-spec/src/persistence.rs` contracts and `raft-proofs/persistence.rs` consumers first. Ordinary attempts cannot change shared representation, independent targets/tests, the driver or checker configuration; propose a representation extension explicitly if it exceeds this scope.
+ 
+ There is one pending write. Submission moves the proposed term/vote/log image into `Node.hard`, allocates `(incarnation, serial)` without wrapping, retains an optional dependent protocol reply, and returns only the persistence token. The host snapshots `hard` under that token before notification; submission is not durable success. While pending, reject new writes with Busy and preserve the current image/reply. Completion compares node incarnation, full token and Persist kind before consuming anything. Success returns the retained reply exactly once; duplicate, stale, unknown and wrong-kind callbacks preserve state and release nothing. NotPerformed returns StorageFailure, Unknown returns RecoveryRequired; both enter the current model's conservative fail-stop policy and release no reply. Recovery and a direct known-failure retry path are not implemented. These draft API choices are recorded under ADR-01/07, not newly approved semantics.
+ 
+@@ -30,4 +30,4 @@
+ 
+ Connect every existing Event variant to the appropriate state transition and ordered effects. Document dispatch behavior while work is pending and after role changes. Drive the same node repeatedly from a host queue; do not write a second implementation in the simulator. Exercise proposals, messages, both timers, completion outcomes and recovery over multiple terms. Retain explicit error paths.
+ 
+-Deliver the public node entrypoint, an executable host-loop example and tests for all event/error branches. Add local step/refinement entrypoints with meaningful state invariants, then check the integrated node and dependent proofs. The partial `Node::step` now handles persistence completions and explicitly rejects every unsupported Event variant. Its return type will need a reviewed extension for general effects; all-event handlers and independent profiles are still missing, so this remains PLANNED. Missing handlers cannot be replaced with success stubs.
++Deliver the public node entrypoint, an executable host-loop example and tests for all event/error branches. Add local step/refinement entrypoints with meaningful state invariants, then check the integrated node and dependent proofs. RUNTIME-PERSIST must first generate a partial `Node::step` that handles persistence completions and explicitly rejects every unsupported Event variant. Its return type will need a reviewed extension for general effects; all-event handlers and independent profiles are still missing, so this remains PLANNED. Missing handlers cannot be replaced with success stubs.
+--- /dev/null
++++ b/input/starting-point.md
+@@ -0,0 +1,19 @@
++# Experiment starting point
++
++Status: DRAFT. The experiment studies AI generation of executable Rust Raft behavior and its Verus proofs, starting without an implemented Raft operation. This is synthesis from supplied requirements and interfaces, not unconstrained synthesis from a blank file.
++
++## Supplied inputs
++
++English requirements and module assignments, the candidate formal model, exact local contracts and protected proof consumers, shared data types and API signatures, independent tests, host replay drivers, measurement harnesses, Cargo configuration and the Python controller are supplied. Record these inputs when describing results. Tests and host drivers call the library; they are not alternative Raft implementations. Structural derives and representation functions are part of the supplied interface/specification.
++
++## Missing work
++
++`node.rs`, `reconcile.rs` and `persistence.rs` contain intentionally incorrect error-only seeds. They compile, but do not implement their contracts. `progress_lemmas.rs` supplies target signatures with empty proof bodies and no induction strategy. Other editable lemma declarations also have empty bodies; Verus may discharge simple supplied targets automatically, which is not evidence of an AI-authored proof strategy. No seeds use trusted bodies, assumptions or skipped verification. Missing behavior and unproved targets must fail their independent checks.
++
++Generate the selected executable body and its proof in the same source. Subsequent steps and repairs build on the candidate produced during this run. Resume retains that candidate and its history; it must not restore seeds or import a demonstration solution. Earlier completed tasks are rechecked when later changes can affect them. Future unimplemented tasks are not prerequisites for completing the current bounded assignment.
++
++## Evidence and scope
++
++Offline controller tests and scripted solutions are maintenance material and are omitted from candidate copies, along with historical evidence and maintenance instructions. Do not search outside the candidate for answers, historical implementations or fixture code. Scripted generation is SIMULATED even when its Rust/Verus checks are real. These local directory boundaries prevent accidental answer inclusion; they are not hostile-process OS isolation.
++
++A new run copies the checked-out seed source; a resume continues the recorded generated candidate. If the source checkout is manually populated with an implementation, a new copy is an extension experiment and must be described as such. No automatic reset, solution overlay or source merge occurs. Completion concerns selected tasks only. Full Raft safety, conditional liveness and implementation/cluster refinement remain open until their actual proofs are checked.
+--- a/input/state.md
++++ b/input/state.md
+@@ -16,20 +16,19 @@
+ 
+ Stage: READY for generation, not implemented or proved in the source checkout.
+ 
+-Implement `Node::new(id: u64, members: Vec<u64>) -> Result<Node, InitError>` in `crates/raft-verified/src/node.rs`, with its Verus annotations and loop proofs in the same file. The current reject-all seed is deliberately incomplete and cannot pass this task. Do not copy the offline controller fixture as generated work.
++Implement `Node::new(id: u64, members: Vec<u64>) -> Result<Node, InitError>` in `crates/raft-verified/src/node.rs`, with its Verus annotations and loop proofs in the same file. The current reject-all seed is deliberately incomplete and cannot pass this task. The candidate contains no offline solution; do not retrieve one from outside it.
+ 
+ Accept every nonempty, duplicate-free membership containing the local ID, regardless of input order, including one node and `u64::MAX` IDs. Preserve the member order and values. Reject empty lists, duplicate peers and absent IDs with `InvalidMembership`. Initialize term/positions/incarnation/serial to zero, no vote, empty log, Follower role, deadline 1, no pending write and recovery_required false, matching the existing `fresh_node` fields. This constructor is only for a genuinely fresh identity/storage image; never use it to bypass recovery or reuse incarnation zero. Allocation follows Rust Vec's existing abort behavior; no resource-liveness claim is made. API recommendations remain DRAFT under ADR-01/02/03 for review after delivery.
+ 
+ The protected `crates/raft-spec/src/node_init.rs` specifies valid membership and `init_result`. It demands success for every valid input, so rejecting all inputs cannot prove the target vacuously. `crates/raft-proofs/node_init.rs` calls the exact constructor source compiled by Cargo; weakening its annotation or strengthening its precondition cannot satisfy the independent caller. This checks only the represented initial fields, not whole-node/cluster refinement or runtime behavior. No semantic model, oracle or checking-policy edit is part of this task.
+ 
+-Develop code and proof together. A simple duplicate scan is sufficient initially; use invariants to relate the scanned prefix to membership validity. Compare test failures and failed proof goals, retain failed approaches in the report, and repair within this file. Check all existing executable regressions as well.
++Develop code and proof together. A simple duplicate scan is sufficient initially; use invariants to relate the scanned prefix to membership validity. Compare test failures and failed proof goals, retain failed approaches in the report, and repair within this file. Run all eight independent initialization cases. Other behavior remains unimplemented until its selected step; the controller additionally reruns completed tasks when continuing a plan.
+ 
+ ```sh
+ python3 crates/raft-verified/check.py build
+-python3 crates/raft-verified/check.py test
++python3 crates/raft-verified/check.py test --test node_init
+ python3 crates/raft-verified/check.py node-replay
+ python3 crates/raft-verified/check.py node-proof
+-python3 crates/raft-verified/check.py proof
+ python3 crates/raft-verified/check.py node-bench
+ ```
+ 
+--- /dev/null
++++ b/orchestrator/tests/fixtures/solutions/README.md
+@@ -0,0 +1,7 @@
++# Offline solutions — SIMULATED generation only
++
++These former maintenance implementations are preserved exclusively as scripted test data. The entire `orchestrator/tests` directory is excluded from candidates and input manifests. The controller never installs these files during a real launch or resume. `real_repair_demo.py` explicitly supplies them to the fake process to exercise actual Rust/Verus rejection and repair.
++
++`reconcile.rs` and `persistence.rs` supply the local executable solutions; `persistence_lemmas.rs` and `progress_lemmas.rs` supply associated proof examples. The constructor fixture remains at `../node_init_solution.rs`. `legacy_lib.rs` preserves the former unused OperationSequence demonstration and its two tests; it is not part of the experimental API or a runtime dependency. Original files before the shared-type extraction are also retained in the pre-edit backup named in `evidence/from-zero/backup-path.txt`.
++
++These are not model-generated experimental results and do not establish full Raft correctness. Do not copy them into a real experiment as a starting implementation or successful generation.
+--- /dev/null
++++ b/orchestrator/tests/fixtures/solutions/legacy_lib.rs
+@@ -0,0 +1,107 @@
++//! DRAFT Raft interface and verified local log reconciliation.
++//! No complete Raft node or `step` implementation is provided.
++//! `u64` exhaustion must return an error; the unbounded model is not a resource proof.
++#![forbid(unsafe_code)]
++
++pub type NodeId = u64;
++pub type Term = u64;
++pub type LogIndex = u64;
++
++pub mod reconcile;
++pub use reconcile::{reconcile_log, Command, Entry, ReconcileError, RequestId};
++
++pub mod state;
++pub mod node;
++pub use state::{DurableState, InitError, Node, Role};
++
++pub mod io;
++pub mod persistence;
++pub use io::*;
++
++/// Small runnable interface helper only; this is not a protocol handler.
++#[derive(Debug)]
++pub struct OperationSequence {
++    incarnation: u64,
++    next: Option<u64>,
++}
++
++impl OperationSequence {
++    pub fn new(incarnation: u64) -> Self {
++        Self {
++            incarnation,
++            next: Some(0),
++        }
++    }
++
++    pub fn allocate(&mut self) -> Result<OperationId, InputError> {
++        let sequence = self.next.ok_or(InputError::ResourceExhausted)?;
++        self.next = sequence.checked_add(1);
++        Ok(OperationId {
++            incarnation: self.incarnation,
++            sequence,
++        })
++    }
++
++    /// Match the full token and kind; duplicates become stale after removal.
++    pub fn validate_completion(
++        expected: Option<(OperationId, CompletionKind)>,
++        received: OperationId,
++        kind: CompletionKind,
++    ) -> Result<(), InputError> {
++        let (token, expected_kind) = expected.ok_or(InputError::UnknownOperation)?;
++        if received != token {
++            return Err(InputError::StaleCompletion);
++        }
++        if kind != expected_kind {
++            return Err(InputError::WrongCompletionKind);
++        }
++        Ok(())
++    }
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++
++    #[test]
++    fn completions_distinguish_incarnation_kind_and_duplicate() {
++        let mut seq = OperationSequence::new(7);
++        let token = seq.allocate().unwrap();
++        assert_eq!(seq.allocate().unwrap().sequence, 1);
++        let expected = Some((token, CompletionKind::Persist));
++        assert_eq!(
++            OperationSequence::validate_completion(expected, token, CompletionKind::Persist),
++            Ok(())
++        );
++        assert_eq!(
++            OperationSequence::validate_completion(
++                expected,
++                OperationId {
++                    incarnation: 6,
++                    ..token
++                },
++                CompletionKind::Persist
++            ),
++            Err(InputError::StaleCompletion)
++        );
++        assert_eq!(
++            OperationSequence::validate_completion(expected, token, CompletionKind::Apply),
++            Err(InputError::WrongCompletionKind)
++        );
++        assert_eq!(
++            OperationSequence::validate_completion(None, token, CompletionKind::Persist),
++            Err(InputError::UnknownOperation)
++        );
++    }
++
++    #[test]
++    fn exhaustion_never_reuses_a_token() {
++        let mut seq = OperationSequence {
++            incarnation: 1,
++            next: Some(u64::MAX),
++        };
++        assert_eq!(seq.allocate().unwrap().sequence, u64::MAX);
++        assert_eq!(seq.allocate(), Err(InputError::ResourceExhausted));
++        assert_eq!(seq.allocate(), Err(InputError::ResourceExhausted));
++    }
++}
+--- /dev/null
++++ b/orchestrator/tests/fixtures/solutions/persistence.rs
+@@ -0,0 +1,63 @@
++//! DRAFT one-write coordinator on the shared Node. No election/replication legality claim.
++use crate::state::{DurableState, Node, PendingWrite};
++use crate::io::*;
++#[cfg(verus_keep_ghost)]
++use crate::persistence_spec::{issue_result, complete_result, dispatch_result};
++use vstd::prelude::*;
++
++verus! {
++impl Node {
++    /// Only a protocol handler that has established a legal transition may submit its image/reply.
++    /// The host snapshots self.hard under this token before delivering any callback.
++    pub fn submit_persist(&mut self, image: DurableState, reply: Option<Message>) -> (result: Result<OperationId, InputError>)
++        ensures issue_result(*old(self), *self, image, reply, result),
++    {
++        if self.recovery_required { return Err(InputError::RecoveryRequired); }
++        if self.pending_write.is_some() { return Err(InputError::Busy); }
++        if self.serial == u64::MAX { return Err(InputError::ResourceExhausted); }
++        let operation = OperationId { incarnation: self.incarnation, sequence: self.serial };
++        self.serial = self.serial + 1;
++        self.hard = image;
++        self.pending_write = Some(PendingWrite { operation, reply });
++        Ok(operation)
++    }
++
++    pub fn complete_persist(&mut self, operation: OperationId, kind: CompletionKind, outcome: CompletionOutcome)
++        -> (result: Result<Option<Message>, InputError>)
++        ensures complete_result(*old(self), *self, operation, kind, outcome, result),
++    {
++        if self.recovery_required { return Err(InputError::RecoveryRequired); }
++        if operation.incarnation != self.incarnation { return Err(InputError::StaleCompletion); }
++        let pending = match &self.pending_write {
++            Some(p) => p,
++            None => { return Err(InputError::UnknownOperation); }
++        };
++        if operation.incarnation != pending.operation.incarnation || operation.sequence != pending.operation.sequence {
++            return Err(InputError::UnknownOperation);
++        }
++        if !matches!(kind, CompletionKind::Persist) { return Err(InputError::WrongCompletionKind); }
++        let pending = self.pending_write.take().unwrap();
++        match outcome {
++            CompletionOutcome::Success => Ok(pending.reply),
++            CompletionOutcome::NotPerformed => {
++                self.recovery_required = true;
++                Err(InputError::StorageFailure)
++            },
++            CompletionOutcome::Unknown => {
++                self.recovery_required = true;
++                Err(InputError::RecoveryRequired)
++            },
++        }
++    }
++
++    /// Partial dispatcher shared by host drivers. Unsupported events never fake success.
++    pub fn step(&mut self, event: Event) -> (result: Result<Option<Message>, InputError>)
++        ensures dispatch_result(*old(self), *self, event, result),
++    {
++        match event {
++            Event::Complete { operation, kind, outcome } => self.complete_persist(operation, kind, outcome),
++            _ => Err(InputError::UnsupportedEvent),
++        }
++    }
++}
++}
+--- /dev/null
++++ b/orchestrator/tests/fixtures/solutions/persistence_lemmas.rs
+@@ -0,0 +1,27 @@
++//! DRAFT local projection only. Legal Raft transitions and host storage remain caller obligations.
++use crate::{state::*, io::*, model, persistence_spec::*};
++use vstd::prelude::*;
++verus! {
++pub proof fn submit_projection(before: Node, after: Node, m: model::Node,
++    image: DurableState, reply: Option<Message>, token: OperationId)
++    requires storage_projection(before, m), issue_error(before).is_none(),
++        issue_result(before, after, image, reply, Ok(token)),
++    ensures storage_projection(after, model::write(m, hard_view(image), reply_view(reply))),
++{}
++
++pub proof fn completion_projection(before: Node, after: Node, s: model::Cluster, id: model::NodeId,
++    token: OperationId, result: Result<Option<Message>, InputError>)
++    requires s.members.contains(id), s.nodes.contains_key(id), storage_projection(before, s.nodes[id]),
++        completion_error(before, token, CompletionKind::Persist).is_none(),
++        s.nodes[id].disk == s.nodes[id].hard,
++        complete_result(before, after, token, CompletionKind::Persist, CompletionOutcome::Success, result),
++    ensures ({
++        let m = s.nodes[id];
++        let next = model::Node { pending_write: None,
++            outbox: match m.pending_write.unwrap().reply { Some(message) => m.outbox.push(message), None => m.outbox }, ..m };
++        storage_projection(after, next)
++        && model::storage_ack(s, model::set_node(s, id, next), id, token_view(token))
++        && result.is_ok() && reply_view(result.unwrap()) == m.pending_write.unwrap().reply
++    }),
++{}
++}
+--- /dev/null
++++ b/orchestrator/tests/fixtures/solutions/progress_lemmas.rs
+@@ -0,0 +1,42 @@
++//! DRAFT implementation progress foundation using Verus spec_fn/nat traces.
++use crate::{state::Node, io::*, persistence_spec::*, progress_spec::*};
++use vstd::prelude::*;
++verus! {
++pub proof fn waiting_prefix(nodes: spec_fn(nat) -> Node, events: spec_fn(nat) -> Event,
++    outputs: spec_fn(nat) -> Result<Option<Message>, InputError>, start: nat, end: nat)
++    requires start <= end, execution(nodes, events, outputs, start),
++        forall |i: nat| start <= i < end ==> #[trigger] waiting_event(nodes(start), events(i)),
++    ensures nodes(end) == nodes(start),
++    decreases end - start,
++{
++    if end > start {
++        waiting_prefix(nodes, events, outputs, start, (end - 1) as nat);
++        let i = (end - 1) as nat;
++        assert(start <= i);
++        assert(i + 1 == end);
++        assert(forall |j: nat| j >= start ==> #[trigger] dispatch_result(nodes(j), nodes(j + 1), events(j), outputs(j)));
++        assert(dispatch_result(nodes(i), nodes(i + 1), events(i), outputs(i)));
++        assert(waiting_event(nodes(start), events(i)));
++        match events(i) {
++            Event::Complete { operation, kind, outcome } => {
++                assert(completion_error(nodes(i), operation, kind).is_some());
++                assert(complete_result(nodes(i), nodes(i + 1), operation, kind, outcome, outputs(i)));
++            },
++            _ => {},
++        }
++    }
++}
++
++pub proof fn release_after_service(nodes: spec_fn(nat) -> Node, events: spec_fn(nat) -> Event,
++    outputs: spec_fn(nat) -> Result<Option<Message>, InputError>, start: nat, token: OperationId)
++    requires ready(nodes(start), token), execution(nodes, events, outputs, start),
++        fair_completion(nodes(start), events, start, token),
++    ensures eventually_released(nodes, outputs, start),
++{
++    let k = choose |k: nat| k >= start && #[trigger] successful(events(k), token)
++        && forall |i: nat| start <= i < k ==> #[trigger] waiting_event(nodes(start), events(i));
++    waiting_prefix(nodes, events, outputs, start, k);
++    assert(dispatch_result(nodes(k), nodes(k + 1), events(k), outputs(k)));
++    assert(outputs(k) == Ok::<Option<Message>, InputError>(nodes(start).pending_write.unwrap().reply));
++}
++}
+--- /dev/null
++++ b/orchestrator/tests/fixtures/solutions/reconcile.rs
+@@ -0,0 +1,92 @@
++//! DRAFT: local AppendEntries suffix reconciliation, not a complete handler.
++//! This exact executable source is erased by the Verus macro for Cargo and
++//! checked with its contracts by crates/raft-proofs/reconcile.rs.
++#[cfg(verus_keep_ghost)]
++use crate::model;
++#[cfg(verus_keep_ghost)]
++use crate::representation::log_view;
++use vstd::prelude::*;
++
++pub use crate::types::{RequestId, Command, Entry, ReconcileError};
++
++verus! {
++/// `previous` is the number of existing entries preceding the incoming entries.
++/// The caller must separately check the predecessor term, message term, commit
++/// constraints and durable response timing. Entries with equal terms retain the
++/// existing command, exactly as the current candidate model's `merged` specifies.
++/// Allocation failure follows Rust Vec's abort behavior; no resource liveness is claimed.
++pub fn reconcile_log(log: &mut Vec<Entry>, previous: usize, incoming: Vec<Entry>)
++    -> (result: Result<(), ReconcileError>)
++    ensures
++        match result {
++            Ok(()) => model::merged(log_view(old(log)@), previous as nat,
++                log_view(incoming@), log_view(log@))
++                && log@.take(previous as int) == old(log)@.take(previous as int),
++            Err(ReconcileError::InvalidIndex) => previous > old(log).len() && log@ == old(log)@,
++            Err(ReconcileError::ResourceExhausted) => previous <= old(log).len()
++                && previous + incoming.len() > usize::MAX && log@ == old(log)@,
++        },
++{
++    if previous > log.len() {
++        return Err(ReconcileError::InvalidIndex);
++    }
++    if incoming.len() > usize::MAX - previous {
++        return Err(ReconcileError::ResourceExhausted);
++    }
++    let ghost original = log@;
++    let mut k: usize = 0;
++    while k < incoming.len()
++        invariant
++            log@ == original,
++            original == old(log)@,
++            previous <= log.len(),
++            previous + k <= log.len(),
++            previous + incoming.len() <= usize::MAX,
++            k <= incoming.len(),
++            forall |j: int| 0 <= j < k ==> previous + j < original.len()
++                && original[previous as int + j].term == incoming@[j].term,
++        decreases incoming.len() - k,
++    {
++        let index = previous + k;
++        if index >= log.len() || log[index].term != incoming[k].term {
++            proof {
++                assert(index >= log_view(original).len()
++                    || log_view(original)[index as int].term != log_view(incoming@)[k as int].term);
++            }
++            let ghost initial_incoming = incoming@;
++            let mut remaining = incoming;
++            let mut suffix = remaining.split_off(k);
++            log.truncate(index);
++            log.append(&mut suffix);
++            proof {
++                assert(log@ == original.take(index as int)
++                    + initial_incoming.subrange(k as int, initial_incoming.len() as int));
++                assert(log_view(log@) =~= log_view(original).take(index as int)
++                    + log_view(initial_incoming).subrange(k as int, initial_incoming.len() as int));
++                assert forall |j: int| 0 <= j < k implies
++                    previous + j < log_view(original).len()
++                    && log_view(original)[previous as int + j].term == log_view(initial_incoming)[j].term by {};
++                assert(exists |w: nat| w == k && w < log_view(initial_incoming).len()
++                    && (forall |j: int| 0 <= j < w ==> previous + j < log_view(original).len()
++                        && log_view(original)[previous as int + j].term == log_view(initial_incoming)[j].term)
++                    && (previous + w >= log_view(original).len()
++                        || log_view(original)[(previous + w) as int].term != log_view(initial_incoming)[w as int].term)
++                    && log_view(log@) == log_view(original).take((previous + w) as int)
++                        + log_view(initial_incoming).subrange(w as int, log_view(initial_incoming).len() as int));
++                assert(model::merged(log_view(original), previous as nat,
++                    log_view(initial_incoming), log_view(log@)));
++                assert(log@.take(previous as int) =~= original.take(previous as int));
++            }
++            return Ok(());
++        }
++        k += 1;
++    }
++    proof {
++        assert(previous + incoming.len() <= original.len());
++        assert forall |j: int| 0 <= j < incoming.len() implies
++            log_view(original)[previous as int + j].term == log_view(incoming@)[j].term by {};
++    }
++    // MATCHING_TAIL: a wholly matching request, including empty, changes nothing.
++    Ok(())
++}
++}
+--- a/orchestrator/tests/real_repair_demo.py
++++ b/orchestrator/tests/real_repair_demo.py
+@@ -19,6 +19,7 @@
+ from orchestrator.scheduler import run_task, run_plan
+ from orchestrator.workspace import create_candidate
+ 
++SOLUTIONS = ROOT / "orchestrator/tests/fixtures/solutions"
+ 
+ def demonstrate(output: Path, task_id: str = "REPLICATION-RECONCILE") -> dict:
+     output.mkdir(parents=True, exist_ok=False)
+@@ -29,41 +30,50 @@
+         "supported_versions": ["codex-cli FIXTURE"],
+         "fixture": True,
+     })
+-    if task_id == "RUNTIME-PERSIST":
++    if task_id in {"RUNTIME-PERSIST", "PROGRESS-FOUNDATION"}:
+         relative = "crates/raft-verified/src/persistence.rs"
+-        repaired = (source / relative).read_text()
++        repaired = (SOLUTIONS / "persistence.rs").read_text()
+         marker = "if !matches!(kind, CompletionKind::Persist)"
+         if repaired.count(marker) != 1:
+             raise ValueError("controlled wrong-kind mutation anchor changed")
+         defective = repaired.replace(marker, marker + " && operation.sequence == u64::MAX")
+         lemmas = "crates/raft-proofs/persistence_lemmas.rs"
+-        proof_repair = (source / lemmas).read_text().replace("{}", "{ assert(after.serial == before.serial + 1); }", 1)
++        proof_repair = (SOLUTIONS / "persistence_lemmas.rs").read_text().replace("{}", "{ assert(after.serial == before.serial + 1); }", 1)
+         config["codex"]["fixture_task_edits"] = {
+             "STATE-INIT": [dict(path="crates/raft-verified/src/node.rs", text=(ROOT / "orchestrator/tests/fixtures/node_init_solution.rs").read_text())],
+             "RUNTIME-PERSIST": [dict(path=relative, text=defective),
+                 dict(files=[dict(path=relative, text=repaired), dict(path=lemmas, text=proof_repair)])]}
+-        result = run_plan(source, config, ["RUNTIME-PERSIST"], True, fixture_mode=True)
++        if task_id == "PROGRESS-FOUNDATION":
++            config["codex"]["fixture_task_edits"][task_id] = [dict(
++                path="crates/raft-proofs/progress_lemmas.rs",
++                text=(SOLUTIONS / "progress_lemmas.rs").read_text())]
++        result = run_plan(source, config, [task_id], True, fixture_mode=True)
+         checks = [json.loads(p.read_text()) for run_id in result["task_runs"]
+                   for p in sorted((source / "evidence/runs" / run_id).glob("attempt-*/*.check.json"))]
+         observed = {name: [c for c in checks if c["profile_id"] == name] for name in
+                     ("persist-tests", "persist-proof", "persist-replay")}
+         correct = result["status"] == "PASSED" and result["generation_kind"] == "SIMULATED"
+         for name, records in observed.items():
+-            correct &= [c["result"] for c in records] == ["FAIL", "PASS"]
++            # The next selected proof step also reruns completed-task checks.
++            expected = ["FAIL", "PASS", "PASS"] if task_id == "PROGRESS-FOUNDATION" else ["FAIL", "PASS"]
++            correct &= [c["result"] for c in records] == expected
+             correct &= all(c["evidence_kind"] == "REAL_LOCAL" for c in records)
+             if name.endswith("proof") and records:
+                 correct &= records[0].get("verification_summary", {}).get("errors", 0) > 0
+                 stderr = Path(records[0]["evidence_paths"][1]).read_text()
+                 correct &= "postcondition not satisfied" in stderr and "error[E" not in stderr
++        if task_id == "PROGRESS-FOUNDATION":
++            progress = [c for c in checks if c["profile_id"] == "progress-proof"]
++            correct &= len(progress) == 1 and progress[0]["result"] == "PASS"
+         summary = dict(status="PASS" if correct else "FAIL", generation_kind="SIMULATED", check_evidence_kind="REAL_LOCAL",
+-            full_acceptance=False, meaning="One candidate: scripted STATE-INIT, wrong-kind coordinator defect, then repair; actual independent checks.",
++            full_acceptance=False, meaning="One scaffold candidate: scripted initialization, coordinator defect and repair, then any selected progress proof; actual independent checks.",
+             source_copy=str(source), controller_conclusion=result,
+             checks=[{k: c.get(k) for k in ("profile_id", "result", "evidence_kind", "verification_summary", "evidence_paths")} for c in checks])
+         write_json(output / "summary.json", summary)
+         return summary
+     is_node = task_id == "STATE-INIT"
+     relative = "crates/raft-verified/src/" + ("node.rs" if is_node else "reconcile.rs")
+-    solution = ROOT / "orchestrator/tests/fixtures/node_init_solution.rs" if is_node else source / relative
++    solution = ROOT / "orchestrator/tests/fixtures/node_init_solution.rs" if is_node else SOLUTIONS / "reconcile.rs"
+     repaired = solution.read_text(encoding="utf-8")
+     marker = "term: 0, voted_for:" if is_node else "    // MATCHING_TAIL: a wholly matching request, including empty, changes nothing."
+     if repaired.count(marker) != 1:
+@@ -122,7 +132,7 @@
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument("--output", type=Path, required=True,
+                         help="new evidence directory; existing evidence is never overwritten")
+-    parser.add_argument("--task", choices=("STATE-INIT", "RUNTIME-PERSIST", "REPLICATION-RECONCILE"), default="REPLICATION-RECONCILE")
++    parser.add_argument("--task", choices=("STATE-INIT", "RUNTIME-PERSIST", "PROGRESS-FOUNDATION", "REPLICATION-RECONCILE"), default="STATE-INIT")
+     args = parser.parse_args()
+     summary = demonstrate(args.output.resolve(), args.task)
+     print(json.dumps(summary, indent=2))
+--- a/orchestrator/tests/test_node_contract.py
++++ b/orchestrator/tests/test_node_contract.py
+@@ -20,7 +20,8 @@
+             outside = Path(location)
+             candidate = create_candidate(ROOT, outside/'candidate')
+             source = candidate/'crates/raft-verified/src/persistence.rs'
+-            text = source.read_text()
++            # Scripted solution is explicit test setup, never a fresh candidate input.
++            text = (ROOT/'orchestrator/tests/fixtures/solutions/persistence.rs').read_text()
+             contract = 'ensures complete_result(*old(self), *self, operation, kind, outcome, result),'
+             for name, replacement in [('weakened', 'ensures true,'), ('stronger', 'requires false,\n        ' + contract)]:
+                 source.write_text(text.replace(contract, replacement))
+--- a/orchestrator/tests/test_revision.py
++++ b/orchestrator/tests/test_revision.py
+@@ -346,7 +346,7 @@
+         for name in ('Cargo.toml', 'Cargo.lock'):
+             shutil.copyfile(REPO/name, candidate/name)
+         source = candidate/'crates/raft-verified/src/reconcile.rs'
+-        original = source.read_text()
++        original = (REPO/'orchestrator/tests/fixtures/solutions/reconcile.rs').read_text()
+         start = original.index('\n    ensures', original.index('pub fn reconcile_log'))
+         end = original.index('\n{', start)
+         cases = [original[:start] + '\n    ensures true,' + original[end:],
+--- /dev/null
++++ b/orchestrator/tests/test_starting_point.py
+@@ -0,0 +1,101 @@
++"""Fresh experiments omit maintenance answers; partial generation stays partial."""
++from pathlib import Path
++import tempfile
++import unittest
++
++from orchestrator.config import load_config, profile_by_id
++from orchestrator.scheduler import load_tasks, render_prompt
++from orchestrator.verifier_runner import verify_profile
++from orchestrator.workspace import create_candidate, snapshot
++
++ROOT = Path(__file__).resolve().parents[2]
++
++
++class StartingPointTests(unittest.TestCase):
++    def test_fresh_copy_omits_all_test_scripts_answers_and_past_runs(self):
++        with tempfile.TemporaryDirectory() as location:
++            candidate = create_candidate(ROOT, Path(location)/'candidate')
++            for relative in ('orchestrator/tests', 'Agent.md', 'evidence', 'target', '.git'):
++                self.assertFalse((candidate/relative).exists(), relative)
++            for relative in ('input/starting-point.md', 'crates/raft-verified/tests/node_init.rs',
++                             'crates/raft-verified/tests/persistence.rs', 'crates/raft-proofs/node_init.rs',
++                             'crates/raft-spec/src/persistence.rs', 'orchestrator/wire'):
++                self.assertTrue((candidate/relative).exists(), relative)
++            self.assertFalse(any(p.startswith('orchestrator/tests/') for p in snapshot(ROOT)))
++
++    def test_new_copy_does_not_inherit_another_run_or_rewrite_it(self):
++        with tempfile.TemporaryDirectory() as location:
++            base = Path(location)
++            first = create_candidate(ROOT, base/'first')
++            body = first/'crates/raft-verified/src/node.rs'
++            generated = body.read_text() + '\n// SIMULATED saved attempt, not a fresh seed.\n'
++            body.write_text(generated)
++            second = create_candidate(ROOT, base/'second')
++            self.assertEqual(body.read_text(), generated)
++            self.assertEqual((second/body.relative_to(first)).read_text(),
++                             (ROOT/body.relative_to(first)).read_text())
++            self.assertNotEqual((second/body.relative_to(first)).read_text(), generated)
++
++    def test_prompts_state_supplied_inputs_and_do_not_offer_answers(self):
++        tasks = load_tasks(ROOT, load_config(ROOT))
++        for task in tasks:
++            with self.subTest(task=task['id']):
++                prompt = render_prompt(ROOT, task)
++                self.assertIn('no working Raft operation', prompt)
++                self.assertNotIn('fixtures/solutions', prompt)
++                self.assertNotIn('node_init_solution.rs', prompt)
++        init = next(t for t in tasks if t['id'] == 'STATE-INIT')
++        self.assertNotIn('reconcile-proof', init['check_profile_ids'])
++        self.assertNotIn('persist-proof', init['check_profile_ids'])
++
++    def test_real_initialization_can_pass_while_future_bodies_remain_unimplemented(self):
++        config = load_config(ROOT)
++        if config['toolchain']['resolved']['missing']:
++            self.skipTest('Real toolchain unavailable; no simulated checks substituted')
++        with tempfile.TemporaryDirectory() as location:
++            outside = Path(location)
++            candidate = create_candidate(ROOT, outside/'candidate')
++            untouched = {rel: (candidate/rel).read_bytes() for rel in (
++                'crates/raft-verified/src/reconcile.rs', 'crates/raft-verified/src/persistence.rs',
++                'crates/raft-proofs/progress_lemmas.rs')}
++            # Explicit SIMULATED generation in the test process, after the copy.
++            (candidate/'crates/raft-verified/src/node.rs').write_text(
++                (ROOT/'orchestrator/tests/fixtures/node_init_solution.rs').read_text())
++            for name, expected in [('node-tests', 'PASS'), ('node-proof', 'PASS'),
++                                   ('persist-tests', 'FAIL'), ('persist-proof', 'FAIL'),
++                                   ('reconcile-proof', 'FAIL')]:
++                with self.subTest(profile=name):
++                    result = verify_profile(candidate, profile_by_id(config, name), outside/name)
++                    self.assertEqual(result['result'], expected, result)
++                    self.assertEqual(result['evidence_kind'], 'REAL_LOCAL')
++                    if expected == 'FAIL' and name.endswith('proof'):
++                        self.assertGreater(result['verification_summary']['errors'], 0)
++                        self.assertEqual(result['obligation_ids_checked'], [])
++            for rel, original in untouched.items():
++                self.assertEqual((candidate/rel).read_bytes(), original)
++
++    def test_actual_progress_proof_needs_a_generated_strategy(self):
++        config = load_config(ROOT)
++        if config['toolchain']['resolved']['missing']:
++            self.skipTest('Real toolchain unavailable; no simulated checks substituted')
++        with tempfile.TemporaryDirectory() as location:
++            outside = Path(location)
++            candidate = create_candidate(ROOT, outside/'candidate')
++            solutions = ROOT/'orchestrator/tests/fixtures/solutions'
++            (candidate/'crates/raft-verified/src/persistence.rs').write_text(
++                (solutions/'persistence.rs').read_text())
++            profile = profile_by_id(config, 'progress-proof')
++            missing = verify_profile(candidate, profile, outside/'missing-strategy')
++            self.assertEqual(missing['result'], 'FAIL', missing)
++            self.assertTrue(any('progress_lemmas' in name and not passed
++                                for name, passed in missing['function_results'].items()), missing)
++            self.assertEqual(missing['obligation_ids_checked'], [])
++            (candidate/'crates/raft-proofs/progress_lemmas.rs').write_text(
++                (solutions/'progress_lemmas.rs').read_text())
++            generated = verify_profile(candidate, profile, outside/'scripted-strategy')
++            self.assertEqual(generated['result'], 'PASS', generated)
++            self.assertEqual(generated['evidence_kind'], 'REAL_LOCAL')
++
++
++if __name__ == '__main__':
++    unittest.main()
+--- a/orchestrator/tests/test_toolchain.py
++++ b/orchestrator/tests/test_toolchain.py
+@@ -10,6 +10,7 @@
+ from orchestrator.config import load_config, profile_by_id
+ from orchestrator.toolchain import resolve
+ from orchestrator.verifier_runner import verify_profile
++from orchestrator.workspace import create_candidate
+ ROOT = Path(__file__).resolve().parents[2]
+ 
+ class ToolchainTests(unittest.TestCase):
+@@ -55,8 +56,12 @@
+             for name in ('verus-x86-linux', 'rustup'):
+                 (base/name).symlink_to(original/name, target_is_directory=True)
+             env = dict(os.environ, RAFT_TOOLCHAIN_ROOT=str(base), PYTHONDONTWRITEBYTECODE='1', CARGO_TARGET_DIR=str(base/'build'))
++            candidate = create_candidate(ROOT, base/'candidate')
++            # SIMULATED implementation injection; the following tools really run.
++            (candidate/'crates/raft-verified/src/persistence.rs').write_text(
++                (ROOT/'orchestrator/tests/fixtures/solutions/persistence.rs').read_text())
+             for command in ('build', 'persist-proof'):
+-                result = subprocess.run([sys.executable, str(ROOT/'crates/raft-verified/check.py'), command],
++                result = subprocess.run([sys.executable, str(candidate/'crates/raft-verified/check.py'), command],
+                                         env=env, capture_output=True, text=True, timeout=120)
+                 self.assertEqual(result.returncode, 0, result.stderr)
+                 self.assertIn(str(base), result.stderr)
+--- a/orchestrator/tests/test_workspace.py
++++ b/orchestrator/tests/test_workspace.py
+@@ -65,11 +65,14 @@
+         solution = self.source/'orchestrator/tests/fixtures/node_init_solution.rs'
+         solution.parent.mkdir(parents=True)
+         solution.write_text('Offline answer, never experiment input')
++        script = self.source/'orchestrator/tests/demo.py'
++        script.write_text('Inline solution in a maintenance script')
+         (self.source/'AGENTS.md').write_text('Shared safeguards')
+         destination = self.root/'candidate'
+         create_candidate(self.source, destination)
+         self.assertFalse((destination/'Agent.md').exists())
+         self.assertFalse((destination/solution.relative_to(self.source)).exists())
++        self.assertFalse((destination/'orchestrator/tests').exists())
+         self.assertEqual((destination/'AGENTS.md').read_text(), 'Shared safeguards')
+         self.assertNotIn('Agent.md', snapshot(self.source))
+ 
+--- a/orchestrator/workspace.py
++++ b/orchestrator/workspace.py
+@@ -10,8 +10,8 @@
+ 
+ # Controller evidence and raw agent reports are never verifier source inputs.
+ DEFAULT_EXCLUDES = {".git", "evidence", ".agent-output", "__pycache__", "target", "Agent.md"}
+-# A scripted solution is controller test data, never an experiment's answer key.
+-DEFAULT_EXCLUDES.add("orchestrator/tests/fixtures/node_init_solution.rs")
++# Offline tests contain complete solutions and scripted edits. None are agent input.
++DEFAULT_EXCLUDES.add("orchestrator/tests")
+ 
+ 
+ def digest_bytes(data: bytes) -> str:
+--- a/review/OPEN_DECISIONS.md
++++ b/review/OPEN_DECISIONS.md
+@@ -2,7 +2,7 @@
+ 
+ Status: DRAFT. All ten recommendations await human review; none is approved. Approver and approval time: none.
+ 
+-The requested maintenance revision activates STATE-INIT as a draft generation experiment. Review its candidate API, independent targets and results after delivery; activation approves no Raft semantics. RUNTIME-PERSIST still lacks its executable representation and checks. Real adapters and temporal proofs remain open.
++The requested maintenance revision activates STATE-INIT as a draft generation experiment. Review its candidate API, independent targets and results after delivery; activation approves no Raft semantics. RUNTIME-PERSIST has supplied types, contracts, independent checks and failing seeds; executable behavior is for the experiment to generate. Real adapters and temporal proofs remain open.
+ 
+ | ID | Topic | Status |
+ |---|---|---|
+@@ -25,7 +25,7 @@
+ 
+ Alternatives: Put coordination in the host, expanding external assumptions; or use blocking I/O, which still needs intermediate-crash semantics.
+ 
+-Impact: Determines PO-IO/PO-REFINE-STEP and host duties. A local suffix-reconciliation operation and token helpers exist; there is still no step implementation.
++Impact: Determines PO-IO/PO-REFINE-STEP and host duties. Active source contains shared types and failing operation seeds; old maintenance implementations are retained only as excluded offline fixtures.
+ 
+ Definition: [related material](../input/io.md). This candidate may be revised; it is not an approved baseline.
+ 
+@@ -144,8 +144,8 @@
+ | ADR-01 / ADR-03 | Reconciliation API and numeric/resource boundary | Use the shared `reconcile_log` after term/predecessor validation. Invalid indices and representable-length overflow return errors without mutation. Future callers must check `u64` to `usize` conversion and committed-prefix compatibility. `Vec` allocation can still abort; do not claim recoverable allocation failure or resource liveness. |
+ | ADR-07 / ADR-08 | Shared Cargo/Verus build and local proof target | Use the installed macro erasure with matching child Rust 1.92. Keep `merged` unchanged. A protected proof caller demands the original relation even if an editable implementation contract is weakened. Derived non-Copy Clone contracts are unavailable; the verified operation does not invoke Clone. |
+ | ADR-09 / ADR-10 | Revised local acceptance and resumable candidates | Review delivered task/check definitions separately from semantic claims. Typecheck/test/measurement completion need not close a theorem; real whole-crate function-attributed proof evidence can close only its local target. No hostile-process isolation or whole-project acceptance is claimed. |
+-| ADR-01 / ADR-02 / ADR-03 | Initial Node API | Recommend `Node::new(id, members)` for genuinely fresh storage only. Accept arbitrary ordering, reject duplicates/unknown identity/empty membership; preserve IDs and order. Incarnation zero is not a recovery allocator. Pending I/O and peer state are future extensions to the same Node. No behavior is approved by this task. |
+-| ADR-08 / ADR-10 | Initialization correspondence and experiment | Recommend the protected `init_result` consumer of the shared constructor. It checks initial represented fields and demands success on all valid memberships; it is not full node/cluster refinement. The source seed must fail, offline scripted repairs are SIMULATED generation, and only their actual checking is REAL_LOCAL. Narrow the existing reconciliation test profile to its original 15 regressions; the node profile runs all 23. Review the exact added ghost-only import allowance, which imports a specification and does not alter executable code. |
++| ADR-01 / ADR-02 / ADR-03 | Initial Node API | Recommend `Node::new(id, members)` for genuinely fresh storage only. Accept arbitrary ordering, reject duplicates/unknown identity/empty membership; preserve IDs and order. Incarnation zero is not a recovery allocator. Pending I/O fields are supplied; peer state remains a future extension to the same Node. No behavior is approved by this task. |
++| ADR-08 / ADR-10 | Initialization correspondence and experiment | Recommend the protected `init_result` consumer of the shared constructor. It checks initial represented fields and demands success on all valid memberships; it is not full node/cluster refinement. The source seed must fail, offline scripted repairs are SIMULATED generation, and only their actual checking is REAL_LOCAL. The initialization profile runs its eight unchanged independent cases; reconciliation runs its 13 operation/replay cases. Previously completed tasks are regressed during continuation. The unused legacy token helper and its two tests are preserved in an excluded fixture. Review the exact added ghost-only import allowance, which imports a specification and does not alter executable code. |
+ 
+ The fixture repair demonstration used no live agent session. The configured experiment requires an explicit launch; the ten technical decisions remain DRAFT.
+ 
+@@ -158,3 +158,7 @@
+ | ADR-08 | Use installed Verus/vstd spec_fn/nat traces for the early coordinator progress theorem | External temporal-library compatibility, interference, resource adequacy and host fairness transfer remain open |
+ | ADR-08 / ADR-10 | Protected persistence/progress consumers and independent tests; persistent budgets, scoped checkpoints, conservative affected-task reruns and optional explicit performance rule | Review checker changes and scope; no whole-project acceptance or new runtime approval checkpoint |
+ | ADR-10 | Keep real microbenchmarks measurement-only until a comparable reference and explicit rule are configured | No approved performance target or cluster measurement claim exists |
++
++## From-zero input correction
++
++The user requested an experiment without prewritten Raft behavior. Active implementations and the induction strategy are now failing seeds/empty proof bodies; prior solutions are excluded SIMULATED fixtures. Supplied data layout, API signatures, formal targets, independent tests and harnesses remain explicit experiment inputs. This changes the starting material and task-check scope, not Raft semantics. Initialization checks its eight unchanged cases and local target; previously completed task checks still rerun during continuation. All semantic choices above remain DRAFT.
+--- a/review/REVIEW_PACKET.md
++++ b/review/REVIEW_PACKET.md
+@@ -1,99 +1,75 @@
+-# Raft continuation revision review packet
++# From-zero experiment correction
+ 
+-Status: DRAFT. Delivered 2026-10-27 for human review after delivery. No new Raft semantics, global assumptions or formal-correctness claim is approved. No real Codex task, recursive agent, merge, push or publication was performed.
++Status: DRAFT. Delivered 2026-10-27 for review after delivery. The experimental input now contains no working Raft operation or supplied induction strategy. No real Codex task, recursive agent, merge, push, publication, tool download or system-toolchain change occurred.
+ 
+-## Inspected revision and preserved work
++## Corrected experiment boundary
+ 
+-Maintained files initially matched `7edcfa2985b848bffcf7949c139c906c84cfc956`; no newer authored changes were found. The pre-edit backup is `/tmp/raft-next-revision-76hxlxeb/authored.tar.gz`. The maintenance workspace's read-only `.git`, `.agents`, `.codex` and `.aws` remain untouched. Historical evidence remains unchanged. See the [maintained-file diff](../evidence/next-revision/changes.patch) and [changed-file list](../evidence/next-revision/changed-files.json).
++Maintenance prepares requirements, shared types and interfaces, formal targets, independent oracles, replay/measurement harnesses and the existing Python controller. The experiment generates executable behavior and proof strategies in one persistent candidate. Later steps extend that run's own code. This is generation from specified interfaces, not unconstrained generation from blank files. Supplied specifications, types, views and tests must be disclosed in any experiment report.
+ 
+-The default STATE-INIT experiment, its intentional reject-all constructor, module assignments, same-source Cargo/Verus checking, protected independent targets, scoped edits, subprocess limits and review-after-delivery policy are preserved. The scripted passing constructor remains excluded from experiment candidates. There are 26 named steps, seven ready and 19 planned; every complete Raft module remains incomplete. All 26 global proof obligations remain OPEN.
++Previously, candidate copying included working reconciliation, persistence and progress implementations, and initialization required the existing operation checks to pass. That was an extension experiment. The active source now has failing executable seeds and empty progress proof bodies. Previous working implementations are preserved only as excluded SIMULATED fixtures. The original reject-all constructor is unchanged; it was not replaced with the scripted answer.
+ 
+-## Main delivered files
++| Main files | Actual change |
++|---|---|
++| [Agent.md](../Agent.md), [input/starting-point.md](../input/starting-point.md), [input/instructions.md](../input/instructions.md) | Maintenance/experiment responsibilities, supplied input and generation boundaries, one continuously developed candidate |
++| [orchestrator/workspace.py](../orchestrator/workspace.py) | Excludes all of `orchestrator/tests`, including scripts and solution data, from candidate copies and input manifests; preserves existing evidence/maintenance exclusions |
++| [src/reconcile.rs](../crates/raft-verified/src/reconcile.rs), [src/persistence.rs](../crates/raft-verified/src/persistence.rs), [progress_lemmas.rs](../crates/raft-proofs/progress_lemmas.rs) | Incorrect error-only executable seeds and empty proof bodies; no assume/admit, trusted body or skipped verification |
++| [src/types.rs](../crates/raft-verified/src/types.rs), local proof entrypoints and representation imports | Shared data vocabulary separated from reconciliation behavior; initialization/persistence proofs no longer import a future unfinished algorithm |
++| [workflow.toml](../workflow.toml) | Initialization checks all eight unchanged initialization cases and its exact proof/replay; reconciliation checks its 13 operation/replay cases. Previously completed tasks still regress through the existing controller |
++| [offline solutions](../orchestrator/tests/fixtures/solutions/README.md), [real_repair_demo.py](../orchestrator/tests/real_repair_demo.py) | Prior executable/proof examples retained as explicit fake-process edits; optional progress continuation demonstration. No solution loader is invoked by real launch/resume |
++| [test_starting_point.py](../orchestrator/tests/test_starting_point.py), related controller tests | Exclusion, independent fresh copies, English prompt boundary, actual partial generation and missing-progress-proof regressions |
+ 
+-| Files | Result |
++The unused legacy OperationSequence helper and its two tests are preserved in `orchestrator/tests/fixtures/solutions/legacy_lib.rs`; no Node implementation called it. It is removed from the supplied experimental API, rather than provided as another solved operation. All existing independent Rust integration tests and replay/measurement inputs are unchanged. The candidate model and initialization/persistence/progress specifications are unchanged. `reconcile_view.rs` only changes its type import. Protected proof consumers retain their contracts and checks, importing the relocated types instead of an unrelated algorithm. See the [preservation and exclusion audit](../evidence/from-zero/starting-point-audit.json).
++
++## Actual checks and evidence
++
++All generation below is **SIMULATED**, performed only by the bundled fake subprocess. Rust/Verus/replay checks actually ran and are **REAL_LOCAL**. There is no evidence of real-model capability. No fresh candidate contains the solution directory; scripts explicitly inject answers after candidate creation only for these offline demonstrations.
++
++| Check | Observed result |
+ |---|---|
+-| `orchestrator/scheduler.py`, `continuation.py`, `cli.py` | Persistent per-task/plan budgets, attempt/design history, scoped checkpoints, explicit budget extension/rewind, bounded redesign and repair of affected completed tasks |
+-| `orchestrator/feedback.py`, `performance.py`, `verifier_runner.py` | Distinct functional/scenario/proof/timeout/setup diagnoses; optional comparable-reference evaluation and optimization through correctness rechecks |
+-| `orchestrator/toolchain.py`, `config.py`, `crates/raft-verified/check.py`, `workflow.toml` | One toolchain selection for runtime and proof, an explicit installation-root override, resolved paths and preserved version calibration |
+-| `crates/raft-verified/src/state.rs`, `io.rs`, `persistence.rs` | The same Node now holds one pending write and a fail-stop flag; actual submission, completion handling and partial Event dispatcher |
+-| `crates/raft-spec/src/persistence.rs`, `crates/raft-proofs/persistence.rs`, `persistence_lemmas.rs` | Exact executable contracts, protected consumers and submission/successful-callback storage projection |
+-| `crates/raft-spec/src/progress.rs`, `crates/raft-proofs/progress.rs`, `progress_lemmas.rs` | Early conditional progress theorem over actual dispatcher contracts, with an explicit service/noninterference premise |
+-| `crates/raft-verified/tests/persistence.rs`, `examples/persistence.rs`, `examples/persistence.trace` | Six independent coordinator tests, 14-event repeatable host scenario and release microbenchmark |
+-| Initialization specification, tests, proof entrypoint and offline fixture | New pending fields included; valid membership still must succeed; the production constructor seed remains unchanged |
+-| `orchestrator/tests/test_continuation.py`, `test_performance.py`, `test_toolchain.py`, `test_node_contract.py` | Continuation, regression, comparison, relocation and exact-target regressions, extending the existing suite |
+-| `input/`, `docs/`, `review/OPEN_DECISIONS.md` | Concrete assignments, early dispatcher/progress dependencies, pinned research references, commands and pending choices; English prose paragraphs occupy one physical line |
++| [Controller suite](../evidence/from-zero/controller-final.log) | **115 tests passed, no skips**, including actual relocated-tool checking, cumulative continuation/regression checks and five new starting-point tests |
++| [Active scaffold](../evidence/from-zero/seed-checks/summary.json) | Build PASS; initialization and reconciliation tests FAIL as expected. Verus: initialization 18 verified / 1 error, reconciliation 7 / 1, persistence 24 / 3, progress 19 / 5. Failures are real missing postconditions/proofs, not compiler failures |
++| Model in that scaffold | TYPECHECKED, 0 verified; no Raft theorem discharged |
++| [Initialization defect and repair](../evidence/from-zero/initialization-demo/summary.json) | Wrong initial term rejected by actual tests, replay and Verus; repaired scripted constructor passes all eight cases, replay and proof (21 / 0). Future persistence/reconciliation remain unfinished |
++| [Shared candidate continuation](../evidence/from-zero/continuation-demo/summary.json) | Four scripted calls: initialization, wrong-kind persistence defect, repair, progress proof. Wrong-kind defect rejected by tests/replay and Verus (26 / 1). Repair passes six persistence cases, 14-event scenario and proof (27 / 0); supplied-by-fixture progress strategy then passes (24 / 0). Completed initialization/persistence checks rerun |
++| [Reconciliation defect and repair](../evidence/from-zero/reconciliation-demo/summary.json) | Matching-tail truncation rejected by actual tests and Verus (8 / 1); repaired scripted implementation passes 13 cases and proof (9 / 0) |
++| Missing proof strategy regression | With a scripted correct coordinator but empty progress bodies, actual progress verification fails; adding the scripted strategy makes it pass. Included in the 115-test suite |
++| Measurements | Initialization/coordinator demonstrations emit actual repeated release measurements after required correctness checks. No comparable reference or performance target is configured; verdict remains MEASURED/INCONCLUSIVE |
++| [Validation](../evidence/from-zero/validation.json), [default preview](../evidence/from-zero/default-preview.json), [combined preview](../evidence/from-zero/combined-preview.json) | PASS / DRY_RUN, zero live agent calls; 26 English task prompts; all 26 global obligations OPEN |
+ 
+-## Actual checks
++Verifier function counts include dependencies and derives; they are not counts of proved Raft properties. Each selected proof crate is checked in full with the existing no-cheating configuration. Separating types does not claim that excluded, future operation bodies are proved. A successful initialization or persistence candidate can still fail the all-library test command because reconciliation has not been generated. Whole-project acceptance remains false.
+ 
+-Generation in retained demonstrations is **SIMULATED**. Rust/Verus/scenario checking in the persistence demonstration is **REAL_LOCAL**. Controller comparison fixtures use synthetic measurements and make no Raft proof or real performance-regression claim.
++The earlier persistence-only demonstration and initial controller log are retained under `evidence/from-zero`; the final continuation demonstration above is the reviewed multi-step result. The earlier persistence-only run overlapped controller validation, so its timings should not be used as a comparable performance reference.
+ 
+-| Check | Actual result and evidence |
+-|---|---|
+-| Final controller suite | **110 passed, no skips**; [full log](../evidence/next-revision/controller-delivery-final.log). Includes actual relocated build/proof with spaces in tool paths and rejection of weakened executable contracts/strengthened preconditions |
+-| Continuation examples | Six retained examples PASS: exhausted resume, explicit extension and redesign, interrupted launched call, cross-task regression repair during a run and after interruption, scoped rewind, and optimization that first breaks correctness; [summary and artifact directories](../evidence/next-revision/continuation-delivery/summary.json) |
+-| Source checkout | Build PASS and original 15 runtime regressions PASS. Constructor tests intentionally FAIL for valid memberships; constructor proof is **20 verified / 1 error**. Model is **TYPECHECKED, 0 verified**; [source checks](../evidence/next-revision/source-checks.json) |
+-| Source persistence/progress proofs | Persistence **29 verified / 0 errors**, including independent callback-projection consumer; [final persistence report](../evidence/next-revision/persist-proof-final.json). Progress **26 / 0**; [progress report](../evidence/next-revision/progress-proof.json) |
+-| Controlled wrong-kind callback defect | Compilation PASS, coordinator tests and replay FAIL, actual Verus **28 / 1**, with the intended postcondition failure rather than a compiler failure. Measurements deferred |
+-| Repaired shared candidate | **29 Rust tests PASS**, six coordinator tests PASS, replay **14 events PASS**, initialization proof **23 / 0**, persistence proof **29 / 0**, reconciliation proof **9 / 0**; [complete demonstration](../evidence/next-revision/persist-delivery/summary.json) |
+-| Measurements | Four initialization workloads and one coordinator workload, five samples each, MEASURED/INCONCLUSIVE. No real reference or performance target configured. Synthetic comparison tests separately distinguish measurement-only, noise and reproduced regression |
+-| Materials/default launcher | Structural validation PASS; 26 English prompts; constructor seed unchanged; default preview makes zero agent calls. [Material audit](../evidence/next-revision/material-audit-final.json), [validation](../evidence/next-revision/validate-final-delivery.json), [combined preview](../evidence/next-revision/combined-preview-final.json) |
+-| Whole Raft | BLOCKED: whole-project proof entrypoint, protocol handlers, recovery/cluster integration and global safety/liveness/refinement proofs remain missing |
++## Preservation and limits
+ 
+-The final shared candidate is [here](../evidence/next-revision/persist-delivery/source/evidence/runs/20261027T103406Z-192085495b62/candidate). It took three scripted calls across STATE-INIT and RUNTIME-PERSIST, with one repair. The repair changed executable code and a local proof together; independent requirements and tests stayed fixed. Attempt patches, cumulative patches, actual argv, outputs, check results and persisted usage are retained under the run IDs in its summary. Successful completed-step evidence was invalidated by the later defect and restored only after affected checks passed.
++The pre-edit authored-file backup is `/tmp/raft-from-zero-92mb2iaz/authored.tar.gz`. [The previous review packet](../evidence/from-zero/previous-review.md) and all earlier evidence remain available. The read-only `.git`, `.agents`, `.codex` and `.aws` directories were untouched. [The maintained-file diff](../evidence/from-zero/changes.patch) records this correction; no local Git reset or source solution overlay occurred.
+ 
+-Function totals include dependencies and derived functions, not counts of Raft properties. Non-Copy Clone warnings remain; these local proofs do not use those missing Clone contracts. Intermediate debug logs are retained. An early negative test incorrectly expected weakening an auxiliary lemma to fail even when the independent consumer could re-prove the full target automatically; the delivered negative test instead weakens the executable contract or strengthens its precondition and verifies rejection.
++Fresh runs copy the current scaffold; resume retains the recorded candidate, budgets and history. No automatic integration occurs. If someone later manually fills the source checkout with implementations, a new copy becomes an extension experiment and must be reported as such. Historical runs retain their actual starting materials and are not retroactively labeled from-zero. Existing changed-input checks prevent silent reuse across changed specifications/configuration.
+ 
+-## What the results mean
++Candidate exclusions prevent accidental answer inclusion. They do not provide OS isolation against an agent deliberately reading other same-user paths. Requirements instruct the experiment agent to stay inside the candidate and not retrieve external fixtures or prior implementations. Authentication, checker protection, scope restrictions, process limits and irreversible-operation safeguards remain in place.
+ 
+-Submission reserves a fresh node-scoped token and retains a proposed image/reply; it is not durable success. The host scenario records its disk update separately from callback delivery. Only a matching successful Persist completion returns the retained reply. Busy, identity/kind mismatch, duplicates, uncertain outcomes and exhaustion have explicit behavior. The partial dispatcher rejects every unsupported Event variant. This is a coordinator/completion scenario, not a crash-recovery or cluster fault test.
++All Raft modules remain incomplete. Election, both-side replication, commitment, recovery, integrated cluster behavior and global safety/liveness/refinement are still open. Supplied DRAFT semantic choices remain pending in [OPEN_DECISIONS.md](OPEN_DECISIONS.md), including persistence failure behavior, host durability, legal callers, recovery incarnations, full Effects integration and fairness/resource assumptions. This correction approves no new Raft behavior or assumptions. Empty auxiliary lemma declarations may be discharged automatically by SMT; report this as automation on supplied targets, not an AI-authored proof strategy.
+ 
+-The storage projection relates represented fields and successful submission/completion to the existing model's `write`/`storage_ack`. It does not prove arbitrary supplied term/log changes legal Raft actions. Future election/replication callers must establish their actual transition guards, preserve committed state and authorize replies; recovery must reconstruct the real durable image with a fresh incarnation. Real adapters, general Effect/Send integration, full error/recovery refinement and cluster composition remain OPEN.
++## Exact commands and next task
+ 
+-The progress theorem says that a matching successful callback receiving service after finitely many noninterfering events releases its pending reply. Its premises constrain inputs and require actual dispatcher-step contracts, not eventual output. Installed Verus/vstd handles this unbounded-nat trace encoding and decreasing prefix induction. External verus-tla is unavailable/unverified. Global election, commitment and delivery liveness, finite-resource adequacy, interference and fairness transfer remain mandatory and OPEN.
+-
+-## Continuation, tools and pending choices
+-
+-Calls and bounded time reservations are persisted before execution. Normal completion settles actual process time; interruption conservatively retains the reservation, while paused wall time is not charged. Resume retains history and cannot replenish caps. An explicit `extend-plan` records extra allowance; it is not an approval checkpoint. Repeated failing targets trigger at most the configured redesign allowance. Rewind affects only the controller candidate, retains abandoned changes and reruns affected checks. Mixed historical generation labels remain distinct from check provenance.
+-
+-[Tool observations](../evidence/next-revision/doctor.json): Verus `0.2026.01.23.1650a05`, Rust/Cargo `1.92.0`, Z3 `4.12.5`, Python `3.10.12`, Codex CLI `0.162.0-alpha.17.2`. The system default Rust is still `1.88.0`. Configuration requests `gpt-6.1-sol` / `high`; account/model access is NOT_RUN. No tools were downloaded or global defaults changed. `workflow.toml` plus `RAFT_TOOLCHAIN_ROOT` selects the installation for both checking paths; [tools.md](../docs/tools.md) explains configuration and relocation.
+-
+-[Pending decisions](OPEN_DECISIONS.md) remain DRAFT: Busy for a pending write; conservative fail-stop handling of both NotPerformed and Unknown with distinct errors; host snapshot/notification ownership; interim optional-message dispatcher output versus final Effects; legal caller/refinement boundaries; recovery incarnation allocation; temporal-library integration and global fairness/resource premises. No performance rule is approved. Local mode still does not provide hostile-process OS isolation. [sources.md](../docs/sources.md) records the exact IDS-derived and ConsensusArena/ConsensusWiki files/revisions read, the concrete mechanisms adopted, and uninspected Laputa/ConsensusVerifier material.
+-
+-## Commands and next runnable work
+-
+-The following inspection/check/demo commands were run locally; they do not launch real agents. Use a new output directory for each demonstration.
++Run these from the repository root; demonstration output directories must be new:
+ 
+ ```sh
+ export PYTHONDONTWRITEBYTECODE=1
+ python3 -m orchestrator validate
+ python3 -m unittest discover -s orchestrator/tests -v
+-python3 orchestrator/tests/continuation_demo.py --output /tmp/raft-continuation-review
+-python3 orchestrator/tests/real_repair_demo.py --task RUNTIME-PERSIST --output /tmp/raft-persistence-review
+-python3 -m orchestrator verify --profile persist-proof
+-python3 -m orchestrator verify --profile progress-proof
+-python3 -m orchestrator run-plan --tasks RUNTIME-PERSIST --dry-run
++python3 orchestrator/tests/real_repair_demo.py --task STATE-INIT --output /tmp/raft-zero-init
++python3 orchestrator/tests/real_repair_demo.py --task PROGRESS-FOUNDATION --output /tmp/raft-zero-continuation
++python3 orchestrator/tests/real_repair_demo.py --task REPLICATION-RECONCILE --output /tmp/raft-zero-reconciliation
+ ./experiment.sh
++python3 -m orchestrator run-plan --tasks PROGRESS-FOUNDATION --dry-run
+ ```
+ 
+-Recheck the delivered candidate directly from this repository root:
++The next real task is STATE-INIT: generate the missing constructor and proof from the unchanged seed. `./experiment.sh run` explicitly launches that task with the configured `gpt-6.1-sol` / `high`; it does not build all of Raft. For the selected ready continuation, the following live commands remain available but were **not run** during this maintenance:
+ 
+ ```sh
+-cd evidence/next-revision/persist-delivery/source/evidence/runs/20261027T103406Z-192085495b62/candidate
+-python3 crates/raft-verified/check.py test
+-python3 crates/raft-verified/check.py node-proof
+-python3 crates/raft-verified/check.py persist-proof
+-python3 crates/raft-verified/check.py persist-replay
+-python3 crates/raft-verified/check.py progress-proof
+-python3 crates/raft-verified/check.py persist-bench
++python3 -m orchestrator run-plan --tasks PROGRESS-FOUNDATION --execute-codex
++python3 -m orchestrator resume --run-id RUN_ID --execute-codex
+ ```
+ 
+-The next real experiment still begins with STATE-INIT. After reviewing this delivery, the user can explicitly run the combined path below; it carries the checked initializer into RUNTIME-PERSIST without copying or merging a solution. Selecting PROGRESS-FOUNDATION instead also includes the early progress task. These live commands were **not** run during maintenance.
+-
+-```sh
+-python3 -m orchestrator --model gpt-6.1-sol --reasoning-effort high run-plan --tasks RUNTIME-PERSIST --execute-codex
+-python3 -m orchestrator resume --run-id RUN_ID --execute-codex
+-python3 -m orchestrator extend-plan --run-id RUN_ID --task RUNTIME-PERSIST --calls 1 --repairs 1 --seconds 600
+-python3 -m orchestrator rewind --run-id RUN_ID --task RUNTIME-PERSIST --check persist-tests
+-```
+-
+-Delivery stops here for human review. There is no approval file, interactive approval checkpoint or automatic candidate integration.
++This plan generates initialization, persistence and local progress in the same candidate. Later protocol steps still need their runnable independent checks. Delivery stops for human review; no approval file or interactive approval checkpoint has been added.
+--- a/workflow.toml
++++ b/workflow.toml
+@@ -4,7 +4,7 @@
+ allow_real_codex = true
+ isolation = "local-development"
+ context = []
+-protected_paths = ["AGENTS.md", "Cargo.toml", "Cargo.lock", "input", "workflow.toml", "crates/raft-spec", "crates/proof-smoke", "crates/raft-proofs/reconcile.rs", "crates/raft-proofs/node_init.rs", "crates/raft-verified/src/state.rs", "crates/raft-verified/src/io.rs", "crates/raft-proofs/persistence.rs", "crates/raft-proofs/progress.rs", "crates/raft-verified/tests/persistence.rs", "crates/raft-verified/tests/node_init.rs", "orchestrator", "crates/raft-verified/check.py", "crates/raft-verified/tests/reconcile.rs", "crates/raft-verified/examples"]
++protected_paths = ["AGENTS.md", "Cargo.toml", "Cargo.lock", "input", "workflow.toml", "crates/raft-spec", "crates/proof-smoke", "crates/raft-proofs/reconcile.rs", "crates/raft-proofs/node_init.rs", "crates/raft-verified/src/state.rs", "crates/raft-verified/src/types.rs", "crates/raft-verified/src/io.rs", "crates/raft-proofs/persistence.rs", "crates/raft-proofs/progress.rs", "crates/raft-verified/tests/persistence.rs", "crates/raft-verified/tests/node_init.rs", "orchestrator", "crates/raft-verified/check.py", "crates/raft-verified/tests/reconcile.rs", "crates/raft-verified/examples"]
+ 
+ [codex]
+ executable = "codex"
+@@ -118,11 +118,12 @@
+ kind = "functional-tests"
+ purpose = "test"
+ adapter = "command-text-v1"
+-argv = ["python3", "crates/raft-verified/check.py", "test", "--lib", "--test", "reconcile", "--test", "replay_cases"]
++argv = ["python3", "crates/raft-verified/check.py", "test", "--test", "reconcile", "--test", "replay_cases"]
+ entrypoints = ["Cargo.toml", "Cargo.lock", "crates/raft-verified/Cargo.toml", "crates/raft-verified/src/lib.rs", "crates/raft-verified/src/reconcile.rs", "crates/raft-verified/tests/reconcile.rs", "crates/raft-verified/tests/replay_cases.rs", "crates/raft-verified/examples/replay.rs", "crates/raft-verified/examples/reconcile.trace", "crates/raft-verified/check.py"]
+-expected_targets = ["reconciliation edge cases and interface regressions"]
++expected_targets = ["reconciliation edge cases and replay regressions"]
+ expected_obligation_ids = []
+ success_pattern = "test result: ok"
++minimum_tests = 13
+ timeout_seconds = 300
+ 
+ [checks.reconcile-proof]
+@@ -168,20 +169,20 @@
+ kind = "functional-tests"
+ purpose = "test"
+ adapter = "command-text-v1"
+-argv = ["python3", "crates/raft-verified/check.py", "test"]
++argv = ["python3", "crates/raft-verified/check.py", "test", "--test", "node_init"]
+ entrypoints = ["crates/raft-verified/tests/node_init.rs", "crates/raft-verified/check.py"]
+ source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified"]
+-expected_targets = ["node initialization and existing runtime regressions"]
++expected_targets = ["all eight independent node initialization cases"]
+ expected_obligation_ids = []
+ success_pattern = "test result: ok"
+-minimum_tests = 23
++minimum_tests = 8
+ 
+ [checks.node-proof]
+ kind = "local-correspondence"
+ purpose = "proof"
+ adapter = "verus-calibrated-text-v1"
+ argv = ["{verus}", "--crate-type", "lib", "--no-cheating", "--output-json", "--time-expanded", "--triggers-mode", "silent", "crates/raft-proofs/node_init.rs"]
+-entrypoints = ["crates/raft-proofs/node_init.rs", "crates/raft-verified/src/node.rs", "crates/raft-verified/src/state.rs", "crates/raft-verified/src/reconcile.rs", "crates/raft-spec/src/lib.rs", "crates/raft-spec/src/reconcile_view.rs", "crates/raft-spec/src/node_init.rs"]
++entrypoints = ["crates/raft-proofs/node_init.rs", "crates/raft-verified/src/node.rs", "crates/raft-verified/src/state.rs", "crates/raft-verified/src/types.rs", "crates/raft-spec/src/lib.rs", "crates/raft-spec/src/reconcile_view.rs", "crates/raft-spec/src/node_init.rs"]
+ source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified", "crates/raft-spec", "crates/raft-proofs/node_init.rs"]
+ proof_entrypoints = ["crates/raft-proofs/node_init.rs", "crates/raft-verified/src/node.rs"]
+ expected_targets = ["check_node_init", "new"]
+@@ -271,7 +272,7 @@
+ edit = ["crates/raft-verified/src/node.rs"]
+ outputs = ["crates/raft-verified/src/node.rs"]
+ obligations = ["LOCAL-NODE-INIT"]
+-checks = ["interface-check", "node-tests", "node-replay", "spec", "node-proof", "reconcile-proof", "node-bench"]
++checks = ["interface-check", "node-tests", "node-replay", "spec", "node-proof", "node-bench"]
+ 
+ [tasks.RUNTIME-PERSIST]
+ module = "input/runtime.md"

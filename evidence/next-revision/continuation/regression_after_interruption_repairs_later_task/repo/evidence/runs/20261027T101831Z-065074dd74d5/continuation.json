@@ -1,0 +1,91 @@
+{
+  "calls": 1,
+  "repairs": 0,
+  "redesigns": 0,
+  "active_seconds": 0.09659523100708611,
+  "call_limit": 3,
+  "repair_limit": 2,
+  "redesign_limit": 1,
+  "seconds_limit": 15,
+  "attempts": [
+    {
+      "number": 1,
+      "mode": "initial",
+      "summary": "SIMULATED fixture candidate",
+      "changed_paths": [],
+      "results": "actual-test=PASS",
+      "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/regression_after_interruption_repairs_later_task/repo/evidence/runs/20261027T101831Z-065074dd74d5/attempt-1",
+      "generation_kind": "SIMULATED"
+    }
+  ],
+  "diagnostics": {
+    "checks": [
+      {
+        "schema_version": "1",
+        "check_id": "actual-test",
+        "run_id": "20261027T101831Z-065074dd74d5",
+        "check_kind": "verification",
+        "profile_id": "actual-test",
+        "purpose": "test",
+        "required": true,
+        "expected_targets": [
+          "candidate source regression"
+        ],
+        "expected_obligation_ids": [],
+        "entrypoints": [
+          "src/lib.rs"
+        ],
+        "expected_behavior": "Configured targets and required observations succeed",
+        "result": "PASS",
+        "argv": [
+          "/usr/bin/python3",
+          "-c",
+          "from pathlib import Path; assert \"candidate\" in Path(\"src/lib.rs\").read_text(); print(\"test result: ok. 1 passed\")"
+        ],
+        "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/regression_after_interruption_repairs_later_task/repo/evidence/runs/20261027T101831Z-813cd7f6ea60/candidate",
+        "input_manifest_digest": "4da1c8024b4ac40dd4adb9f9cdf005dc5a24a46014b497bf225b51bf37419212",
+        "tool_versions": {},
+        "started_at": "2026-10-27T10:18:31.742096+00:00",
+        "finished_at": "2026-10-27T10:18:31.789530+00:00",
+        "exit_code": 0,
+        "stdout_digest": "f3be4c2819e457d80dfe19b512f6557e25eace316d3706cc7e27794300da2ae2",
+        "stderr_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "evidence_paths": [
+          "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/regression_after_interruption_repairs_later_task/repo/evidence/runs/20261027T101831Z-065074dd74d5/attempt-1/actual-test.stdout.log",
+          "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/regression_after_interruption_repairs_later_task/repo/evidence/runs/20261027T101831Z-065074dd74d5/attempt-1/actual-test.stderr.log"
+        ],
+        "obligation_ids_checked": [],
+        "coverage_findings": [
+          "build/test only; no mathematical proof"
+        ],
+        "policy_findings": [],
+        "evidence_kind": "REAL_LOCAL",
+        "contract_status": "DRAFT",
+        "full_acceptance": false,
+        "tool_environment": {},
+        "failed_tests": [],
+        "tests_selected": 1,
+        "reason": "profile checks passed locally; no full Raft acceptance"
+      }
+    ],
+    "candidate_revision": "aebbaa15a8a3a0ec2bdabbbb83eb65494cb97ea9a1d6a6a5976a9063e119b447"
+  },
+  "stalls": 0,
+  "failing": [],
+  "checkpoints": {
+    "actual-test": {
+      "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/regression_after_interruption_repairs_later_task/repo/evidence/runs/20261027T101831Z-065074dd74d5/attempt-1/checkpoint",
+      "files": [
+        "src/lib.rs"
+      ],
+      "editable_scope": [
+        "src"
+      ],
+      "checked_scope": "actual-test",
+      "result": "PASS"
+    }
+  },
+  "generation_kinds": [
+    "SIMULATED"
+  ]
+}

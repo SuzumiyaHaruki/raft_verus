@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "/home/nitro/Desktop/raft_verus/orchestrator/tests/fixtures/fake_codex.py",
+    "--ask-for-approval",
+    "never",
+    "exec",
+    "--sandbox",
+    "workspace-write",
+    "--json",
+    "--output-schema",
+    "/home/nitro/Desktop/raft_verus/orchestrator/wire/agent_report.schema.json",
+    "--output-last-message",
+    "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/interrupt_after_launch_is_charged_and_candidate_retained/repo/evidence/runs/20261027T101830Z-31237795968e/candidate/.agent-output/agent_report.json",
+    "--skip-git-repo-check",
+    "--add-dir",
+    "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/interrupt_after_launch_is_charged_and_candidate_retained/repo/evidence/runs/20261027T101830Z-29a5684079b0/attempt-1/agent-build",
+    "-"
+  ],
+  "status": "COMPLETED",
+  "exit_code": 0,
+  "stdout": "{\"type\": \"thread.started\", \"thread_id\": \"fixture-thread\"}\n{\"type\": \"turn.completed\", \"usage\": {\"input_tokens\": 2, \"output_tokens\": 3}}\n",
+  "stderr": "",
+  "stdout_truncated": false,
+  "stderr_truncated": false,
+  "elapsed_seconds": 0.05548814599751495
+}

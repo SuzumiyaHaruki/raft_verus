@@ -1,0 +1,255 @@
+{
+  "verification-results": {
+    "encountered-error": true,
+    "encountered-vir-error": false,
+    "success": false,
+    "verified": 7,
+    "errors": 1,
+    "is-verifying-entire-crate": true
+  },
+  "times-ms": {
+    "verus-build": {
+      "profile": "release",
+      "version": "0.2026.01.23.1650a05"
+    },
+    "num-threads": 3,
+    "total": 985,
+    "estimated-cpu-time": 1269,
+    "rust": {
+      "total": 204,
+      "init-and-types": 136,
+      "trait-conflicts": 67,
+      "compile": 0
+    },
+    "verification": {
+      "total": 744,
+      "vir": {
+        "total": 455,
+        "hir": 34,
+        "import": 251,
+        "rust-to-vir": 59
+      }
+    },
+    "total-verify": 526,
+    "total-verify-module-times": [
+      {
+        "module": "model",
+        "time": 130
+      },
+      {
+        "module": "",
+        "time": 113
+      },
+      {
+        "module": "reconcile",
+        "time": 107
+      },
+      {
+        "module": "types",
+        "time": 90
+      },
+      {
+        "module": "reconcile_lemmas",
+        "time": 61
+      },
+      {
+        "module": "representation",
+        "time": 23
+      }
+    ],
+    "air": {
+      "total": 227,
+      "module-times": [
+        {
+          "module": "reconcile",
+          "time": 58
+        },
+        {
+          "module": "",
+          "time": 50
+        },
+        {
+          "module": "types",
+          "time": 46
+        },
+        {
+          "module": "reconcile_lemmas",
+          "time": 34
+        },
+        {
+          "module": "model",
+          "time": 32
+        },
+        {
+          "module": "representation",
+          "time": 4
+        }
+      ]
+    },
+    "smt": {
+      "total": 59,
+      "smt-init": 42,
+      "smt-init-module-times": [
+        {
+          "module": "types",
+          "time": 18,
+          "time-micros": 18090,
+          "rlimit-count": 68613
+        },
+        {
+          "module": "reconcile",
+          "time": 10,
+          "time-micros": 10859,
+          "rlimit-count": 71079
+        },
+        {
+          "module": "",
+          "time": 8,
+          "time-micros": 8390,
+          "rlimit-count": 6164
+        },
+        {
+          "module": "reconcile_lemmas",
+          "time": 5,
+          "time-micros": 5215,
+          "rlimit-count": 38966
+        },
+        {
+          "module": "representation",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "model",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        }
+      ],
+      "smt-run": 17,
+      "smt-run-module-times": [
+        {
+          "module": "",
+          "time": 9,
+          "time-micros": 9882,
+          "rlimit-count": 6164,
+          "function-breakdown": [
+            {
+              "function": "reconcile::check_reconcile_contract",
+              "mode:": "exec",
+              "time": 9,
+              "time-micros": 9882,
+              "rlimit-count": 6164,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "reconcile_lemmas",
+          "time": 3,
+          "time-micros": 3044,
+          "rlimit-count": 38966,
+          "function-breakdown": [
+            {
+              "function": "reconcile::reconcile_lemmas::merged_empty_preserves_log",
+              "mode:": "proof",
+              "time": 1,
+              "time-micros": 1394,
+              "rlimit-count": 3145,
+              "success": true
+            },
+            {
+              "function": "reconcile::reconcile_lemmas::merged_matching_preserves_log",
+              "mode:": "proof",
+              "time": 1,
+              "time-micros": 1650,
+              "rlimit-count": 35821,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "reconcile",
+          "time": 2,
+          "time-micros": 2786,
+          "rlimit-count": 71079,
+          "function-breakdown": [
+            {
+              "function": "reconcile::reconcile::reconcile_log",
+              "mode:": "exec",
+              "time": 2,
+              "time-micros": 2786,
+              "rlimit-count": 71079,
+              "success": false
+            }
+          ]
+        },
+        {
+          "module": "types",
+          "time": 1,
+          "time-micros": 1397,
+          "rlimit-count": 68613,
+          "function-breakdown": [
+            {
+              "function": "reconcile::types::Entry::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 154,
+              "rlimit-count": 376,
+              "success": true
+            },
+            {
+              "function": "reconcile::types::RequestId::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 621,
+              "rlimit-count": 6076,
+              "success": true
+            },
+            {
+              "function": "reconcile::types::Command::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 385,
+              "rlimit-count": 62050,
+              "success": true
+            },
+            {
+              "function": "reconcile::types::ReconcileError::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 234,
+              "rlimit-count": 111,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "representation",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "model",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        }
+      ]
+    }
+  },
+  "verus": {
+    "profile": "release",
+    "version": "0.2026.01.23.1650a05",
+    "platform": {
+      "os": "linux",
+      "arch": "x86_64"
+    },
+    "toolchain": "1.92.0-x86_64-unknown-linux-gnu",
+    "commit": "1650a05d64219fdd1d150f32d0d7d5b19b8defcd"
+  }
+}

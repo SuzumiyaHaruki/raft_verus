@@ -1,0 +1,78 @@
+Toolchain: {"paths": {"verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus", "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib", "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3", "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc", "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo", "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"}, "missing": [], "environment": {"RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus", "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup", "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"}}
+warning: field `request` has inconsistent type or visibility in different variants
+         ->request syntax will not be available for this field
+         use #[allow(inconsistent_fields)] on the struct to silence the warnign
+   --> crates/raft-proofs/../raft-verified/src/io.rs:89:1
+    |
+ 89 | / #[derive(Clone, Debug, Eq, PartialEq)]
+ 90 | | pub enum Effect {
+ 91 | |     Send {
+ 92 | |         operation: OperationId,
+...   |
+124 | |     },
+125 | | }
+    | |_^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> crates/raft-proofs/../raft-verified/src/node_state.rs:6:10
+  |
+6 | #[derive(Clone, Debug, Eq, PartialEq)]
+  |          ^^^^^
+
+warning: autoderive Clone impl does not take the form Verus expects; continuing, but without adding a specification for the derived Clone impl
+ --> crates/raft-proofs/../raft-verified/src/types.rs:9:10
+  |
+9 | #[derive(Clone, Debug, Eq, PartialEq)]
+  |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/types.rs:12:10
+   |
+12 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> crates/raft-proofs/../raft-verified/src/state.rs:8:10
+  |
+8 | #[derive(Clone, Debug, Eq, PartialEq)]
+  |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/state.rs:21:10
+   |
+21 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/state.rs:27:10
+   |
+27 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+warning: autoderive Clone impl does not take the form Verus expects; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/io.rs:16:10
+   |
+16 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/io.rs:37:10
+   |
+37 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+warning: autoderive Clone impl does not take the form Verus expects; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/io.rs:62:10
+   |
+62 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+warning: autoderive Clone impl does not take the form Verus expects; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/io.rs:89:10
+   |
+89 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+verification results:: 32 verified, 0 errors
+warning: 11 warnings emitted
+

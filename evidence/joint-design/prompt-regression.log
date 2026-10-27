@@ -1,0 +1,23 @@
+test_cli_model_override_is_visible_bound_and_does_not_enable_execution (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_fixture_plan_passes_only_selected_step (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_invalid_module_configuration_cannot_fall_back_to_legacy_task (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_launcher_defaults_to_missing_node_work_with_no_generation (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_misspelled_duplicate_and_empty_steps_fail_closed (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_module_requirement_edit_still_requires_review (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_planned_module_step_exposes_blocker_without_agent_calls (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_prompt_contains_module_and_exactly_selected_step (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_repair_prompt_preserves_prior_approaches_and_independent_results (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_repository_plan_maps_all_module_steps_and_keeps_global_work (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_text_plan_cli_keeps_json_interface_and_marks_scope (orchestrator.tests.test_modules.ModuleTests) ... ok
+test_content_untracked_mode_delete_rename (orchestrator.tests.test_workspace.WorkspaceTests) ... ok
+test_copy_preserves_source_and_refuses_existing_destination (orchestrator.tests.test_workspace.WorkspaceTests) ... ok
+test_maintenance_instructions_and_solution_are_not_candidate_context (orchestrator.tests.test_workspace.WorkspaceTests) ... ok
+test_nested_reserved_names_are_still_in_manifest (orchestrator.tests.test_workspace.WorkspaceTests) ... ok
+test_path_traversal_absolute_backslash_and_root_rejected (orchestrator.tests.test_workspace.WorkspaceTests) ... ok
+test_snapshot_binding_invalidates_changed_input (orchestrator.tests.test_workspace.WorkspaceTests) ... ok
+test_symlink_escape_and_input_validation (orchestrator.tests.test_workspace.WorkspaceTests) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 2.388s
+
+OK

@@ -1,0 +1,30 @@
+{
+  "calls": 1,
+  "repairs": 0,
+  "redesigns": 0,
+  "active_seconds": 3.134987926001486,
+  "call_limit": 3,
+  "repair_limit": 2,
+  "redesign_limit": 1,
+  "seconds_limit": 15,
+  "attempts": [
+    {
+      "number": 1,
+      "mode": "initial",
+      "summary": "Launched; report not yet received",
+      "changed_paths": [],
+      "results": "INTERRUPTED_OR_IN_FLIGHT",
+      "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/interrupt_after_launch_is_charged_and_candidate_retained/repo/evidence/runs/20261027T103402Z-c310a1fbcb46/attempt-1",
+      "generation_kind": "SIMULATED"
+    }
+  ],
+  "diagnostics": {
+    "attempts": []
+  },
+  "stalls": 0,
+  "failing": [],
+  "checkpoints": {},
+  "generation_kinds": [
+    "SIMULATED"
+  ]
+}

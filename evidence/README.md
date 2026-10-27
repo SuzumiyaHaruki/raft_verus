@@ -1,27 +1,12 @@
 # Reading execution evidence
 
-Start with [the review packet](../review/REVIEW_PACKET.md). This directory contains
-actual command output and generated controller records; it is not another set of
-requirements to edit or send wholesale to an LLM.
+Start with [the review packet](../review/REVIEW_PACKET.md). Evidence contains actual command output and generated controller records, not another requirements set to edit or send wholesale to an LLM.
 
-- `experiment-setup/RESULTS.md`: current Sol/High defaults, launcher and review-after-delivery checks.
-- `module-workflow/RESULTS.md`: earlier module/step revision commands and results.
-- `sol-high/RESULTS.md`: coupled-module instructions and explicit model/effort forwarding checks; no live model call.
-- `revision/commands.json`: earlier real reconciliation/controller revision.
-- `runs/<run-id>/`: a controller run, its candidate, attempts and independent checks.
-- `bootstrap/`, `simplification/`, `layout-and-tools/` and other named directories:
-  earlier development/checking history.
-- Root `model-*` files: earlier tool observations, model checks, verifier calibration
-  and licenses. Some remain referenced by calibration configuration.
+- `joint-design/`: current joint implementation/specification revision, controller tests, seed checks and SIMULATED redesign/repair with real Rust/Verus checks.
+- `from-zero/`, `next-revision/`, `core-objective/` and earlier named directories: historical deliveries and checking results for their recorded source versions.
+- `runs/<run-id>/`: controller candidates, attempts and independent checks from explicit runs.
+- Root `model-*` files: earlier tool observations, model checks, verifier calibration and licenses; some remain referenced by configuration.
 
-Inside a run, read `conclusion.json` (or `plan-state.json`) first. `*.check.json`
-contains an independent result, `*.stdout.log`/`*.stderr.log` the actual output,
-and `*.process.json` the command, exit status and process observations. Attempts
-also retain the selected prompt, agent claim, changed paths/patch and repair
-feedback. Manifests/bindings associate existing checks and approvals with inputs.
-`candidate/` and build directories are generated working artifacts.
+Read a run's `conclusion.json` or `plan-state.json` first. `*.check.json` records the independent outcome; stdout/stderr logs retain actual output; `*.process.json` records the command and process result. Attempts retain prompts, agent claims, patches and repair feedback. Existing bindings associate checks with their inputs. Candidate/build directories are generated artifacts.
 
-Old results are historical: changing source or checker policy can make them
-inapplicable to current code. SIMULATED generation/checking must be distinguished
-from REAL_LOCAL Rust/Verus execution. A local success is not whole-Raft acceptance.
-Raw historical evidence is preserved; no cleanup or retention policy was approved.
+Old results do not establish correctness of changed source or checking policy. SIMULATED generation is distinct from REAL_LOCAL checking; a local pass is not whole-Raft acceptance. Historical evidence is preserved. Temporary debugging records may describe failed approaches; the review packet identifies final results.

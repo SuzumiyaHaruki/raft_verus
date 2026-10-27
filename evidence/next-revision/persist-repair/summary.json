@@ -1,0 +1,3289 @@
+{
+  "status": "PASS",
+  "generation_kind": "SIMULATED",
+  "check_evidence_kind": "REAL_LOCAL",
+  "full_acceptance": false,
+  "meaning": "One candidate: scripted STATE-INIT, wrong-kind coordinator defect, then repair; actual independent checks.",
+  "source_copy": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source",
+  "controller_conclusion": {
+    "run_id": "20261027T100709Z-f10cb63e7536",
+    "status": "PASSED",
+    "candidate_path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+    "task_ids": [
+      "STATE-INIT",
+      "RUNTIME-PERSIST"
+    ],
+    "completed": {
+      "STATE-INIT": {
+        "run_id": "20261027T100709Z-926ecaf38dbb",
+        "task_id": "STATE-INIT",
+        "status": "PASSED",
+        "agent_calls": 1,
+        "completion_scope": "STEP_ONLY",
+        "module_document": "input/state.md",
+        "codex_request": {
+          "model": "gpt-6.1-sol",
+          "model_reasoning_effort": "high"
+        },
+        "history": [
+          "PENDING",
+          "READY",
+          "RUNNING",
+          "CHECKING",
+          "PASSED"
+        ],
+        "evidence_kind": "REAL_LOCAL",
+        "full_acceptance": false,
+        "generation_kind": "SIMULATED",
+        "obligation_ids_checked": [
+          "LOCAL-NODE-INIT",
+          "LOCAL-RECONCILE"
+        ],
+        "input_fingerprint": "0c71c7cb50a7316076bfc8c2880c5b61d384391a260b3f030b1cdfacbabd14ac",
+        "current_fingerprint": "da82ca248c18705074dfe19b72f526f0de5e8a9509a0ed9fb36ff995df278849",
+        "candidate_path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+        "check_evidence_kind": "REAL_LOCAL",
+        "reason": "local task checks passed; candidate awaits human integration",
+        "cumulative_usage": {
+          "calls": 1,
+          "repairs": 0,
+          "redesigns": 0,
+          "active_seconds": 11.83410958499735,
+          "call_limit": 3,
+          "repair_limit": 2,
+          "redesign_limit": 1,
+          "seconds_limit": 2400,
+          "generation_kinds": [
+            "SIMULATED"
+          ]
+        },
+        "failed_attempts": [
+          {
+            "number": 1,
+            "mode": "initial",
+            "summary": "SIMULATED fixture candidate",
+            "changed_paths": [
+              "crates/raft-verified/src/node.rs"
+            ],
+            "results": "interface-check=PASS, node-tests=PASS, node-replay=PASS, spec=TYPECHECKED, node-proof=PASS, reconcile-proof=PASS, node-bench=MEASURED",
+            "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1",
+            "generation_kind": "SIMULATED"
+          }
+        ],
+        "caused_by": "RUNTIME-PERSIST",
+        "recheck_run_id": "20261027T100722Z-d3ac58f9b5d8"
+      },
+      "RUNTIME-PERSIST": {
+        "run_id": "20261027T100722Z-d3ac58f9b5d8",
+        "task_id": "RUNTIME-PERSIST",
+        "status": "PASSED",
+        "agent_calls": 2,
+        "completion_scope": "STEP_ONLY",
+        "module_document": "input/runtime.md",
+        "codex_request": {
+          "model": "gpt-6.1-sol",
+          "model_reasoning_effort": "high"
+        },
+        "history": [
+          "PENDING",
+          "READY",
+          "RUNNING",
+          "CHECKING",
+          "NEEDS_REPAIR",
+          "RUNNING",
+          "CHECKING",
+          "PASSED"
+        ],
+        "evidence_kind": "REAL_LOCAL",
+        "full_acceptance": false,
+        "generation_kind": "SIMULATED",
+        "obligation_ids_checked": [
+          "LOCAL-NODE-INIT",
+          "LOCAL-PERSIST",
+          "LOCAL-PERSIST-VIEW",
+          "LOCAL-RECONCILE"
+        ],
+        "input_fingerprint": "d3b4fa207bb5bd7cff84b34fd33d3566f46962cc695e997521444ad6effd0c0e",
+        "current_fingerprint": "d01e59aefe3f12e72de0980e2d1412580bb7bbb1dc11b05306ae7d2f76b2f153",
+        "candidate_path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+        "deferred_checks": [
+          {
+            "profile_id": "persist-bench",
+            "attempt": 1,
+            "reason": "required correctness check failed; repair before measuring performance"
+          },
+          {
+            "profile_id": "node-bench",
+            "attempt": 1,
+            "reason": "required correctness check failed; repair before measuring performance"
+          }
+        ],
+        "check_evidence_kind": "REAL_LOCAL",
+        "reason": "local task checks passed; candidate awaits human integration",
+        "cumulative_usage": {
+          "calls": 2,
+          "repairs": 1,
+          "redesigns": 0,
+          "active_seconds": 27.141013239008316,
+          "call_limit": 3,
+          "repair_limit": 2,
+          "redesign_limit": 1,
+          "seconds_limit": 2400,
+          "generation_kinds": [
+            "SIMULATED"
+          ]
+        },
+        "failed_attempts": [
+          {
+            "number": 1,
+            "mode": "initial",
+            "summary": "SIMULATED fixture candidate",
+            "changed_paths": [
+              "crates/raft-verified/src/persistence.rs"
+            ],
+            "results": "interface-check=PASS, node-tests=FAIL, persist-tests=FAIL, persist-proof=FAIL, persist-replay=FAIL, node-replay=PASS, spec=TYPECHECKED, node-proof=PASS, reconcile-proof=PASS",
+            "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1",
+            "generation_kind": "SIMULATED"
+          },
+          {
+            "number": 2,
+            "mode": "repair",
+            "summary": "SIMULATED fixture candidate",
+            "changed_paths": [],
+            "results": "interface-check=PASS, node-tests=PASS, persist-tests=PASS, persist-proof=PASS, persist-replay=PASS, node-replay=PASS, spec=TYPECHECKED, node-proof=PASS, reconcile-proof=PASS, persist-bench=MEASURED, node-bench=MEASURED",
+            "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2",
+            "generation_kind": "SIMULATED"
+          }
+        ]
+      }
+    },
+    "task_runs": [
+      "20261027T100709Z-926ecaf38dbb",
+      "20261027T100722Z-d3ac58f9b5d8"
+    ],
+    "resume_count": 0,
+    "agent_calls": 3,
+    "full_acceptance": false,
+    "generation_kind": "SIMULATED",
+    "task_usage": {
+      "STATE-INIT": {
+        "calls": 1,
+        "repairs": 0,
+        "redesigns": 0,
+        "active_seconds": 11.83410958499735,
+        "call_limit": 3,
+        "repair_limit": 2,
+        "redesign_limit": 1,
+        "seconds_limit": 2400,
+        "attempts": [
+          {
+            "number": 1,
+            "mode": "initial",
+            "summary": "SIMULATED fixture candidate",
+            "changed_paths": [
+              "crates/raft-verified/src/node.rs"
+            ],
+            "results": "interface-check=PASS, node-tests=PASS, node-replay=PASS, spec=TYPECHECKED, node-proof=PASS, reconcile-proof=PASS, node-bench=MEASURED",
+            "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1",
+            "generation_kind": "SIMULATED"
+          }
+        ],
+        "diagnostics": {
+          "checks": [
+            {
+              "schema_version": "1",
+              "check_id": "interface-check",
+              "run_id": "20261027T100709Z-926ecaf38dbb",
+              "check_kind": "build-only",
+              "profile_id": "interface-check",
+              "purpose": "build",
+              "required": true,
+              "expected_targets": [
+                "raft-verified"
+              ],
+              "expected_obligation_ids": [],
+              "entrypoints": [
+                "crates/raft-verified/src/lib.rs",
+                "crates/raft-verified/src/reconcile.rs",
+                "crates/raft-verified/check.py"
+              ],
+              "expected_behavior": "Configured targets and required observations succeed",
+              "result": "PASS",
+              "argv": [
+                "python3",
+                "crates/raft-verified/check.py",
+                "build"
+              ],
+              "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+              "input_manifest_digest": "8dfe4735efd664b8a997c062bc333882ff8a466f0941573e193c70ab30dbb74f",
+              "tool_versions": {},
+              "started_at": "2026-10-27T10:07:10.065764+00:00",
+              "finished_at": "2026-10-27T10:07:10.661461+00:00",
+              "exit_code": 0,
+              "stdout_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stderr_digest": "5b1adee4a8bf29b83f6b93afbaee7af8eedf48d203e075d2c5c26269fed80261",
+              "evidence_paths": [
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/interface-check.stdout.log",
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/interface-check.stderr.log"
+              ],
+              "obligation_ids_checked": [],
+              "coverage_findings": [
+                "build/test only; no mathematical proof"
+              ],
+              "policy_findings": [],
+              "evidence_kind": "REAL_LOCAL",
+              "contract_status": "DRAFT",
+              "full_acceptance": false,
+              "resolved_toolchain": {
+                "paths": {
+                  "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                  "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+                  "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+                  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+                  "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+                  "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+                },
+                "missing": [],
+                "environment": {
+                  "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                  "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                  "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+                }
+              },
+              "tool_environment": {
+                "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+                "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/workflow.toml"
+              },
+              "reason": "profile checks passed locally; no full Raft acceptance"
+            },
+            {
+              "schema_version": "1",
+              "check_id": "node-tests",
+              "run_id": "20261027T100709Z-926ecaf38dbb",
+              "check_kind": "functional-tests",
+              "profile_id": "node-tests",
+              "purpose": "test",
+              "required": true,
+              "expected_targets": [
+                "node initialization and existing runtime regressions"
+              ],
+              "expected_obligation_ids": [],
+              "entrypoints": [
+                "crates/raft-verified/tests/node_init.rs",
+                "crates/raft-verified/check.py"
+              ],
+              "expected_behavior": "Configured targets and required observations succeed",
+              "result": "PASS",
+              "argv": [
+                "python3",
+                "crates/raft-verified/check.py",
+                "test"
+              ],
+              "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+              "input_manifest_digest": "e60da7d6ee03a98555042ece2728d991f5b5dcb6bb6564940e778cb6be0838b1",
+              "tool_versions": {},
+              "started_at": "2026-10-27T10:07:10.687340+00:00",
+              "finished_at": "2026-10-27T10:07:12.252524+00:00",
+              "exit_code": 0,
+              "stdout_digest": "b964d45cba2fb92d67fc67a13582d75a1fbf8278caca14500444a91c55d2b764",
+              "stderr_digest": "5ba750889daf70e17d3f5471886a19607029ed83f6470e5160b1c66eb2a1783b",
+              "evidence_paths": [
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/node-tests.stdout.log",
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/node-tests.stderr.log"
+              ],
+              "obligation_ids_checked": [],
+              "coverage_findings": [
+                "build/test only; no mathematical proof"
+              ],
+              "policy_findings": [],
+              "evidence_kind": "REAL_LOCAL",
+              "contract_status": "DRAFT",
+              "full_acceptance": false,
+              "resolved_toolchain": {
+                "paths": {
+                  "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                  "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+                  "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+                  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+                  "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+                  "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+                },
+                "missing": [],
+                "environment": {
+                  "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                  "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                  "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+                }
+              },
+              "tool_environment": {
+                "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+                "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/workflow.toml"
+              },
+              "tests_selected": 29,
+              "reason": "profile checks passed locally; no full Raft acceptance"
+            },
+            {
+              "schema_version": "1",
+              "check_id": "node-replay",
+              "run_id": "20261027T100709Z-926ecaf38dbb",
+              "check_kind": "initialization-scenario",
+              "profile_id": "node-replay",
+              "purpose": "test",
+              "required": true,
+              "expected_targets": [
+                "construct three independent nodes and reject an unknown identity"
+              ],
+              "expected_obligation_ids": [],
+              "entrypoints": [
+                "crates/raft-verified/examples/initialize.rs",
+                "crates/raft-verified/check.py"
+              ],
+              "expected_behavior": "Configured targets and required observations succeed",
+              "result": "PASS",
+              "argv": [
+                "python3",
+                "crates/raft-verified/check.py",
+                "node-replay"
+              ],
+              "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+              "input_manifest_digest": "739af98e6327281c059df996dac9daa4f01791757da120df2f88a68e6620abf5",
+              "tool_versions": {},
+              "started_at": "2026-10-27T10:07:12.278443+00:00",
+              "finished_at": "2026-10-27T10:07:12.401125+00:00",
+              "exit_code": 0,
+              "stdout_digest": "5a02fe4668dbfb500313da1bbf407e2a0582e81bbd3ce0e4044e583efe99a995",
+              "stderr_digest": "474f9745a9de705840b3f1cd7255035a9eac297cf997877607ae305b77066eb4",
+              "evidence_paths": [
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/node-replay.stdout.log",
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/node-replay.stderr.log"
+              ],
+              "obligation_ids_checked": [],
+              "coverage_findings": [
+                "build/test only; no mathematical proof"
+              ],
+              "policy_findings": [],
+              "evidence_kind": "REAL_LOCAL",
+              "contract_status": "DRAFT",
+              "full_acceptance": false,
+              "resolved_toolchain": {
+                "paths": {
+                  "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                  "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+                  "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+                  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+                  "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+                  "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+                },
+                "missing": [],
+                "environment": {
+                  "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                  "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                  "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+                }
+              },
+              "tool_environment": {
+                "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+                "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/workflow.toml"
+              },
+              "scenario": {
+                "seed": 0,
+                "trace_path": "crates/raft-verified/examples/initialize.rs",
+                "boundary": "Initial states only; no protocol messages, crash recovery or liveness claim.",
+                "saved_trace": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/node-replay.trace.json",
+                "state_observations": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/node-replay.stdout.log"
+              },
+              "tests_selected": 4,
+              "reason": "profile checks passed locally; no full Raft acceptance"
+            },
+            {
+              "schema_version": "1",
+              "check_id": "spec",
+              "run_id": "20261027T100709Z-926ecaf38dbb",
+              "check_kind": "candidate-model-typecheck",
+              "profile_id": "spec",
+              "purpose": "typecheck",
+              "required": true,
+              "expected_targets": [
+                "init",
+                "next",
+                "election_safety",
+                "log_matching"
+              ],
+              "expected_obligation_ids": [],
+              "entrypoints": [
+                "crates/raft-spec/src/lib.rs"
+              ],
+              "expected_behavior": "Configured targets and required observations succeed",
+              "result": "TYPECHECKED",
+              "argv": [
+                "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                "--crate-type",
+                "lib",
+                "crates/raft-spec/src/lib.rs"
+              ],
+              "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+              "input_manifest_digest": "2b5e2ffa1d06771c9723eabb689c9fd292d44e6ebc8a2b29f9c8db6e64c82134",
+              "tool_versions": {
+                "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+              },
+              "started_at": "2026-10-27T10:07:12.420030+00:00",
+              "finished_at": "2026-10-27T10:07:15.240413+00:00",
+              "exit_code": 0,
+              "stdout_digest": "ac38eb7ec194153b4a9c8a0fe622fb1451adbaf12e25b4e6ceea174956f16b4b",
+              "stderr_digest": "ab507bb3fbc38736dbf1494d1a02b35892063775901550f08a959750d015e2de",
+              "evidence_paths": [
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/spec.stdout.log",
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/spec.stderr.log"
+              ],
+              "obligation_ids_checked": [],
+              "coverage_findings": [
+                "definitions typechecked; zero Raft proof obligations are discharged"
+              ],
+              "policy_findings": [],
+              "evidence_kind": "REAL_LOCAL",
+              "contract_status": "DRAFT",
+              "full_acceptance": false,
+              "resolved_toolchain": {
+                "paths": {
+                  "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                  "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+                  "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+                  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+                  "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+                  "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+                },
+                "missing": [],
+                "environment": {
+                  "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                  "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                  "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+                }
+              },
+              "tool_environment": {
+                "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+                "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/workflow.toml"
+              },
+              "verification_summary": {
+                "verified": 0,
+                "errors": 0
+              },
+              "proof_result": "NOT_RUN",
+              "reason": "candidate definitions checked; no mathematical theorem acceptance"
+            },
+            {
+              "schema_version": "1",
+              "check_id": "node-proof",
+              "run_id": "20261027T100709Z-926ecaf38dbb",
+              "check_kind": "local-correspondence",
+              "profile_id": "node-proof",
+              "purpose": "proof",
+              "required": true,
+              "expected_targets": [
+                "check_node_init",
+                "new"
+              ],
+              "expected_obligation_ids": [
+                "LOCAL-NODE-INIT"
+              ],
+              "entrypoints": [
+                "crates/raft-proofs/node_init.rs",
+                "crates/raft-verified/src/node.rs",
+                "crates/raft-verified/src/state.rs",
+                "crates/raft-verified/src/reconcile.rs",
+                "crates/raft-spec/src/lib.rs",
+                "crates/raft-spec/src/reconcile_view.rs",
+                "crates/raft-spec/src/node_init.rs"
+              ],
+              "expected_behavior": "Configured targets and required observations succeed",
+              "result": "PASS",
+              "argv": [
+                "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                "--crate-type",
+                "lib",
+                "--no-cheating",
+                "--output-json",
+                "--time-expanded",
+                "--triggers-mode",
+                "silent",
+                "crates/raft-proofs/node_init.rs"
+              ],
+              "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+              "input_manifest_digest": "ed1b6b212cb8a7ddc4e67af6aba20a01271f35e5050fb5c21dd7cee8c45bb799",
+              "tool_versions": {
+                "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+              },
+              "started_at": "2026-10-27T10:07:15.271090+00:00",
+              "finished_at": "2026-10-27T10:07:18.490339+00:00",
+              "exit_code": 0,
+              "stdout_digest": "49635036ede40e5215d24b4bc3ddfdfa536f003b7fac14f636ca8343eb38bacd",
+              "stderr_digest": "c030e723a7f9888a039ee0dbcc449f829fc40408a3bf75c367c89b860050d24d",
+              "evidence_paths": [
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/node-proof.stdout.log",
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/node-proof.stderr.log"
+              ],
+              "obligation_ids_checked": [
+                "LOCAL-NODE-INIT"
+              ],
+              "coverage_findings": [
+                "complete Verus entrypoint verified; reviewed target mapping binds its function contracts to local obligations"
+              ],
+              "policy_findings": [],
+              "evidence_kind": "REAL_LOCAL",
+              "contract_status": "DRAFT",
+              "full_acceptance": false,
+              "resolved_toolchain": {
+                "paths": {
+                  "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                  "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+                  "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+                  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+                  "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+                  "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+                },
+                "missing": [],
+                "environment": {
+                  "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                  "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                  "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+                }
+              },
+              "tool_environment": {
+                "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+                "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/workflow.toml"
+              },
+              "function_results": {
+                "node_init::reconcile::Entry::clone": true,
+                "node_init::reconcile::Command::clone": true,
+                "node_init::reconcile::ReconcileError::clone": true,
+                "node_init::reconcile::RequestId::clone": true,
+                "node_init::reconcile::reconcile_log": true,
+                "node_init::state::Node::new": true,
+                "node_init::io::MessageBody::clone": true,
+                "node_init::io::InputError::clone": true,
+                "node_init::io::Effect::clone": true,
+                "node_init::io::CompletionKind::clone": true,
+                "node_init::io::Event::clone": true,
+                "node_init::io::OperationId::clone": true,
+                "node_init::io::CompletionOutcome::clone": true,
+                "node_init::io::Message::clone": true,
+                "node_init::state::Role::clone": true,
+                "node_init::state::Node::clone": true,
+                "node_init::state::InitError::clone": true,
+                "node_init::state::DurableState::clone": true,
+                "node_init::state::PendingWrite::clone": true,
+                "node_init::check_node_init": true
+              },
+              "entire_crate_checked": true,
+              "verification_summary": {
+                "verified": 23,
+                "errors": 0
+              },
+              "reason": "profile checks passed locally; no full Raft acceptance"
+            },
+            {
+              "schema_version": "1",
+              "check_id": "reconcile-proof",
+              "run_id": "20261027T100709Z-926ecaf38dbb",
+              "check_kind": "local-correspondence",
+              "profile_id": "reconcile-proof",
+              "purpose": "proof",
+              "required": true,
+              "expected_targets": [
+                "check_reconcile_contract",
+                "reconcile_log"
+              ],
+              "expected_obligation_ids": [
+                "LOCAL-RECONCILE"
+              ],
+              "entrypoints": [
+                "crates/raft-proofs/reconcile.rs",
+                "crates/raft-proofs/reconcile_lemmas.rs",
+                "crates/raft-verified/src/reconcile.rs",
+                "crates/raft-spec/src/lib.rs",
+                "crates/raft-spec/src/reconcile_view.rs"
+              ],
+              "expected_behavior": "Configured targets and required observations succeed",
+              "result": "PASS",
+              "argv": [
+                "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                "--crate-type",
+                "lib",
+                "--no-cheating",
+                "--output-json",
+                "--time-expanded",
+                "--triggers-mode",
+                "silent",
+                "crates/raft-proofs/reconcile.rs"
+              ],
+              "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+              "input_manifest_digest": "f8e71c5451175187de08374bf0349a6109324ea8b2307ab978e9870f35856e39",
+              "tool_versions": {
+                "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+              },
+              "started_at": "2026-10-27T10:07:18.502204+00:00",
+              "finished_at": "2026-10-27T10:07:20.963505+00:00",
+              "exit_code": 0,
+              "stdout_digest": "6dee66ec07c56996c7ca901be7b2bed4a3710cbd2991b4640b20da8ed73710d2",
+              "stderr_digest": "1cf2abba78f27d4ead2b9d2462e04fbc146e9bd2b2ebd57f25ab66e43050e51c",
+              "evidence_paths": [
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/reconcile-proof.stdout.log",
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/reconcile-proof.stderr.log"
+              ],
+              "obligation_ids_checked": [
+                "LOCAL-RECONCILE"
+              ],
+              "coverage_findings": [
+                "complete Verus entrypoint verified; reviewed target mapping binds its function contracts to local obligations"
+              ],
+              "policy_findings": [],
+              "evidence_kind": "REAL_LOCAL",
+              "contract_status": "DRAFT",
+              "full_acceptance": false,
+              "resolved_toolchain": {
+                "paths": {
+                  "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                  "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+                  "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+                  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+                  "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+                  "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+                },
+                "missing": [],
+                "environment": {
+                  "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                  "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                  "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+                }
+              },
+              "tool_environment": {
+                "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+                "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/workflow.toml"
+              },
+              "function_results": {
+                "reconcile::reconcile::Command::clone": true,
+                "reconcile::reconcile::reconcile_log": true,
+                "reconcile::reconcile::ReconcileError::clone": true,
+                "reconcile::reconcile::RequestId::clone": true,
+                "reconcile::reconcile::Entry::clone": true,
+                "reconcile::check_reconcile_contract": true,
+                "reconcile::reconcile_lemmas::merged_empty_preserves_log": true,
+                "reconcile::reconcile_lemmas::merged_matching_preserves_log": true
+              },
+              "entire_crate_checked": true,
+              "verification_summary": {
+                "verified": 9,
+                "errors": 0
+              },
+              "reason": "profile checks passed locally; no full Raft acceptance"
+            },
+            {
+              "schema_version": "1",
+              "check_id": "node-bench",
+              "run_id": "20261027T100709Z-926ecaf38dbb",
+              "check_kind": "core-microbenchmark",
+              "profile_id": "node-bench",
+              "purpose": "benchmark",
+              "required": true,
+              "expected_targets": [
+                "node construction cost at 1, 3, 5 and 31 members"
+              ],
+              "expected_obligation_ids": [],
+              "entrypoints": [
+                "crates/raft-verified/examples/initialize.rs",
+                "crates/raft-verified/check.py"
+              ],
+              "expected_behavior": "Configured targets and required observations succeed",
+              "result": "MEASURED",
+              "argv": [
+                "python3",
+                "crates/raft-verified/check.py",
+                "node-bench"
+              ],
+              "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+              "input_manifest_digest": "f3e76d1ad7c58f3fc54026c909fa4b2ace61ad337353282272ac15d2dd973912",
+              "tool_versions": {},
+              "started_at": "2026-10-27T10:07:20.987907+00:00",
+              "finished_at": "2026-10-27T10:07:21.865880+00:00",
+              "exit_code": 0,
+              "stdout_digest": "f043193485bc6b9a1ee38151818ea55cfb5752f64bf0fb686ba241ce9ad17287",
+              "stderr_digest": "f919f34c9588863da22b3fead0d00dc72515f421e6989dfd75b42ca3bd92956e",
+              "evidence_paths": [
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/node-bench.stdout.log",
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/node-bench.stderr.log"
+              ],
+              "obligation_ids_checked": [],
+              "coverage_findings": [],
+              "policy_findings": [],
+              "evidence_kind": "REAL_LOCAL",
+              "contract_status": "DRAFT",
+              "full_acceptance": false,
+              "resolved_toolchain": {
+                "paths": {
+                  "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                  "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+                  "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+                  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+                  "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+                  "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+                },
+                "missing": [],
+                "environment": {
+                  "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                  "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                  "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+                }
+              },
+              "tool_environment": {
+                "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+                "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/workflow.toml"
+              },
+              "measurements": [
+                {
+                  "kind": "CORE_MICROBENCHMARK",
+                  "result": "MEASURED",
+                  "evidence_kind": "REAL_LOCAL",
+                  "code_version": "DRAFT candidate bound by checker",
+                  "source": "crates/raft-verified/src/node.rs",
+                  "build_mode": "release",
+                  "workload": "initialize_1_members",
+                  "members": 1,
+                  "architecture": "x86_64",
+                  "os": "linux",
+                  "concurrency": 1,
+                  "repetitions": 5,
+                  "operations_per_sample": 1000,
+                  "boundary": "membership allocation, validation, construction and destruction; includes loop/timer overhead",
+                  "samples_ns_per_operation": [
+                    49.288,
+                    51.073,
+                    51.67,
+                    46.623,
+                    43.479
+                  ],
+                  "threshold": null,
+                  "reference_version": null,
+                  "comparison": "INCONCLUSIVE_NO_REFERENCE"
+                },
+                {
+                  "kind": "CORE_MICROBENCHMARK",
+                  "result": "MEASURED",
+                  "evidence_kind": "REAL_LOCAL",
+                  "code_version": "DRAFT candidate bound by checker",
+                  "source": "crates/raft-verified/src/node.rs",
+                  "build_mode": "release",
+                  "workload": "initialize_3_members",
+                  "members": 3,
+                  "architecture": "x86_64",
+                  "os": "linux",
+                  "concurrency": 1,
+                  "repetitions": 5,
+                  "operations_per_sample": 1000,
+                  "boundary": "membership allocation, validation, construction and destruction; includes loop/timer overhead",
+                  "samples_ns_per_operation": [
+                    44.422,
+                    43.878,
+                    53.974,
+                    43.872,
+                    43.967
+                  ],
+                  "threshold": null,
+                  "reference_version": null,
+                  "comparison": "INCONCLUSIVE_NO_REFERENCE"
+                },
+                {
+                  "kind": "CORE_MICROBENCHMARK",
+                  "result": "MEASURED",
+                  "evidence_kind": "REAL_LOCAL",
+                  "code_version": "DRAFT candidate bound by checker",
+                  "source": "crates/raft-verified/src/node.rs",
+                  "build_mode": "release",
+                  "workload": "initialize_5_members",
+                  "members": 5,
+                  "architecture": "x86_64",
+                  "os": "linux",
+                  "concurrency": 1,
+                  "repetitions": 5,
+                  "operations_per_sample": 1000,
+                  "boundary": "membership allocation, validation, construction and destruction; includes loop/timer overhead",
+                  "samples_ns_per_operation": [
+                    44.365,
+                    43.625,
+                    43.633,
+                    43.592,
+                    43.692
+                  ],
+                  "threshold": null,
+                  "reference_version": null,
+                  "comparison": "INCONCLUSIVE_NO_REFERENCE"
+                },
+                {
+                  "kind": "CORE_MICROBENCHMARK",
+                  "result": "MEASURED",
+                  "evidence_kind": "REAL_LOCAL",
+                  "code_version": "DRAFT candidate bound by checker",
+                  "source": "crates/raft-verified/src/node.rs",
+                  "build_mode": "release",
+                  "workload": "initialize_31_members",
+                  "members": 31,
+                  "architecture": "x86_64",
+                  "os": "linux",
+                  "concurrency": 1,
+                  "repetitions": 5,
+                  "operations_per_sample": 1000,
+                  "boundary": "membership allocation, validation, construction and destruction; includes loop/timer overhead",
+                  "samples_ns_per_operation": [
+                    316.368,
+                    257.022,
+                    402.026,
+                    264.807,
+                    255.726
+                  ],
+                  "threshold": null,
+                  "reference_version": null,
+                  "comparison": "INCONCLUSIVE_NO_REFERENCE"
+                }
+              ],
+              "performance_verdict": "INCONCLUSIVE",
+              "reference": "No approved reference threshold",
+              "comparison_reason": "measurement only; no reference/rule configured",
+              "reason": "measurement recorded; comparison: INCONCLUSIVE"
+            }
+          ],
+          "candidate_revision": "1e55100b9de1211b0e84841148902c2eaa10021a968e1d1b875a15f65c093398"
+        },
+        "stalls": 0,
+        "failing": [],
+        "checkpoints": {
+          "interface-check": {
+            "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/checkpoint",
+            "files": [
+              "crates/raft-verified/src/node.rs"
+            ],
+            "editable_scope": [
+              "crates/raft-verified/src/node.rs"
+            ],
+            "checked_scope": "interface-check",
+            "result": "PASS"
+          },
+          "node-tests": {
+            "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/checkpoint",
+            "files": [
+              "crates/raft-verified/src/node.rs"
+            ],
+            "editable_scope": [
+              "crates/raft-verified/src/node.rs"
+            ],
+            "checked_scope": "node-tests",
+            "result": "PASS"
+          },
+          "node-replay": {
+            "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/checkpoint",
+            "files": [
+              "crates/raft-verified/src/node.rs"
+            ],
+            "editable_scope": [
+              "crates/raft-verified/src/node.rs"
+            ],
+            "checked_scope": "node-replay",
+            "result": "PASS"
+          },
+          "spec": {
+            "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/checkpoint",
+            "files": [
+              "crates/raft-verified/src/node.rs"
+            ],
+            "editable_scope": [
+              "crates/raft-verified/src/node.rs"
+            ],
+            "checked_scope": "spec",
+            "result": "TYPECHECKED"
+          },
+          "node-proof": {
+            "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/checkpoint",
+            "files": [
+              "crates/raft-verified/src/node.rs"
+            ],
+            "editable_scope": [
+              "crates/raft-verified/src/node.rs"
+            ],
+            "checked_scope": "node-proof",
+            "result": "PASS"
+          },
+          "reconcile-proof": {
+            "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/checkpoint",
+            "files": [
+              "crates/raft-verified/src/node.rs"
+            ],
+            "editable_scope": [
+              "crates/raft-verified/src/node.rs"
+            ],
+            "checked_scope": "reconcile-proof",
+            "result": "PASS"
+          }
+        },
+        "generation_kinds": [
+          "SIMULATED"
+        ]
+      },
+      "RUNTIME-PERSIST": {
+        "calls": 2,
+        "repairs": 1,
+        "redesigns": 0,
+        "active_seconds": 27.141013239008316,
+        "call_limit": 3,
+        "repair_limit": 2,
+        "redesign_limit": 1,
+        "seconds_limit": 2400,
+        "attempts": [
+          {
+            "number": 1,
+            "mode": "initial",
+            "summary": "SIMULATED fixture candidate",
+            "changed_paths": [
+              "crates/raft-verified/src/persistence.rs"
+            ],
+            "results": "interface-check=PASS, node-tests=FAIL, persist-tests=FAIL, persist-proof=FAIL, persist-replay=FAIL, node-replay=PASS, spec=TYPECHECKED, node-proof=PASS, reconcile-proof=PASS",
+            "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1",
+            "generation_kind": "SIMULATED"
+          },
+          {
+            "number": 2,
+            "mode": "repair",
+            "summary": "SIMULATED fixture candidate",
+            "changed_paths": [],
+            "results": "interface-check=PASS, node-tests=PASS, persist-tests=PASS, persist-proof=PASS, persist-replay=PASS, node-replay=PASS, spec=TYPECHECKED, node-proof=PASS, reconcile-proof=PASS, persist-bench=MEASURED, node-bench=MEASURED",
+            "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2",
+            "generation_kind": "SIMULATED"
+          }
+        ],
+        "diagnostics": {
+          "checks": [
+            {
+              "schema_version": "1",
+              "check_id": "interface-check",
+              "run_id": "20261027T100722Z-d3ac58f9b5d8",
+              "check_kind": "build-only",
+              "profile_id": "interface-check",
+              "purpose": "build",
+              "required": true,
+              "expected_targets": [
+                "raft-verified"
+              ],
+              "expected_obligation_ids": [],
+              "entrypoints": [
+                "crates/raft-verified/src/lib.rs",
+                "crates/raft-verified/src/reconcile.rs",
+                "crates/raft-verified/check.py"
+              ],
+              "expected_behavior": "Configured targets and required observations succeed",
+              "result": "PASS",
+              "argv": [
+                "python3",
+                "crates/raft-verified/check.py",
+                "build"
+              ],
+              "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+              "input_manifest_digest": "8dfe4735efd664b8a997c062bc333882ff8a466f0941573e193c70ab30dbb74f",
+              "tool_versions": {},
+              "started_at": "2026-10-27T10:07:36.644422+00:00",
+              "finished_at": "2026-10-27T10:07:36.969042+00:00",
+              "exit_code": 0,
+              "stdout_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stderr_digest": "374c8c3e1ed828d627121e042fceb6cf30d3fd6bed08e6252e6abee8c01ba986",
+              "evidence_paths": [
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/interface-check.stdout.log",
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/interface-check.stderr.log"
+              ],
+              "obligation_ids_checked": [],
+              "coverage_findings": [
+                "build/test only; no mathematical proof"
+              ],
+              "policy_findings": [],
+              "evidence_kind": "REAL_LOCAL",
+              "contract_status": "DRAFT",
+              "full_acceptance": false,
+              "resolved_toolchain": {
+                "paths": {
+                  "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                  "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+                  "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+                  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+                  "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+                  "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+                },
+                "missing": [],
+                "environment": {
+                  "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                  "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                  "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+                }
+              },
+              "tool_environment": {
+                "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+                "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/workflow.toml"
+              },
+              "reason": "profile checks passed locally; no full Raft acceptance"
+            },
+            {
+              "schema_version": "1",
+              "check_id": "node-tests",
+              "run_id": "20261027T100722Z-d3ac58f9b5d8",
+              "check_kind": "functional-tests",
+              "profile_id": "node-tests",
+              "purpose": "test",
+              "required": true,
+              "expected_targets": [
+                "node initialization and existing runtime regressions"
+              ],
+              "expected_obligation_ids": [],
+              "entrypoints": [
+                "crates/raft-verified/tests/node_init.rs",
+                "crates/raft-verified/check.py"
+              ],
+              "expected_behavior": "Configured targets and required observations succeed",
+              "result": "PASS",
+              "argv": [
+                "python3",
+                "crates/raft-verified/check.py",
+                "test"
+              ],
+              "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+              "input_manifest_digest": "e60da7d6ee03a98555042ece2728d991f5b5dcb6bb6564940e778cb6be0838b1",
+              "tool_versions": {},
+              "started_at": "2026-10-27T10:07:36.999853+00:00",
+              "finished_at": "2026-10-27T10:07:38.295629+00:00",
+              "exit_code": 0,
+              "stdout_digest": "1247571e16f00518d31ad3e4f574bfa77158012b99551424c767c0e3f48e9edc",
+              "stderr_digest": "b78a9c951401c446ddc56ed3d6be6ecae62e9a84bea74ce0ffd564014961d588",
+              "evidence_paths": [
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/node-tests.stdout.log",
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/node-tests.stderr.log"
+              ],
+              "obligation_ids_checked": [],
+              "coverage_findings": [
+                "build/test only; no mathematical proof"
+              ],
+              "policy_findings": [],
+              "evidence_kind": "REAL_LOCAL",
+              "contract_status": "DRAFT",
+              "full_acceptance": false,
+              "resolved_toolchain": {
+                "paths": {
+                  "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                  "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+                  "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+                  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+                  "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+                  "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+                },
+                "missing": [],
+                "environment": {
+                  "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                  "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                  "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+                }
+              },
+              "tool_environment": {
+                "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+                "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/workflow.toml"
+              },
+              "tests_selected": 29,
+              "reason": "profile checks passed locally; no full Raft acceptance"
+            },
+            {
+              "schema_version": "1",
+              "check_id": "persist-tests",
+              "run_id": "20261027T100722Z-d3ac58f9b5d8",
+              "check_kind": "verification",
+              "profile_id": "persist-tests",
+              "purpose": "test",
+              "required": true,
+              "expected_targets": [
+                "actual Node coordinator behavior"
+              ],
+              "expected_obligation_ids": [],
+              "entrypoints": [
+                "crates/raft-verified/tests/persistence.rs"
+              ],
+              "expected_behavior": "Configured targets and required observations succeed",
+              "result": "PASS",
+              "argv": [
+                "python3",
+                "crates/raft-verified/check.py",
+                "test",
+                "--test",
+                "persistence"
+              ],
+              "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+              "input_manifest_digest": "fa39ac6792c56b1b4c1f15c9262c9032d27175a5dd9579dba6089b55a88eaa4f",
+              "tool_versions": {},
+              "started_at": "2026-10-27T10:07:38.318604+00:00",
+              "finished_at": "2026-10-27T10:07:38.581352+00:00",
+              "exit_code": 0,
+              "stdout_digest": "5b7c57f7719ca71a12f41e7a07580d2f219238c85bfe40ac5486a47c95b78f2a",
+              "stderr_digest": "3a06e9939a24bbe044b805f77806d8df89abfa40f3f91614996c9f89dc14b467",
+              "evidence_paths": [
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/persist-tests.stdout.log",
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/persist-tests.stderr.log"
+              ],
+              "obligation_ids_checked": [],
+              "coverage_findings": [
+                "build/test only; no mathematical proof"
+              ],
+              "policy_findings": [],
+              "evidence_kind": "REAL_LOCAL",
+              "contract_status": "DRAFT",
+              "full_acceptance": false,
+              "resolved_toolchain": {
+                "paths": {
+                  "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                  "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+                  "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+                  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+                  "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+                  "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+                },
+                "missing": [],
+                "environment": {
+                  "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                  "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                  "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+                }
+              },
+              "tool_environment": {
+                "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+                "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/workflow.toml"
+              },
+              "tests_selected": 6,
+              "reason": "profile checks passed locally; no full Raft acceptance"
+            },
+            {
+              "schema_version": "1",
+              "check_id": "persist-proof",
+              "run_id": "20261027T100722Z-d3ac58f9b5d8",
+              "check_kind": "verification",
+              "profile_id": "persist-proof",
+              "purpose": "proof",
+              "required": true,
+              "expected_targets": [
+                "check_submit",
+                "check_complete",
+                "check_dispatch",
+                "check_storage_projection",
+                "completion_projection"
+              ],
+              "expected_obligation_ids": [
+                "LOCAL-PERSIST",
+                "LOCAL-PERSIST-VIEW"
+              ],
+              "entrypoints": [
+                "crates/raft-proofs/persistence.rs",
+                "crates/raft-proofs/persistence_lemmas.rs",
+                "crates/raft-verified/src/persistence.rs",
+                "crates/raft-verified/src/state.rs",
+                "crates/raft-verified/src/io.rs",
+                "crates/raft-spec/src/persistence.rs"
+              ],
+              "expected_behavior": "Configured targets and required observations succeed",
+              "result": "PASS",
+              "argv": [
+                "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                "--crate-type",
+                "lib",
+                "--no-cheating",
+                "--output-json",
+                "--time-expanded",
+                "--triggers-mode",
+                "silent",
+                "crates/raft-proofs/persistence.rs"
+              ],
+              "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+              "input_manifest_digest": "ccaaecd557b1c3eb4f52f82eefe4db2b471a87e6395aeb8dbd12b938018f63f4",
+              "tool_versions": {
+                "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+              },
+              "started_at": "2026-10-27T10:07:38.602995+00:00",
+              "finished_at": "2026-10-27T10:07:41.458721+00:00",
+              "exit_code": 0,
+              "stdout_digest": "3d3d5043fe68f9a8c3c24be50dc02db3f730c1cd65fda26da1c5cb472703dcf8",
+              "stderr_digest": "c030e723a7f9888a039ee0dbcc449f829fc40408a3bf75c367c89b860050d24d",
+              "evidence_paths": [
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/persist-proof.stdout.log",
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/persist-proof.stderr.log"
+              ],
+              "obligation_ids_checked": [
+                "LOCAL-PERSIST",
+                "LOCAL-PERSIST-VIEW"
+              ],
+              "coverage_findings": [
+                "complete Verus entrypoint verified; reviewed target mapping binds its function contracts to local obligations"
+              ],
+              "policy_findings": [],
+              "evidence_kind": "REAL_LOCAL",
+              "contract_status": "DRAFT",
+              "full_acceptance": false,
+              "resolved_toolchain": {
+                "paths": {
+                  "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                  "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+                  "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+                  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+                  "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+                  "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+                },
+                "missing": [],
+                "environment": {
+                  "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                  "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                  "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+                }
+              },
+              "tool_environment": {
+                "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+                "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/workflow.toml"
+              },
+              "function_results": {
+                "persistence::reconcile::Command::clone": true,
+                "persistence::reconcile::ReconcileError::clone": true,
+                "persistence::reconcile::RequestId::clone": true,
+                "persistence::reconcile::reconcile_log": true,
+                "persistence::reconcile::Entry::clone": true,
+                "persistence::check_storage_projection": true,
+                "persistence::check_dispatch": true,
+                "persistence::check_submit": true,
+                "persistence::check_complete": true,
+                "persistence::persistence_lemmas::completion_projection": true,
+                "persistence::persistence_lemmas::submit_projection": true,
+                "persistence::state::Node::step": true,
+                "persistence::state::Node::submit_persist": true,
+                "persistence::state::Node::complete_persist": true,
+                "persistence::io::OperationId::clone": true,
+                "persistence::io::Effect::clone": true,
+                "persistence::io::CompletionOutcome::clone": true,
+                "persistence::io::MessageBody::clone": true,
+                "persistence::io::InputError::clone": true,
+                "persistence::io::CompletionKind::clone": true,
+                "persistence::io::Message::clone": true,
+                "persistence::io::Event::clone": true,
+                "persistence::state::PendingWrite::clone": true,
+                "persistence::state::Node::clone": true,
+                "persistence::state::DurableState::clone": true,
+                "persistence::state::Role::clone": true,
+                "persistence::state::InitError::clone": true
+              },
+              "entire_crate_checked": true,
+              "verification_summary": {
+                "verified": 28,
+                "errors": 0
+              },
+              "reason": "profile checks passed locally; no full Raft acceptance"
+            },
+            {
+              "schema_version": "1",
+              "check_id": "persist-replay",
+              "run_id": "20261027T100722Z-d3ac58f9b5d8",
+              "check_kind": "verification",
+              "profile_id": "persist-replay",
+              "purpose": "test",
+              "required": true,
+              "expected_targets": [
+                "delayed duplicate stale wrong-kind and reordered coordinator completions"
+              ],
+              "expected_obligation_ids": [],
+              "entrypoints": [
+                "crates/raft-verified/examples/persistence.rs",
+                "crates/raft-verified/examples/persistence.trace"
+              ],
+              "expected_behavior": "Configured targets and required observations succeed",
+              "result": "PASS",
+              "argv": [
+                "python3",
+                "crates/raft-verified/check.py",
+                "persist-replay"
+              ],
+              "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+              "input_manifest_digest": "7d7aac0181bd76451f8947ed4cc77ede70bac05f55e0f6f39204ad509f35e5ff",
+              "tool_versions": {},
+              "started_at": "2026-10-27T10:07:41.477794+00:00",
+              "finished_at": "2026-10-27T10:07:41.627374+00:00",
+              "exit_code": 0,
+              "stdout_digest": "de59e949e463ed562697eda1c9ff6c3025233700862225e148a3bc354a4cdc35",
+              "stderr_digest": "4e41e60fc7e69e04e1f43de7649f53f984533f1ba83a58765e5d6266c04ae4ce",
+              "evidence_paths": [
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/persist-replay.stdout.log",
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/persist-replay.stderr.log"
+              ],
+              "obligation_ids_checked": [],
+              "coverage_findings": [
+                "build/test only; no mathematical proof"
+              ],
+              "policy_findings": [],
+              "evidence_kind": "REAL_LOCAL",
+              "contract_status": "DRAFT",
+              "full_acceptance": false,
+              "resolved_toolchain": {
+                "paths": {
+                  "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                  "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+                  "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+                  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+                  "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+                  "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+                },
+                "missing": [],
+                "environment": {
+                  "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                  "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                  "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+                }
+              },
+              "tool_environment": {
+                "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+                "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/workflow.toml"
+              },
+              "scenario": {
+                "seed": 0,
+                "trace_path": "crates/raft-verified/examples/persistence.trace",
+                "boundary": "Actual partial Node dispatcher; separate host disk and callback; no implemented crash recovery or cluster.",
+                "saved_trace": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/persist-replay.trace.json",
+                "state_observations": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/persist-replay.stdout.log"
+              },
+              "tests_selected": 14,
+              "reason": "profile checks passed locally; no full Raft acceptance"
+            },
+            {
+              "schema_version": "1",
+              "check_id": "node-replay",
+              "run_id": "20261027T100722Z-d3ac58f9b5d8",
+              "check_kind": "initialization-scenario",
+              "profile_id": "node-replay",
+              "purpose": "test",
+              "required": true,
+              "expected_targets": [
+                "construct three independent nodes and reject an unknown identity"
+              ],
+              "expected_obligation_ids": [],
+              "entrypoints": [
+                "crates/raft-verified/examples/initialize.rs",
+                "crates/raft-verified/check.py"
+              ],
+              "expected_behavior": "Configured targets and required observations succeed",
+              "result": "PASS",
+              "argv": [
+                "python3",
+                "crates/raft-verified/check.py",
+                "node-replay"
+              ],
+              "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+              "input_manifest_digest": "739af98e6327281c059df996dac9daa4f01791757da120df2f88a68e6620abf5",
+              "tool_versions": {},
+              "started_at": "2026-10-27T10:07:41.645225+00:00",
+              "finished_at": "2026-10-27T10:07:41.819289+00:00",
+              "exit_code": 0,
+              "stdout_digest": "5a02fe4668dbfb500313da1bbf407e2a0582e81bbd3ce0e4044e583efe99a995",
+              "stderr_digest": "986c2c48c657010b5f7a102879072cbcc5ec9c45574ef8d7797aa0c6c7dc6451",
+              "evidence_paths": [
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/node-replay.stdout.log",
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/node-replay.stderr.log"
+              ],
+              "obligation_ids_checked": [],
+              "coverage_findings": [
+                "build/test only; no mathematical proof"
+              ],
+              "policy_findings": [],
+              "evidence_kind": "REAL_LOCAL",
+              "contract_status": "DRAFT",
+              "full_acceptance": false,
+              "resolved_toolchain": {
+                "paths": {
+                  "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                  "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+                  "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+                  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+                  "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+                  "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+                },
+                "missing": [],
+                "environment": {
+                  "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                  "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                  "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+                }
+              },
+              "tool_environment": {
+                "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+                "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/workflow.toml"
+              },
+              "scenario": {
+                "seed": 0,
+                "trace_path": "crates/raft-verified/examples/initialize.rs",
+                "boundary": "Initial states only; no protocol messages, crash recovery or liveness claim.",
+                "saved_trace": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/node-replay.trace.json",
+                "state_observations": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/node-replay.stdout.log"
+              },
+              "tests_selected": 4,
+              "reason": "profile checks passed locally; no full Raft acceptance"
+            },
+            {
+              "schema_version": "1",
+              "check_id": "spec",
+              "run_id": "20261027T100722Z-d3ac58f9b5d8",
+              "check_kind": "candidate-model-typecheck",
+              "profile_id": "spec",
+              "purpose": "typecheck",
+              "required": true,
+              "expected_targets": [
+                "init",
+                "next",
+                "election_safety",
+                "log_matching"
+              ],
+              "expected_obligation_ids": [],
+              "entrypoints": [
+                "crates/raft-spec/src/lib.rs"
+              ],
+              "expected_behavior": "Configured targets and required observations succeed",
+              "result": "TYPECHECKED",
+              "argv": [
+                "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                "--crate-type",
+                "lib",
+                "crates/raft-spec/src/lib.rs"
+              ],
+              "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+              "input_manifest_digest": "2b5e2ffa1d06771c9723eabb689c9fd292d44e6ebc8a2b29f9c8db6e64c82134",
+              "tool_versions": {
+                "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+              },
+              "started_at": "2026-10-27T10:07:41.846243+00:00",
+              "finished_at": "2026-10-27T10:07:43.272961+00:00",
+              "exit_code": 0,
+              "stdout_digest": "ac38eb7ec194153b4a9c8a0fe622fb1451adbaf12e25b4e6ceea174956f16b4b",
+              "stderr_digest": "ab507bb3fbc38736dbf1494d1a02b35892063775901550f08a959750d015e2de",
+              "evidence_paths": [
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/spec.stdout.log",
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/spec.stderr.log"
+              ],
+              "obligation_ids_checked": [],
+              "coverage_findings": [
+                "definitions typechecked; zero Raft proof obligations are discharged"
+              ],
+              "policy_findings": [],
+              "evidence_kind": "REAL_LOCAL",
+              "contract_status": "DRAFT",
+              "full_acceptance": false,
+              "resolved_toolchain": {
+                "paths": {
+                  "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                  "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+                  "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+                  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+                  "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+                  "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+                },
+                "missing": [],
+                "environment": {
+                  "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                  "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                  "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+                }
+              },
+              "tool_environment": {
+                "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+                "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/workflow.toml"
+              },
+              "verification_summary": {
+                "verified": 0,
+                "errors": 0
+              },
+              "proof_result": "NOT_RUN",
+              "reason": "candidate definitions checked; no mathematical theorem acceptance"
+            },
+            {
+              "schema_version": "1",
+              "check_id": "node-proof",
+              "run_id": "20261027T100722Z-d3ac58f9b5d8",
+              "check_kind": "local-correspondence",
+              "profile_id": "node-proof",
+              "purpose": "proof",
+              "required": true,
+              "expected_targets": [
+                "check_node_init",
+                "new"
+              ],
+              "expected_obligation_ids": [
+                "LOCAL-NODE-INIT"
+              ],
+              "entrypoints": [
+                "crates/raft-proofs/node_init.rs",
+                "crates/raft-verified/src/node.rs",
+                "crates/raft-verified/src/state.rs",
+                "crates/raft-verified/src/reconcile.rs",
+                "crates/raft-spec/src/lib.rs",
+                "crates/raft-spec/src/reconcile_view.rs",
+                "crates/raft-spec/src/node_init.rs"
+              ],
+              "expected_behavior": "Configured targets and required observations succeed",
+              "result": "PASS",
+              "argv": [
+                "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                "--crate-type",
+                "lib",
+                "--no-cheating",
+                "--output-json",
+                "--time-expanded",
+                "--triggers-mode",
+                "silent",
+                "crates/raft-proofs/node_init.rs"
+              ],
+              "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+              "input_manifest_digest": "ed1b6b212cb8a7ddc4e67af6aba20a01271f35e5050fb5c21dd7cee8c45bb799",
+              "tool_versions": {
+                "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+              },
+              "started_at": "2026-10-27T10:07:43.295193+00:00",
+              "finished_at": "2026-10-27T10:07:46.133565+00:00",
+              "exit_code": 0,
+              "stdout_digest": "636912d0e14bc8d4d4126299ee5758d16040993add39431572cb79c692e46098",
+              "stderr_digest": "c030e723a7f9888a039ee0dbcc449f829fc40408a3bf75c367c89b860050d24d",
+              "evidence_paths": [
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/node-proof.stdout.log",
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/node-proof.stderr.log"
+              ],
+              "obligation_ids_checked": [
+                "LOCAL-NODE-INIT"
+              ],
+              "coverage_findings": [
+                "complete Verus entrypoint verified; reviewed target mapping binds its function contracts to local obligations"
+              ],
+              "policy_findings": [],
+              "evidence_kind": "REAL_LOCAL",
+              "contract_status": "DRAFT",
+              "full_acceptance": false,
+              "resolved_toolchain": {
+                "paths": {
+                  "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                  "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+                  "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+                  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+                  "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+                  "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+                },
+                "missing": [],
+                "environment": {
+                  "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                  "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                  "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+                }
+              },
+              "tool_environment": {
+                "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+                "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/workflow.toml"
+              },
+              "function_results": {
+                "node_init::reconcile::RequestId::clone": true,
+                "node_init::reconcile::Entry::clone": true,
+                "node_init::reconcile::ReconcileError::clone": true,
+                "node_init::reconcile::reconcile_log": true,
+                "node_init::reconcile::Command::clone": true,
+                "node_init::state::Node::new": true,
+                "node_init::io::InputError::clone": true,
+                "node_init::io::CompletionKind::clone": true,
+                "node_init::io::CompletionOutcome::clone": true,
+                "node_init::io::Message::clone": true,
+                "node_init::io::MessageBody::clone": true,
+                "node_init::io::Event::clone": true,
+                "node_init::io::OperationId::clone": true,
+                "node_init::io::Effect::clone": true,
+                "node_init::state::Role::clone": true,
+                "node_init::state::DurableState::clone": true,
+                "node_init::state::InitError::clone": true,
+                "node_init::state::PendingWrite::clone": true,
+                "node_init::state::Node::clone": true,
+                "node_init::check_node_init": true
+              },
+              "entire_crate_checked": true,
+              "verification_summary": {
+                "verified": 23,
+                "errors": 0
+              },
+              "reason": "profile checks passed locally; no full Raft acceptance"
+            },
+            {
+              "schema_version": "1",
+              "check_id": "reconcile-proof",
+              "run_id": "20261027T100722Z-d3ac58f9b5d8",
+              "check_kind": "local-correspondence",
+              "profile_id": "reconcile-proof",
+              "purpose": "proof",
+              "required": true,
+              "expected_targets": [
+                "check_reconcile_contract",
+                "reconcile_log"
+              ],
+              "expected_obligation_ids": [
+                "LOCAL-RECONCILE"
+              ],
+              "entrypoints": [
+                "crates/raft-proofs/reconcile.rs",
+                "crates/raft-proofs/reconcile_lemmas.rs",
+                "crates/raft-verified/src/reconcile.rs",
+                "crates/raft-spec/src/lib.rs",
+                "crates/raft-spec/src/reconcile_view.rs"
+              ],
+              "expected_behavior": "Configured targets and required observations succeed",
+              "result": "PASS",
+              "argv": [
+                "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                "--crate-type",
+                "lib",
+                "--no-cheating",
+                "--output-json",
+                "--time-expanded",
+                "--triggers-mode",
+                "silent",
+                "crates/raft-proofs/reconcile.rs"
+              ],
+              "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+              "input_manifest_digest": "f8e71c5451175187de08374bf0349a6109324ea8b2307ab978e9870f35856e39",
+              "tool_versions": {
+                "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+              },
+              "started_at": "2026-10-27T10:07:46.179321+00:00",
+              "finished_at": "2026-10-27T10:07:48.463430+00:00",
+              "exit_code": 0,
+              "stdout_digest": "d64fc42b242799e9292b7c6f893b7fb19e1712e4388696badb278ce39d7e3753",
+              "stderr_digest": "1cf2abba78f27d4ead2b9d2462e04fbc146e9bd2b2ebd57f25ab66e43050e51c",
+              "evidence_paths": [
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/reconcile-proof.stdout.log",
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/reconcile-proof.stderr.log"
+              ],
+              "obligation_ids_checked": [
+                "LOCAL-RECONCILE"
+              ],
+              "coverage_findings": [
+                "complete Verus entrypoint verified; reviewed target mapping binds its function contracts to local obligations"
+              ],
+              "policy_findings": [],
+              "evidence_kind": "REAL_LOCAL",
+              "contract_status": "DRAFT",
+              "full_acceptance": false,
+              "resolved_toolchain": {
+                "paths": {
+                  "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                  "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+                  "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+                  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+                  "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+                  "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+                },
+                "missing": [],
+                "environment": {
+                  "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                  "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                  "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+                }
+              },
+              "tool_environment": {
+                "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+                "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/workflow.toml"
+              },
+              "function_results": {
+                "reconcile::reconcile::Entry::clone": true,
+                "reconcile::reconcile::Command::clone": true,
+                "reconcile::reconcile::reconcile_log": true,
+                "reconcile::reconcile::ReconcileError::clone": true,
+                "reconcile::reconcile::RequestId::clone": true,
+                "reconcile::check_reconcile_contract": true,
+                "reconcile::reconcile_lemmas::merged_empty_preserves_log": true,
+                "reconcile::reconcile_lemmas::merged_matching_preserves_log": true
+              },
+              "entire_crate_checked": true,
+              "verification_summary": {
+                "verified": 9,
+                "errors": 0
+              },
+              "reason": "profile checks passed locally; no full Raft acceptance"
+            },
+            {
+              "schema_version": "1",
+              "check_id": "persist-bench",
+              "run_id": "20261027T100722Z-d3ac58f9b5d8",
+              "check_kind": "verification",
+              "profile_id": "persist-bench",
+              "purpose": "benchmark",
+              "required": true,
+              "expected_targets": [
+                "coordinator submission and completion cost; no storage or cluster throughput"
+              ],
+              "expected_obligation_ids": [],
+              "entrypoints": [
+                "crates/raft-verified/examples/persistence.rs"
+              ],
+              "expected_behavior": "Configured targets and required observations succeed",
+              "result": "MEASURED",
+              "argv": [
+                "python3",
+                "crates/raft-verified/check.py",
+                "persist-bench"
+              ],
+              "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+              "input_manifest_digest": "75096f65bdff66776f5fd26b8f6f32c32b1c6eaacbbd76f4fa5ea1b75424b37b",
+              "tool_versions": {},
+              "started_at": "2026-10-27T10:07:48.493282+00:00",
+              "finished_at": "2026-10-27T10:07:49.639907+00:00",
+              "exit_code": 0,
+              "stdout_digest": "1db2eba0b7c5bfdc1183c008b5855140af83a1bc1ecc1b3b36163ab2c96876d0",
+              "stderr_digest": "02a601c42a38453ad1bd0fe713bb22de8dde104677e885f9f9b2d183d9d6c9fe",
+              "evidence_paths": [
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/persist-bench.stdout.log",
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/persist-bench.stderr.log"
+              ],
+              "obligation_ids_checked": [],
+              "coverage_findings": [],
+              "policy_findings": [],
+              "evidence_kind": "REAL_LOCAL",
+              "contract_status": "DRAFT",
+              "full_acceptance": false,
+              "resolved_toolchain": {
+                "paths": {
+                  "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                  "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+                  "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+                  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+                  "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+                  "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+                },
+                "missing": [],
+                "environment": {
+                  "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                  "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                  "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+                }
+              },
+              "tool_environment": {
+                "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+                "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/workflow.toml"
+              },
+              "measurements": [
+                {
+                  "kind": "CORE_MICROBENCHMARK",
+                  "workload": "coordinator_submit_complete",
+                  "build_mode": "release",
+                  "environment": {
+                    "architecture": "x86_64",
+                    "os": "linux"
+                  },
+                  "boundary": "in-memory submit plus callback; no disk, network or initialization",
+                  "operations_per_sample": 1000,
+                  "samples_ns_per_operation": [
+                    87.088,
+                    86.298,
+                    86.422,
+                    86.238,
+                    86.246
+                  ]
+                }
+              ],
+              "performance_verdict": "INCONCLUSIVE",
+              "reference": "No approved reference threshold",
+              "comparison_reason": "measurement only; no reference/rule configured",
+              "reason": "measurement recorded; comparison: INCONCLUSIVE"
+            },
+            {
+              "schema_version": "1",
+              "check_id": "node-bench",
+              "run_id": "20261027T100722Z-d3ac58f9b5d8",
+              "check_kind": "core-microbenchmark",
+              "profile_id": "node-bench",
+              "purpose": "benchmark",
+              "required": true,
+              "expected_targets": [
+                "node construction cost at 1, 3, 5 and 31 members"
+              ],
+              "expected_obligation_ids": [],
+              "entrypoints": [
+                "crates/raft-verified/examples/initialize.rs",
+                "crates/raft-verified/check.py"
+              ],
+              "expected_behavior": "Configured targets and required observations succeed",
+              "result": "MEASURED",
+              "argv": [
+                "python3",
+                "crates/raft-verified/check.py",
+                "node-bench"
+              ],
+              "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-f10cb63e7536/candidate",
+              "input_manifest_digest": "f3e76d1ad7c58f3fc54026c909fa4b2ace61ad337353282272ac15d2dd973912",
+              "tool_versions": {},
+              "started_at": "2026-10-27T10:07:49.657527+00:00",
+              "finished_at": "2026-10-27T10:07:50.153211+00:00",
+              "exit_code": 0,
+              "stdout_digest": "358181dc7e33be036722f7e0268623d68cfffddae807beccc974a1f4d0391f52",
+              "stderr_digest": "6540f86e1390a24c437501bd77865ec802bfa7af7a31a7ac4cb84d7bdd45770b",
+              "evidence_paths": [
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/node-bench.stdout.log",
+                "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/node-bench.stderr.log"
+              ],
+              "obligation_ids_checked": [],
+              "coverage_findings": [],
+              "policy_findings": [],
+              "evidence_kind": "REAL_LOCAL",
+              "contract_status": "DRAFT",
+              "full_acceptance": false,
+              "resolved_toolchain": {
+                "paths": {
+                  "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+                  "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+                  "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+                  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+                  "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+                  "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+                },
+                "missing": [],
+                "environment": {
+                  "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                  "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                  "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+                }
+              },
+              "tool_environment": {
+                "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+                "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+                "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+                "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/workflow.toml"
+              },
+              "measurements": [
+                {
+                  "kind": "CORE_MICROBENCHMARK",
+                  "result": "MEASURED",
+                  "evidence_kind": "REAL_LOCAL",
+                  "code_version": "DRAFT candidate bound by checker",
+                  "source": "crates/raft-verified/src/node.rs",
+                  "build_mode": "release",
+                  "workload": "initialize_1_members",
+                  "members": 1,
+                  "architecture": "x86_64",
+                  "os": "linux",
+                  "concurrency": 1,
+                  "repetitions": 5,
+                  "operations_per_sample": 1000,
+                  "boundary": "membership allocation, validation, construction and destruction; includes loop/timer overhead",
+                  "samples_ns_per_operation": [
+                    39.123,
+                    38.69,
+                    38.728,
+                    38.662,
+                    38.655
+                  ],
+                  "threshold": null,
+                  "reference_version": null,
+                  "comparison": "INCONCLUSIVE_NO_REFERENCE"
+                },
+                {
+                  "kind": "CORE_MICROBENCHMARK",
+                  "result": "MEASURED",
+                  "evidence_kind": "REAL_LOCAL",
+                  "code_version": "DRAFT candidate bound by checker",
+                  "source": "crates/raft-verified/src/node.rs",
+                  "build_mode": "release",
+                  "workload": "initialize_3_members",
+                  "members": 3,
+                  "architecture": "x86_64",
+                  "os": "linux",
+                  "concurrency": 1,
+                  "repetitions": 5,
+                  "operations_per_sample": 1000,
+                  "boundary": "membership allocation, validation, construction and destruction; includes loop/timer overhead",
+                  "samples_ns_per_operation": [
+                    55.756,
+                    41.211,
+                    41.466,
+                    41.186,
+                    41.217
+                  ],
+                  "threshold": null,
+                  "reference_version": null,
+                  "comparison": "INCONCLUSIVE_NO_REFERENCE"
+                },
+                {
+                  "kind": "CORE_MICROBENCHMARK",
+                  "result": "MEASURED",
+                  "evidence_kind": "REAL_LOCAL",
+                  "code_version": "DRAFT candidate bound by checker",
+                  "source": "crates/raft-verified/src/node.rs",
+                  "build_mode": "release",
+                  "workload": "initialize_5_members",
+                  "members": 5,
+                  "architecture": "x86_64",
+                  "os": "linux",
+                  "concurrency": 1,
+                  "repetitions": 5,
+                  "operations_per_sample": 1000,
+                  "boundary": "membership allocation, validation, construction and destruction; includes loop/timer overhead",
+                  "samples_ns_per_operation": [
+                    37.757,
+                    37.207,
+                    37.081,
+                    37.184,
+                    37.104
+                  ],
+                  "threshold": null,
+                  "reference_version": null,
+                  "comparison": "INCONCLUSIVE_NO_REFERENCE"
+                },
+                {
+                  "kind": "CORE_MICROBENCHMARK",
+                  "result": "MEASURED",
+                  "evidence_kind": "REAL_LOCAL",
+                  "code_version": "DRAFT candidate bound by checker",
+                  "source": "crates/raft-verified/src/node.rs",
+                  "build_mode": "release",
+                  "workload": "initialize_31_members",
+                  "members": 31,
+                  "architecture": "x86_64",
+                  "os": "linux",
+                  "concurrency": 1,
+                  "repetitions": 5,
+                  "operations_per_sample": 1000,
+                  "boundary": "membership allocation, validation, construction and destruction; includes loop/timer overhead",
+                  "samples_ns_per_operation": [
+                    278.473,
+                    259.218,
+                    243.025,
+                    258.111,
+                    238.67
+                  ],
+                  "threshold": null,
+                  "reference_version": null,
+                  "comparison": "INCONCLUSIVE_NO_REFERENCE"
+                }
+              ],
+              "performance_verdict": "INCONCLUSIVE",
+              "reference": "No approved reference threshold",
+              "comparison_reason": "measurement only; no reference/rule configured",
+              "reason": "measurement recorded; comparison: INCONCLUSIVE"
+            }
+          ],
+          "candidate_revision": "1e55100b9de1211b0e84841148902c2eaa10021a968e1d1b875a15f65c093398"
+        },
+        "stalls": 1,
+        "failing": [
+          "node-tests:node initialization and existing runtime regressions",
+          "persist-proof:check_complete",
+          "persist-proof:check_dispatch",
+          "persist-proof:check_storage_projection",
+          "persist-proof:check_submit",
+          "persist-proof:completion_projection",
+          "persist-replay:delayed duplicate stale wrong-kind and reordered coordinator completions",
+          "persist-tests:actual Node coordinator behavior"
+        ],
+        "checkpoints": {
+          "interface-check": {
+            "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/checkpoint",
+            "files": [
+              "crates/raft-proofs/persistence_lemmas.rs",
+              "crates/raft-verified/src/node.rs",
+              "crates/raft-verified/src/persistence.rs"
+            ],
+            "editable_scope": [
+              "crates/raft-verified/src/persistence.rs",
+              "crates/raft-proofs/persistence_lemmas.rs",
+              "crates/raft-verified/src/node.rs"
+            ],
+            "checked_scope": "interface-check",
+            "result": "PASS"
+          },
+          "node-replay": {
+            "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/checkpoint",
+            "files": [
+              "crates/raft-proofs/persistence_lemmas.rs",
+              "crates/raft-verified/src/node.rs",
+              "crates/raft-verified/src/persistence.rs"
+            ],
+            "editable_scope": [
+              "crates/raft-verified/src/persistence.rs",
+              "crates/raft-proofs/persistence_lemmas.rs",
+              "crates/raft-verified/src/node.rs"
+            ],
+            "checked_scope": "node-replay",
+            "result": "PASS"
+          },
+          "spec": {
+            "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/checkpoint",
+            "files": [
+              "crates/raft-proofs/persistence_lemmas.rs",
+              "crates/raft-verified/src/node.rs",
+              "crates/raft-verified/src/persistence.rs"
+            ],
+            "editable_scope": [
+              "crates/raft-verified/src/persistence.rs",
+              "crates/raft-proofs/persistence_lemmas.rs",
+              "crates/raft-verified/src/node.rs"
+            ],
+            "checked_scope": "spec",
+            "result": "TYPECHECKED"
+          },
+          "node-proof": {
+            "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/checkpoint",
+            "files": [
+              "crates/raft-proofs/persistence_lemmas.rs",
+              "crates/raft-verified/src/node.rs",
+              "crates/raft-verified/src/persistence.rs"
+            ],
+            "editable_scope": [
+              "crates/raft-verified/src/persistence.rs",
+              "crates/raft-proofs/persistence_lemmas.rs",
+              "crates/raft-verified/src/node.rs"
+            ],
+            "checked_scope": "node-proof",
+            "result": "PASS"
+          },
+          "reconcile-proof": {
+            "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/checkpoint",
+            "files": [
+              "crates/raft-proofs/persistence_lemmas.rs",
+              "crates/raft-verified/src/node.rs",
+              "crates/raft-verified/src/persistence.rs"
+            ],
+            "editable_scope": [
+              "crates/raft-verified/src/persistence.rs",
+              "crates/raft-proofs/persistence_lemmas.rs",
+              "crates/raft-verified/src/node.rs"
+            ],
+            "checked_scope": "reconcile-proof",
+            "result": "PASS"
+          },
+          "node-tests": {
+            "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/checkpoint",
+            "files": [
+              "crates/raft-proofs/persistence_lemmas.rs",
+              "crates/raft-verified/src/node.rs",
+              "crates/raft-verified/src/persistence.rs"
+            ],
+            "editable_scope": [
+              "crates/raft-verified/src/persistence.rs",
+              "crates/raft-proofs/persistence_lemmas.rs",
+              "crates/raft-verified/src/node.rs"
+            ],
+            "checked_scope": "node-tests",
+            "result": "PASS"
+          },
+          "persist-tests": {
+            "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/checkpoint",
+            "files": [
+              "crates/raft-proofs/persistence_lemmas.rs",
+              "crates/raft-verified/src/node.rs",
+              "crates/raft-verified/src/persistence.rs"
+            ],
+            "editable_scope": [
+              "crates/raft-verified/src/persistence.rs",
+              "crates/raft-proofs/persistence_lemmas.rs",
+              "crates/raft-verified/src/node.rs"
+            ],
+            "checked_scope": "persist-tests",
+            "result": "PASS"
+          },
+          "persist-proof": {
+            "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/checkpoint",
+            "files": [
+              "crates/raft-proofs/persistence_lemmas.rs",
+              "crates/raft-verified/src/node.rs",
+              "crates/raft-verified/src/persistence.rs"
+            ],
+            "editable_scope": [
+              "crates/raft-verified/src/persistence.rs",
+              "crates/raft-proofs/persistence_lemmas.rs",
+              "crates/raft-verified/src/node.rs"
+            ],
+            "checked_scope": "persist-proof",
+            "result": "PASS"
+          },
+          "persist-replay": {
+            "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/checkpoint",
+            "files": [
+              "crates/raft-proofs/persistence_lemmas.rs",
+              "crates/raft-verified/src/node.rs",
+              "crates/raft-verified/src/persistence.rs"
+            ],
+            "editable_scope": [
+              "crates/raft-verified/src/persistence.rs",
+              "crates/raft-proofs/persistence_lemmas.rs",
+              "crates/raft-verified/src/node.rs"
+            ],
+            "checked_scope": "persist-replay",
+            "result": "PASS"
+          }
+        },
+        "generation_kinds": [
+          "SIMULATED"
+        ]
+      }
+    },
+    "usage": {
+      "calls": 3,
+      "repairs": 1,
+      "redesigns": 0,
+      "active_seconds": 38.975122824005666,
+      "call_limit": 6,
+      "repair_limit": 0,
+      "redesign_limit": 0,
+      "seconds_limit": 4800,
+      "attempts": [],
+      "diagnostics": {},
+      "stalls": 0,
+      "failing": [],
+      "checkpoints": {},
+      "generation_kinds": []
+    },
+    "generation_kinds": [
+      "SIMULATED"
+    ],
+    "active_task": "RUNTIME-PERSIST",
+    "active_scope": [
+      "crates/raft-verified/src/persistence.rs",
+      "crates/raft-proofs/persistence_lemmas.rs",
+      "crates/raft-verified/src/node.rs"
+    ],
+    "active_before": {
+      ".agents": {
+        "mode": 365,
+        "kind": "directory"
+      },
+      ".aws": {
+        "mode": 365,
+        "kind": "directory"
+      },
+      ".codex": {
+        "mode": 365,
+        "kind": "directory"
+      },
+      ".gitignore": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "3f2c89f7a6d4bd376c72ca300d2bcc23b0f88c0b8fde81d4e7a7223c4e849be9",
+        "size": 107
+      },
+      "AGENTS.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "9661daef5566da629b95f67d24068ef71a173a642c25de4939d97f32524f42c3",
+        "size": 3239
+      },
+      "Cargo.lock": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "a440c119adb4ef540753b502e597215bea10b73b274d5bb78cdb8b5e5a24998f",
+        "size": 157
+      },
+      "Cargo.toml": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "f024b145cda3d9cd2300786cea04d4b2ce3a044ef28bf22b280383e50b07db6d",
+        "size": 231
+      },
+      "README.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "2742d101d8975afad4e0c0cadbfebf8b3689ae1897e4d7606e549d355b789040",
+        "size": 8964
+      },
+      "crates": {
+        "mode": 509,
+        "kind": "directory"
+      },
+      "crates/proof-smoke": {
+        "mode": 509,
+        "kind": "directory"
+      },
+      "crates/proof-smoke/negative.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "e2c41c7bf0dd2e86f177656bd5d4bc5f3e27851b7f0328897d727e1b8f0eab1f",
+        "size": 233
+      },
+      "crates/proof-smoke/positive.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "eb780307a0be38c675e848880c2ba3038872937ef2da59362ee6e7d9be1a2168",
+        "size": 405
+      },
+      "crates/raft-proofs": {
+        "mode": 509,
+        "kind": "directory"
+      },
+      "crates/raft-proofs/README.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "413d6bac4fc9bd14de4169e19d16eed0f2ae726ad6c205beea602e29f5a24f97",
+        "size": 3486
+      },
+      "crates/raft-proofs/node_init.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "63a7ba14aa1910e90fa38b1df70dc4e608ee5d2e399c39d716ad3c3fc82d197d",
+        "size": 730
+      },
+      "crates/raft-proofs/persistence.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "6f36063fe23b89daef659066e2d61c6b8e43d3a49c65645020e5ba2a80423518",
+        "size": 2033
+      },
+      "crates/raft-proofs/persistence_lemmas.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "684e6a9554d822f4756256ae0fbf31ba6244a5e7f1924fea17e95044c32cab94",
+        "size": 1524
+      },
+      "crates/raft-proofs/progress.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "f9ed9d2a347ec6e24fab5d41fb81ce0826702d0855d5a6602f61994f773bb1b9",
+        "size": 1435
+      },
+      "crates/raft-proofs/progress_lemmas.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "aa9df276cd15fe976758092259b6e75c4af9a8d61a2e7cbc8d5c494c336e3e8a",
+        "size": 1628
+      },
+      "crates/raft-proofs/reconcile.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "0f9acb0b3525f3a763a4e208edf97282af1f258486cdd32d3b28acae4ecf329c",
+        "size": 1891
+      },
+      "crates/raft-proofs/reconcile_lemmas.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "57a975c7f8e1b3736dbaefeaa27b1f6359263d5ffd7df1ea2502c87cc7820c79",
+        "size": 827
+      },
+      "crates/raft-spec": {
+        "mode": 509,
+        "kind": "directory"
+      },
+      "crates/raft-spec/src": {
+        "mode": 509,
+        "kind": "directory"
+      },
+      "crates/raft-spec/src/lib.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "10cac62adddc8f0d6a88cb7142b1edc37f70baa3ec89a65bb5bd92a6614b68b6",
+        "size": 28184
+      },
+      "crates/raft-spec/src/node_init.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "796867dd1bb693c94d703d3cc71a25eb2031c9d3598e097e15eac7f8a15cf92e",
+        "size": 1559
+      },
+      "crates/raft-spec/src/persistence.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "2aea262432e74e5cb9aa6e44872b0064522fc860e99da6cbd615743bb5184ca1",
+        "size": 5186
+      },
+      "crates/raft-spec/src/progress.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "6f02e7c8495a16c343da77188aa7f0235f4b260bd535ee8f1e2c291857067343",
+        "size": 1798
+      },
+      "crates/raft-spec/src/reconcile_view.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "ac0cfc0fcfe7a6898fbaf4b3f8845756c47c0d487bff042b29434e5dbba8fb5c",
+        "size": 723
+      },
+      "crates/raft-verified": {
+        "mode": 509,
+        "kind": "directory"
+      },
+      "crates/raft-verified/Cargo.toml": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "ce004ebe221e3b705b41ac2961acde87dd7c87c845ac84f65165b5f84653f8dd",
+        "size": 133
+      },
+      "crates/raft-verified/README.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "a4fc9552f185845c588f9d1c36c65843cd838e2beafb41fd8b1c64502f0188a9",
+        "size": 2354
+      },
+      "crates/raft-verified/check.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "4a5eeda057eae521793cded5811f1ea1e7b454aa023d1c384b0b5c1dfe4d3cee",
+        "size": 3331
+      },
+      "crates/raft-verified/examples": {
+        "mode": 509,
+        "kind": "directory"
+      },
+      "crates/raft-verified/examples/initialize.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "8ee10d19ec5d5fd456320d6914a68297c137e44b46ae9060c3fdecbfe523c70a",
+        "size": 2005
+      },
+      "crates/raft-verified/examples/measure_reconcile.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "dcdd9f8a77627e389dd952cbf67484d8935d88c1a79c6f0fa426b4ad04bc9e5f",
+        "size": 4081
+      },
+      "crates/raft-verified/examples/persistence.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "3d65fd211f3dc78bc94279132d62c948721b54b6914188839a49c29ff075d236",
+        "size": 4118
+      },
+      "crates/raft-verified/examples/persistence.trace": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "3d7ca4bab7148bb1f30d02ab98f73716eeabeeba4991ad5b9b468ff3be50e41c",
+        "size": 526
+      },
+      "crates/raft-verified/examples/reconcile.trace": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "4d8237a522e113ee9fabc6c0f576c100c10be7826958d5172c267f06cfcedd50",
+        "size": 342
+      },
+      "crates/raft-verified/examples/replay.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "4ce4caf0b2950109b4ee0d49bc032772e9af6e2a6a190c7c83265f7d7e7116df",
+        "size": 4053
+      },
+      "crates/raft-verified/src": {
+        "mode": 509,
+        "kind": "directory"
+      },
+      "crates/raft-verified/src/io.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "6ad8cd3e24330a75e3e38072baa1d7a3d0d3e048ad526e2a4def580a44fab6eb",
+        "size": 3050
+      },
+      "crates/raft-verified/src/lib.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "e9e220cb2ac9fac9bda9616a90cdffc5f387bf0735d2e88fe4eb8aee607a1ff8",
+        "size": 3258
+      },
+      "crates/raft-verified/src/node.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "6a6a005b7c088d847367cac9d29cd20df1b5a0d75721be73b2e6e35895c8e74c",
+        "size": 2044
+      },
+      "crates/raft-verified/src/persistence.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "cdfd58e5dbd1b2f6c5dfe09f403ca6912a4bc7d91e307c562832c41252d7de81",
+        "size": 3006
+      },
+      "crates/raft-verified/src/reconcile.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "27b06c2bdca640546a0c7680fa88d3713a9791d533b3f10f4d60764a978a5d77",
+        "size": 5042
+      },
+      "crates/raft-verified/src/state.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "83b71d00f7dc1a010d62fd128428e276f64cfbf808ec18648d7e76e9338c770d",
+        "size": 1014
+      },
+      "crates/raft-verified/tests": {
+        "mode": 509,
+        "kind": "directory"
+      },
+      "crates/raft-verified/tests/node_init.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "5f8541dbb8639321300e6dcdac63efcb4f666920914c74ae4f290aa09e521245",
+        "size": 1442
+      },
+      "crates/raft-verified/tests/persistence.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "c93e78b3aa0f0bd483148f4fa9721754f29fdc9bfe34e363da6aa1986e97aad6",
+        "size": 4549
+      },
+      "crates/raft-verified/tests/reconcile.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "b43caa099085bf3d27bb9d45b7e8205defa2e324dc0a7d44986a4063c6f5f5c5",
+        "size": 3410
+      },
+      "crates/raft-verified/tests/replay_cases.rs": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "fe91eec41f97731cd722b9093666bddd05901417328b5372ac8b36e5330b8fa6",
+        "size": 602
+      },
+      "docs": {
+        "mode": 509,
+        "kind": "directory"
+      },
+      "docs/sources.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "06aee89967402b44308cb5c1197e1e5ef2fc723f6b230cbb9058685a6f6f13d3",
+        "size": 8191
+      },
+      "docs/tools.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "78d986bef9d5260a7c033fdf27e848fd92dd75ed4b6b1988745e4f0559ffad24",
+        "size": 4980
+      },
+      "docs/workflow.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "1d8eadca768674e50b98a3b32146d5801f42ab5b045c5e388d02298b3add3cf1",
+        "size": 18584
+      },
+      "experiment.sh": {
+        "mode": 500,
+        "kind": "file",
+        "digest": "eeefd765de9d554a40402176e72981ef24fb3c4f01203fc1e508e126bd51b5b4",
+        "size": 936
+      },
+      "input": {
+        "mode": 509,
+        "kind": "directory"
+      },
+      "input/assumptions.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "edbfad63e965b55503a165046302326e21c0dc31ed55644e07efe6b4732b8d81",
+        "size": 10573
+      },
+      "input/commitment.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "e2e18f0f64217f144834c216fbecf47e699893b21cd0e2b12511e528749e3470",
+        "size": 3313
+      },
+      "input/elections.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "d3c6b2649315e4660a32c438ab05bca0ab7e4427841365dd4a99083382443381",
+        "size": 4466
+      },
+      "input/instructions.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "110e4009882803998bc504254ba2929a7a298f64070e2a3abbe15f86ace8263a",
+        "size": 4629
+      },
+      "input/integration.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "ce9c215ed671a72aee510532456f1b3cec71cf32d656dd1f090f128e416db7bb",
+        "size": 6205
+      },
+      "input/io.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "7d852196bd6511f6af06e66f214f187c126bd1116062af66095c4eb07b9e6ac0",
+        "size": 4652
+      },
+      "input/model.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "99acbec3440136096010e60df8f4c4ff7fbe9e7eeb305e7600fbeb32796bff0e",
+        "size": 9572
+      },
+      "input/progress.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "6dbaa97069438d843554a1bbefc4c1b7f32aed2e38fd545cf6cbb6842ce6c003",
+        "size": 6662
+      },
+      "input/proofs.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "25ee9a33438237156626b48d2c73b48848841986a79859cd962409e6477acb56",
+        "size": 22218
+      },
+      "input/properties.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "c2ccedefeb8a06b57a004cc3a1d6d44f5d958311525993d1cad468b3465a2da9",
+        "size": 2355
+      },
+      "input/recovery.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "8bc731811d5905b535277869796628410a167bc09e00c96a68300d6ebdaf3eec",
+        "size": 3427
+      },
+      "input/replication.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "ad1110cc09ffdbbd8a5364ab2d6be5e930240f0ea467d248238304eef1e5bbc8",
+        "size": 8459
+      },
+      "input/requirements.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "34b044ffddb6c42b623fd5383886ef99cb09c93e384aeba8154247952e35d310",
+        "size": 2683
+      },
+      "input/roadmap.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "749744ac2a0ce910af69203948d5f89948de66b7f7ebb5a83358a745e275caf9",
+        "size": 6436
+      },
+      "input/runtime.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "82f0990e1e08fa760729e908fa2b85183921d2e79b72f17e538da0cb96729c87",
+        "size": 6338
+      },
+      "input/state.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "a8dbff3bbdae93422ee5fea4987aa7dd275e1824a5635fc949ad76656317a0ba",
+        "size": 4475
+      },
+      "input/trust.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "5ed8d6dcc9ff387517d075f7bdc8b11184899fdab029f479722114709f595f68",
+        "size": 2676
+      },
+      "orchestrator": {
+        "mode": 509,
+        "kind": "directory"
+      },
+      "orchestrator/__init__.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "417e2be13968e9aef03f0c843b0a012fa88f92a090d3e5b5538b938c961dc839",
+        "size": 91
+      },
+      "orchestrator/__main__.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
+        "size": 47
+      },
+      "orchestrator/__pycache__": {
+        "mode": 509,
+        "kind": "directory"
+      },
+      "orchestrator/__pycache__/__init__.cpython-310.pyc": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "d0d007483fdc45a81f0792e78e74043fd48f65b41a957ab7beb379dddf2c62e8",
+        "size": 248
+      },
+      "orchestrator/__pycache__/__main__.cpython-310.pyc": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "71ce0e1713b032ef53642ec07eb46a299896ef7663a4f318afaaf6779b67e81e",
+        "size": 199
+      },
+      "orchestrator/__pycache__/cli.cpython-310.pyc": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "7db3897860bbf854d775064dca728d42533a6c08a871345bb0e137f11eeb48ec",
+        "size": 10591
+      },
+      "orchestrator/__pycache__/codex_runner.cpython-310.pyc": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "923a7dacc01f8c576438f86cd4ebd833cfe9a7da631b8edd419f540e34481583",
+        "size": 4160
+      },
+      "orchestrator/__pycache__/config.cpython-310.pyc": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "7904b1e859146b1ae6fe5f7b799b5f29ef03b664ce14da8b9c92e03eac91dbfa",
+        "size": 3786
+      },
+      "orchestrator/__pycache__/evidence.cpython-310.pyc": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "dd8d65733439f927966377ba89c5de63d46cb7f7b4f9f11c7d479d44132af417",
+        "size": 2039
+      },
+      "orchestrator/__pycache__/feedback.cpython-310.pyc": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "0cf759a28990b3531e8f0a1738d1c1ecf961ce90934ffe2ad146a85778daf0f3",
+        "size": 4336
+      },
+      "orchestrator/__pycache__/materials.cpython-310.pyc": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "4ac81e90c99b1c1d6b0009bd17a3a9dda1e870723f2be80585fb2e0de71414ee",
+        "size": 3382
+      },
+      "orchestrator/__pycache__/policy.cpython-310.pyc": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "53a74b9eb740badeac49a0e38e2b8f492e79b07c16362bd80a9a80757c8103ea",
+        "size": 4919
+      },
+      "orchestrator/__pycache__/process.cpython-310.pyc": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "7c69a52bde587eb27be70d868837f9d8d0744ee95947b7297d6a5178a57042aa",
+        "size": 4226
+      },
+      "orchestrator/__pycache__/scheduler.cpython-310.pyc": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "0d4d3e70ffbf1965c673ba8d635ed9c6a1278316d8a4d4b9207666067a139f30",
+        "size": 25724
+      },
+      "orchestrator/__pycache__/schemas.cpython-310.pyc": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "9946efe99d48583a1d1512b3e309dbc38afb31c077a0b10495b9534474d9db58",
+        "size": 1801
+      },
+      "orchestrator/__pycache__/verifier_runner.cpython-310.pyc": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "d50f6cd361f068d457b2e42bb8b050a57b5f16770b85b23ca4577a95bbbf16a0",
+        "size": 13530
+      },
+      "orchestrator/__pycache__/workspace.cpython-310.pyc": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "d48484b94383557f480dd1ca8868f42a0c7afcbc33fddab375bce118041f5319",
+        "size": 4183
+      },
+      "orchestrator/cli.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "d296a89f84f43cca23064620141aabc508c11a685462b3572b4c9beda078d58f",
+        "size": 13951
+      },
+      "orchestrator/codex_runner.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "bddfa7eb68a0b091d576a5673d2f1c64f879b9aa7c5176691d4110957af304ea",
+        "size": 6073
+      },
+      "orchestrator/config.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "4beb66f1be1cd3bbc64a4a45b6b68316db0d55b3a22ceaafc6e9b408e052f5ab",
+        "size": 5163
+      },
+      "orchestrator/continuation.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "388cd97d9bd07a25649830b8ae750526feb2037f0e74be349fb55491db764726",
+        "size": 3351
+      },
+      "orchestrator/evidence.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "23b4f8928738174516ece798638f5b384e3120d076d5588e86aee0bfd2cdfe60",
+        "size": 1583
+      },
+      "orchestrator/feedback.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "bec86d5277e678b8f1d7a77889ef8190ed8394eee059e1e4d326023dc984464b",
+        "size": 5112
+      },
+      "orchestrator/materials.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "a0dadc5736af88a3831f346e01b52d25e1c68a096af08448dc12bcfb083dbcf0",
+        "size": 4321
+      },
+      "orchestrator/performance.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "e705f250eca98a90e43cdf5ea6fa724b08bbfc2939fe6af1001d2a573876b90e",
+        "size": 3327
+      },
+      "orchestrator/policy.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "0b318bff0a631797942c010719a26236fe0f26766a6959f7ef480cc1828a9f3d",
+        "size": 5547
+      },
+      "orchestrator/process.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "e5491963a33fa9dd0b9b37d5bbcc2129bd20a08ecc6cdf05be5c9e2fcadc352c",
+        "size": 4072
+      },
+      "orchestrator/pyproject.toml": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "bbed01d9976eb7052c4df4bb7f59d09d01eb4ad42a027755067dcf3af37d7d61",
+        "size": 85
+      },
+      "orchestrator/scheduler.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "2d09f14f357e74190bd56b04c645cf1971969aba212662e4b66c9a3881865016",
+        "size": 50292
+      },
+      "orchestrator/schemas.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "4d467acf71ef1a2da982e440b166e80fcff22d4456f087a6211744d1aae840a6",
+        "size": 1220
+      },
+      "orchestrator/setup.cfg": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "28e9f71bd2299b7bf6d5cf6bc13c2f0be3110f486254741071b2e021caed88d2",
+        "size": 418
+      },
+      "orchestrator/setup.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "76189f7511a9eb8dab0ccaf022097f598fa32c3026ce2c2174ea7e7c3fccc71e",
+        "size": 37
+      },
+      "orchestrator/tests": {
+        "mode": 509,
+        "kind": "directory"
+      },
+      "orchestrator/tests/fixtures": {
+        "mode": 509,
+        "kind": "directory"
+      },
+      "orchestrator/tests/fixtures/fake_codex.py": {
+        "mode": 509,
+        "kind": "file",
+        "digest": "e2badd2ecb940f4473bbb0c38a9f3627bf82ea5a228a627c24c95cf05e317d28",
+        "size": 3260
+      },
+      "orchestrator/tests/fixtures/fake_verifier.py": {
+        "mode": 509,
+        "kind": "file",
+        "digest": "6ca80aedb4e4f729f7aa8aa44f37438b6dcf816e94d1909fe97cf48f960f981e",
+        "size": 1001
+      },
+      "orchestrator/tests/fixtures/fake_verus.py": {
+        "mode": 509,
+        "kind": "file",
+        "digest": "a76009c299237086dc04df9008e41b22eba14ffa256886048d56bbef4e8a1107",
+        "size": 679
+      },
+      "orchestrator/tests/real_repair_demo.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "e3f66ac5718257f3a9687a8bb5445984686885fee124e009059570480d49289c",
+        "size": 7478
+      },
+      "orchestrator/tests/test_adapters.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "b8a0ec75acd22ede762593afa00b3155c130af4f596295ad4050ffe892801fea",
+        "size": 9079
+      },
+      "orchestrator/tests/test_continuation.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "61bd81b8b5eb4316bf3bb1aa04c11c282e6597809b9f02bb725fab6515440b22",
+        "size": 7602
+      },
+      "orchestrator/tests/test_modules.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "e44155512897da73780ebf4d2fe7805132fcb8d2b67b84ccb60e6b4f185d5150",
+        "size": 10572
+      },
+      "orchestrator/tests/test_node_contract.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "d3e77c8fd8e75d6b0a2b854838bd11b1271400f1cc3c528217c380e693b2a660",
+        "size": 1883
+      },
+      "orchestrator/tests/test_performance.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "c6831b48d893083507b875ca03150f407684085ebc1a4ae4fd695205815ba6a9",
+        "size": 4363
+      },
+      "orchestrator/tests/test_policy.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "208f7de2d8230ac1843108fb73771cd7aa1217efd941bd16df4dee1faeefdc55",
+        "size": 2594
+      },
+      "orchestrator/tests/test_process.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "f1d27c0c564ff4d4e52e8f55a53bc073d14cca5675f4264572173dc863689b92",
+        "size": 4229
+      },
+      "orchestrator/tests/test_registry.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "2014bd73133689a1c54bb4c90682624135b17588e65d392177fe8ad261fa4cb4",
+        "size": 3797
+      },
+      "orchestrator/tests/test_revision.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "beaecc6d7da8f9d0190d207c6df49738f1a20b1100503d987b1a6305b4372656",
+        "size": 22885
+      },
+      "orchestrator/tests/test_scheduler.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "a6bf49520fdd0d6e65812237c7779ccbe60c07dac0477f5cc8158be3cee53298",
+        "size": 10088
+      },
+      "orchestrator/tests/test_toolchain.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "c581d480611fa557fc86576f3746672ea29cc9b397711887cbf3ae9224f08218",
+        "size": 2863
+      },
+      "orchestrator/tests/test_workspace.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "682afb31273b3e9b6886fd6e9e9ead894b8ab9e8e237e7e84a51cf2a4862f1a2",
+        "size": 3609
+      },
+      "orchestrator/toolchain.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "3bbb43a59655294a582d7a086770a4eb50d9b3cd90201db191f6023200739280",
+        "size": 929
+      },
+      "orchestrator/verifier_runner.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "e1aa64258b4f680415e47304b8fc629c18dd9c6f0310b600ca7c2736781e2db6",
+        "size": 21812
+      },
+      "orchestrator/wire": {
+        "mode": 509,
+        "kind": "directory"
+      },
+      "orchestrator/wire/agent_report.schema.json": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "2dde1eb09de8f9016041fad4e7278d7ce29815d83895990dd32092b8b1e562f6",
+        "size": 1344
+      },
+      "orchestrator/wire/check_report.schema.json": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "4ca51246e0a9bc4bfa3da0822bc17215d13ad923d402bfcdc595478cb1c31376",
+        "size": 2270
+      },
+      "orchestrator/workspace.py": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "8c4fede17616e5979fe9c907160f02de6ba805c07f3b3d6f237f1f662b8f2233",
+        "size": 3775
+      },
+      "review": {
+        "mode": 509,
+        "kind": "directory"
+      },
+      "review/OPEN_DECISIONS.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "ce06b1ec3ff51aecb78a800616fef56cf48e22f889ff29d6c9dad376bb785709",
+        "size": 12757
+      },
+      "review/REQUIREMENTS_TRACEABILITY.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "8ced2b5bb840880871741551784f91a830d54f0073ebc98be1b7887f70f40f0d",
+        "size": 9984
+      },
+      "review/REVIEW_PACKET.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "ae79aecbba6a8becd3ad4d6f31685896642bd256d9dff31e491ed116c10e8004",
+        "size": 7833
+      },
+      "review/REVISION_PLAN.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "941d06dc09bec95d03cfd9b24fab0a9059b36e5eb2fa1557937e862023c1914f",
+        "size": 1087
+      },
+      "review/measurements": {
+        "mode": 509,
+        "kind": "directory"
+      },
+      "review/measurements/reconciliation.md": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "a12679d937cf7578b29515eaef9ff76b3528f6f14803f3ea4fc24b7f2efefad9",
+        "size": 3554
+      },
+      "workflow.toml": {
+        "mode": 436,
+        "kind": "file",
+        "digest": "e38f5dd3f380ba4c32ce142b1daa2dbfc65141ce026b0019e6488f9838d0d430",
+        "size": 25264
+      }
+    },
+    "reason": "selected local tasks complete in saved candidate; no source merge or full project acceptance",
+    "completion_scope": "SELECTED_STEPS_ONLY",
+    "module_completion": "NOT_ASSESSED",
+    "codex_request": {
+      "model": "gpt-6.1-sol",
+      "model_reasoning_effort": "high"
+    }
+  },
+  "checks": [
+    {
+      "profile_id": "interface-check",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/interface-check.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/interface-check.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "node-bench",
+      "result": "MEASURED",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/node-bench.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/node-bench.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "node-proof",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": {
+        "verified": 23,
+        "errors": 0
+      },
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/node-proof.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/node-proof.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "node-replay",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/node-replay.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/node-replay.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "node-tests",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/node-tests.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/node-tests.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "reconcile-proof",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": {
+        "verified": 9,
+        "errors": 0
+      },
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/reconcile-proof.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/reconcile-proof.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "spec",
+      "result": "TYPECHECKED",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": {
+        "verified": 0,
+        "errors": 0
+      },
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/spec.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100709Z-926ecaf38dbb/attempt-1/spec.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "interface-check",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1/interface-check.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1/interface-check.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "node-proof",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": {
+        "verified": 23,
+        "errors": 0
+      },
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1/node-proof.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1/node-proof.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "node-replay",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1/node-replay.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1/node-replay.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "node-tests",
+      "result": "FAIL",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1/node-tests.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1/node-tests.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "persist-proof",
+      "result": "FAIL",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": {
+        "verified": 27,
+        "errors": 1
+      },
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1/persist-proof.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1/persist-proof.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "persist-replay",
+      "result": "FAIL",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1/persist-replay.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1/persist-replay.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "persist-tests",
+      "result": "FAIL",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1/persist-tests.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1/persist-tests.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "reconcile-proof",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": {
+        "verified": 9,
+        "errors": 0
+      },
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1/reconcile-proof.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1/reconcile-proof.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "spec",
+      "result": "TYPECHECKED",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": {
+        "verified": 0,
+        "errors": 0
+      },
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1/spec.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-1/spec.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "interface-check",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/interface-check.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/interface-check.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "node-bench",
+      "result": "MEASURED",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/node-bench.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/node-bench.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "node-proof",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": {
+        "verified": 23,
+        "errors": 0
+      },
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/node-proof.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/node-proof.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "node-replay",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/node-replay.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/node-replay.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "node-tests",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/node-tests.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/node-tests.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "persist-bench",
+      "result": "MEASURED",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/persist-bench.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/persist-bench.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "persist-proof",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": {
+        "verified": 28,
+        "errors": 0
+      },
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/persist-proof.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/persist-proof.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "persist-replay",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/persist-replay.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/persist-replay.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "persist-tests",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": null,
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/persist-tests.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/persist-tests.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "reconcile-proof",
+      "result": "PASS",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": {
+        "verified": 9,
+        "errors": 0
+      },
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/reconcile-proof.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/reconcile-proof.stderr.log"
+      ]
+    },
+    {
+      "profile_id": "spec",
+      "result": "TYPECHECKED",
+      "evidence_kind": "REAL_LOCAL",
+      "verification_summary": {
+        "verified": 0,
+        "errors": 0
+      },
+      "evidence_paths": [
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/spec.stdout.log",
+        "/home/nitro/Desktop/raft_verus/evidence/next-revision/persist-repair/source/evidence/runs/20261027T100722Z-d3ac58f9b5d8/attempt-2/spec.stderr.log"
+      ]
+    }
+  ]
+}

@@ -13,23 +13,25 @@ import sys
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("check", choices=("build", "test", "replay", "bench", "proof", "node-proof", "node-replay", "node-bench"))
+    parser.add_argument("check", choices=("build", "test", "replay", "bench", "proof", "node-proof", "node-replay", "node-bench", "persist-proof", "persist-replay", "persist-bench", "progress-proof"))
     parser.add_argument("extra", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
-    installed = Path.home() / ".local/share/raft-verus"
-    verus = Path(os.environ.get("RAFT_VERUS", installed / "verus-x86-linux/verus"))
-    rustup = Path(os.environ.get("RAFT_RUSTUP_HOME", installed / "rustup"))
-    rust = rustup / "toolchains/1.92.0-x86_64-unknown-linux-gnu/bin"
-    required = [verus, verus.parent / "libvstd.rlib", rust / "cargo", rust / "rustc"]
-    for path in required:
-        if not path.is_file():
-            print(f"BLOCKED: missing local tool or dependency: {path}", file=sys.stderr)
-            return 2
+    sys.path.insert(0, str(root))
+    from orchestrator.config import load_config
+    selected = load_config(root, os.environ.get("RAFT_WORKFLOW_CONFIG", "workflow.toml"))["toolchain"]["resolved"]
+    import json
+    print("Toolchain: " + json.dumps(selected), file=sys.stderr)
+    if selected["missing"]:
+        print("BLOCKED: missing local tools: " + ", ".join(selected["missing"]), file=sys.stderr)
+        return 2
+    paths = selected["paths"]
+    verus = Path(paths["verus"])
+    rust = Path(paths["rustc"]).parent
     env = os.environ.copy()
-    env["RUSTUP_HOME"] = str(rustup)
-    env["RUSTC"] = str(rust / "rustc")
-    env["RUSTDOC"] = str(rust / "rustdoc")
+    env.update(selected["environment"])
+    env["RUSTC"] = paths["rustc"]
+    env["RUSTDOC"] = paths["rustdoc"]
     flags = ["--extern", f"vstd={verus.parent / 'libvstd.rlib'}",
              "-L", f"dependency={verus.parent}", "--check-cfg",
              "cfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"]
@@ -37,9 +39,9 @@ def main():
     env["CARGO_ENCODED_RUSTFLAGS"] = "\x1f".join(flags)
     env["CARGO_ENCODED_RUSTDOCFLAGS"] = "\x1f".join(flags)
     env.pop("RUSTFLAGS", None)
-    if args.check in {"proof", "node-proof"}:
+    if args.check in {"proof", "node-proof", "persist-proof", "progress-proof"}:
         command = [str(verus), "--crate-type", "lib", "--no-cheating", "--triggers-mode", "silent",
-                   "crates/raft-proofs/" + ("node_init.rs" if args.check == "node-proof" else "reconcile.rs")]
+                   "crates/raft-proofs/" + {"proof": "reconcile.rs", "node-proof": "node_init.rs", "persist-proof": "persistence.rs", "progress-proof": "progress.rs"}[args.check]]
     else:
         command = [str(rust / "cargo")]
         if args.check == "build":
@@ -49,10 +51,10 @@ def main():
         else:
             command += ["run", "--locked", "--offline", "-p", "raft-verified", "--example"]
             command += [{"replay": "replay", "bench": "measure_reconcile",
-                         "node-replay": "initialize", "node-bench": "initialize"}[args.check]]
+                         "node-replay": "initialize", "node-bench": "initialize", "persist-replay": "persistence", "persist-bench": "persistence"}[args.check]]
             if args.check.endswith("bench"):
                 command += ["--release"]
-            if args.check == "node-bench":
+            if args.check in {"node-bench", "persist-bench"}:
                 command += ["--", "--measure"]
         if args.check.endswith("bench"):
             env.setdefault("RAFT_CODE_VERSION", "DRAFT workspace; see independently bound check evidence")

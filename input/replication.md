@@ -1,6 +1,6 @@
 # Log replication
 
-Status: DRAFT. Module: INCOMPLETE. Only log-suffix reconciliation and its local proof/tests/replay are implemented; follower and leader protocol paths are absent.
+Status: DRAFT. Module: INCOMPLETE. Log-suffix reconciliation has an interface, contracts, independent tests and replay; its implementation and proof must be generated. Follower and leader protocol paths are absent.
 
 ## Responsibility and connections
 
@@ -14,11 +14,11 @@ Both sides of replication run through the node dispatcher and handle stale terms
 
 ## Step: Reconcile log contents
 
-Stage: READY for local recheck or repair of the existing operation.
+Stage: READY for generation from an intentionally incomplete error-only body.
 
-Use `reconcile_log(log: &mut Vec<Entry>, previous: usize, incoming: Vec<Entry>)` in `crates/raft-verified/src/reconcile.rs`. Reject invalid predecessor/checked length overflow without changing the log. Compare overlapping terms; at the first conflict or missing position replace the remaining suffix. Empty, fully matching or shorter matching requests preserve the existing tail. Same-term/different-payload entries retain the old entry under `merged`; changing comparison semantics needs review. Protocol positions use zero as the prefix sentinel; stored entries use zero-based offsets. The future caller checks u64-to-usize conversion, message and predecessor terms, committed-prefix compatibility and durability ordering.
+Implement and prove `reconcile_log(log: &mut Vec<Entry>, previous: usize, incoming: Vec<Entry>)` in `crates/raft-verified/src/reconcile.rs`. Reject invalid predecessor/checked length overflow without changing the log. Compare overlapping terms; at the first conflict or missing position replace the remaining suffix. Empty, fully matching or shorter matching requests preserve the existing tail. Same-term/different-payload entries retain the old entry under `merged`; changing comparison semantics needs review. Protocol positions use zero as the prefix sentinel; stored entries use zero-based offsets. The future caller checks u64-to-usize conversion, message and predecessor terms, committed-prefix compatibility and durability ordering.
 
-Edit only the shared executable source. Preserve the protected view, proof caller and regression oracles. Rust tests, replay, benchmarks and Verus must use this same operation. Vec allocation may abort; no recoverable-OOM or resource-liveness claim is made. Read the slice tests and `crates/raft-verified/check.py` before editing.
+Edit the shared executable source and `raft-proofs/reconcile_lemmas.rs`. Generate local predicates, helper decomposition and invariants within these files; the protected view, proof caller and regression oracles remain independent. Rust tests, replay, benchmarks and Verus must use this same operation. Vec allocation may abort; no recoverable-OOM or resource-liveness claim is made. Read the slice tests and `crates/raft-verified/check.py` before editing.
 
 Run `python3 -m orchestrator verify --profile interface-check`, then profiles `reconcile-tests`, `reconcile-replay`, `reconcile-proof` and `reconcile-bench`. Finish only when all required checks succeed for their respective purposes on unchanged code. Missing tools or checks block completion; failed semantics or protected-target changes require review, not weakened expectations.
 

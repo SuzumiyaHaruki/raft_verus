@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "generation_kind": "SIMULATED",
+  "checking": "Real Python fixture predicates; synthetic benchmark samples; no Rust/Verus or Raft proof claim",
+  "full_acceptance": false,
+  "cases": [
+    {
+      "case": "test_exhaustion_resume_and_explicit_extension",
+      "status": "PASS",
+      "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/exhaustion_resume_and_explicit_extension"
+    },
+    {
+      "case": "test_interrupt_after_launch_is_charged_and_candidate_retained",
+      "status": "PASS",
+      "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/interrupt_after_launch_is_charged_and_candidate_retained"
+    },
+    {
+      "case": "test_cross_task_regression_repaired_in_current_task_scope",
+      "status": "PASS",
+      "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/cross_task_regression_repaired_in_current_task_scope"
+    },
+    {
+      "case": "test_regression_after_interruption_repairs_later_task",
+      "status": "PASS",
+      "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/regression_after_interruption_repairs_later_task"
+    },
+    {
+      "case": "test_rewind_preserves_abandoned_patch_and_rechecks",
+      "status": "PASS",
+      "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/rewind_preserves_abandoned_patch_and_rechecks"
+    },
+    {
+      "case": "test_optimization_patch_returns_through_correctness_before_measurement",
+      "status": "PASS",
+      "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/optimization_patch_returns_through_correctness_before_measurement"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+[
+  {
+    "category": "performance",
+    "action": "repair",
+    "diagnosis": "Profile this reproduced comparable regression and return a scoped optimization; rerun all affected correctness checks before measuring again.",
+    "task_goal": "FIXTURE_JSON={\"task_id\": \"fixture-task\"}\n",
+    "candidate_revision": "598fe86ab51810cbc1320124d746c7efa1756a2cba6327f78cfa6657f7349c1f",
+    "failed_command": [
+      "/usr/bin/python3",
+      "-c",
+      "from pathlib import Path; import json; s=Path(\"src/lib.rs\").read_text(); r={'kind': 'measurement', 'workload': 'fixture', 'build_mode': 'release', 'environment': 'SIMULATED fixed hardware', 'boundary': 'fixture operation', 'samples_ns': [20, 20, 20, 20, 20]}; r[\"samples_ns\"]=[20 if \"slow\" in s else 5]*5; print(json.dumps(r))"
+    ],
+    "expected": "Configured targets and required observations succeed",
+    "observed": "reproduced comparable regression under the configured rule",
+    "reproduction": "cd /home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/optimization_patch_returns_through_correctness_before_measurement/repo/evidence/runs/20261027T101833Z-6a895101da9b/candidate && /usr/bin/python3 -c 'from pathlib import Path; import json; s=Path(\"src/lib.rs\").read_text(); r={'\"'\"'kind'\"'\"': '\"'\"'measurement'\"'\"', '\"'\"'workload'\"'\"': '\"'\"'fixture'\"'\"', '\"'\"'build_mode'\"'\"': '\"'\"'release'\"'\"', '\"'\"'environment'\"'\"': '\"'\"'SIMULATED fixed hardware'\"'\"', '\"'\"'boundary'\"'\"': '\"'\"'fixture operation'\"'\"', '\"'\"'samples_ns'\"'\"': [20, 20, 20, 20, 20]}; r[\"samples_ns\"]=[20 if \"slow\" in s else 5]*5; print(json.dumps(r))'",
+    "artifact_paths": [
+      "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/optimization_patch_returns_through_correctness_before_measurement/repo/evidence/runs/20261027T101833Z-6a895101da9b/attempt-1/measurement.stdout.log",
+      "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/optimization_patch_returns_through_correctness_before_measurement/repo/evidence/runs/20261027T101833Z-6a895101da9b/attempt-1/measurement.stderr.log"
+    ],
+    "error_excerpt": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/optimization_patch_returns_through_correctness_before_measurement/repo/evidence/runs/20261027T101833Z-6a895101da9b/attempt-1/measurement.stdout.log:\n1: {\"kind\": \"measurement\", \"workload\": \"fixture\", \"build_mode\": \"release\", \"environment\": \"SIMULATED fixed hardware\", \"boundary\": \"fixture operation\", \"samples_ns\": [20, 20, 20, 20, 20]}\n/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/optimization_patch_returns_through_correctness_before_measurement/repo/evidence/runs/20261027T101833Z-6a895101da9b/attempt-1/measurement.stderr.log:\n",
+    "editable_scope": [
+      "src"
+    ],
+    "required_reruns": [
+      "actual-test",
+      "measurement"
+    ],
+    "measurement_context": {
+      "measurements": [
+        {
+          "kind": "measurement",
+          "workload": "fixture",
+          "build_mode": "release",
+          "environment": "SIMULATED fixed hardware",
+          "boundary": "fixture operation",
+          "samples_ns": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ]
+        }
+      ],
+      "reference": {
+        "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/optimization_patch_returns_through_correctness_before_measurement/reference.json",
+        "candidate": "SIMULATED fixture reference v1"
+      },
+      "performance_verdict": "REGRESSION"
+    }
+  }
+]

@@ -8,7 +8,7 @@ Read `input/roadmap.md`, then the relevant module assignment: `state.md`, `runti
 
 `workflow.toml` selects the module document and exact `## Step: ...` heading through `module` and `step`, plus dependencies, context, editable paths, checks and budgets. Common module context goes before the first step; each step uses `###` subheadings. The controller supplies that common context and only the selected step body. Missing, duplicate or empty step headings are configuration errors. Ordinary repairs cannot change their module requirements or independently selected checks. Legacy standalone Markdown loading remains for existing controller clients/fixtures; the repository's old T files have been removed.
 
-Formal definitions and proofs live in Verus source. The existing global proof checklist remains in `input/proofs.md`; the bounded `LOCAL-RECONCILE` and `LOCAL-NODE-INIT` targets close none of the 26 global obligations. The roadmap maps the old task IDs to current module steps; saved historical evidence retains its original IDs.
+Formal definitions and proofs live in Verus source. The existing global proof checklist remains in `input/proofs.md`; the bounded local reconciliation, initialization, persistence and progress targets close none of the 26 global obligations. The roadmap maps the old task IDs to current module steps; saved historical evidence retains its original IDs.
 
 From the repository root, these commands inspect work without starting an agent:
 
@@ -21,7 +21,7 @@ python3 -m orchestrator run-task --task STATE-INIT --dry-run
 python3 -m orchestrator run-plan --tasks STATE-INIT --dry-run
 ```
 
-Ready means the task has a usable scope and local checks; it does not start generation automatically. Planned tasks identify missing node/coordinator/proof prerequisites and have no pretend successful check. New proved helper lemmas and invariants are normal proof development. Changed public behavior, assumptions, top-level properties, trusted interfaces or acceptance rules need an explicit explanation for human review.
+Ready means the task has a usable scope and local checks; it does not start generation automatically. Planned tasks identify missing node/coordinator/proof prerequisites and have no pretend successful check. Implementation-layer contracts, representation/view changes, helper lemmas and invariants are normal scoped development. Independent behavioral requirements remain protected. Changed public behavior, assumptions, top-level properties, trusted interfaces or acceptance rules need an explicit explanation for human review.
 
 ## The serial development loop
 
@@ -33,8 +33,8 @@ flowchart TD
     A --> B[Explicit launch: agent edits one candidate]
     B --> C[Check report and allowed changes]
     C --> D[Build and functional tests]
-    D --> E[Required local scenarios and Verus proofs]
-    E --> F[Applicable measurements and affected regressions]
+    D --> E[Required scenarios, Verus proofs and affected regressions]
+    E --> F[Applicable measurements or comparable-reference evaluation]
     F -->|Step requirements met| G[Save step result and continue selected steps in the same candidate]
     F -->|Repairable failure within budget| H[Classify evidence and prepare focused feedback]
     H --> B
@@ -43,7 +43,7 @@ flowchart TD
     G --> I[Human reviews module coverage and candidate; no automatic merge]
 ```
 
-The controller reuses its candidate copy, subprocess runner, independent checks and bounded retry loop. It never copies a successful candidate back into the user's source tree automatically. One candidate remains unchanged while its independent check group runs. Cancellation, timeouts and log limits terminate the controlled POSIX process group; repeated failure without useful changes stops repair. Proof and benchmark tasks have their own larger time budgets. Linux/POSIX and Python 3.10+ are supported.
+The controller reuses its candidate copy, subprocess runner, independent checks and bounded retry loop. It never copies a successful candidate back into the user's source tree automatically. One candidate remains unchanged while its independent check group runs. Cancellation, timeouts and log limits terminate the controlled POSIX process group; persistent failing targets trigger bounded redesign and then stop at the cumulative limit; changing bytes alone does not count as progress. Proof and benchmark tasks retain their configured time budgets. Linux/POSIX and Python 3.10+ are supported.
 
 `run-plan` continues dependency-ready steps in one saved candidate. Its PASSED result means only the selected steps passed their checks: `completion_scope` is `SELECTED_STEPS_ONLY`, `module_completion` is `NOT_ASSESSED`, and `full_acceptance` remains false. Neither initialization nor the optional helper steps complete a module or Raft. Review module completion against its entire behavior and actual integration/proof coverage; no new automated module approval is introduced.
 
@@ -60,9 +60,9 @@ The controller reuses its candidate copy, subprocess runner, independent checks 
 ./experiment.sh report RUN_ID   # Read results without generation
 ```
 
-The launcher works from any current directory and selects STATE-INIT. It allows three agent calls, at most two repair rounds, 600 seconds per call and 2,400 seconds for the task. This is a bounded generation experiment, not the entire Raft project. The checked source seed intentionally rejects all memberships; the agent must implement the constructor and its proof together. Eight independent tests and a protected Verus caller prevent reject-all or weakened-contract acceptance. Ordinary repairs may edit only `crates/raft-verified/src/node.rs`.
+The launcher works from any current directory and selects STATE-INIT. It allows three agent calls, at most two repair rounds, 600 seconds per call and 2,400 seconds for the task. This is a bounded generation experiment, not the entire Raft project. The checked source seed intentionally rejects all memberships; the agent must implement the constructor and its proof together. Eight independent tests and a protected Verus caller prevent reject-all or weakened-contract acceptance. STATE-INIT may edit `node.rs`, `node_state.rs` and `contracts.rs`: generate executable code, representation, local predicates and proofs together. The protected observation consumers connect actual executable adapters to the generated view; initialization must establish the generated invariant and the independent initial-state requirement.
 
-The task runs build, all 23 runtime regressions, initial-state replay, model typechecking, the local initialization proof and existing reconciliation proof. Only after those pass does it measure constructor cost. TYPECHECKED is useful feedback but closes no obligation. A pass closes only the mapped local targets; whole-node refinement, cluster safety and conditional liveness remain open.
+The task runs build, all eight independent initialization cases, initial-state replay, model typechecking and the local initialization proof. Reconciliation and persistence are unimplemented future steps, so their checks are not initialization prerequisites. The controller reruns previously completed tasks during later steps. Only after those pass does it measure constructor cost. TYPECHECKED is useful feedback but closes no obligation. A pass closes only the mapped local targets; whole-node refinement, cluster safety and conditional liveness remain open.
 
 ```sh
 python3 -m orchestrator run-plan --tasks STATE-INIT --execute-codex
@@ -71,13 +71,11 @@ PYTHONDONTWRITEBYTECODE=1 python3 orchestrator/tests/real_repair_demo.py \
   --task STATE-INIT --output /tmp/raft-node-demo
 ```
 
-The last command uses only a scripted subprocess fixture plus real Rust/Verus, with a new output directory. It rejects a wrong initial term, repairs it and reruns the same independent targets. `Agent.md` and the scripted solution fixture are excluded from candidates and prompt inputs. This prevents accidental context mixing, not malicious access by a same-user process.
+The last command uses only a scripted subprocess fixture plus real Rust/Verus, with a new output directory. It rejects a wrong initial term, repairs it and reruns the same independent targets. `Agent.md`, historical evidence and the entire `orchestrator/tests` directory (including every solution and script) are excluded from candidates and input manifests. This prevents accidental context mixing, not malicious access by a same-user process.
 
-The retry prompt retains prior attempt summaries (explicitly agent claims), changed files, independent outcomes and links to saved patches/raw diagnostics. Detailed repair context is included for failed checks. The existing call budget bounds history; no new agent hierarchy, score system or evidence format is needed. Within scope, change code and auxiliary invariants together. A target/assumption conflict is a recorded scope finding, not permission to weaken the target.
+The retry prompt retains prior attempt summaries (explicitly agent claims), changed files, independent outcomes and links to saved patches/raw diagnostics. Detailed repair context is included for failed checks. The existing call budget bounds history; no new agent hierarchy, score system or evidence format is needed. Within scope, change code, local contracts, representation and invariants together. Report these ordinary edits in `changed_files` and `summary`; `proposed_spec_changes` is reserved for changes to protected behavioral requirements or assumptions and stops ordinary repair for review.
 
-Review delivered code and results with the user. Runtime approval validation, `--approval-file` and the unused schema/template have been removed. Existing bindings still detect source/checker changes and stale evidence; new records use `input_bindings.json`. Historical artifacts remain readable.
-
-Candidate separation, permitted edits, independent checks, process limits and Codex sandbox settings remain. Scope conflicts stop with findings for later review; passing local checks never approves semantics or merges code. Specifications remain DRAFT, and hostile same-user process isolation is still unimplemented.
+Existing `input_bindings.json` records detect source/checker changes and stale evidence; historical artifacts remain readable. Candidate separation, edit scope, independent checks, process limits and sandbox settings remain. Review follows delivery, with no approval file inside the loop; passing checks neither approves DRAFT semantics nor merges code. Hostile same-user process isolation remains unimplemented.
 
 Global controller options go before the subcommand and override project settings for that invocation. For example:
 
@@ -119,7 +117,7 @@ The agent report is only a claim. Commands, expectations and existing oracles co
 
 ### Shared runtime and Verus source
 
-`crates/raft-verified/src/reconcile.rs` contains the executable `reconcile_log`, its source contracts and local proof blocks. The protected view in `crates/raft-spec/src/reconcile_view.rs` preserves entry contents. The protected `crates/raft-proofs/reconcile.rs` caller independently requires the full original postcondition, so an editable implementation cannot pass by weakening its contract. Additional proved corollaries live in the separately editable `reconcile_lemmas.rs`. The ordinary library reexports that operation; Rust integration tests, the replay example and the measurement example call it. `crates/raft-proofs/reconcile.rs` imports the same source and the candidate model's `merged` relation. There is no separately maintained verification-only algorithm.
+`crates/raft-verified/src/reconcile.rs` contains the `reconcile_log` interface and source contract with an intentionally incomplete body. The experiment supplies the executable logic and local proof blocks. The protected view in `crates/raft-spec/src/reconcile_view.rs` preserves entry contents. The protected `crates/raft-proofs/reconcile.rs` caller independently requires the full original postcondition, so an editable implementation cannot pass by weakening its contract. Additional proved corollaries live in the separately editable `reconcile_lemmas.rs`. The ordinary library reexports that operation; Rust integration tests, the replay example and the measurement example call it. `crates/raft-proofs/reconcile.rs` imports the same source and the candidate model's `merged` relation. There is no separately maintained verification-only algorithm.
 
 `crates/raft-verified/check.py` uses the installed Verus release's `libvstd.rlib` and macro dependencies with its matching Rust 1.92 toolchain in the child process. Cargo's Verus macro expansion erases ghost/proof syntax from the shared source; the Verus entrypoint checks that source with proofs retained. The wrapper configures `RUSTC` and library search paths locally, without changing the user's default toolchain or downloading tools. Missing installation files produce an explicit blocker. See `docs/tools.md` for installation provenance.
 
@@ -143,6 +141,7 @@ Every focused repair request includes the task goal, candidate revision, failed 
 |---|---|
 | Build or functional failure | Reproduce the failing input; retain a regression; repair the cause within scope |
 | Local fault/scenario failure | Include seed, explicit trace and states; inspect the core, adapter and oracle before attributing blame |
+| Candidate syntax, types, modes or visibility error | Repair source; proof is NOT_RUN, not a missing-tool blocker or successful negative proof |
 | Unproved Verus goal | Include symbol/obligation, source context and definitions; investigate code, missing invariant, specification or solver/resource limits; failure to prove is not itself a counterexample |
 | Missing tool, unsupported interface or infrastructure timeout | Repair configuration in an authorized scope or record BLOCKED; do not modify Raft semantics |
 | Suspected performance regression | Include workload/reference and repeated samples; repeat comparable runs and report noise/inconclusive data before optimizing |
@@ -152,9 +151,9 @@ Every focused repair request includes the task goal, candidate revision, failed 
 
 | Changed material | Required response |
 |---|---|
-| Executable core or coordinator | Related functional/scenario tests and implementation proofs; measurement when the measured path changes |
+| Executable core, representation or local contracts | Related functional/scenario tests, correspondence and dependent proofs; measurement when the measured path changes |
 | Proof-only source | Affected proofs and dependent theorems; establish that executable behavior is unchanged before skipping runtime measurement |
-| Formal specification, public contract or assumptions | Explicit semantic review and dependent implementation/model checks |
+| Protected behavioral requirement, public observable interface or assumptions | Explicit semantic review and dependent implementation/model checks |
 | Scenario oracle, benchmark harness or checker | Explicit checking-policy review, then recheck affected candidates |
 | Explanatory documentation only | References and prompt checks; no automatic protocol regeneration |
 
@@ -163,3 +162,27 @@ Existing evidence content bindings prevent reuse of a pass after uncommitted imp
 Snapshots cover untracked files, deletions, modes, directories and links. Candidate creation rejects symlinks/special files; path checks reject escaping or unauthorized changes. Source is never reset or cleaned. Read-only `.git`, `.agents`, `.codex` and `.aws` remain untouched. Trust scanning flags possible assumptions, external bodies, unsafe code and unfinished verification; it is a diagnostic scan, not a proof that no hidden axiom exists.
 
 Evidence uses restricted file permissions and retains bounded full process logs. The trusted local host and toolchain remain part of the declared boundary; same-user tampering, all path races and malicious subprocess escape are not solved by directory copies. Authentication, data security, irreversible actions and publication keep their existing protections. Stop with the human review packet; do not recursively invoke Codex, approve semantics, merge, push or publish automatically.
+
+## Continue, redesign and repair regressions
+
+The generated plan state now owns per-task and total calls, repair/redesign counts, active execution seconds, attempt references, diagnostics and scoped checkpoints. A call is charged before launch. Its bounded time reservation is refunded to actual elapsed process time after a normal return; interruption before settlement conservatively consumes the whole reservation. Independent checks use the same time accounting. Paused wall time is not charged, and no process-local monotonic timestamp survives a restart. Current-invocation deadlines also bound preparation/checking; historical runs without this accounting cannot acquire a fresh allowance by resuming. Plan caps default to the sum of selected step caps; optional `plan_budget.max_agent_calls` and `plan_budget.active_seconds` can lower them.
+
+Failed checks and agent design explanations persist separately. Each attempt retains both its change from the previous candidate (`attempt.patch`) and the cumulative source comparison (`candidate.patch`). `stalled_attempts` counts repeated blocking targets, not source hashes; removing a failing target can reset it, and a changed blocking target starts a new count. With `max_redesigns = 1`, a stalled attempt receives a different prompt through the same adapter: suspected cause, abandoned representation/invariant, revised design and first obligation/check. The design is an agent hypothesis. A solver timeout is inconclusive and gets bounded proof-complexity investigation at the same limit; missing tools, invalid reports and authentication failures stop. Targets and assumptions cannot be weakened during repair.
+
+A conservative check dependency rule reruns all already completed selected tasks with the current task. Shared implementation/proof edits are allowed only in the union of those tasks' authorized scopes; tests, behavioral targets and policy stay protected; scoped implementation-layer specifications remain editable. All affected correctness checks precede any measurement. A failure immediately invalidates earlier results and is routed to the current change, including after interruption, instead of regenerating the old assignment. Source scope conflicts remain blockers for delivery-time review.
+
+Each successful check saves an editable-file checkpoint labeled with that check's scope and PASS or TYPECHECKED result. A test checkpoint does not claim proof completion. `rewind` changes only the saved candidate, retains the abandoned patch, invalidates completion records and reruns affected checks before resume revalidates task completion. It neither resets the checkout nor adds budget. These explicit commands never launch an agent:
+
+```sh
+python3 -m orchestrator extend-plan --run-id RUN_ID --task RUNTIME-PERSIST --calls 1 --repairs 1 --seconds 600
+python3 -m orchestrator rewind --run-id RUN_ID --task RUNTIME-PERSIST --check persist-tests
+python3 -m orchestrator report --run-id RUN_ID
+```
+
+`--redesigns 1` can explicitly extend that separate allowance when needed. Extensions are recorded in the same plan state, not approval files. A subsequent `resume --run-id RUN_ID --execute-codex` is a separate explicit launch. Generation provenance is retained per attempt; a plan with scripted and real calls reports MIXED. Check provenance remains separate, and simulated checking never closes a real obligation.
+
+## Optional performance feedback
+
+Without an explicit comparison rule, benchmark results stay MEASURED/INCONCLUSIVE. A benchmark profile may add a `comparison` table with `reference_path` (saved measurement JSON or a check report), `reference_candidate`, `max_regression_fraction`, `max_relative_dispersion`, `minimum_samples`, `workload_fields` and `comparable_fields`. There is no configured threshold in this repository. Choose a rule deliberately; do not infer one from the current microbenchmark numbers. Declare workload dimensions such as log length, command size, batch size and concurrency so repeated workload names are unique. Build mode, environment, measurement boundary and units must agree; missing or mismatched workloads are rejected.
+
+The comparison reports medians, sample counts, relative ranges and ratios. A regression requires enough stable repeated samples and every candidate sample to exceed the reference range by the configured fraction; noise or too few samples is INCONCLUSIVE. Only a reproduced regression routes to bounded profiling/optimization. Any patch then goes through all affected tests, proofs and scenarios before measurement is eligible again. Checks and measurements run serially in this runner; the operator must keep other heavy jobs off the measured resource. Deterministic comparison fixtures test this routing and are labeled SIMULATED, separately from actual release microbenchmarks. Real cluster committed/delivered throughput, latency and recovery measurements remain the later integration assignment.

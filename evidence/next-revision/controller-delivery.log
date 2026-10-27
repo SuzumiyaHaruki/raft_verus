@@ -1,0 +1,126 @@
+test_agent_claim_does_not_overrule_independent_failure (test_adapters.AdapterTests) ... ok
+test_agent_local_build_outputs_do_not_mutate_candidate_sources (test_adapters.AdapterTests) ... ok
+test_changes_during_check_invalidate_result (test_adapters.AdapterTests) ... ok
+test_checked_targets_cannot_be_unrelated (test_adapters.AdapterTests) ... ok
+test_cli_capability_discovery (test_adapters.AdapterTests) ... ok
+test_codex_success_is_candidate_only (test_adapters.AdapterTests) ... ok
+test_explicit_model_and_effort_reach_the_subprocess (test_adapters.AdapterTests) ... ok
+test_fake_verifier_pass_is_simulated (test_adapters.AdapterTests) ... ok
+test_invalid_model_settings_are_rejected (test_adapters.AdapterTests) ... ok
+test_missing_verifier (test_adapters.AdapterTests) ... ok
+test_negative_smoke_requires_actual_rejection (test_adapters.AdapterTests) ... ok
+test_protocol_errors (test_adapters.AdapterTests) ... ok
+test_real_schema_rejects_trusted_result_in_agent_report (test_adapters.AdapterTests) ... ok
+test_typecheck_is_separate_from_proof_pass (test_adapters.AdapterTests) ... ok
+test_unknown_event_preserved_with_warning (test_adapters.AdapterTests) ... ok
+test_unset_model_and_effort_do_not_override_codex_defaults (test_adapters.AdapterTests) ... ok
+test_verifier_failure_modes_never_pass (test_adapters.AdapterTests) ... ok
+test_zero_verification_is_not_a_proof_pass (test_adapters.AdapterTests) ... ok
+test_active_time_not_paused_wall_time_and_plan_cap (test_continuation.ContinuationTests) ... ok
+test_cross_task_regression_repaired_in_current_task_scope (test_continuation.ContinuationTests) ... ok
+test_exhaustion_resume_and_explicit_extension (test_continuation.ContinuationTests) ... ok
+test_interrupt_after_launch_is_charged_and_candidate_retained (test_continuation.ContinuationTests) ... ok
+test_regression_after_interruption_repairs_later_task (test_continuation.ContinuationTests) ... ok
+test_resume_keeps_mixed_historical_generation_labels (test_continuation.ContinuationTests) ... ok
+test_rewind_preserves_abandoned_patch_and_rechecks (test_continuation.ContinuationTests) ... ok
+test_tests_only_checkpoint_does_not_claim_open_proof_passed (test_continuation.ContinuationTests) ... ok
+test_cli_model_override_is_visible_bound_and_does_not_enable_execution (test_modules.ModuleTests) ... ok
+test_fixture_plan_passes_only_selected_step (test_modules.ModuleTests) ... ok
+test_invalid_module_configuration_cannot_fall_back_to_legacy_task (test_modules.ModuleTests) ... ok
+test_launcher_defaults_to_missing_node_work_with_no_generation (test_modules.ModuleTests) ... ok
+test_misspelled_duplicate_and_empty_steps_fail_closed (test_modules.ModuleTests) ... ok
+test_module_requirement_edit_still_requires_review (test_modules.ModuleTests) ... ok
+test_planned_module_step_exposes_blocker_without_agent_calls (test_modules.ModuleTests) ... ok
+test_prompt_contains_module_and_exactly_selected_step (test_modules.ModuleTests) ... ok
+test_repair_prompt_preserves_prior_approaches_and_independent_results (test_modules.ModuleTests) ... ok
+test_repository_plan_maps_all_module_steps_and_keeps_global_work (test_modules.ModuleTests) ... ok
+test_text_plan_cli_keeps_json_interface_and_marks_scope (test_modules.ModuleTests) ... ok
+test_completion_projection_cannot_weaken_its_independent_target (test_node_contract.NodeContractTests) ... FAIL
+test_seed_weaker_postcondition_and_stronger_precondition_are_rejected (test_node_contract.NodeContractTests) ... ok
+test_incomparable_workload_units_and_configuration_rejected (test_performance.PerformanceTests) ... ok
+test_measurement_noisy_and_confirmed_regression_are_distinct (test_performance.PerformanceTests) ... ok
+test_optimization_patch_returns_through_correctness_before_measurement (test_performance.PerformanceTests) ... ok
+test_allowed_source_change (test_policy.PolicyTests) ... ok
+test_contract_checker_lock_and_deleted_file_are_protected (test_policy.PolicyTests) ... ok
+test_scanner_distinguishes_comments_and_strings (test_policy.PolicyTests) ... ok
+test_scanner_flags_unfinished_unsafe_and_conditional_coverage (test_policy.PolicyTests) ... ok
+test_symlink_rejected_even_within_permitted_scope (test_policy.PolicyTests) ... ok
+test_untracked_outside_scope_rejected (test_policy.PolicyTests) ... ok
+test_both_large_streams_do_not_deadlock (test_process.ProcessTests) ... ok
+test_cancel_and_descendant_cleanup (test_process.ProcessTests) ... ok
+test_invalid_limits_and_argv (test_process.ProcessTests) ... ok
+test_large_logs_are_bounded (test_process.ProcessTests) ... ok
+test_large_stdin_unicode_and_shell_characters_are_data (test_process.ProcessTests) ... ok
+test_missing_and_nonexecutable (test_process.ProcessTests) ... ok
+test_nonzero_auth_permission_and_signal (test_process.ProcessTests) ... ok
+test_success_two_streams (test_process.ProcessTests) ... ok
+test_timeout (test_process.ProcessTests) ... ok
+test_actual_registry_structurally_valid (test_registry.RegistryTests) ... ok
+test_coverage_and_profile_mismatches_rejected (test_registry.RegistryTests) ... ok
+test_liveness_cannot_be_removed_to_get_full_pass (test_registry.RegistryTests) ... ok
+test_malformed_markdown_and_duplicate_obligations_rejected (test_registry.RegistryTests) ... ok
+test_review_status_is_separate_from_proof_completion (test_registry.RegistryTests) ... ok
+test_safety_cannot_inherit_liveness_assumption (test_registry.RegistryTests) ... ok
+test_unknown_assumption_is_rejected (test_registry.RegistryTests) ... ok
+test_unproved_checked_status_rejected (test_registry.RegistryTests) ... ok
+test_cli_task_plan_and_resume_need_no_review_file (test_revision.RevisionTests) ... ok
+test_disabled_or_unimplemented_isolation_stops_plan_before_checks (test_revision.RevisionTests) ... ok
+test_disabling_execution_also_stops_resume (test_revision.RevisionTests) ... ok
+test_empty_test_selection_missing_entrypoint_and_tool_fail (test_revision.RevisionTests) ... ok
+test_failed_correctness_check_defers_benchmark_and_keeps_repair_routing (test_revision.RevisionTests) ... ok
+test_fault_feedback_preserves_trace_seed_states_and_reproduction (test_revision.RevisionTests) ... ok
+test_fixture_mode_does_not_authorize_an_arbitrary_executable (test_revision.RevisionTests) ... ok
+test_interrupted_plan_resumes_same_candidate_and_rechecks_changes (test_revision.RevisionTests) ... ok
+test_measurements_without_threshold_and_noisy_samples_are_not_pass (test_revision.RevisionTests) ... ok
+test_negative_compiler_failure_not_accepted_as_proof_failure (test_revision.RevisionTests) ... ok
+test_ordinary_repair_cannot_weaken_checker (test_revision.RevisionTests) ... ok
+test_planned_task_blocks_before_generation (test_revision.RevisionTests) ... ok
+test_proof_failure_and_solver_timeout_keep_uncertainty (test_revision.RevisionTests) ... ok
+test_real_slice_consumer_rejects_weakened_postcondition_and_stronger_precondition (test_revision.RevisionTests) ... ok
+test_real_tests_without_proof_targets_complete (test_revision.RevisionTests) ... ok
+test_resume_rejects_mutation_between_independent_checks (test_revision.RevisionTests) ... ok
+test_runtime_cfg_binding_is_not_proof_source_but_proof_cfg_still_requires_review (test_revision.RevisionTests) ... ok
+test_simulated_check_cannot_close_obligation (test_revision.RevisionTests) ... ok
+test_task_binding_ignores_unrelated_prose_but_tracks_code_and_checker (test_revision.RevisionTests) ... ok
+test_typecheck_only_completes_without_theorem (test_revision.RevisionTests) ... ok
+test_typecheck_plus_installed_real_verus_proof_and_current_evidence (test_revision.RevisionTests) ... ok
+test_unrelated_real_smoke_cannot_close_named_source_obligation (test_revision.RevisionTests) ... ok
+test_build_only_check_cannot_close_proof_task (test_scheduler.SchedulerTests) ... ok
+test_claimed_success_fails_and_identical_failure_stops_early (test_scheduler.SchedulerTests) ... ok
+test_dependency_not_complete_blocks (test_scheduler.SchedulerTests) ... ok
+test_disabled_bootstrap_and_strict_isolation_block (test_scheduler.SchedulerTests) ... ok
+test_duplicate_unknown_and_cycle_dependencies (test_scheduler.SchedulerTests) ... ok
+test_explicit_run_needs_no_human_review_record (test_scheduler.SchedulerTests) ... ok
+test_fake_end_to_end_evidence_and_repeated_run_unique (test_scheduler.SchedulerTests) ... ok
+test_missing_input_and_invalid_profile (test_scheduler.SchedulerTests) ... ok
+test_old_controller_evidence_invalidated_by_input_change (test_scheduler.SchedulerTests) ... ok
+test_one_call_budget_and_zero_budget (test_scheduler.SchedulerTests) ... ok
+test_plan_validate_and_dry_run_never_launch_codex (test_scheduler.SchedulerTests) ... ok
+test_prompt_is_plain_markdown_and_includes_real_diagnostics (test_scheduler.SchedulerTests) ... ok
+test_protected_candidate_mutation_requires_review (test_scheduler.SchedulerTests) ... ok
+test_override_with_spaces_resolves_both_paths_and_missing_tools (test_toolchain.ToolchainTests) ... ok
+test_real_relocated_build_and_proof_when_installed (test_toolchain.ToolchainTests) ... ok
+test_relocated_wrapper_and_proof_select_same_installation (test_toolchain.ToolchainTests) ... ok
+test_content_untracked_mode_delete_rename (test_workspace.WorkspaceTests) ... ok
+test_copy_preserves_source_and_refuses_existing_destination (test_workspace.WorkspaceTests) ... ok
+test_maintenance_instructions_and_solution_are_not_candidate_context (test_workspace.WorkspaceTests) ... ok
+test_nested_reserved_names_are_still_in_manifest (test_workspace.WorkspaceTests) ... ok
+test_path_traversal_absolute_backslash_and_root_rejected (test_workspace.WorkspaceTests) ... ok
+test_snapshot_binding_invalidates_changed_input (test_workspace.WorkspaceTests) ... ok
+test_symlink_escape_and_input_validation (test_workspace.WorkspaceTests) ... ok
+
+======================================================================
+FAIL: test_completion_projection_cannot_weaken_its_independent_target (test_node_contract.NodeContractTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/nitro/Desktop/raft_verus/orchestrator/tests/test_node_contract.py", line 29, in test_completion_projection_cannot_weaken_its_independent_target
+    self.assertEqual(result['result'], 'FAIL', result)
+AssertionError: 'PASS' != 'FAIL'
+- PASS
++ FAIL
+ : {'schema_version': '1', 'check_id': 'persist-proof', 'run_id': 'local', 'check_kind': 'verification', 'profile_id': 'persist-proof', 'purpose': 'proof', 'required': True, 'expected_targets': ['check_submit', 'check_complete', 'check_dispatch', 'check_storage_projection', 'check_completion_projection', 'completion_projection'], 'expected_obligation_ids': ['LOCAL-PERSIST', 'LOCAL-PERSIST-VIEW'], 'entrypoints': ['crates/raft-proofs/persistence.rs', 'crates/raft-proofs/persistence_lemmas.rs', 'crates/raft-verified/src/persistence.rs', 'crates/raft-verified/src/state.rs', 'crates/raft-verified/src/io.rs', 'crates/raft-spec/src/persistence.rs'], 'expected_behavior': 'Configured targets and required observations succeed', 'result': 'PASS', 'argv': ['/home/nitro/.local/share/raft-verus/verus-x86-linux/verus', '--crate-type', 'lib', '--no-cheating', '--output-json', '--time-expanded', '--triggers-mode', 'silent', 'crates/raft-proofs/persistence.rs'], 'working_directory': '/tmp/tmptce47qma/candidate', 'input_manifest_digest': '19e8c1850ba03abfd6c0e78bbfe426a0d6ffce258526b356176ed1a6a2928141', 'tool_versions': {'verus': 'Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu'}, 'started_at': '2026-10-27T10:31:06.337354+00:00', 'finished_at': '2026-10-27T10:31:09.412141+00:00', 'exit_code': 0, 'stdout_digest': 'fb7be05ae2aa9827fec0cb5b3085632b45d086346a96632604d352e236ad4e74', 'stderr_digest': 'c030e723a7f9888a039ee0dbcc449f829fc40408a3bf75c367c89b860050d24d', 'evidence_paths': ['/tmp/tmptce47qma/weakened/persist-proof.stdout.log', '/tmp/tmptce47qma/weakened/persist-proof.stderr.log'], 'obligation_ids_checked': ['LOCAL-PERSIST', 'LOCAL-PERSIST-VIEW'], 'coverage_findings': ['complete Verus entrypoint verified; reviewed target mapping binds its function contracts to local obligations'], 'policy_findings': [], 'evidence_kind': 'REAL_LOCAL', 'contract_status': 'DRAFT', 'full_acceptance': False, 'resolved_toolchain': {'paths': {'verus': '/home/nitro/.local/share/raft-verus/verus-x86-linux/verus', 'vstd': '/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib', 'z3': '/home/nitro/.local/share/raft-verus/verus-x86-linux/z3', 'rustc': '/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc', 'cargo': '/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo', 'rustdoc': '/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc'}, 'missing': [], 'environment': {'RAFT_TOOLCHAIN_ROOT': '/home/nitro/.local/share/raft-verus', 'RUSTUP_HOME': '/home/nitro/.local/share/raft-verus/rustup', 'CARGO_HOME': '/home/nitro/.local/share/raft-verus/cargo'}}, 'tool_environment': {'RAFT_TOOLCHAIN_ROOT': '/home/nitro/.local/share/raft-verus', 'RUSTUP_HOME': '/home/nitro/.local/share/raft-verus/rustup', 'CARGO_HOME': '/home/nitro/.local/share/raft-verus/cargo', 'RAFT_WORKFLOW_CONFIG': '/home/nitro/Desktop/raft_verus/workflow.toml'}, 'function_results': {'persistence::reconcile::RequestId::clone': True, 'persistence::reconcile::Command::clone': True, 'persistence::reconcile::reconcile_log': True, 'persistence::reconcile::ReconcileError::clone': True, 'persistence::reconcile::Entry::clone': True, 'persistence::check_storage_projection': True, 'persistence::check_dispatch': True, 'persistence::check_completion_projection': True, 'persistence::check_complete': True, 'persistence::check_submit': True, 'persistence::state::Node::complete_persist': True, 'persistence::state::Node::step': True, 'persistence::state::Node::submit_persist': True, 'persistence::persistence_lemmas::submit_projection': True, 'persistence::persistence_lemmas::completion_projection': True, 'persistence::io::CompletionOutcome::clone': True, 'persistence::io::MessageBody::clone': True, 'persistence::io::Effect::clone': True, 'persistence::io::OperationId::clone': True, 'persistence::io::Message::clone': True, 'persistence::io::CompletionKind::clone': True, 'persistence::io::Event::clone': True, 'persistence::io::InputError::clone': True, 'persistence::state::Node::clone': True, 'persistence::state::InitError::clone': True, 'persistence::state::Role::clone': True, 'persistence::state::DurableState::clone': True, 'persistence::state::PendingWrite::clone': True}, 'entire_crate_checked': True, 'verification_summary': {'verified': 29, 'errors': 0}, 'reason': 'profile checks passed locally; no full Raft acceptance'}
+
+----------------------------------------------------------------------
+Ran 110 tests in 51.502s
+
+FAILED (failures=1)

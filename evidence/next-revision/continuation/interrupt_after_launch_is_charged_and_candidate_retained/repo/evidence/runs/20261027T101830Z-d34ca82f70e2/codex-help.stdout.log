@@ -1,0 +1,1 @@
+--ask-for-approval --sandbox --json --output-schema --output-last-message --model --config --skip-git-repo-check --add-dir

@@ -1,0 +1,207 @@
+{
+  "calls": 3,
+  "repairs": 2,
+  "redesigns": 0,
+  "active_seconds": 0.6247717009973712,
+  "call_limit": 3,
+  "repair_limit": 2,
+  "redesign_limit": 0,
+  "seconds_limit": 15,
+  "attempts": [
+    {
+      "number": 1,
+      "mode": "initial",
+      "summary": "SIMULATED fixture candidate",
+      "changed_paths": [
+        "src/lib.rs"
+      ],
+      "results": "actual-test=PASS, measurement=FAIL",
+      "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/optimization_patch_returns_through_correctness_before_measurement/repo/evidence/runs/20261027T103405Z-b7156fe765b9/attempt-1",
+      "generation_kind": "SIMULATED"
+    },
+    {
+      "number": 2,
+      "mode": "repair",
+      "summary": "SIMULATED fixture candidate",
+      "changed_paths": [
+        "src/lib.rs"
+      ],
+      "results": "actual-test=FAIL",
+      "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/optimization_patch_returns_through_correctness_before_measurement/repo/evidence/runs/20261027T103405Z-b7156fe765b9/attempt-2",
+      "generation_kind": "SIMULATED"
+    },
+    {
+      "number": 3,
+      "mode": "repair",
+      "summary": "SIMULATED fixture candidate",
+      "changed_paths": [
+        "src/lib.rs"
+      ],
+      "results": "actual-test=PASS, measurement=MEASURED",
+      "artifacts": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/optimization_patch_returns_through_correctness_before_measurement/repo/evidence/runs/20261027T103405Z-b7156fe765b9/attempt-3",
+      "generation_kind": "SIMULATED"
+    }
+  ],
+  "diagnostics": {
+    "checks": [
+      {
+        "schema_version": "1",
+        "check_id": "actual-test",
+        "run_id": "20261027T103405Z-b7156fe765b9",
+        "check_kind": "verification",
+        "profile_id": "actual-test",
+        "purpose": "test",
+        "required": true,
+        "expected_targets": [
+          "candidate source regression"
+        ],
+        "expected_obligation_ids": [],
+        "entrypoints": [
+          "src/lib.rs"
+        ],
+        "expected_behavior": "Configured targets and required observations succeed",
+        "result": "PASS",
+        "argv": [
+          "/usr/bin/python3",
+          "-c",
+          "from pathlib import Path; assert \"candidate\" in Path(\"src/lib.rs\").read_text(); print(\"test result: ok. 1 passed\")"
+        ],
+        "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/optimization_patch_returns_through_correctness_before_measurement/repo/evidence/runs/20261027T103405Z-b7156fe765b9/candidate",
+        "input_manifest_digest": "624e18d277d5188dc66badc4fee1f5c47a665dff284c99d46628baa91ad286af",
+        "tool_versions": {},
+        "started_at": "2026-10-27T10:34:06.043665+00:00",
+        "finished_at": "2026-10-27T10:34:06.080662+00:00",
+        "exit_code": 0,
+        "stdout_digest": "f3be4c2819e457d80dfe19b512f6557e25eace316d3706cc7e27794300da2ae2",
+        "stderr_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "evidence_paths": [
+          "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/optimization_patch_returns_through_correctness_before_measurement/repo/evidence/runs/20261027T103405Z-b7156fe765b9/attempt-3/actual-test.stdout.log",
+          "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/optimization_patch_returns_through_correctness_before_measurement/repo/evidence/runs/20261027T103405Z-b7156fe765b9/attempt-3/actual-test.stderr.log"
+        ],
+        "obligation_ids_checked": [],
+        "coverage_findings": [
+          "build/test only; no mathematical proof"
+        ],
+        "policy_findings": [],
+        "evidence_kind": "REAL_LOCAL",
+        "contract_status": "DRAFT",
+        "full_acceptance": false,
+        "tool_environment": {},
+        "failed_tests": [],
+        "tests_selected": 1,
+        "reason": "profile checks passed locally; no full Raft acceptance"
+      },
+      {
+        "schema_version": "1",
+        "check_id": "measurement",
+        "run_id": "20261027T103405Z-b7156fe765b9",
+        "check_kind": "verification",
+        "profile_id": "measurement",
+        "purpose": "benchmark",
+        "required": true,
+        "expected_targets": [
+          "fixture"
+        ],
+        "expected_obligation_ids": [],
+        "entrypoints": [
+          "src/lib.rs"
+        ],
+        "expected_behavior": "Configured targets and required observations succeed",
+        "result": "MEASURED",
+        "argv": [
+          "/usr/bin/python3",
+          "-c",
+          "from pathlib import Path; import json; s=Path(\"src/lib.rs\").read_text(); r={'kind': 'measurement', 'workload': 'fixture', 'build_mode': 'release', 'environment': 'SIMULATED fixed hardware', 'boundary': 'fixture operation', 'samples_ns': [20, 20, 20, 20, 20]}; r[\"samples_ns\"]=[20 if \"slow\" in s else 5]*5; print(json.dumps(r))"
+        ],
+        "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/optimization_patch_returns_through_correctness_before_measurement/repo/evidence/runs/20261027T103405Z-b7156fe765b9/candidate",
+        "input_manifest_digest": "b4fccfe66a16f8df3f627eb578d159db0423cc1e52d91900aecf86812091af41",
+        "tool_versions": {},
+        "started_at": "2026-10-27T10:34:06.084561+00:00",
+        "finished_at": "2026-10-27T10:34:06.124934+00:00",
+        "exit_code": 0,
+        "stdout_digest": "0df15d17809d6f0ec4383544bec3f94ac104395ce99ca55ce0801e09c5e31869",
+        "stderr_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "evidence_paths": [
+          "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/optimization_patch_returns_through_correctness_before_measurement/repo/evidence/runs/20261027T103405Z-b7156fe765b9/attempt-3/measurement.stdout.log",
+          "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/optimization_patch_returns_through_correctness_before_measurement/repo/evidence/runs/20261027T103405Z-b7156fe765b9/attempt-3/measurement.stderr.log"
+        ],
+        "obligation_ids_checked": [],
+        "coverage_findings": [],
+        "policy_findings": [],
+        "evidence_kind": "SIMULATED",
+        "contract_status": "DRAFT",
+        "full_acceptance": false,
+        "tool_environment": {},
+        "measurements": [
+          {
+            "kind": "measurement",
+            "workload": "fixture",
+            "build_mode": "release",
+            "environment": "SIMULATED fixed hardware",
+            "boundary": "fixture operation",
+            "samples_ns": [
+              5,
+              5,
+              5,
+              5,
+              5
+            ]
+          }
+        ],
+        "performance_verdict": "NO_REGRESSION",
+        "reference": {
+          "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/optimization_patch_returns_through_correctness_before_measurement/reference.json",
+          "candidate": "SIMULATED fixture reference v1"
+        },
+        "comparisons": [
+          {
+            "workload": [
+              "\"fixture\""
+            ],
+            "statistic": "median",
+            "ratio": 0.5,
+            "samples": [
+              5,
+              5
+            ],
+            "relative_range": [
+              0.0,
+              0.0
+            ],
+            "reference_median": 10,
+            "candidate_median": 5,
+            "regression": false
+          }
+        ],
+        "comparison_rule": {
+          "reference_path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/optimization_patch_returns_through_correctness_before_measurement/reference.json",
+          "reference_candidate": "SIMULATED fixture reference v1",
+          "max_regression_fraction": 0.1,
+          "max_relative_dispersion": 0.05
+        },
+        "reason": "measurement recorded; comparison: NO_REGRESSION"
+      }
+    ],
+    "candidate_revision": "0640c24c9b017678e5c15d0a425b2314ad843c3b87a9e7dc2d6f08f57e6cd580"
+  },
+  "stalls": 1,
+  "failing": [
+    "actual-test:candidate source regression"
+  ],
+  "checkpoints": {
+    "actual-test": {
+      "path": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation-delivery/optimization_patch_returns_through_correctness_before_measurement/repo/evidence/runs/20261027T103405Z-b7156fe765b9/attempt-3/checkpoint",
+      "files": [
+        "src/lib.rs"
+      ],
+      "editable_scope": [
+        "src"
+      ],
+      "checked_scope": "actual-test",
+      "result": "PASS"
+    }
+  },
+  "generation_kinds": [
+    "SIMULATED"
+  ]
+}

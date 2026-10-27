@@ -1,0 +1,47 @@
+{
+  "schema_version": "1",
+  "check_id": "actual-test",
+  "run_id": "20261027T101833Z-6a895101da9b",
+  "check_kind": "verification",
+  "profile_id": "actual-test",
+  "purpose": "test",
+  "required": true,
+  "expected_targets": [
+    "candidate source regression"
+  ],
+  "expected_obligation_ids": [],
+  "entrypoints": [
+    "src/lib.rs"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "PASS",
+  "argv": [
+    "/usr/bin/python3",
+    "-c",
+    "from pathlib import Path; assert \"candidate\" in Path(\"src/lib.rs\").read_text(); print(\"test result: ok. 1 passed\")"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/optimization_patch_returns_through_correctness_before_measurement/repo/evidence/runs/20261027T101833Z-6a895101da9b/candidate",
+  "input_manifest_digest": "6860f4ac6c4c57b5b1c94325e9ed7259c18875cd5c224f322d10e5578bb0a88a",
+  "tool_versions": {},
+  "started_at": "2026-10-27T10:18:33.210524+00:00",
+  "finished_at": "2026-10-27T10:18:33.259537+00:00",
+  "exit_code": 0,
+  "stdout_digest": "f3be4c2819e457d80dfe19b512f6557e25eace316d3706cc7e27794300da2ae2",
+  "stderr_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/optimization_patch_returns_through_correctness_before_measurement/repo/evidence/runs/20261027T101833Z-6a895101da9b/attempt-1/actual-test.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/next-revision/continuation/optimization_patch_returns_through_correctness_before_measurement/repo/evidence/runs/20261027T101833Z-6a895101da9b/attempt-1/actual-test.stderr.log"
+  ],
+  "obligation_ids_checked": [],
+  "coverage_findings": [
+    "build/test only; no mathematical proof"
+  ],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "tool_environment": {},
+  "failed_tests": [],
+  "tests_selected": 1,
+  "reason": "profile checks passed locally; no full Raft acceptance"
+}
