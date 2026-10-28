@@ -1,6 +1,6 @@
 # Integrated Raft validation and performance
 
-Status: DRAFT. Module: INCOMPLETE; local reconciliation checks exist, while a complete node, real adapters and whole-project proofs are absent.
+Status: DRAFT. Module: INCOMPLETE. A real MadSim host and independent scenarios are supplied; the complete protocol, production adapters and whole-project proofs remain absent.
 
 ## Responsibility and connections
 
@@ -26,7 +26,7 @@ Stage: PLANNED. Requires the integrated dispatcher and reviewed host contract.
 
 Implement concrete transport identity/codec handling, durable storage/recovery and timer delivery for a runnable multi-node example. State external device/library trust explicitly and test ordering/durability/error behavior against io.md. Keep the protocol in the shared core; do not hide its coordinator in an unverified host.
 
-Deliver adapters, repeated client/protocol execution example and real integration checks including restart and delayed completions. Adapter choice and any TCB expansion remain pending ADR-07 review; no adapters or real profiles exist today. A passing simulator cannot complete this step.
+Deliver adapters, repeated client/protocol execution example and real integration checks including restart and delayed completions. Adapter choice and any TCB expansion remain pending ADR-07 review; production adapters are not supplied. Existing MadSim profiles do not complete this production-adapter step.
 
 ## Step: Compose global safety proofs
 
@@ -34,7 +34,7 @@ Stage: PLANNED. Requires integrated handlers and recovery scenarios.
 
 Build the inductive invariant and prove initialization and preservation for all model transitions. Connect all concrete event/error paths and I/O waits to that model, compose nodes with the network/storage environment, then derive historical election safety, append-only leadership, log matching, leader completeness, interface safety and application safety with their declared assumptions.
 
-Deliver real invariant/refinement/composition lemmas and global safety entrypoints. Use the existing obligation/dependency map; never replace a missing induction argument with a helper proof or function-name match. These source entrypoints and profiles are absent. Plan individual dependent lemmas with bounded editable scopes before execution. Local proofs remain useful but do not close this step by themselves.
+Deliver real invariant/refinement/composition lemmas and global safety entrypoints. Use the existing obligation/dependency map; never replace a missing induction argument with a helper proof or function-name match. The independent whole-execution and five-property source consumers are absent; the raft-safety profile explicitly reports BLOCKED. Plan individual dependent lemmas with bounded editable scopes before execution. Local proofs remain useful but do not close this step by themselves.
 
 ## Step: Measure integrated workloads
 

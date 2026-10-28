@@ -1,1 +1,0 @@
-Develop the next behavior without discarding the existing candidate.

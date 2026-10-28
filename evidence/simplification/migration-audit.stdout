@@ -1,4 +1,0 @@
-PASS: 26 unchanged obligation definitions/dependencies/statuses; 49 coverage mappings; 14 unchanged assumption definitions; 8 TCB descriptions; 8 task goals/scopes/checks/budgets preserved.
-PASS: original read-only directories untouched; obsolete material removed.
-PASS: active authored context and all 8 assembled prompts contain no Han text; English prose manually reviewed; Markdown local links resolve.
-NOT A RAFT PROOF: structural migration audit only; no real Codex generation.

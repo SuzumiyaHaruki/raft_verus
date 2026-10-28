@@ -1,8 +1,0 @@
-/target/
-__pycache__/
-*.pyc
-*.egg-info/
-/.venv/
-/orchestrator/build/
-/evidence/runs/
-/evidence/workspaces/

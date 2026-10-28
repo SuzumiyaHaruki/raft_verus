@@ -1,0 +1,560 @@
+{
+  "verification-results": {
+    "encountered-error": false,
+    "encountered-vir-error": false,
+    "success": true,
+    "verified": 33,
+    "errors": 0,
+    "is-verifying-entire-crate": true
+  },
+  "times-ms": {
+    "verus-build": {
+      "profile": "release",
+      "version": "0.2026.01.23.1650a05"
+    },
+    "num-threads": 3,
+    "total": 1420,
+    "estimated-cpu-time": 2147,
+    "rust": {
+      "total": 418,
+      "init-and-types": 188,
+      "trait-conflicts": 58,
+      "compile": 171
+    },
+    "verification": {
+      "total": 956,
+      "vir": {
+        "total": 474,
+        "hir": 68,
+        "import": 215,
+        "rust-to-vir": 72
+      }
+    },
+    "total-verify": 1163,
+    "total-verify-module-times": [
+      {
+        "module": "madraft",
+        "time": 286
+      },
+      {
+        "module": "",
+        "time": 187
+      },
+      {
+        "module": "io",
+        "time": 144
+      },
+      {
+        "module": "state",
+        "time": 105
+      },
+      {
+        "module": "model",
+        "time": 93
+      },
+      {
+        "module": "node_state",
+        "time": 71
+      },
+      {
+        "module": "observation",
+        "time": 63
+      },
+      {
+        "module": "types",
+        "time": 53
+      },
+      {
+        "module": "vote_spec",
+        "time": 51
+      },
+      {
+        "module": "initialization",
+        "time": 41
+      },
+      {
+        "module": "persistence_spec",
+        "time": 40
+      },
+      {
+        "module": "representation",
+        "time": 24
+      }
+    ],
+    "air": {
+      "total": 434,
+      "module-times": [
+        {
+          "module": "madraft",
+          "time": 74
+        },
+        {
+          "module": "",
+          "time": 67
+        },
+        {
+          "module": "io",
+          "time": 62
+        },
+        {
+          "module": "state",
+          "time": 61
+        },
+        {
+          "module": "node_state",
+          "time": 39
+        },
+        {
+          "module": "types",
+          "time": 32
+        },
+        {
+          "module": "observation",
+          "time": 31
+        },
+        {
+          "module": "model",
+          "time": 23
+        },
+        {
+          "module": "initialization",
+          "time": 15
+        },
+        {
+          "module": "vote_spec",
+          "time": 12
+        },
+        {
+          "module": "persistence_spec",
+          "time": 11
+        },
+        {
+          "module": "representation",
+          "time": 2
+        }
+      ]
+    },
+    "smt": {
+      "total": 257,
+      "smt-init": 84,
+      "smt-init-module-times": [
+        {
+          "module": "madraft",
+          "time": 27,
+          "time-micros": 27408,
+          "rlimit-count": 423618
+        },
+        {
+          "module": "io",
+          "time": 15,
+          "time-micros": 15989,
+          "rlimit-count": 123147
+        },
+        {
+          "module": "",
+          "time": 12,
+          "time-micros": 12641,
+          "rlimit-count": 180777
+        },
+        {
+          "module": "node_state",
+          "time": 11,
+          "time-micros": 11105,
+          "rlimit-count": 94285
+        },
+        {
+          "module": "state",
+          "time": 8,
+          "time-micros": 8232,
+          "rlimit-count": 89659
+        },
+        {
+          "module": "types",
+          "time": 5,
+          "time-micros": 5072,
+          "rlimit-count": 68613
+        },
+        {
+          "module": "observation",
+          "time": 4,
+          "time-micros": 4331,
+          "rlimit-count": 62764
+        },
+        {
+          "module": "representation",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "persistence_spec",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "initialization",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "vote_spec",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "model",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        }
+      ],
+      "smt-run": 173,
+      "smt-run-module-times": [
+        {
+          "module": "madraft",
+          "time": 122,
+          "time-micros": 122729,
+          "rlimit-count": 423618,
+          "function-breakdown": [
+            {
+              "function": "madraft_vote::node_state::Node::finish_vote",
+              "mode:": "exec",
+              "time": 8,
+              "time-micros": 8855,
+              "rlimit-count": 180340,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::madraft::member",
+              "mode:": "exec",
+              "time": 4,
+              "time-micros": 4824,
+              "rlimit-count": 141663,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::node_state::Node::handle_request_vote",
+              "mode:": "exec",
+              "time": 76,
+              "time-micros": 76802,
+              "rlimit-count": 41733,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::node_state::Node::feasibility_follower",
+              "mode:": "exec",
+              "time": 32,
+              "time-micros": 32246,
+              "rlimit-count": 59882,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "",
+          "time": 39,
+          "time-micros": 39069,
+          "rlimit-count": 180777,
+          "function-breakdown": [
+            {
+              "function": "madraft_vote::check_freshness_projection",
+              "mode:": "proof",
+              "time": 3,
+              "time-micros": 3672,
+              "rlimit-count": 37122,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::check_vote",
+              "mode:": "exec",
+              "time": 8,
+              "time-micros": 8513,
+              "rlimit-count": 118482,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::check_durable_reply",
+              "mode:": "exec",
+              "time": 26,
+              "time-micros": 26361,
+              "rlimit-count": 13433,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::check_follower",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 522,
+              "rlimit-count": 11740,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "io",
+          "time": 6,
+          "time-micros": 6391,
+          "rlimit-count": 123147,
+          "function-breakdown": [
+            {
+              "function": "madraft_vote::io::Event::clone",
+              "mode:": "exec",
+              "time": 1,
+              "time-micros": 1205,
+              "rlimit-count": 539,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::io::Effect::clone",
+              "mode:": "exec",
+              "time": 1,
+              "time-micros": 1010,
+              "rlimit-count": 539,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::io::Message::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 52,
+              "rlimit-count": 2461,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::io::MessageBody::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 722,
+              "rlimit-count": 104355,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::io::CompletionOutcome::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 320,
+              "rlimit-count": 591,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::io::CompletionKind::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 52,
+              "rlimit-count": 141,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::io::InputError::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 75,
+              "rlimit-count": 4048,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::io::OperationId::clone",
+              "mode:": "exec",
+              "time": 2,
+              "time-micros": 2950,
+              "rlimit-count": 10473,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "node_state",
+          "time": 2,
+          "time-micros": 2733,
+          "rlimit-count": 94285,
+          "function-breakdown": [
+            {
+              "function": "madraft_vote::node_state::Node::observe",
+              "mode:": "exec",
+              "time": 1,
+              "time-micros": 1566,
+              "rlimit-count": 82078,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::node_state::Node::from_observation",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 909,
+              "rlimit-count": 4134,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::node_state::Node::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 256,
+              "rlimit-count": 8073,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "observation",
+          "time": 2,
+          "time-micros": 2046,
+          "rlimit-count": 62764,
+          "function-breakdown": [
+            {
+              "function": "madraft_vote::observation::check_observation_input",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 595,
+              "rlimit-count": 57446,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::observation::check_observe",
+              "mode:": "exec",
+              "time": 1,
+              "time-micros": 1450,
+              "rlimit-count": 5318,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "state",
+          "time": 0,
+          "time-micros": 669,
+          "rlimit-count": 89659,
+          "function-breakdown": [
+            {
+              "function": "madraft_vote::state::DurableState::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 171,
+              "rlimit-count": 7863,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::state::Observation::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 111,
+              "rlimit-count": 623,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::state::Role::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 112,
+              "rlimit-count": 79982,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::state::InitError::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 156,
+              "rlimit-count": 591,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::state::PendingWrite::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 116,
+              "rlimit-count": 600,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "types",
+          "time": 0,
+          "time-micros": 165,
+          "rlimit-count": 68613,
+          "function-breakdown": [
+            {
+              "function": "madraft_vote::types::Command::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 49,
+              "rlimit-count": 62050,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::types::Entry::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 31,
+              "rlimit-count": 376,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::types::RequestId::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 52,
+              "rlimit-count": 6076,
+              "success": true
+            },
+            {
+              "function": "madraft_vote::types::ReconcileError::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 31,
+              "rlimit-count": 111,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "representation",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "persistence_spec",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "initialization",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "vote_spec",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "model",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        }
+      ]
+    }
+  },
+  "verus": {
+    "profile": "release",
+    "version": "0.2026.01.23.1650a05",
+    "platform": {
+      "os": "linux",
+      "arch": "x86_64"
+    },
+    "toolchain": "1.92.0-x86_64-unknown-linux-gnu",
+    "commit": "1650a05d64219fdd1d150f32d0d7d5b19b8defcd"
+  }
+}

@@ -1,3 +1,0 @@
-   Compiling raft-verified v0.0.0 (/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/candidate/crates/raft-verified)
-    Finished `release` profile [optimized] target(s) in 0.85s
-     Running `/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-final/source/evidence/runs/20261027T074617Z-6c663c2ca961/attempt-2/build/release/examples/initialize --measure`

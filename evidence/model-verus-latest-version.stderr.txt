@@ -1,6 +1,0 @@
-/tmp/raft-verus-tools/verus-x86-linux/verus: /lib/x86_64-linux-gnu/libc.so.6: weak version `GLIBC_2.39' not found (required by /tmp/raft-verus-tools/verus-x86-linux/verus)
-[31mverus: required rust toolchain 1.99.1-x86_64-unknown-linux-gnu not found[0m
-[34mrun the following command (in a bash-compatible shell) to install the necessary toolchain:[0m
-  [37mrustup install 1.99.1-x86_64-unknown-linux-gnu[0m
-error: toolchain '1.99.1-x86_64-unknown-linux-gnu' is not installed
-help: run `rustup toolchain install 1.99.1-x86_64-unknown-linux-gnu` to install it

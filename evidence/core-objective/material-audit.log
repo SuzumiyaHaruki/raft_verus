@@ -1,4 +1,0 @@
-PASS: 25 English task prompts; one selected step each; no maintenance objective/fixture content.
-PASS: authored input/source/controller files contain no Chinese text.
-PASS: original read-only directories remain empty and untouched.
-Tasks: 5 ready, 20 planned. All module/global claims remain open.

@@ -1,1 +1,0 @@
-Keep earlier behavior while adding B.

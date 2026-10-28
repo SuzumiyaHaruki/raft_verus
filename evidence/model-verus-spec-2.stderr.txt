@@ -1,8 +1,0 @@
-error: Could not automatically infer triggers for this quantifier.  Use #[trigger] annotations to manually mark trigger terms instead.
-   --> crates/raft-spec/src/lib.rs:470:20
-    |
-470 |     init(ex(0)) && forall |time: nat| step(ex(time), actions(time), ex(time + 1))
-    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-error: aborting due to 1 previous error
-

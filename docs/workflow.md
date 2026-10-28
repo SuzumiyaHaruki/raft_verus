@@ -8,7 +8,7 @@ Read `input/roadmap.md`, then the relevant module assignment: `state.md`, `runti
 
 `workflow.toml` selects the module document and exact `## Step: ...` heading through `module` and `step`, plus dependencies, context, editable paths, checks and budgets. Common module context goes before the first step; each step uses `###` subheadings. The controller supplies that common context and only the selected step body. Missing, duplicate or empty step headings are configuration errors. Ordinary repairs cannot change their module requirements or independently selected checks. Legacy standalone Markdown loading remains for existing controller clients/fixtures; the repository's old T files have been removed.
 
-Formal definitions and proofs live in Verus source. The existing global proof checklist remains in `input/proofs.md`; the bounded local reconciliation, initialization, persistence and progress targets close none of the 26 global obligations. The roadmap maps the old task IDs to current module steps; saved historical evidence retains its original IDs.
+Formal definitions and proofs live in Verus source. The existing global proof checklist remains in `input/proofs.md`; the bounded local reconciliation, initialization, persistence and progress targets close none of the 26 global obligations.
 
 From the repository root, these commands inspect work without starting an agent:
 
@@ -16,12 +16,18 @@ From the repository root, these commands inspect work without starting an agent:
 export PYTHONDONTWRITEBYTECODE=1
 python3 -m orchestrator validate
 python3 -m orchestrator plan --format text
-python3 -m orchestrator prompt --task STATE-INIT
-python3 -m orchestrator run-task --task STATE-INIT --dry-run
-python3 -m orchestrator run-plan --tasks STATE-INIT --dry-run
+python3 -m orchestrator prompt --task MADRAFT-VOTE
+python3 -m orchestrator run-task --task MADRAFT-VOTE --dry-run
+python3 -m orchestrator run-plan --tasks MADRAFT-RECOVERY --dry-run
 ```
 
 Ready means the task has a usable scope and local checks; it does not start generation automatically. Planned tasks identify missing node/coordinator/proof prerequisites and have no pretend successful check. Implementation-layer contracts, representation/view changes, helper lemmas and invariants are normal scoped development. Independent behavioral requirements remain protected. Changed public behavior, assumptions, top-level properties, trusted interfaces or acceptance rules need an explicit explanation for human review.
+
+## New run versus resume
+
+Every explicit new launch creates a unique evidence/runs/RUN_ID/candidate from the supplied MadRaft-inspired foundation, with fresh budgets and empty attempt history. It never starts from another experiment's candidate or last success. Only explicit resume reuses an existing candidate and cumulative accounting. Within a run, steps and repairs share code and proofs. The controller never writes that generated result back to the supplied source checkout automatically.
+
+Evidence is output rather than input. Obsolete maintenance archives were deleted, not moved elsewhere. Current calibration and maintenance check logs remain small; compiled build directories are disposable. Each run's raw diagnostics remain available while that run is being investigated. Deliberately deleting a completed run also removes the ability to resume it; the workflow does not silently delete or auto-resume old experiments.
 
 ## The serial development loop
 
@@ -55,27 +61,25 @@ The controller reuses its candidate copy, subprocess runner, independent checks 
 
 ```sh
 ./experiment.sh                 # Preview, no generation
-./experiment.sh run             # Generate and prove node initialization
+./experiment.sh run             # Generate missing protocol code and local proofs in one candidate
 ./experiment.sh resume RUN_ID   # Reuse the same candidate and recheck stale results
 ./experiment.sh report RUN_ID   # Read results without generation
 ```
 
-The launcher works from any current directory and selects STATE-INIT. It allows three agent calls, at most two repair rounds, 600 seconds per call and 2,400 seconds for the task. This is a bounded generation experiment, not the entire Raft project. The checked source seed intentionally rejects all memberships; the agent must implement the constructor and its proof together. Eight independent tests and a protected Verus caller prevent reject-all or weakened-contract acceptance. STATE-INIT may edit `node.rs`, `node_state.rs` and `contracts.rs`: generate executable code, representation, local predicates and proofs together. The protected observation consumers connect actual executable adapters to the generated view; initialization must establish the generated invariant and the independent initial-state requirement.
+The launcher works from any current directory and selects MADRAFT-RECOVERY, expanding STATE-INIT, RUNTIME-PERSIST and the four MadSim protocol steps in dependency order. Each task allows three calls, at most two repairs, 600 seconds per call and 2,400 seconds total; resume does not reset these budgets. The supplied inputs are the host, interfaces, independent requirements and protocol scaffold. Python-launched Codex generates initialization, persistence, voting and the remaining behavior, representation, local predicates and proofs, using protected tests and same-source proof callers for feedback.
 
-The task runs build, all eight independent initialization cases, initial-state replay, model typechecking and the local initialization proof. Reconciliation and persistence are unimplemented future steps, so their checks are not initialization prerequisites. The controller reruns previously completed tasks during later steps. Only after those pass does it measure constructor cost. TYPECHECKED is useful feedback but closes no obligation. A pass closes only the mapped local targets; whole-node refinement, cluster safety and conditional liveness remain open.
+The independent local barrier checks actual `handle_event`; functional checks demand useful progress, and completed tasks are rechecked. Selected-step completion is not a global safety result. Complete-execution correspondence and five-property consumers are still missing, so raft-safety remains BLOCKED and INTEGRATION-SAFETY remains planned. Conditional liveness is a required experiment objective with incomplete global checking.
 
 ```sh
-python3 -m orchestrator run-plan --tasks STATE-INIT --execute-codex
+python3 -m orchestrator run-plan --tasks MADRAFT-RECOVERY --execute-codex
 python3 -m orchestrator resume --run-id RUN_ID --execute-codex
-PYTHONDONTWRITEBYTECODE=1 python3 orchestrator/tests/real_repair_demo.py \
-  --task STATE-INIT --output /tmp/raft-node-demo
 ```
 
-The last command uses only a scripted subprocess fixture plus real Rust/Verus, with a new output directory. It rejects a wrong initial term, repairs it and reruns the same independent targets. `Agent.md`, historical evidence and the entire `orchestrator/tests` directory (including every solution and script) are excluded from candidates and input manifests. This prevents accidental context mixing, not malicious access by a same-user process.
+Original initialization, persistence and reconciliation demonstrations remain explicitly selectable offline regression examples. Their fixtures simulate generation and are never supplied to real candidates. `Agent.md`, local metadata, the maintenance review packet, evidence and the entire `orchestrator/tests` directory are excluded from candidate copies. This prevents accidental answer inclusion, not malicious access by a same-user process.
 
 The retry prompt retains prior attempt summaries (explicitly agent claims), changed files, independent outcomes and links to saved patches/raw diagnostics. Detailed repair context is included for failed checks. The existing call budget bounds history; no new agent hierarchy, score system or evidence format is needed. Within scope, change code, local contracts, representation and invariants together. Report these ordinary edits in `changed_files` and `summary`; `proposed_spec_changes` is reserved for changes to protected behavioral requirements or assumptions and stops ordinary repair for review.
 
-Existing `input_bindings.json` records detect source/checker changes and stale evidence; historical artifacts remain readable. Candidate separation, edit scope, independent checks, process limits and sandbox settings remain. Review follows delivery, with no approval file inside the loop; passing checks neither approves DRAFT semantics nor merges code. Hostile same-user process isolation remains unimplemented.
+Existing `input_bindings.json` records detect source/checker changes and stale evidence within retained experiments. Candidate separation, edit scope, independent checks, process limits and sandbox settings remain. Review follows delivery, with no approval file inside the loop; passing checks neither approves DRAFT semantics nor merges code. Hostile same-user process isolation remains unimplemented.
 
 Global controller options go before the subcommand and override project settings for that invocation. For example:
 
@@ -131,7 +135,7 @@ python3 crates/raft-verified/check.py replay
 python3 crates/raft-verified/check.py bench
 ```
 
-The replay is a local sequence of reconciliation calls, with seed, explicit trace and relevant before/after log states. The measurement is a core microbenchmark across several log lengths. It records repetitions, raw samples, code version/binding, build mode, workload, command/batch size, concurrency, machine and timing boundary. Run it without competing heavy jobs. No approved throughput target or regression percentage exists. Cluster acceptance, commitment and delivery measurements, network/storage adapters and full fault simulation remain planned.
+The replay is a local sequence of reconciliation calls, with seed, explicit trace and relevant before/after log states. The measurement is a core microbenchmark across several log lengths. It records repetitions, raw samples, code version/binding, build mode, workload, command/batch size, concurrency, machine and timing boundary. Run it without competing heavy jobs. No approved throughput target or regression percentage exists. The MadSim host now supplies network/storage adapters and repeatable fault scenarios. Missing protocol behavior prevents successful full-cluster execution; cluster performance measurements and universal proofs remain future work.
 
 ## Read failures before repairing
 

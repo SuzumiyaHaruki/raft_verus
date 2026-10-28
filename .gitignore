@@ -6,10 +6,5 @@ __pycache__/
 /orchestrator/build/
 /evidence/runs/
 /evidence/workspaces/
-/evidence/next-revision/**/build/
-/evidence/next-revision/**/agent-build/
-/evidence/from-zero/**/build/
-/evidence/from-zero/**/agent-build/
-/evidence/joint-design/**/build/
-/evidence/joint-design/**/agent-build/
-/evidence/madraft-feasibility/**/build/
+/evidence/**/build/
+/evidence/**/agent-build/

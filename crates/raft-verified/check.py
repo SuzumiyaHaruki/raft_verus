@@ -32,7 +32,7 @@ def cargo_environment(selected, extra_flags=()):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("check", choices=("build", "test", "replay", "bench", "proof", "node-proof", "node-replay", "node-bench", "persist-proof", "persist-replay", "persist-bench", "progress-proof"))
+    parser.add_argument("check", choices=("build", "test", "replay", "bench", "proof", "node-proof", "node-replay", "node-bench", "persist-proof", "persist-replay", "persist-bench", "progress-proof", "core-proof"))
     parser.add_argument("extra", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
@@ -48,9 +48,9 @@ def main():
     verus = Path(paths["verus"])
     rust = Path(paths["rustc"]).parent
     env = cargo_environment(selected)
-    if args.check in {"proof", "node-proof", "persist-proof", "progress-proof"}:
+    if args.check in {"proof", "node-proof", "persist-proof", "progress-proof", "core-proof"}:
         command = [str(verus), "--crate-type", "lib", "--no-cheating", "--triggers-mode", "silent",
-                   "crates/raft-proofs/" + {"proof": "reconcile.rs", "node-proof": "node_init.rs", "persist-proof": "persistence.rs", "progress-proof": "progress.rs"}[args.check]]
+                   "crates/raft-proofs/" + {"proof": "reconcile.rs", "node-proof": "node_init.rs", "persist-proof": "persistence.rs", "progress-proof": "progress.rs", "core-proof": "core.rs"}[args.check]]
     else:
         command = [str(rust / "cargo")]
         if args.check == "build":

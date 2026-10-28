@@ -1,9 +1,0 @@
-test_code_satisfies_its_generated_contract_but_independent_target_rejects_it (orchestrator.tests.test_joint_design.JointDesignTests) ... ok
-test_different_layout_and_nontrivial_invariant_pass_unchanged_observable_targets (orchestrator.tests.test_joint_design.JointDesignTests) ... ok
-test_false_invariant_and_unconnected_observer_cannot_discharge_bridge (orchestrator.tests.test_joint_design.JointDesignTests) ... ok
-test_verus_visibility_error_is_source_repair_not_missing_tool_or_proof (orchestrator.tests.test_joint_design.JointDesignTests) ... ok
-
-----------------------------------------------------------------------
-Ran 4 tests in 17.066s
-
-OK

@@ -23,6 +23,13 @@ class StartingPointTests(unittest.TestCase):
                              'crates/raft-spec/src/persistence.rs', 'orchestrator/wire'):
                 self.assertTrue((candidate/relative).exists(), relative)
             self.assertFalse(any(p.startswith('orchestrator/tests/') for p in snapshot(ROOT)))
+            # Supply the host and API scaffold, never a preimplemented protocol slice.
+            self.assertTrue((candidate/'crates/raft-verified/src/madraft.rs').is_file())
+            protocol = (candidate/'crates/raft-verified/src/protocol.rs').read_text()
+            self.assertIn('Err(InputError::UnsupportedEvent)', protocol)
+            self.assertNotIn('fn elect', protocol)
+            self.assertTrue((candidate/'experiments/madraft-poc/src/cluster.rs').is_file())
+            self.assertTrue((candidate/'crates/raft-proofs/core.rs').is_file())
 
     def test_new_copy_does_not_inherit_another_run_or_rewrite_it(self):
         with tempfile.TemporaryDirectory() as location:
@@ -42,7 +49,8 @@ class StartingPointTests(unittest.TestCase):
         for task in tasks:
             with self.subTest(task=task['id']):
                 prompt = render_prompt(ROOT, task)
-                self.assertIn('no working Raft operation', prompt)
+                self.assertIn('Python', prompt)
+                self.assertIn('supplied', prompt)
                 self.assertNotIn('fixtures/solutions', prompt)
                 self.assertNotIn('node_init_solution.rs', prompt)
         init = next(t for t in tasks if t['id'] == 'STATE-INIT')
@@ -76,6 +84,41 @@ class StartingPointTests(unittest.TestCase):
                         self.assertEqual(result['obligation_ids_checked'], [])
             for rel, original in untouched.items():
                 self.assertEqual((candidate/rel).read_bytes(), original)
+
+            # Generating initialization alone must not reveal a working vote implementation.
+            vote = verify_profile(candidate, profile_by_id(config, 'madraft-poc-verus'), outside/'vote-proof')
+            self.assertEqual(vote['result'], 'FAIL', vote)
+            self.assertTrue(vote['function_results']['madraft_vote::check_follower'], vote)
+            self.assertFalse(vote['function_results']['madraft_vote::check_vote'], vote)
+            self.assertFalse(vote['function_results']['madraft_vote::check_durable_reply'], vote)
+            self.assertEqual(vote['obligation_ids_checked'], [])
+
+    def test_public_event_contract_and_useful_behavior_are_checked_independently(self):
+        config = load_config(ROOT)
+        if config['toolchain']['resolved']['missing']:
+            self.skipTest('Real toolchain unavailable; no simulated checks substituted')
+        with tempfile.TemporaryDirectory() as location:
+            outside = Path(location)
+            candidate = create_candidate(ROOT, outside/'candidate')
+            profile = profile_by_id(config, 'core-proof')
+            missing = verify_profile(candidate, profile, outside/'missing-contract')
+            self.assertEqual(missing['result'], 'FAIL', missing)
+            self.assertGreater(missing['verification_summary']['errors'], 0)
+            self.assertEqual(missing['obligation_ids_checked'], [])
+            # SIMULATED contract edit, not a protocol implementation. Real Verus follows.
+            body = candidate/'crates/raft-verified/src/protocol.rs'
+            body.write_text(body.read_text().replace('ensures self.wf(),',
+                            'ensures self.wf(), result.is_err(),'))
+            barrier = verify_profile(candidate, profile, outside/'reject-all-barrier')
+            self.assertEqual(barrier['result'], 'PASS', barrier)
+            behavior = verify_profile(candidate, profile_by_id(config, 'core-vote-tests'),
+                                      outside/'reject-all-behavior')
+            self.assertEqual(behavior['result'], 'FAIL', behavior)
+            self.assertEqual(behavior['evidence_kind'], 'REAL_LOCAL')
+            # The unchanged reconciliation caller still rejects its weak local contract.
+            merge = verify_profile(candidate, profile_by_id(config, 'reconcile-proof'), outside/'merge')
+            self.assertEqual(merge['result'], 'FAIL', merge)
+            self.assertGreater(merge['verification_summary']['errors'], 0)
 
     def test_actual_progress_proof_needs_a_generated_strategy(self):
         config = load_config(ROOT)

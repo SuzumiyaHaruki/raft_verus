@@ -1,8 +1,0 @@
-{
-  "status": "PASS",
-  "check_kind": "STRUCTURAL_ONLY",
-  "contract_status": "DRAFT",
-  "full_acceptance": false,
-  "errors": [],
-  "meaning": "Markdown references and configuration checks only; no proof obligation closed"
-}

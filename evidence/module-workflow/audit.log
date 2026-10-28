@@ -1,8 +1,0 @@
-COMMAND: PYTHONPATH=/home/nitro/Desktop/raft_verus PYTHONDONTWRITEBYTECODE=1 python3 /tmp/raft-module-audit.py
-EXIT: 0
-PASS: 8 module documents, 25 English scoped prompts, 4 ready/21 planned; old T files removed.
-PASS: maintained Markdown file links exist.
-PASS: all Rust/Verus source, models, assumptions, global obligations, properties, I/O and TCB unchanged.
-PASS: all 26 global obligations remain OPEN; real generation remains disabled.
-PASS: original read-only directories remain empty.
-PASS: saved real checks still match final checked inputs; current local proof evidence is available.

@@ -1,4 +1,0 @@
---- a/src/lib.rs
-+++ b/src/lib.rs
-@@ -1 +1 @@
--broken but fast+fn candidate_fast() {}

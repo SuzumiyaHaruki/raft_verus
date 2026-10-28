@@ -158,6 +158,8 @@ class ModuleTests(unittest.TestCase):
         self.assertIn('REPLICATION-PROOF', indexed['INTEGRATION-MEASURE']['dependency_ids'])
         self.assertIn('PROGRESS-REFINEMENT', indexed['INTEGRATION-FULL']['dependency_ids'])
         self.assertIn('STATE-INIT', indexed['RUNTIME-PERSIST']['dependency_ids'])
+        self.assertEqual(indexed['MADRAFT-VOTE']['dependency_ids'], ['RUNTIME-PERSIST'])
+        self.assertIn('madraft-poc-verus', indexed['MADRAFT-VOTE']['check_profile_ids'])
         with patch('orchestrator.scheduler.run_codex', side_effect=AssertionError('preview must not generate')):
             preview = run_plan(REPO, config)
         self.assertEqual(preview['status'], 'DRY_RUN')
@@ -169,11 +171,12 @@ class ModuleTests(unittest.TestCase):
             self.assertNotRegex(prompt, r'[\u3400-\u9fff]')
         self.assertFalse(plan(REPO, config)['full_acceptance'])
 
-    def test_launcher_defaults_to_missing_node_work_with_no_generation(self):
+    def test_launcher_defaults_to_coupled_madsim_extension_with_no_generation(self):
         result = subprocess.run([str(REPO/'experiment.sh')], cwd='/tmp',
                                 text=True, capture_output=True, check=True)
         preview = json.loads(result.stdout)
-        self.assertEqual(preview['tasks'], ['STATE-INIT'])
+        self.assertEqual(preview['tasks'], ['STATE-INIT', 'RUNTIME-PERSIST', 'MADRAFT-VOTE', 'MADRAFT-ELECTION',
+                                            'MADRAFT-REPLICATION', 'MADRAFT-RECOVERY'])
         self.assertEqual(preview['agent_calls'], 0)
 
     def test_repair_prompt_preserves_prior_approaches_and_independent_results(self):

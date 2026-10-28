@@ -3,7 +3,7 @@
 set -euo pipefail
 cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 export PYTHONDONTWRITEBYTECODE=1
-tasks=(STATE-INIT)
+tasks=(MADRAFT-RECOVERY)
 
 case "${1:-preview}" in
   preview)

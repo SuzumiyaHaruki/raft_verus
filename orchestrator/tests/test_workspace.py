@@ -67,12 +67,26 @@ class WorkspaceTests(unittest.TestCase):
         solution.write_text('Offline answer, never experiment input')
         script = self.source/'orchestrator/tests/demo.py'
         script.write_text('Inline solution in a maintenance script')
+        cache = self.source/'orchestrator/__pycache__'
+        cache.mkdir()
+        (cache/'config.pyc').write_bytes(b'cached maintenance interpreter output')
         (self.source/'AGENTS.md').write_text('Shared safeguards')
+        for name in ('.agents', '.codex', '.aws', 'review'):
+            (self.source/name).mkdir()
+        (self.source/'review/REVIEW_PACKET.md').write_text('Previous maintenance results')
+        (self.source/'review/OPEN_DECISIONS.md').write_text('Current pending semantics')
+        (self.source/'.codex/local.txt').write_text('Local maintenance context')
         destination = self.root/'candidate'
         create_candidate(self.source, destination)
         self.assertFalse((destination/'Agent.md').exists())
         self.assertFalse((destination/solution.relative_to(self.source)).exists())
         self.assertFalse((destination/'orchestrator/tests').exists())
+        self.assertFalse((destination/'orchestrator/__pycache__').exists())
+        self.assertNotIn('orchestrator/__pycache__', snapshot(self.source))
+        for name in ('.agents', '.codex', '.aws', 'review/REVIEW_PACKET.md'):
+            self.assertFalse((destination/name).exists())
+            self.assertTrue((self.source/name).exists())
+        self.assertTrue((destination/'review/OPEN_DECISIONS.md').is_file())
         self.assertEqual((destination/'AGENTS.md').read_text(), 'Shared safeguards')
         self.assertNotIn('Agent.md', snapshot(self.source))
 

@@ -1,9 +1,11 @@
 # Local proof entrypoints
 
-Status: DRAFT. Independent consumers demand exact properties of the same executable source compiled by Cargo. Active executable bodies are intentionally incomplete seeds; local progress proof bodies are empty. Historical successful maintenance implementations are excluded offline fixtures, not the experiment starting point. See [the supplied inputs](../../input/starting-point.md).
+Status: DRAFT. Independent consumers demand exact properties of the same executable source compiled by Cargo. Initialization, vote/persistence and the public event path are unimplemented scaffolds. Python-launched Codex generates all protocol code, local specifications and proofs. No completed maintenance vote implementation or proof strategy is supplied. See [the supplied inputs](../../input/starting-point.md).
 
 | Entrypoint | Required result | Command |
 |---|---|---|
+| `madraft_vote.rs` | Generated shared Node::new, RequestVote decisions and correlated durable reply | `python3 -m orchestrator verify --profile madraft-poc-verus` |
+| `core.rs` | Every positive reply from the actual generated `handle_event` requires a matching successful persistence completion; local barrier only | `python3 crates/raft-verified/check.py core-proof` |
 | `node_init.rs` | Every valid membership constructs the specified initial fields; invalid membership is rejected | `python3 crates/raft-verified/check.py node-proof` |
 | `reconcile.rs` | The actual operation satisfies `merged`, preserves its prefix and leaves input-error states unchanged | `python3 crates/raft-verified/check.py proof` |
 | `persistence.rs` | Actual submission/completion/partial dispatch contracts and successful-path storage projection | `python3 crates/raft-verified/check.py persist-proof` |
@@ -16,3 +18,5 @@ Behavioral requirements and independent consumers remain protected; implementati
 The protected entry view preserves term, command tag, request identity and bytes. Reconciliation compares terms under `merged`; legality of caller transitions, committed-prefix protection and durable response timing remain separate obligations. Initialization relates represented fresh fields only. Persistence assumes truthful host durability notifications and legal Raft callers; it does not prove arbitrary term/log changes legal, error/recovery refinement or real storage. The local progress target explicitly assumes serviced successful completion and noninterference; global election, commitment, delivery and fairness transfer remain open.
 
 `check.py` supplies the installed release's vstd/macros and matching Rust compiler to Cargo. Macro erasure removes ghost/proof syntax from the same source checked by Verus. `workflow.toml` and an explicit `RAFT_TOOLCHAIN_ROOT` select tools in child processes; missing tools report BLOCKED and the system default is unchanged. Rust/LLVM, Verus/vstd/SMT and host assumptions remain in the TCB. Non-Copy Clone derives have no Verus contracts in this release; local proofs must not depend on those missing contracts. `proof-smoke` calibrates tools and proves no Raft property.
+
+The `core.rs` caller imports the complete event implementation source; functional tests independently require useful behavior so reject-all cannot complete a step. Its local barrier does not establish legal vote/append decisions or reachable cluster invariants. Complete-execution correspondence and five-property consumers are not supplied yet; `raft-safety` reports BLOCKED. All global obligations remain OPEN.

@@ -3,6 +3,9 @@ use vstd::prelude::*;
 #[path = "../raft-verified/src/types.rs"] pub mod types;
 #[path = "../raft-verified/src/state.rs"] pub mod state;
 #[path = "../raft-verified/src/node_state.rs"] pub mod node_state;
+#[path = "../raft-verified/src/node.rs"] pub mod node;
+#[path = "../raft-verified/src/contracts.rs"] pub mod contracts;
+#[path = "../raft-verified/src/persistence.rs"] pub mod persistence;
 #[path = "../raft-verified/src/io.rs"] pub mod io;
 #[path = "../raft-spec/src/lib.rs"] pub mod model;
 #[path = "../raft-spec/src/reconcile_view.rs"] pub mod representation;
@@ -16,7 +19,7 @@ use io::*;
 verus! {
 pub fn check_follower(id: u64, members: Vec<u64>) -> (r: Result<Node, InitError>)
     ensures vote_spec::constructed(r, id, members@),
-{ Node::feasibility_follower(id, members) }
+{ Node::new(id, members) }
 
 pub fn check_vote(n: &mut Node, m: Message) -> (r: Result<madraft::VoteAction, InputError>)
     requires old(n).wf(), vote_spec::invariant(old(n).view()),

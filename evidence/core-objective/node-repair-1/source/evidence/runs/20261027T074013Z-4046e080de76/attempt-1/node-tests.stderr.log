@@ -1,5 +1,0 @@
-   Compiling raft-verified v0.0.0 (/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-1/source/evidence/runs/20261027T074013Z-4046e080de76/candidate/crates/raft-verified)
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.97s
-     Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-1/source/evidence/runs/20261027T074013Z-4046e080de76/attempt-1/build/debug/deps/raft_verified-7061c45fddf45f90)
-     Running tests/node_init.rs (/home/nitro/Desktop/raft_verus/evidence/core-objective/node-repair-1/source/evidence/runs/20261027T074013Z-4046e080de76/attempt-1/build/debug/deps/node_init-e09bec45f082e884)
-error: test failed, to rerun pass `--test node_init`

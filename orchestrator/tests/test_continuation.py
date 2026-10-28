@@ -26,6 +26,28 @@ class ContinuationTests(unittest.TestCase):
     def run_plan(self, resume=None, **kw):
         return run_plan(self.root, self.config, execute_codex=True, fixture_mode=True, resume_id=resume, **kw)
 
+    def test_each_new_experiment_generates_from_the_supplied_foundation(self):
+        self.configure(['fn candidate_generated() {}'])
+        import orchestrator.scheduler as scheduler
+        original = scheduler.run_codex
+        initial_sources = []
+        def inspect_start(config, candidate, *args, **kwargs):
+            initial_sources.append((candidate/'src/lib.rs').read_text())
+            return original(config, candidate, *args, **kwargs)
+        with patch.object(scheduler, 'run_codex', side_effect=inspect_start):
+            first = self.run_plan()
+            first_source = Path(first['candidate_path'])/'src/lib.rs'
+            first_source.write_text('fn previous_experiment_only() {}')
+            second = self.run_plan()
+        self.assertEqual((first['status'], second['status']), ('PASSED', 'PASSED'))
+        self.assertNotEqual(first['run_id'], second['run_id'])
+        self.assertNotEqual(first['candidate_path'], second['candidate_path'])
+        foundation = (self.root/'src/lib.rs').read_text()
+        self.assertEqual(initial_sources, [foundation, foundation])
+        self.assertEqual(first_source.read_text(), 'fn previous_experiment_only() {}')
+        self.assertEqual((first['agent_calls'], second['agent_calls']), (1, 1))
+        self.assertEqual((first['resume_count'], second['resume_count']), (0, 0))
+
     def test_exhaustion_resume_and_explicit_extension(self):
         self.configure(['broken', 'still broken', 'fn candidate() {}'], calls=2)
         first = self.run_plan()

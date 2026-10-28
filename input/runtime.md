@@ -1,6 +1,6 @@
 # Event processing and I/O coordination
 
-Status: DRAFT. Module: INCOMPLETE; interfaces and independent checks exist; coordinator, dispatcher and protocol behavior await generation.
+Status: DRAFT. Module: INCOMPLETE. A MadSim host and interfaces are supplied. Persistence coordination, voting and the public event dispatcher await Python-launched Codex generation. The default experiment generates the shared constructor, then its persistence coordinator, before voting.
 
 ## Responsibility and connections
 
@@ -31,3 +31,13 @@ Stage: PLANNED. Requires election, replication, commitment and recovery handlers
 Connect every existing Event variant to the appropriate state transition and ordered effects. Document dispatch behavior while work is pending and after role changes. Drive the same node repeatedly from a host queue; do not write a second implementation in the simulator. Exercise proposals, messages, both timers, completion outcomes and recovery over multiple terms. Retain explicit error paths.
 
 Deliver the public node entrypoint, an executable host-loop example and tests for all event/error branches. Add local step/refinement entrypoints with meaningful state invariants, then check the integrated node and dependent proofs. RUNTIME-PERSIST must first generate a partial `Node::step` that handles persistence completions and explicitly rejects every unsupported Event variant. Its return type will need a reviewed extension for general effects; all-event handlers and independent profiles are still missing, so this remains PLANNED. Missing handlers cannot be replaced with success stubs.
+
+## Step: Generate voting and durable replies on the MadSim host
+
+Stage: READY as MADRAFT-VOTE after STATE-INIT and RUNTIME-PERSIST in the same candidate. Read starting-point.md, the unimplemented madraft.rs and protocol.rs APIs, protected vote/persistence targets, their proof callers, public tests and the MadSim host. No vote or durable-reply implementation or proof strategy is supplied.
+
+Generate Node::handle_request_vote, Node::finish_vote and Node::handle_event with their implementation-layer contracts, helpers and Verus proofs. Reuse this run's generated Node::new and persistence coordinator; maintain one node state and one protocol implementation. The dedicated vote API is an independent boundary exercised by the vote scenarios; the cluster uses handle_event. Connect both to shared generated behavior rather than maintaining separate protocol engines. Generate term updates, vote eligibility and freshness, persistence submission, pending-request correlation, error handling and release after a matching successful completion. Higher-term request continuation belongs in the core; the cluster host only executes effects and reports completion.
+
+Keep the independent targets unchanged. Establish the vote boundary's preconditions when calling it and preserve prior initialization/persistence results. The protected core.rs caller requires the actual event result's positive vote/append replies to be authorized by a matching successful persistence callback. Its local conclusion is not Election Safety; the separate behavioral tests require useful votes and cannot be satisfied by rejecting all events. Choose internal representation, local predicates and proof strategy jointly with the executable code.
+
+Run profiles interface-check, madraft-poc-runtime, madraft-poc-verus, core-vote-tests and core-proof. The controller also rechecks the completed initialization and persistence tasks. Record actual failures and revise code and proof together. All global obligations remain OPEN; no maintenance implementation, prior successful slice or scripted solution may be retrieved into this candidate.

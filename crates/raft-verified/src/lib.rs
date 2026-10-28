@@ -22,3 +22,5 @@ pub use io::*;
 
 #[cfg(feature = "madraft-poc")]
 pub mod madraft;
+
+pub mod protocol;

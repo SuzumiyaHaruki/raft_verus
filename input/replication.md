@@ -44,7 +44,7 @@ Stage: PLANNED. Requires term handling, node state and persistence coordination.
 
 Implement the reusable AppendEntries handler. Reject stale terms; handle higher terms and step-down under the durability contract. Validate predecessor index/term including the zero sentinel. Call the checked reconciliation helper, preserve a matching tail and the committed prefix, and limit follower commit advancement to the request-covered position and valid bounds without decreasing it. Identify any conflict with reachable-state invariants for review. Bind responses to peer, term and RPC; emit success only after the required durable acknowledgment.
 
-Deliver handler code, term/predecessor/heartbeat/conflict tests, a crash/delayed-write trace and local `receive_append` correspondence. Configure actual checks including helper regressions before enabling this step. No follower handler profiles exist yet. Do not assume arbitrary received logs satisfy the required invariant.
+Deliver handler code, term/predecessor/heartbeat/conflict tests, a crash/delayed-write trace and local `receive_append` correspondence. Configure actual checks including helper regressions before enabling this step. The active MADRAFT-REPLICATION step supplies public handler checks; this earlier standalone route remains planned. Do not assume arbitrary received logs satisfy the required invariant.
 
 ## Step: Send proposals and replication requests
 
@@ -52,7 +52,7 @@ Stage: PLANNED. Requires leader transition and persistence coordination.
 
 Implement leader proposal admission and durable append, per-peer next/match state, AppendEntries construction, heartbeat timers and retry scheduling. Respect request identity and Client/Noop distinction; ProposalAccepted is local receipt, not commitment. Record request/term/RPC coverage so responses can be validated. Send multi-entry suffixes from valid predecessors without overflowing indices or tokens.
 
-Deliver shared-runtime source, proposal/heartbeat/retry tests and local `propose`/`send_append` correspondence. Supply independent profiles for these paths and existing helper regressions before activation. Leader state/scheduling and those profiles are missing. Do not introduce pipelining or new retry assumptions without reviewing the existing scope and progress contract.
+Deliver shared-runtime source, proposal/heartbeat/retry tests and local `propose`/`send_append` correspondence. Supply independent profiles for these paths and existing helper regressions before activation. Leader state/scheduling is missing; the active MADRAFT-REPLICATION step groups these coupled paths with real scenario profiles. Do not introduce pipelining or new retry assumptions without reviewing the existing scope and progress contract.
 
 ## Step: Process replication responses
 
@@ -60,4 +60,12 @@ Stage: PLANNED. Requires follower and leader replication paths.
 
 Handle accepted/rejected responses against the corresponding peer, term and RPC coverage. Ignore stale/duplicate/out-of-order responses that cannot justify new progress; process higher terms through step-down. Update confirmed durable match positions and bounded retry/backtracking state without inventing acknowledgments. Feed valid progress to commitment and continue sending until the peer catches up.
 
-Deliver response handling, delayed/reordered-response and divergent-log catch-up traces, and local `receive_append_response` proofs. Run both-side replication regressions and supporting log invariants. Profiles and peer-progress code are missing today. Completing this step still requires dispatcher integration and the module-level tests/proofs above before replication can be considered complete.
+Deliver response handling, delayed/reordered-response and divergent-log catch-up traces, and local `receive_append_response` proofs. Run both-side replication regressions and supporting log invariants. Peer-progress code is missing; use the active MADRAFT-REPLICATION scenario profiles for the coupled extension. Completing this step still requires dispatcher integration and the module-level tests/proofs above before replication can be considered complete.
+
+## Step: Generate replication and committed delivery
+
+Stage: READY as MADRAFT-REPLICATION after MADRAFT-ELECTION. Extend the same handle_event path and representation with leader proposals, heartbeats, suffix transmission, follower predecessor/term checks, first-conflict reconciliation, correlated append replies, retry/backtracking, durable-majority current-term commitment and ordered Deliver/application acknowledgment. Keep protocol decisions inside raft-verified. Use actual Client request identities and bytes; Noop and ProposalAccepted cannot stand for committed client work.
+
+Generate code and Verus contracts/invariants together. The existing independent reconciliation caller still requires merged, prefix preservation and honest errors. Connect those facts to the actual follower handler, committed-prefix protection and durable reply. Prove unique peer accounting, what match indices mean, the current-term commit restriction and application bounds; do not assume these as host premises. Record the remaining dependencies of Leader Append-Only, Log Matching, Leader Completeness and State Machine Safety separately.
+
+The protected cluster-replication scenario elects real leaders, commits multiple commands, isolates an old leader, creates a divergent uncommitted entry, elects a replacement, heals the partition and checks catch-up with command contents intact. Re-run interface-check, reconcile-tests, reconcile-proof, core-replication-tests, cluster-replication and core-proof. The controller also rechecks completed election/vote tasks. Neither finite convergence nor the local merge proof discharges the cluster-level properties.

@@ -1,1 +1,0 @@
-[{"kind": "measurement", "workload": "fixture", "build_mode": "release", "environment": "SIMULATED fixed hardware", "boundary": "fixture operation", "samples_ns": [10, 10, 10, 10, 10]}]

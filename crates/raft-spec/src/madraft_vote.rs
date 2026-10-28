@@ -1,4 +1,4 @@
-//! DRAFT additive feasibility targets. Existing model and dispatcher targets are unchanged.
+//! DRAFT independent vote targets. Generate the executable bodies and local contracts separately.
 use crate::{state::*, io::*, madraft::VoteAction, initialization, persistence_spec};
 use vstd::prelude::*;
 verus! {

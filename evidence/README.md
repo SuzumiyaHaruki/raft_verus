@@ -1,12 +1,9 @@
-# Reading execution evidence
+# Current evidence
 
-Start with [the review packet](../review/REVIEW_PACKET.md). Evidence contains actual command output and generated controller records, not another requirements set to edit or send wholesale to an LLM.
+This directory is output, never experiment input. Obsolete maintenance archives, old candidate copies and build products were deleted at the user's request. They were not moved to another archive.
 
-- `joint-design/`: current joint implementation/specification revision, controller tests, seed checks and SIMULATED redesign/repair with real Rust/Verus checks.
-- `from-zero/`, `next-revision/`, `core-objective/` and earlier named directories: historical deliveries and checking results for their recorded source versions.
-- `runs/<run-id>/`: controller candidates, attempts and independent checks from explicit runs.
-- Root `model-*` files: earlier tool observations, model checks, verifier calibration and licenses; some remain referenced by configuration.
+- calibration/: current real positive and negative Verus smoke results used to calibrate the checker.
+- checks/protocol-scaffold/: current validation, tests and real Rust/Verus results after removing the maintenance vote implementation. Earlier records under checks/ predate this change; their vote-slice successes do not apply to the current scaffold. Temporary build products are removed after checking.
+- runs/RUN_ID/: each explicitly launched experiment or direct check gets a new directory. A plan keeps its candidate and cumulative history there; its task/check record IDs refer to their own unique run directories. Only explicit resume continues an existing plan.
 
-Read a run's `conclusion.json` or `plan-state.json` first. `*.check.json` records the independent outcome; stdout/stderr logs retain actual output; `*.process.json` records the command and process result. Attempts retain prompts, agent claims, patches and repair feedback. Existing bindings associate checks with their inputs. Candidate/build directories are generated artifacts.
-
-Old results do not establish correctness of changed source or checking policy. SIMULATED generation is distinct from REAL_LOCAL checking; a local pass is not whole-Raft acceptance. Historical evidence is preserved. Temporary debugging records may describe failed approaches; the review packet identifies final results.
+A new experiment starts from the supplied source foundation, never from this directory. Keep required diagnostics while an experiment is being investigated. Completed disposable runs may be deleted deliberately; deleted runs cannot be resumed. Logs are actual observations, not assumptions or automatic global proof claims. Scripted generation is SIMULATED; real tool execution is recorded separately.

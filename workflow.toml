@@ -4,7 +4,7 @@
 allow_real_codex = true
 isolation = "local-development"
 context = []
-protected_paths = ["AGENTS.md", "Cargo.toml", "Cargo.lock", "input", "workflow.toml", "crates/raft-spec", "crates/proof-smoke", "crates/raft-proofs/reconcile.rs", "crates/raft-proofs/node_init.rs", "crates/raft-proofs/observation.rs", "crates/raft-proofs/madraft_vote.rs", "experiments/madraft-poc", "crates/raft-verified/src/state.rs", "crates/raft-verified/src/types.rs", "crates/raft-verified/src/io.rs", "crates/raft-proofs/persistence.rs", "crates/raft-proofs/progress.rs", "crates/raft-verified/tests/persistence.rs", "crates/raft-verified/tests/node_init.rs", "orchestrator", "crates/raft-verified/check.py", "crates/raft-verified/tests/reconcile.rs", "crates/raft-verified/examples"]
+protected_paths = ["AGENTS.md", "Cargo.toml", "Cargo.lock", "input", "workflow.toml", "crates/raft-spec", "crates/proof-smoke", "crates/raft-proofs/reconcile.rs", "crates/raft-proofs/node_init.rs", "crates/raft-proofs/observation.rs", "crates/raft-proofs/madraft_vote.rs", "crates/raft-proofs/core.rs", "crates/raft-verified/tests/protocol.rs", "experiments/madraft-poc", "crates/raft-verified/src/state.rs", "crates/raft-verified/src/types.rs", "crates/raft-verified/src/io.rs", "crates/raft-proofs/persistence.rs", "crates/raft-proofs/progress.rs", "crates/raft-verified/tests/persistence.rs", "crates/raft-verified/tests/node_init.rs", "orchestrator", "crates/raft-verified/check.py", "crates/raft-verified/tests/reconcile.rs", "crates/raft-verified/examples"]
 
 [codex]
 executable = "codex"
@@ -35,9 +35,10 @@ call_timeout_seconds = 300
 task_timeout_seconds = 1200
 
 [local_obligations]
+LOCAL-CORE-REPLY = "The generated public Event-to-Effects method releases a positive vote or append reply only on a matching successful persistence callback; not global Raft safety."
 LOCAL-MADRAFT-VOTE = "Dedicated RequestVote decisions and durable-intended updates; no reply grant before completion."
 LOCAL-MADRAFT-DURABLE = "The exact completion function releases only the correlated pending reply on matching truthful success."
-LOCAL-MADRAFT-INIT = "The dedicated feasibility constructor establishes legitimate fresh membership and the vote invariant."
+LOCAL-MADRAFT-INIT = "The generated shared Node::new establishes legitimate fresh membership and the vote invariant."
 LOCAL-PERSIST = "Exact executable submit/completion/partial dispatcher contracts, including matching, withholding, fresh identity and fail-stop errors; not legal Raft transitions."
 LOCAL-PERSIST-VIEW = "Submitted images and successful callbacks correspond to the storage projection; host durability and legal caller transitions remain external obligations."
 LOCAL-PROGRESS = "A fairly serviced matching successful completion releases its pending reply through actual dispatcher contracts, under explicit noninterference; not global Raft liveness."
@@ -46,6 +47,7 @@ LOCAL-RECONCILE = "Executable log reconciliation corresponds to merged and prese
 
 [toolchain]
 install_root = "~/.local/share/raft-verus"
+madsim_cargo_home = "/home/nitro/Desktop/raft_verus/target/madraft-cargo"
 lifecycle_status = "DRAFT"
 codex_observed = "codex-cli 0.162.0-alpha.17.2"
 verus = "0.2026.01.23.1650a05"
@@ -58,9 +60,8 @@ python_minimum = "3.10"
 [verus_calibration]
 tool_version = "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
 summary_pattern = "(?m)^verification results:: (?P<verified>[0-9]+) verified, (?P<errors>[0-9]+) errors$"
-positive_evidence = "evidence/model-verus-positive-1.stdout.txt"
-negative_evidence = "evidence/model-verus-negative-1.stdout.txt"
-run_metadata = "evidence/model-verus-runs-1.json"
+positive_evidence = "evidence/calibration/smoke-positive.stdout.log"
+negative_evidence = "evidence/calibration/smoke-negative.stdout.log"
 
 [checks.smoke-positive]
 kind = "proof-smoke"
@@ -552,7 +553,7 @@ argv = ["{verus}", "--crate-type", "lib", "--no-cheating", "--output-json", "--t
 entrypoints = ["crates/raft-proofs/madraft_vote.rs", "crates/raft-proofs/observation.rs", "crates/raft-verified/src/madraft.rs", "crates/raft-spec/src/madraft_vote.rs"]
 source_inputs = ["Cargo.toml", "Cargo.lock", "workflow.toml", "crates/raft-verified", "crates/raft-spec", "crates/raft-proofs/madraft_vote.rs", "crates/raft-proofs/observation.rs", "experiments/madraft-poc"]
 proof_entrypoints = ["crates/raft-proofs/madraft_vote.rs"]
-expected_targets = ["check_follower", "check_vote", "check_durable_reply", "handle_request_vote", "finish_vote", "feasibility_follower", "check_freshness_projection"]
+expected_targets = ["check_follower", "check_vote", "check_durable_reply", "handle_request_vote", "finish_vote", "new", "check_freshness_projection"]
 expected_obligation_ids = ["LOCAL-MADRAFT-VOTE", "LOCAL-MADRAFT-DURABLE", "LOCAL-MADRAFT-INIT"]
 proof_targets = { LOCAL-MADRAFT-VOTE = "madraft_vote::check_vote", LOCAL-MADRAFT-DURABLE = "madraft_vote::check_durable_reply", LOCAL-MADRAFT-INIT = "madraft_vote::check_follower" }
 minimum_verified = 1
@@ -569,3 +570,205 @@ success_pattern = "NEGATIVE_CONTROL_PASS"
 selected_count_pattern = 'NEGATIVE_CONTROL_PASS selected=(?P<count>[0-9]+)'
 minimum_tests = 4
 timeout_seconds = 360
+
+# Python-launched Codex generates all Raft protocol behavior on the supplied MadSim host.
+[checks.core-proof]
+purpose = "proof"
+adapter = "verus-calibrated-text-v1"
+argv = ["{verus}", "--crate-type", "lib", "--no-cheating", "--output-json", "--time-expanded", "--triggers-mode", "silent", "crates/raft-proofs/core.rs"]
+entrypoints = ["crates/raft-proofs/core.rs", "crates/raft-verified/src/protocol.rs"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified", "crates/raft-spec", "crates/raft-proofs"]
+proof_entrypoints = ["crates/raft-proofs/core.rs", "crates/raft-verified/src/protocol.rs"]
+expected_targets = ["check_durable_reply", "handle_event"]
+expected_obligation_ids = ["LOCAL-CORE-REPLY"]
+proof_targets = { LOCAL-CORE-REPLY = "core::check_durable_reply" }
+minimum_verified = 1
+
+[checks.raft-safety]
+purpose = "proof"
+adapter = "verus-calibrated-text-v1"
+argv = ["{verus}", "--crate-type", "lib", "--no-cheating", "--output-json", "--time-expanded", "crates/raft-proofs/safety.rs"]
+entrypoints = ["crates/raft-proofs/core.rs", "crates/raft-spec/src/lib.rs", "crates/raft-proofs/README.md"]
+source_inputs = ["crates/raft-verified", "crates/raft-spec", "crates/raft-proofs"]
+planned_entrypoints = ["crates/raft-proofs/safety.rs"]
+expected_targets = ["implementation_execution_refinement", "election_safety", "leader_append_only", "log_matching", "leader_completeness", "state_machine_safety"]
+expected_obligation_ids = ["PO-S-ELECTION", "PO-S-APPEND", "PO-S-LOG", "PO-S-COMPLETE", "PO-S-APPLY", "PO-REFINE-STEP", "PO-COMPOSITION"]
+blocked_reason = "Independent complete-execution correspondence and five-property consumers are not yet supplied. Local core-proof or simulation cannot satisfy this aggregate."
+
+[checks.core-vote-tests]
+purpose = "test"
+adapter = "command-text-v1"
+argv = ["python3", "crates/raft-verified/check.py", "test", "--features", "madraft-poc", "--test", "protocol", "--", "persistence_barrier", "vote_freshness_and_single_vote_per_term", "storage_error_and_callback_correlation"]
+entrypoints = ["crates/raft-verified/tests/protocol.rs", "crates/raft-verified/check.py"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified", "experiments/madraft-poc"]
+expected_targets = ["Independent public event behavior: core-vote-tests"]
+expected_obligation_ids = []
+success_pattern = "test result: ok"
+minimum_tests = 3
+max_log_bytes = 8388608
+timeout_seconds = 300
+
+[checks.core-election-tests]
+purpose = "test"
+adapter = "command-text-v1"
+argv = ["python3", "crates/raft-verified/check.py", "test", "--features", "madraft-poc", "--test", "protocol", "--", "duplicate_votes_never_form_quorum", "stale_vote_responses_do_not_elect", "bounded_resources_and_invalid_inputs_are_explicit"]
+entrypoints = ["crates/raft-verified/tests/protocol.rs", "crates/raft-verified/check.py"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified", "experiments/madraft-poc"]
+expected_targets = ["Independent public event behavior: core-election-tests"]
+expected_obligation_ids = []
+success_pattern = "test result: ok"
+minimum_tests = 3
+max_log_bytes = 8388608
+timeout_seconds = 300
+
+[checks.core-replication-tests]
+purpose = "test"
+adapter = "command-text-v1"
+argv = ["python3", "crates/raft-verified/check.py", "test", "--features", "madraft-poc", "--test", "protocol", "--", "append_"]
+entrypoints = ["crates/raft-verified/tests/protocol.rs", "crates/raft-verified/check.py"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified", "experiments/madraft-poc"]
+expected_targets = ["Independent public event behavior: core-replication-tests"]
+expected_obligation_ids = []
+success_pattern = "test result: ok"
+minimum_tests = 1
+max_log_bytes = 8388608
+timeout_seconds = 300
+
+[checks.core-recovery-tests]
+purpose = "test"
+adapter = "command-text-v1"
+argv = ["python3", "crates/raft-verified/check.py", "test", "--features", "madraft-poc", "--test", "protocol", "--", "recover_"]
+entrypoints = ["crates/raft-verified/tests/protocol.rs", "crates/raft-verified/check.py"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified", "experiments/madraft-poc"]
+expected_targets = ["Independent public event behavior: core-recovery-tests"]
+expected_obligation_ids = []
+success_pattern = "test result: ok"
+minimum_tests = 1
+max_log_bytes = 8388608
+timeout_seconds = 300
+
+[checks.core-all-tests]
+purpose = "test"
+adapter = "command-text-v1"
+argv = ["python3", "crates/raft-verified/check.py", "test", "--features", "madraft-poc", "--test", "protocol", "--"]
+entrypoints = ["crates/raft-verified/tests/protocol.rs", "crates/raft-verified/check.py"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified", "experiments/madraft-poc"]
+expected_targets = ["Independent public event behavior: core-all-tests"]
+expected_obligation_ids = []
+success_pattern = "test result: ok"
+minimum_tests = 8
+max_log_bytes = 8388608
+timeout_seconds = 300
+
+[checks.cluster-election]
+purpose = "test"
+adapter = "command-text-v1"
+argv = ["python3", "experiments/madraft-poc/check.py", "election"]
+entrypoints = ["experiments/madraft-poc/check.py", "experiments/madraft-poc/src/cluster.rs", "experiments/madraft-poc/tests/cluster.rs"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified", "experiments/madraft-poc"]
+expected_targets = ["Actual MadSim nodes: election"]
+expected_obligation_ids = []
+success_pattern = "test result: ok"
+minimum_tests = 2
+max_log_bytes = 8388608
+timeout_seconds = 300
+
+[checks.cluster-replication]
+purpose = "test"
+adapter = "command-text-v1"
+argv = ["python3", "experiments/madraft-poc/check.py", "replication"]
+entrypoints = ["experiments/madraft-poc/check.py", "experiments/madraft-poc/src/cluster.rs", "experiments/madraft-poc/tests/cluster.rs"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified", "experiments/madraft-poc"]
+expected_targets = ["Actual MadSim nodes: replication"]
+expected_obligation_ids = []
+success_pattern = "test result: ok"
+minimum_tests = 1
+max_log_bytes = 8388608
+timeout_seconds = 300
+
+[checks.cluster-recovery]
+purpose = "test"
+adapter = "command-text-v1"
+argv = ["python3", "experiments/madraft-poc/check.py", "recovery"]
+entrypoints = ["experiments/madraft-poc/check.py", "experiments/madraft-poc/src/cluster.rs", "experiments/madraft-poc/tests/cluster.rs"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified", "experiments/madraft-poc"]
+expected_targets = ["Actual MadSim nodes: recovery"]
+expected_obligation_ids = []
+success_pattern = "test result: ok"
+minimum_tests = 1
+max_log_bytes = 8388608
+timeout_seconds = 300
+
+[checks.cluster-tests]
+purpose = "test"
+adapter = "command-text-v1"
+argv = ["python3", "experiments/madraft-poc/check.py", "cluster"]
+entrypoints = ["experiments/madraft-poc/check.py", "experiments/madraft-poc/src/cluster.rs", "experiments/madraft-poc/tests/cluster.rs"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified", "experiments/madraft-poc"]
+expected_targets = ["Actual MadSim nodes: cluster"]
+expected_obligation_ids = []
+success_pattern = "test result: ok"
+minimum_tests = 8
+max_log_bytes = 8388608
+timeout_seconds = 300
+
+[checks.cluster-replay]
+purpose = "test"
+adapter = "command-text-v1"
+argv = ["python3", "experiments/madraft-poc/check.py", "replay"]
+entrypoints = ["experiments/madraft-poc/src/bin/replay.rs", "experiments/madraft-poc/src/cluster.rs", "experiments/madraft-poc/check.py"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "crates/raft-verified", "experiments/madraft-poc"]
+expected_targets = ["Identical actual event histories for fixed seed 771"]
+expected_obligation_ids = []
+success_pattern = "CLUSTER_REPLAY_PASS"
+selected_count_pattern = 'CLUSTER_REPLAY_PASS seed=771 steps=(?P<count>[0-9]+)'
+minimum_tests = 1
+max_log_bytes = 8388608
+
+[tasks.MADRAFT-VOTE]
+module = "input/runtime.md"
+step = "Generate voting and durable replies on the MadSim host"
+status = "ready"
+kind = "implementation"
+after = ["RUNTIME-PERSIST"]
+context = ["input/starting-point.md", "input/progress.md", "input/properties.md", "input/assumptions.md", "input/io.md", "input/proofs.md", "input/trust.md", "crates/raft-verified/src", "crates/raft-verified/tests/protocol.rs", "crates/raft-proofs/core.rs", "crates/raft-spec/src", "experiments/madraft-poc/src/cluster.rs", "experiments/madraft-poc/tests/cluster.rs"]
+edit = ["crates/raft-verified/src/protocol.rs", "crates/raft-verified/src/protocol/", "crates/raft-verified/src/node_state.rs", "crates/raft-verified/src/contracts.rs", "crates/raft-verified/src/madraft.rs", "crates/raft-verified/src/node.rs", "crates/raft-verified/src/persistence.rs", "crates/raft-verified/src/reconcile.rs", "crates/raft-proofs/reconcile_lemmas.rs"]
+outputs = ["crates/raft-verified/src/protocol.rs"]
+obligations = ["LOCAL-MADRAFT-VOTE", "LOCAL-MADRAFT-DURABLE", "LOCAL-MADRAFT-INIT", "LOCAL-CORE-REPLY"]
+checks = ["interface-check", "madraft-poc-runtime", "madraft-poc-verus", "core-vote-tests", "core-proof"]
+
+[tasks.MADRAFT-ELECTION]
+module = "input/elections.md"
+step = "Generate elections on the supplied foundation"
+status = "ready"
+kind = "implementation"
+after = ["MADRAFT-VOTE"]
+context = ["input/starting-point.md", "input/progress.md", "input/properties.md", "input/assumptions.md", "input/io.md", "input/proofs.md", "input/trust.md", "crates/raft-verified/src", "crates/raft-verified/tests/protocol.rs", "crates/raft-proofs/core.rs", "crates/raft-spec/src", "experiments/madraft-poc/src/cluster.rs", "experiments/madraft-poc/tests/cluster.rs"]
+edit = ["crates/raft-verified/src/protocol.rs", "crates/raft-verified/src/protocol/", "crates/raft-verified/src/node_state.rs", "crates/raft-verified/src/contracts.rs", "crates/raft-verified/src/madraft.rs", "crates/raft-verified/src/node.rs", "crates/raft-verified/src/persistence.rs", "crates/raft-verified/src/reconcile.rs", "crates/raft-proofs/reconcile_lemmas.rs"]
+outputs = ["crates/raft-verified/src/protocol.rs"]
+obligations = ["LOCAL-CORE-REPLY"]
+checks = ["interface-check", "core-vote-tests", "core-election-tests", "cluster-election", "core-proof"]
+
+[tasks.MADRAFT-REPLICATION]
+module = "input/replication.md"
+step = "Generate replication and committed delivery"
+status = "ready"
+kind = "implementation"
+after = ["MADRAFT-ELECTION"]
+context = ["input/starting-point.md", "input/progress.md", "input/properties.md", "input/assumptions.md", "input/io.md", "input/proofs.md", "input/trust.md", "crates/raft-verified/src", "crates/raft-verified/tests/protocol.rs", "crates/raft-proofs/core.rs", "crates/raft-spec/src", "experiments/madraft-poc/src/cluster.rs", "experiments/madraft-poc/tests/cluster.rs"]
+edit = ["crates/raft-verified/src/protocol.rs", "crates/raft-verified/src/protocol/", "crates/raft-verified/src/node_state.rs", "crates/raft-verified/src/contracts.rs", "crates/raft-verified/src/madraft.rs", "crates/raft-verified/src/node.rs", "crates/raft-verified/src/persistence.rs", "crates/raft-verified/src/reconcile.rs", "crates/raft-proofs/reconcile_lemmas.rs"]
+outputs = ["crates/raft-verified/src/protocol.rs"]
+obligations = ["LOCAL-CORE-REPLY"]
+checks = ["interface-check", "reconcile-tests", "reconcile-proof", "core-replication-tests", "cluster-replication", "core-proof"]
+
+[tasks.MADRAFT-RECOVERY]
+module = "input/recovery.md"
+step = "Generate recovery and exercise the complete core"
+status = "ready"
+kind = "implementation"
+after = ["MADRAFT-REPLICATION"]
+context = ["input/starting-point.md", "input/progress.md", "input/properties.md", "input/assumptions.md", "input/io.md", "input/proofs.md", "input/trust.md", "crates/raft-verified/src", "crates/raft-verified/tests/protocol.rs", "crates/raft-proofs/core.rs", "crates/raft-spec/src", "experiments/madraft-poc/src/cluster.rs", "experiments/madraft-poc/tests/cluster.rs"]
+edit = ["crates/raft-verified/src/protocol.rs", "crates/raft-verified/src/protocol/", "crates/raft-verified/src/node_state.rs", "crates/raft-verified/src/contracts.rs", "crates/raft-verified/src/madraft.rs", "crates/raft-verified/src/node.rs", "crates/raft-verified/src/persistence.rs", "crates/raft-verified/src/reconcile.rs", "crates/raft-proofs/reconcile_lemmas.rs"]
+outputs = ["crates/raft-verified/src/protocol.rs"]
+obligations = ["LOCAL-CORE-REPLY"]
+checks = ["interface-check", "core-all-tests", "cluster-tests", "cluster-replay", "core-proof"]

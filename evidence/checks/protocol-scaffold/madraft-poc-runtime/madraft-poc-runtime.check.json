@@ -1,0 +1,77 @@
+{
+  "schema_version": "1",
+  "check_id": "madraft-poc-runtime",
+  "run_id": "local",
+  "check_kind": "verification",
+  "profile_id": "madraft-poc-runtime",
+  "purpose": "test",
+  "required": true,
+  "expected_targets": [
+    "Actual MadSim runtime with the same raft-verified source"
+  ],
+  "expected_obligation_ids": [],
+  "entrypoints": [
+    "experiments/madraft-poc/check.py",
+    "experiments/madraft-poc/src/lib.rs",
+    "experiments/madraft-poc/tests/scenarios.rs",
+    "crates/raft-verified/src/madraft.rs"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "FAIL",
+  "argv": [
+    "python3",
+    "experiments/madraft-poc/check.py",
+    "runtime"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus",
+  "input_manifest_digest": "d0ccb9516309f68928941f9e703caafa8729a08d9cedf937e313a2eca797707d",
+  "tool_versions": {},
+  "started_at": "2026-10-28T07:29:42.561322+00:00",
+  "finished_at": "2026-10-28T07:29:55.552549+00:00",
+  "exit_code": 101,
+  "stdout_digest": "f5a5bcb1123ada0de541ac5851dd3116e0132f675ccec0ad481a4abe5b72f2f6",
+  "stderr_digest": "6a3abc79200cd2702c6233f06b7bc247af8f9e164f66d427fd345c295a3dd3a5",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/madraft-poc-runtime/madraft-poc-runtime.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/madraft-poc-runtime/madraft-poc-runtime.stderr.log"
+  ],
+  "obligation_ids_checked": [],
+  "coverage_findings": [],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "resolved_toolchain": {
+    "paths": {
+      "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+      "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+      "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+    },
+    "missing": [],
+    "environment": {
+      "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+    }
+  },
+  "tool_environment": {
+    "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+    "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+    "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+    "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/workflow.toml"
+  },
+  "failed_tests": [
+    "core_boundary_errors_and_token_correlation",
+    "fault_crash_after_durable_before_callback",
+    "fault_loss_duplicate_delay_repeats",
+    "fault_storage_failure_and_unknown_never_grant",
+    "nominal_exchange",
+    "persistence_barrier",
+    "synthetic_log_boundary",
+    "vote_edges"
+  ],
+  "reason": "configured build/test success evidence absent"
+}

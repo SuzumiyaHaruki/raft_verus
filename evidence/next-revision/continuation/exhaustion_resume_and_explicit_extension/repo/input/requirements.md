@@ -1,1 +1,0 @@
-Status: DRAFT. Offline fixture contract and TCB.

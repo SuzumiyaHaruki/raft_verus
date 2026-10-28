@@ -220,7 +220,7 @@ pub fn run(scenario: Scenario, seed: u64) -> Trace {
             .name("injector-3")
             .ip(address(3).ip())
             .build();
-        let mut n = Node::feasibility_follower(2, vec![1, 2, 3]).unwrap();
+        let mut n = Node::new(2, vec![1, 2, 3]).unwrap();
         let records: Records = Arc::new(Mutex::new(vec![]));
         if scenario == Scenario::BoundaryLog {
             let mut s = n.observe().clone();
@@ -360,3 +360,6 @@ pub fn run(scenario: Scenario, seed: u64) -> Trace {
         }
     })
 }
+
+// Supplied host for future Codex-generated core behavior; no protocol decisions here.
+pub mod cluster;

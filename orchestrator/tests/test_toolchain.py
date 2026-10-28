@@ -1,5 +1,6 @@
 """The relocated installation is a real directory; wrappers are labeled test fixtures."""
 import os
+import runpy
 from pathlib import Path
 import shutil
 import subprocess
@@ -69,3 +70,25 @@ class ToolchainTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertIn(str(base), result.stderr)
                 if command == 'persist-proof': self.assertIn('0 errors', result.stdout)
+
+    def test_madsim_candidate_uses_supplied_cache_inside_writable_scratch(self):
+        # Dependency staging only; the full regression suite separately runs real tools.
+        with tempfile.TemporaryDirectory() as location:
+            base = Path(location)
+            candidate = create_candidate(ROOT, base/'candidate')
+            supplied = base/'supplied-cache'; supplied.mkdir()
+            (supplied/'package.txt').write_text('SIMULATED cache bytes')
+            cfg = candidate/'workflow.toml'
+            old = load_config(ROOT)['toolchain']['madsim_cargo_home']
+            cfg.write_text(cfg.read_text().replace(old, str(supplied)))
+            scratch = base/'agent-build'
+            with patch.dict(os.environ, CARGO_TARGET_DIR=str(scratch), RAFT_WORKFLOW_CONFIG=str(cfg)):
+                command = runpy.run_path(str(candidate/'experiments/madraft-poc/check.py'))['cargo_command']
+                argv, env = command(candidate, 'build')
+            staged = Path(env['CARGO_HOME'])
+            self.assertEqual(staged, scratch/'cargo-home')
+            self.assertEqual((staged/'package.txt').read_text(), 'SIMULATED cache bytes')
+            self.assertIn('--offline', argv)
+            self.assertIn('--locked', argv)
+            self.assertFalse((candidate/'target').exists())
+            self.assertTrue((supplied/'package.txt').exists())

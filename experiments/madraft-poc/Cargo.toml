@@ -10,3 +10,5 @@ publish = false
 [dependencies]
 madsim = { git = "https://github.com/madsim-rs/madsim", rev = "519950efb4711464f300ed7edf2967ed62d5f502", default-features = false }
 raft-verified = { path = "../../crates/raft-verified", features = ["madraft-poc"] }
+
+async-channel = "=2.5.0"

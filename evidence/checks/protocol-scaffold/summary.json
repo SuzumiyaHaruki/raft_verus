@@ -1,0 +1,1055 @@
+[
+  {
+    "schema_version": "1",
+    "check_id": "interface-check",
+    "run_id": "local",
+    "check_kind": "build-only",
+    "profile_id": "interface-check",
+    "purpose": "build",
+    "required": true,
+    "expected_targets": [
+      "raft-verified"
+    ],
+    "expected_obligation_ids": [],
+    "entrypoints": [
+      "crates/raft-verified/src/lib.rs",
+      "crates/raft-verified/src/reconcile.rs",
+      "crates/raft-verified/check.py"
+    ],
+    "expected_behavior": "Configured targets and required observations succeed",
+    "result": "PASS",
+    "argv": [
+      "python3",
+      "crates/raft-verified/check.py",
+      "build"
+    ],
+    "working_directory": "/home/nitro/Desktop/raft_verus",
+    "input_manifest_digest": "fd02d22799fa5b8fe74cdd9102166f92e987ac7b9ab5d69b5e219766ddff8571",
+    "tool_versions": {},
+    "started_at": "2026-10-28T07:29:28.473041+00:00",
+    "finished_at": "2026-10-28T07:29:28.809363+00:00",
+    "exit_code": 0,
+    "stdout_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_digest": "b4281984e0d61bc00c1d6271d4c59d83244e238a7d53b2e8830fa99a20fc583c",
+    "evidence_paths": [
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/interface-check/interface-check.stdout.log",
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/interface-check/interface-check.stderr.log"
+    ],
+    "obligation_ids_checked": [],
+    "coverage_findings": [
+      "build/test only; no mathematical proof"
+    ],
+    "policy_findings": [],
+    "evidence_kind": "REAL_LOCAL",
+    "contract_status": "DRAFT",
+    "full_acceptance": false,
+    "resolved_toolchain": {
+      "paths": {
+        "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+        "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+        "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+      },
+      "missing": [],
+      "environment": {
+        "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+      }
+    },
+    "tool_environment": {
+      "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+      "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/workflow.toml"
+    },
+    "reason": "profile checks passed locally; no full Raft acceptance"
+  },
+  {
+    "schema_version": "1",
+    "check_id": "madraft-poc-build",
+    "run_id": "local",
+    "check_kind": "verification",
+    "profile_id": "madraft-poc-build",
+    "purpose": "build",
+    "required": true,
+    "expected_targets": [
+      "Actual MadSim build with the same raft-verified source"
+    ],
+    "expected_obligation_ids": [],
+    "entrypoints": [
+      "experiments/madraft-poc/check.py",
+      "experiments/madraft-poc/src/lib.rs",
+      "experiments/madraft-poc/tests/scenarios.rs",
+      "crates/raft-verified/src/madraft.rs"
+    ],
+    "expected_behavior": "Configured targets and required observations succeed",
+    "result": "PASS",
+    "argv": [
+      "python3",
+      "experiments/madraft-poc/check.py",
+      "build"
+    ],
+    "working_directory": "/home/nitro/Desktop/raft_verus",
+    "input_manifest_digest": "1ba3379c84548432db2dc8cac4b130cd774e2ab9a12c39c28603276a15400f64",
+    "tool_versions": {},
+    "started_at": "2026-10-28T07:29:28.817321+00:00",
+    "finished_at": "2026-10-28T07:29:38.545897+00:00",
+    "exit_code": 0,
+    "stdout_digest": "d4ad2c0509d8fb36dbb91b3f78783d55b206aa97c60f120691ac73e88a8c8ea0",
+    "stderr_digest": "0474b15e855dbfc8538bbad06620c1b2889c81f9e7a0d245265b098b494f7863",
+    "evidence_paths": [
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/madraft-poc-build/madraft-poc-build.stdout.log",
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/madraft-poc-build/madraft-poc-build.stderr.log"
+    ],
+    "obligation_ids_checked": [],
+    "coverage_findings": [
+      "build/test only; no mathematical proof"
+    ],
+    "policy_findings": [],
+    "evidence_kind": "REAL_LOCAL",
+    "contract_status": "DRAFT",
+    "full_acceptance": false,
+    "resolved_toolchain": {
+      "paths": {
+        "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+        "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+        "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+      },
+      "missing": [],
+      "environment": {
+        "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+      }
+    },
+    "tool_environment": {
+      "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+      "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/workflow.toml"
+    },
+    "reason": "profile checks passed locally; no full Raft acceptance"
+  },
+  {
+    "schema_version": "1",
+    "check_id": "node-tests",
+    "run_id": "local",
+    "check_kind": "functional-tests",
+    "profile_id": "node-tests",
+    "purpose": "test",
+    "required": true,
+    "expected_targets": [
+      "all eight independent node initialization cases"
+    ],
+    "expected_obligation_ids": [],
+    "entrypoints": [
+      "crates/raft-verified/tests/node_init.rs",
+      "crates/raft-verified/check.py"
+    ],
+    "expected_behavior": "Configured targets and required observations succeed",
+    "result": "FAIL",
+    "argv": [
+      "python3",
+      "crates/raft-verified/check.py",
+      "test",
+      "--test",
+      "node_init"
+    ],
+    "working_directory": "/home/nitro/Desktop/raft_verus",
+    "input_manifest_digest": "e2cd746ed066140c77f0ca74f7735d4e8e0dbdd94aa89b5e717dbd86d60daeeb",
+    "tool_versions": {},
+    "started_at": "2026-10-28T07:29:38.665732+00:00",
+    "finished_at": "2026-10-28T07:29:39.199652+00:00",
+    "exit_code": 101,
+    "stdout_digest": "0e8be16457388e16157e6a102206fd3923722d195e5af2e88a625b122f77dd98",
+    "stderr_digest": "8faf1d89b23d6129bfb0e78c3db0ef5e63e24d47f6510b94b3fbaa706ffc4dff",
+    "evidence_paths": [
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/node-tests/node-tests.stdout.log",
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/node-tests/node-tests.stderr.log"
+    ],
+    "obligation_ids_checked": [],
+    "coverage_findings": [],
+    "policy_findings": [],
+    "evidence_kind": "REAL_LOCAL",
+    "contract_status": "DRAFT",
+    "full_acceptance": false,
+    "resolved_toolchain": {
+      "paths": {
+        "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+        "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+        "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+      },
+      "missing": [],
+      "environment": {
+        "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+      }
+    },
+    "tool_environment": {
+      "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+      "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/workflow.toml"
+    },
+    "failed_tests": [
+      "maximum_identity_is_not_a_sentinel",
+      "membership_order_is_not_a_precondition",
+      "one_member",
+      "several_members"
+    ],
+    "reason": "configured build/test success evidence absent"
+  },
+  {
+    "schema_version": "1",
+    "check_id": "node-proof",
+    "run_id": "local",
+    "check_kind": "local-correspondence",
+    "profile_id": "node-proof",
+    "purpose": "proof",
+    "required": true,
+    "expected_targets": [
+      "check_observe",
+      "check_observation_input",
+      "check_node_init",
+      "new"
+    ],
+    "expected_obligation_ids": [
+      "LOCAL-NODE-INIT"
+    ],
+    "entrypoints": [
+      "crates/raft-verified/src/node_state.rs",
+      "crates/raft-verified/src/contracts.rs",
+      "crates/raft-proofs/observation.rs",
+      "crates/raft-proofs/node_init.rs",
+      "crates/raft-verified/src/node.rs",
+      "crates/raft-verified/src/state.rs",
+      "crates/raft-verified/src/types.rs",
+      "crates/raft-spec/src/lib.rs",
+      "crates/raft-spec/src/reconcile_view.rs",
+      "crates/raft-spec/src/node_init.rs"
+    ],
+    "expected_behavior": "Configured targets and required observations succeed",
+    "result": "FAIL",
+    "argv": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "--crate-type",
+      "lib",
+      "--no-cheating",
+      "--output-json",
+      "--time-expanded",
+      "--triggers-mode",
+      "silent",
+      "crates/raft-proofs/node_init.rs"
+    ],
+    "working_directory": "/home/nitro/Desktop/raft_verus",
+    "input_manifest_digest": "859e5a76530f122665f79b0218d9534b3b249c922f1048a8ab8999729c1f44c1",
+    "tool_versions": {
+      "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+    },
+    "started_at": "2026-10-28T07:29:39.212767+00:00",
+    "finished_at": "2026-10-28T07:29:40.459880+00:00",
+    "exit_code": 1,
+    "stdout_digest": "70ba6f4ae24b47cbbb4e97e7c35e91811a9078cac46c87d533d91faa6c8c68fc",
+    "stderr_digest": "abeb24ba93c5cc89de90a2c43981bb41b13f5daed0d3466e797975ab10801b19",
+    "evidence_paths": [
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/node-proof/node-proof.stdout.log",
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/node-proof/node-proof.stderr.log"
+    ],
+    "obligation_ids_checked": [],
+    "coverage_findings": [],
+    "policy_findings": [],
+    "evidence_kind": "REAL_LOCAL",
+    "contract_status": "DRAFT",
+    "full_acceptance": false,
+    "resolved_toolchain": {
+      "paths": {
+        "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+        "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+        "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+      },
+      "missing": [],
+      "environment": {
+        "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+      }
+    },
+    "tool_environment": {
+      "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+      "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/workflow.toml"
+    },
+    "function_results": {
+      "node_init::check_node_init": false,
+      "node_init::node_state::Node::observe": true,
+      "node_init::node_state::Node::clone": true,
+      "node_init::node_state::Node::from_observation": true,
+      "node_init::io::InputError::clone": true,
+      "node_init::io::OperationId::clone": true,
+      "node_init::io::CompletionKind::clone": true,
+      "node_init::io::MessageBody::clone": true,
+      "node_init::io::Effect::clone": true,
+      "node_init::io::Event::clone": true,
+      "node_init::io::Message::clone": true,
+      "node_init::io::CompletionOutcome::clone": true,
+      "node_init::observation::check_observe": true,
+      "node_init::observation::check_observation_input": true,
+      "node_init::state::Role::clone": true,
+      "node_init::state::PendingWrite::clone": true,
+      "node_init::state::Observation::clone": true,
+      "node_init::state::InitError::clone": true,
+      "node_init::state::DurableState::clone": true,
+      "node_init::node_state::Node::new": true,
+      "node_init::types::Command::clone": true,
+      "node_init::types::ReconcileError::clone": true,
+      "node_init::types::Entry::clone": true,
+      "node_init::types::RequestId::clone": true
+    },
+    "entire_crate_checked": true,
+    "verification_summary": {
+      "verified": 23,
+      "errors": 1
+    },
+    "reason": "Verus reported rejection or insufficient checked definitions"
+  },
+  {
+    "schema_version": "1",
+    "check_id": "persist-tests",
+    "run_id": "local",
+    "check_kind": "verification",
+    "profile_id": "persist-tests",
+    "purpose": "test",
+    "required": true,
+    "expected_targets": [
+      "actual Node coordinator behavior"
+    ],
+    "expected_obligation_ids": [],
+    "entrypoints": [
+      "crates/raft-verified/tests/persistence.rs"
+    ],
+    "expected_behavior": "Configured targets and required observations succeed",
+    "result": "FAIL",
+    "argv": [
+      "python3",
+      "crates/raft-verified/check.py",
+      "test",
+      "--test",
+      "persistence"
+    ],
+    "working_directory": "/home/nitro/Desktop/raft_verus",
+    "input_manifest_digest": "6d94b2fe3705f29d6378e6a828232d5d56745ca193f2fddb211f4470c3496e23",
+    "tool_versions": {},
+    "started_at": "2026-10-28T07:29:40.466903+00:00",
+    "finished_at": "2026-10-28T07:29:41.124641+00:00",
+    "exit_code": 101,
+    "stdout_digest": "130a0633e69a6911ad0c8d026b0efea8e57dd558471dc7933c853f17c6a8871e",
+    "stderr_digest": "a7331c9b968cfcb4d837c773e09d416f20af7a70746fcef37ec18700412f6fd9",
+    "evidence_paths": [
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/persist-tests/persist-tests.stdout.log",
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/persist-tests/persist-tests.stderr.log"
+    ],
+    "obligation_ids_checked": [],
+    "coverage_findings": [],
+    "policy_findings": [],
+    "evidence_kind": "REAL_LOCAL",
+    "contract_status": "DRAFT",
+    "full_acceptance": false,
+    "resolved_toolchain": {
+      "paths": {
+        "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+        "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+        "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+      },
+      "missing": [],
+      "environment": {
+        "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+      }
+    },
+    "tool_environment": {
+      "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+      "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/workflow.toml"
+    },
+    "failed_tests": [
+      "failures_are_fail_stop_and_never_release_the_reply",
+      "exhaustion_is_explicit_and_does_not_wrap_or_modify_state",
+      "busy_preserves_pending_image_and_fresh_sequence",
+      "incarnation_sequence_and_kind_all_match_before_release",
+      "partial_dispatcher_rejects_every_unimplemented_variant",
+      "submission_and_durable_storage_do_not_release_before_callback"
+    ],
+    "reason": "configured build/test success evidence absent"
+  },
+  {
+    "schema_version": "1",
+    "check_id": "persist-proof",
+    "run_id": "local",
+    "check_kind": "verification",
+    "profile_id": "persist-proof",
+    "purpose": "proof",
+    "required": true,
+    "expected_targets": [
+      "check_observe",
+      "check_observation_input",
+      "check_submit",
+      "check_complete",
+      "check_dispatch",
+      "check_storage_projection",
+      "check_completion_projection",
+      "completion_projection"
+    ],
+    "expected_obligation_ids": [
+      "LOCAL-PERSIST",
+      "LOCAL-PERSIST-VIEW"
+    ],
+    "entrypoints": [
+      "crates/raft-verified/src/node_state.rs",
+      "crates/raft-verified/src/contracts.rs",
+      "crates/raft-proofs/observation.rs",
+      "crates/raft-proofs/persistence.rs",
+      "crates/raft-proofs/persistence_lemmas.rs",
+      "crates/raft-verified/src/persistence.rs",
+      "crates/raft-verified/src/state.rs",
+      "crates/raft-verified/src/io.rs",
+      "crates/raft-spec/src/persistence.rs"
+    ],
+    "expected_behavior": "Configured targets and required observations succeed",
+    "result": "FAIL",
+    "argv": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "--crate-type",
+      "lib",
+      "--no-cheating",
+      "--output-json",
+      "--time-expanded",
+      "--triggers-mode",
+      "silent",
+      "crates/raft-proofs/persistence.rs"
+    ],
+    "working_directory": "/home/nitro/Desktop/raft_verus",
+    "input_manifest_digest": "15815490d2f82c21b674ec42376d0c7ec7eae4acc5980b48531edecdeb01dbfb",
+    "tool_versions": {
+      "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+    },
+    "started_at": "2026-10-28T07:29:41.137209+00:00",
+    "finished_at": "2026-10-28T07:29:42.556316+00:00",
+    "exit_code": 1,
+    "stdout_digest": "69465a665478de9f2c8abc2fb4bdb266b57854c8bce48bd0e6eb41bddf52d0a2",
+    "stderr_digest": "7d7661e655189283b8bde79022b83346d0b37391cbd40435c5332eed66719dd8",
+    "evidence_paths": [
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/persist-proof/persist-proof.stdout.log",
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/persist-proof/persist-proof.stderr.log"
+    ],
+    "obligation_ids_checked": [],
+    "coverage_findings": [],
+    "policy_findings": [],
+    "evidence_kind": "REAL_LOCAL",
+    "contract_status": "DRAFT",
+    "full_acceptance": false,
+    "resolved_toolchain": {
+      "paths": {
+        "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+        "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+        "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+      },
+      "missing": [],
+      "environment": {
+        "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+      }
+    },
+    "tool_environment": {
+      "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+      "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/workflow.toml"
+    },
+    "function_results": {
+      "persistence::check_completion_projection": true,
+      "persistence::check_storage_projection": true,
+      "persistence::check_submit": false,
+      "persistence::check_complete": false,
+      "persistence::check_dispatch": false,
+      "persistence::persistence_lemmas::completion_projection": true,
+      "persistence::persistence_lemmas::submit_projection": true,
+      "persistence::node_state::Node::clone": true,
+      "persistence::node_state::Node::from_observation": true,
+      "persistence::node_state::Node::observe": true,
+      "persistence::observation::check_observe": true,
+      "persistence::observation::check_observation_input": true,
+      "persistence::io::MessageBody::clone": true,
+      "persistence::io::CompletionOutcome::clone": true,
+      "persistence::io::CompletionKind::clone": true,
+      "persistence::io::Message::clone": true,
+      "persistence::io::Event::clone": true,
+      "persistence::io::OperationId::clone": true,
+      "persistence::io::InputError::clone": true,
+      "persistence::io::Effect::clone": true,
+      "persistence::node_state::Node::submit_persist": true,
+      "persistence::node_state::Node::complete_persist": true,
+      "persistence::node_state::Node::step": true,
+      "persistence::state::Role::clone": true,
+      "persistence::state::InitError::clone": true,
+      "persistence::state::DurableState::clone": true,
+      "persistence::state::PendingWrite::clone": true,
+      "persistence::state::Observation::clone": true,
+      "persistence::types::Entry::clone": true,
+      "persistence::types::Command::clone": true,
+      "persistence::types::ReconcileError::clone": true,
+      "persistence::types::RequestId::clone": true
+    },
+    "entire_crate_checked": true,
+    "verification_summary": {
+      "verified": 29,
+      "errors": 3
+    },
+    "reason": "Verus reported rejection or insufficient checked definitions"
+  },
+  {
+    "schema_version": "1",
+    "check_id": "madraft-poc-runtime",
+    "run_id": "local",
+    "check_kind": "verification",
+    "profile_id": "madraft-poc-runtime",
+    "purpose": "test",
+    "required": true,
+    "expected_targets": [
+      "Actual MadSim runtime with the same raft-verified source"
+    ],
+    "expected_obligation_ids": [],
+    "entrypoints": [
+      "experiments/madraft-poc/check.py",
+      "experiments/madraft-poc/src/lib.rs",
+      "experiments/madraft-poc/tests/scenarios.rs",
+      "crates/raft-verified/src/madraft.rs"
+    ],
+    "expected_behavior": "Configured targets and required observations succeed",
+    "result": "FAIL",
+    "argv": [
+      "python3",
+      "experiments/madraft-poc/check.py",
+      "runtime"
+    ],
+    "working_directory": "/home/nitro/Desktop/raft_verus",
+    "input_manifest_digest": "d0ccb9516309f68928941f9e703caafa8729a08d9cedf937e313a2eca797707d",
+    "tool_versions": {},
+    "started_at": "2026-10-28T07:29:42.561322+00:00",
+    "finished_at": "2026-10-28T07:29:55.552549+00:00",
+    "exit_code": 101,
+    "stdout_digest": "f5a5bcb1123ada0de541ac5851dd3116e0132f675ccec0ad481a4abe5b72f2f6",
+    "stderr_digest": "6a3abc79200cd2702c6233f06b7bc247af8f9e164f66d427fd345c295a3dd3a5",
+    "evidence_paths": [
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/madraft-poc-runtime/madraft-poc-runtime.stdout.log",
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/madraft-poc-runtime/madraft-poc-runtime.stderr.log"
+    ],
+    "obligation_ids_checked": [],
+    "coverage_findings": [],
+    "policy_findings": [],
+    "evidence_kind": "REAL_LOCAL",
+    "contract_status": "DRAFT",
+    "full_acceptance": false,
+    "resolved_toolchain": {
+      "paths": {
+        "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+        "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+        "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+      },
+      "missing": [],
+      "environment": {
+        "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+      }
+    },
+    "tool_environment": {
+      "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+      "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/workflow.toml"
+    },
+    "failed_tests": [
+      "core_boundary_errors_and_token_correlation",
+      "fault_crash_after_durable_before_callback",
+      "fault_loss_duplicate_delay_repeats",
+      "fault_storage_failure_and_unknown_never_grant",
+      "nominal_exchange",
+      "persistence_barrier",
+      "synthetic_log_boundary",
+      "vote_edges"
+    ],
+    "reason": "configured build/test success evidence absent"
+  },
+  {
+    "schema_version": "1",
+    "check_id": "madraft-poc-verus",
+    "run_id": "local",
+    "check_kind": "verification",
+    "profile_id": "madraft-poc-verus",
+    "purpose": "proof",
+    "required": true,
+    "expected_targets": [
+      "check_follower",
+      "check_vote",
+      "check_durable_reply",
+      "handle_request_vote",
+      "finish_vote",
+      "new",
+      "check_freshness_projection"
+    ],
+    "expected_obligation_ids": [
+      "LOCAL-MADRAFT-VOTE",
+      "LOCAL-MADRAFT-DURABLE",
+      "LOCAL-MADRAFT-INIT"
+    ],
+    "entrypoints": [
+      "crates/raft-proofs/madraft_vote.rs",
+      "crates/raft-proofs/observation.rs",
+      "crates/raft-verified/src/madraft.rs",
+      "crates/raft-spec/src/madraft_vote.rs"
+    ],
+    "expected_behavior": "Configured targets and required observations succeed",
+    "result": "FAIL",
+    "argv": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "--crate-type",
+      "lib",
+      "--no-cheating",
+      "--output-json",
+      "--time-expanded",
+      "--triggers-mode",
+      "silent",
+      "crates/raft-proofs/madraft_vote.rs"
+    ],
+    "working_directory": "/home/nitro/Desktop/raft_verus",
+    "input_manifest_digest": "d97bd799bb47e46d73c2c7b0a23241f28c260c060b0dca2d57130a661a932afd",
+    "tool_versions": {
+      "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+    },
+    "started_at": "2026-10-28T07:29:55.779642+00:00",
+    "finished_at": "2026-10-28T07:29:56.971898+00:00",
+    "exit_code": 1,
+    "stdout_digest": "afe7640ff349cfae6543bbc12c2c9dc72ede9ab265052b52138a917631fc0fc9",
+    "stderr_digest": "113fcfe07dffd3e4495b59048b7560710ab6cc65eb2a74f7e0c206bd0e67f7ea",
+    "evidence_paths": [
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/madraft-poc-verus/madraft-poc-verus.stdout.log",
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/madraft-poc-verus/madraft-poc-verus.stderr.log"
+    ],
+    "obligation_ids_checked": [],
+    "coverage_findings": [],
+    "policy_findings": [],
+    "evidence_kind": "REAL_LOCAL",
+    "contract_status": "DRAFT",
+    "full_acceptance": false,
+    "resolved_toolchain": {
+      "paths": {
+        "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+        "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+        "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+      },
+      "missing": [],
+      "environment": {
+        "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+      }
+    },
+    "tool_environment": {
+      "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+      "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/workflow.toml"
+    },
+    "function_results": {
+      "madraft_vote::check_follower": false,
+      "madraft_vote::check_vote": false,
+      "madraft_vote::check_durable_reply": false,
+      "madraft_vote::check_freshness_projection": true,
+      "madraft_vote::node_state::Node::clone": true,
+      "madraft_vote::node_state::Node::from_observation": true,
+      "madraft_vote::node_state::Node::observe": true,
+      "madraft_vote::node_state::Node::step": true,
+      "madraft_vote::node_state::Node::submit_persist": true,
+      "madraft_vote::node_state::Node::complete_persist": true,
+      "madraft_vote::io::Effect::clone": true,
+      "madraft_vote::io::Message::clone": true,
+      "madraft_vote::io::Event::clone": true,
+      "madraft_vote::io::InputError::clone": true,
+      "madraft_vote::io::OperationId::clone": true,
+      "madraft_vote::io::CompletionOutcome::clone": true,
+      "madraft_vote::io::MessageBody::clone": true,
+      "madraft_vote::io::CompletionKind::clone": true,
+      "madraft_vote::observation::check_observation_input": true,
+      "madraft_vote::observation::check_observe": true,
+      "madraft_vote::node_state::Node::new": true,
+      "madraft_vote::node_state::Node::finish_vote": true,
+      "madraft_vote::node_state::Node::handle_request_vote": true,
+      "madraft_vote::types::Command::clone": true,
+      "madraft_vote::types::RequestId::clone": true,
+      "madraft_vote::types::ReconcileError::clone": true,
+      "madraft_vote::types::Entry::clone": true,
+      "madraft_vote::state::Observation::clone": true,
+      "madraft_vote::state::Role::clone": true,
+      "madraft_vote::state::InitError::clone": true,
+      "madraft_vote::state::DurableState::clone": true,
+      "madraft_vote::state::PendingWrite::clone": true
+    },
+    "entire_crate_checked": true,
+    "verification_summary": {
+      "verified": 29,
+      "errors": 3
+    },
+    "reason": "Verus reported rejection or insufficient checked definitions"
+  },
+  {
+    "schema_version": "1",
+    "check_id": "core-vote-tests",
+    "run_id": "local",
+    "check_kind": "verification",
+    "profile_id": "core-vote-tests",
+    "purpose": "test",
+    "required": true,
+    "expected_targets": [
+      "Independent public event behavior: core-vote-tests"
+    ],
+    "expected_obligation_ids": [],
+    "entrypoints": [
+      "crates/raft-verified/tests/protocol.rs",
+      "crates/raft-verified/check.py"
+    ],
+    "expected_behavior": "Configured targets and required observations succeed",
+    "result": "FAIL",
+    "argv": [
+      "python3",
+      "crates/raft-verified/check.py",
+      "test",
+      "--features",
+      "madraft-poc",
+      "--test",
+      "protocol",
+      "--",
+      "persistence_barrier",
+      "vote_freshness_and_single_vote_per_term",
+      "storage_error_and_callback_correlation"
+    ],
+    "working_directory": "/home/nitro/Desktop/raft_verus",
+    "input_manifest_digest": "60142b9ceb8babc015d92c64b05b5bca54c117c9c6dc7e375342a996bde8b8ea",
+    "tool_versions": {},
+    "started_at": "2026-10-28T07:29:56.978511+00:00",
+    "finished_at": "2026-10-28T07:29:57.770007+00:00",
+    "exit_code": 101,
+    "stdout_digest": "bdc235ba9a92f88a70b9c00034e9ce989f56f428f1028d75c6187a861e13ae40",
+    "stderr_digest": "9c7fa10cf7a4750405259faa262208753dd4a200f3028c5d713c14e3a9bcdc85",
+    "evidence_paths": [
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/core-vote-tests/core-vote-tests.stdout.log",
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/core-vote-tests/core-vote-tests.stderr.log"
+    ],
+    "obligation_ids_checked": [],
+    "coverage_findings": [],
+    "policy_findings": [],
+    "evidence_kind": "REAL_LOCAL",
+    "contract_status": "DRAFT",
+    "full_acceptance": false,
+    "resolved_toolchain": {
+      "paths": {
+        "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+        "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+        "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+      },
+      "missing": [],
+      "environment": {
+        "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+      }
+    },
+    "tool_environment": {
+      "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+      "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/workflow.toml"
+    },
+    "failed_tests": [
+      "storage_error_and_callback_correlation",
+      "vote_freshness_and_single_vote_per_term",
+      "persistence_barrier"
+    ],
+    "reason": "configured build/test success evidence absent"
+  },
+  {
+    "schema_version": "1",
+    "check_id": "core-proof",
+    "run_id": "local",
+    "check_kind": "verification",
+    "profile_id": "core-proof",
+    "purpose": "proof",
+    "required": true,
+    "expected_targets": [
+      "check_durable_reply",
+      "handle_event"
+    ],
+    "expected_obligation_ids": [
+      "LOCAL-CORE-REPLY"
+    ],
+    "entrypoints": [
+      "crates/raft-proofs/core.rs",
+      "crates/raft-verified/src/protocol.rs"
+    ],
+    "expected_behavior": "Configured targets and required observations succeed",
+    "result": "FAIL",
+    "argv": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "--crate-type",
+      "lib",
+      "--no-cheating",
+      "--output-json",
+      "--time-expanded",
+      "--triggers-mode",
+      "silent",
+      "crates/raft-proofs/core.rs"
+    ],
+    "working_directory": "/home/nitro/Desktop/raft_verus",
+    "input_manifest_digest": "fee223138041afdc8be4877a56700210e277118905dbdd20054d844f845f8c7c",
+    "tool_versions": {
+      "verus": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu"
+    },
+    "started_at": "2026-10-28T07:29:57.781452+00:00",
+    "finished_at": "2026-10-28T07:29:59.108574+00:00",
+    "exit_code": 1,
+    "stdout_digest": "7e482c9cceaf6d23ca16da0582d99ef2443e0c13d1eab06afe3e641bc9a84a73",
+    "stderr_digest": "17d5adb3fe50ac14c7d712500107c1a0465c7e657c8261e9b195366a1273b899",
+    "evidence_paths": [
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/core-proof/core-proof.stdout.log",
+      "/home/nitro/Desktop/raft_verus/evidence/checks/protocol-scaffold/core-proof/core-proof.stderr.log"
+    ],
+    "obligation_ids_checked": [],
+    "coverage_findings": [],
+    "policy_findings": [],
+    "evidence_kind": "REAL_LOCAL",
+    "contract_status": "DRAFT",
+    "full_acceptance": false,
+    "resolved_toolchain": {
+      "paths": {
+        "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+        "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+        "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+      },
+      "missing": [],
+      "environment": {
+        "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+      }
+    },
+    "tool_environment": {
+      "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+      "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/workflow.toml"
+    },
+    "function_results": {
+      "core::check_durable_reply": false,
+      "core::node_state::Node::observe": true,
+      "core::node_state::Node::from_observation": true,
+      "core::node_state::Node::clone": true,
+      "core::node_state::Node::complete_persist": true,
+      "core::node_state::Node::submit_persist": true,
+      "core::node_state::Node::step": true,
+      "core::observation::check_observation_input": true,
+      "core::observation::check_observe": true,
+      "core::io::InputError::clone": true,
+      "core::io::Effect::clone": true,
+      "core::io::Event::clone": true,
+      "core::io::Message::clone": true,
+      "core::io::CompletionOutcome::clone": true,
+      "core::io::OperationId::clone": true,
+      "core::io::CompletionKind::clone": true,
+      "core::io::MessageBody::clone": true,
+      "core::node_state::Node::finish_vote": true,
+      "core::node_state::Node::handle_request_vote": true,
+      "core::state::Role::clone": true,
+      "core::state::PendingWrite::clone": true,
+      "core::state::Observation::clone": true,
+      "core::state::DurableState::clone": true,
+      "core::state::InitError::clone": true,
+      "core::node_state::Node::new": true,
+      "core::types::Entry::clone": true,
+      "core::types::ReconcileError::clone": true,
+      "core::types::RequestId::clone": true,
+      "core::types::Command::clone": true,
+      "core::node_state::Node::handle_event": true,
+      "core::reconcile::reconcile_log": true
+    },
+    "entire_crate_checked": true,
+    "verification_summary": {
+      "verified": 30,
+      "errors": 1
+    },
+    "reason": "Verus reported rejection or insufficient checked definitions"
+  },
+  {
+    "schema_version": "1",
+    "check_id": "raft-safety",
+    "run_id": "local",
+    "check_kind": "verification",
+    "profile_id": "raft-safety",
+    "purpose": "proof",
+    "required": true,
+    "expected_targets": [
+      "implementation_execution_refinement",
+      "election_safety",
+      "leader_append_only",
+      "log_matching",
+      "leader_completeness",
+      "state_machine_safety"
+    ],
+    "expected_obligation_ids": [
+      "PO-S-ELECTION",
+      "PO-S-APPEND",
+      "PO-S-LOG",
+      "PO-S-COMPLETE",
+      "PO-S-APPLY",
+      "PO-REFINE-STEP",
+      "PO-COMPOSITION"
+    ],
+    "entrypoints": [
+      "crates/raft-proofs/core.rs",
+      "crates/raft-spec/src/lib.rs",
+      "crates/raft-proofs/README.md"
+    ],
+    "expected_behavior": "Configured targets and required observations succeed",
+    "result": "BLOCKED",
+    "argv": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "--crate-type",
+      "lib",
+      "--no-cheating",
+      "--output-json",
+      "--time-expanded",
+      "crates/raft-proofs/safety.rs"
+    ],
+    "working_directory": "/home/nitro/Desktop/raft_verus",
+    "input_manifest_digest": "1f20c7e579f0209b5908b3a5e28867167c5e07856f39a7484e237ef4e7d5a0e4",
+    "tool_versions": {},
+    "started_at": "2026-10-28T07:29:59.116304+00:00",
+    "finished_at": "2026-10-28T07:29:59.116447+00:00",
+    "exit_code": null,
+    "stdout_digest": null,
+    "stderr_digest": null,
+    "evidence_paths": [],
+    "obligation_ids_checked": [],
+    "coverage_findings": [],
+    "policy_findings": [],
+    "evidence_kind": "REAL_LOCAL",
+    "contract_status": "DRAFT",
+    "full_acceptance": false,
+    "reason": "planned proof entrypoint is not implemented: crates/raft-proofs/safety.rs"
+  },
+  {
+    "schema_version": "1",
+    "check_id": "full",
+    "run_id": "local",
+    "check_kind": "full-raft-verification",
+    "profile_id": "full",
+    "purpose": "proof",
+    "required": true,
+    "expected_targets": [
+      "all-exec-refinement",
+      "all-safety",
+      "all-liveness",
+      "liveness-preservation"
+    ],
+    "expected_obligation_ids": [
+      "PO-INIT",
+      "PO-AUX-INDEX",
+      "PO-AUX-TERM",
+      "PO-AUX-VOTE",
+      "PO-AUX-COMMIT",
+      "PO-AUX-TOKEN",
+      "PO-REQUEST",
+      "PO-RECOVERY",
+      "PO-STEP",
+      "PO-DELIVERY",
+      "PO-S-ELECTION",
+      "PO-S-APPEND",
+      "PO-S-LOG",
+      "PO-S-COMPLETE",
+      "PO-S-INTERFACE",
+      "PO-S-APPLY",
+      "PO-REPRESENTATION",
+      "PO-REFINE-INIT",
+      "PO-IO",
+      "PO-REFINE-STEP",
+      "PO-COMPOSITION",
+      "PO-L-ELECTION",
+      "PO-L-COMMIT",
+      "PO-L-DELIVER",
+      "PO-LIVE-REFINEMENT",
+      "PO-COVERAGE"
+    ],
+    "entrypoints": [
+      "crates/raft-spec/src/lib.rs",
+      "crates/raft-verified/src/lib.rs",
+      "crates/raft-proofs/README.md"
+    ],
+    "expected_behavior": "Configured targets and required observations succeed",
+    "result": "BLOCKED",
+    "argv": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "--crate-type",
+      "lib",
+      "crates/raft-proofs/src/lib.rs"
+    ],
+    "working_directory": "/home/nitro/Desktop/raft_verus",
+    "input_manifest_digest": "1f20c7e579f0209b5908b3a5e28867167c5e07856f39a7484e237ef4e7d5a0e4",
+    "tool_versions": {},
+    "started_at": "2026-10-28T07:29:59.121267+00:00",
+    "finished_at": "2026-10-28T07:29:59.121347+00:00",
+    "exit_code": null,
+    "stdout_digest": null,
+    "stderr_digest": null,
+    "evidence_paths": [],
+    "obligation_ids_checked": [],
+    "coverage_findings": [],
+    "policy_findings": [],
+    "evidence_kind": "REAL_LOCAL",
+    "contract_status": "DRAFT",
+    "full_acceptance": false,
+    "reason": "planned proof entrypoint is not implemented: crates/raft-proofs/src/lib.rs"
+  }
+]

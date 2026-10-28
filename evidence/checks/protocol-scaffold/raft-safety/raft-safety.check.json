@@ -1,0 +1,58 @@
+{
+  "schema_version": "1",
+  "check_id": "raft-safety",
+  "run_id": "local",
+  "check_kind": "verification",
+  "profile_id": "raft-safety",
+  "purpose": "proof",
+  "required": true,
+  "expected_targets": [
+    "implementation_execution_refinement",
+    "election_safety",
+    "leader_append_only",
+    "log_matching",
+    "leader_completeness",
+    "state_machine_safety"
+  ],
+  "expected_obligation_ids": [
+    "PO-S-ELECTION",
+    "PO-S-APPEND",
+    "PO-S-LOG",
+    "PO-S-COMPLETE",
+    "PO-S-APPLY",
+    "PO-REFINE-STEP",
+    "PO-COMPOSITION"
+  ],
+  "entrypoints": [
+    "crates/raft-proofs/core.rs",
+    "crates/raft-spec/src/lib.rs",
+    "crates/raft-proofs/README.md"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "BLOCKED",
+  "argv": [
+    "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+    "--crate-type",
+    "lib",
+    "--no-cheating",
+    "--output-json",
+    "--time-expanded",
+    "crates/raft-proofs/safety.rs"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus",
+  "input_manifest_digest": "1f20c7e579f0209b5908b3a5e28867167c5e07856f39a7484e237ef4e7d5a0e4",
+  "tool_versions": {},
+  "started_at": "2026-10-28T07:29:59.116304+00:00",
+  "finished_at": "2026-10-28T07:29:59.116447+00:00",
+  "exit_code": null,
+  "stdout_digest": null,
+  "stderr_digest": null,
+  "evidence_paths": [],
+  "obligation_ids_checked": [],
+  "coverage_findings": [],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "reason": "planned proof entrypoint is not implemented: crates/raft-proofs/safety.rs"
+}

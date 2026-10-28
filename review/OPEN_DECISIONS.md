@@ -2,7 +2,7 @@
 
 Status: DRAFT. All ten recommendations await human review; none is approved. Approver and approval time: none.
 
-The requested maintenance revision activates STATE-INIT as a draft generation experiment. Review its candidate API, independent targets and results after delivery; activation approves no Raft semantics. RUNTIME-PERSIST has observable types, independent behavioral targets/checks and editable implementation-contract seeds; executable behavior is for the experiment to generate. Real adapters and temporal proofs remain open.
+The current default activates the four MADRAFT steps as a draft generation experiment; STATE-INIT remains an explicit legacy experiment. Review its candidate API, independent targets and results after delivery; activation approves no Raft semantics. RUNTIME-PERSIST has observable types, independent behavioral targets/checks and editable implementation-contract seeds; executable behavior is for the experiment to generate. Production adapters and temporal proofs remain open; a MadSim host is supplied.
 
 | ID | Topic | Status |
 |---|---|---|
@@ -93,7 +93,7 @@ Definition: [related material](../input/io.md). All remain DRAFT.
 
 Recommendation: The library owns protocol state and I/O dependencies. Abstract storage provides atomic/ordered writes, truthful acknowledgments and recovery. Host contracts constrain network identity/codecs, devices and timers; register each external trust boundary.
 
-Rationale: Actual adapters are absent. external_body must not disguise system assumptions as implementation proofs.
+Rationale: Production adapters are absent; the supplied MadSim host models atomic whole-image writes and transactional application/cursor persistence. external_body must not disguise system assumptions as implementation proofs.
 
 Alternatives: Verify file/network adapters too, or remove crash recovery from scope; the latter conflicts with the current eventual v1 target.
 
@@ -137,7 +137,7 @@ Alternative: Rerun every check instead of reusing evidence. Same-user isolation 
 
 ## Current implementation and checking choices
 
-These concrete boundaries refine the existing decisions; none approves new semantics. Historical revision tables have been consolidated here; previous review packets remain in evidence.
+These concrete boundaries refine the existing decisions; none approves new semantics. Only the current decisions are maintained here; obsolete review packets were deleted.
 
 | Decision | Recommendation and remaining limit |
 |---|---|
@@ -151,4 +151,6 @@ These concrete boundaries refine the existing decisions; none approves new seman
 | ADR-09 / ADR-10 | Keep independent tests and protected behavioral consumers, persistent budgets/history, bounded redesign and affected-task regressions. Local contract changes are ordinary edits; changed protected requirements/assumptions are proposals for review. Candidate source type/mode/visibility failures route to repair with proof NOT_RUN. No hostile-process isolation or whole-project acceptance is claimed. |
 | ADR-10 | Use real microbenchmarks as measurements until a comparable reference and explicit rule are chosen. No approved performance target or cluster measurement claim exists. |
 
-Active protocol bodies remain failing seeds; offline solutions and proof strategies are excluded SIMULATED fixtures. Independent test expectations are retained, now expressed through observations instead of internal fields. Review executable observation correspondence as well as the generated predicates: proof against a weak local contract alone is insufficient. Real Rust/Verus results are separate from generation provenance. Review occurs after delivery; there is no interactive approval checkpoint.
+Initialization, RequestVote, persistence coordination and the public event handler are generation slots; offline solutions and proof strategies are excluded SIMULATED fixtures. Independent test expectations are retained, now expressed through observations instead of internal fields. Review executable observation correspondence as well as the generated predicates: proof against a weak local contract alone is insufficient. Real Rust/Verus results are separate from generation provenance. Review occurs after delivery; there is no interactive approval checkpoint.
+
+The active MadSim extension proposes the existing Event-to-Effects vocabulary through `handle_event`, while retaining `step` for legacy coordinator tests. Its local durable-reply consumer requires each positive vote/append reply to be emitted on a matching successful persistence callback; redundant writes are permitted by the current draft. Review this API/timing boundary, whole-image atomic persistence, host-assigned fresh recovery incarnations and transactional application/cursor behavior under ADR-01/05/07. Tests encode these disclosed draft choices; they do not approve them or establish production storage semantics. Independent whole-execution refinement and five-property proof consumers still need development; no local result may be promoted to global safety.

@@ -158,10 +158,10 @@ fn fault_storage_failure_and_unknown_never_grant() {
 }
 #[test]
 fn core_boundary_errors_and_token_correlation() {
-    assert!(Node::feasibility_follower(2, vec![]).is_err());
-    assert!(Node::feasibility_follower(2, vec![1, 2, 1]).is_err());
-    assert!(Node::feasibility_follower(9, vec![1, 2, 3]).is_err());
-    let mut n = Node::feasibility_follower(2, vec![1, 2, 3]).unwrap();
+    assert!(Node::new(2, vec![]).is_err());
+    assert!(Node::new(2, vec![1, 2, 1]).is_err());
+    assert!(Node::new(9, vec![1, 2, 3]).is_err());
+    let mut n = Node::new(2, vec![1, 2, 3]).unwrap();
     assert_eq!(
         n.handle_request_vote(request(9, 0, 0, 0, 1)),
         Err(InputError::UnknownPeer)

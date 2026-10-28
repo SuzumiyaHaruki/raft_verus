@@ -9,9 +9,12 @@ import stat
 from pathlib import Path, PurePosixPath
 
 # Controller evidence and raw agent reports are never verifier source inputs.
-DEFAULT_EXCLUDES = {".git", "evidence", ".agent-output", "__pycache__", "target", "Agent.md"}
+DEFAULT_EXCLUDES = {".git", ".agents", ".codex", ".aws", "evidence", ".agent-output",
+                    "__pycache__", "target", "Agent.md", "review/REVIEW_PACKET.md"}
 # Offline tests contain complete solutions and scripted edits. None are agent input.
 DEFAULT_EXCLUDES.add("orchestrator/tests")
+# Controller bytecode is generated during local inspection, never candidate source.
+DEFAULT_EXCLUDES.add("orchestrator/__pycache__")
 
 
 def digest_bytes(data: bytes) -> str:

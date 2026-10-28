@@ -1,7 +1,0 @@
-interface-check PASS None
-node-tests FAIL None
-node-proof FAIL {'verified': 23, 'errors': 1}
-persist-proof FAIL {'verified': 29, 'errors': 3}
-progress-proof FAIL {'verified': 26, 'errors': 2}
-reconcile-proof FAIL {'verified': 7, 'errors': 1}
-spec TYPECHECKED {'verified': 0, 'errors': 0}

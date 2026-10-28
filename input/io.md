@@ -1,6 +1,6 @@
 # Events, effects and host contract
 
-Status: DRAFT. ADR-01/03/05/06/07 await review. Types are in `../crates/raft-verified/src/io.rs`, reexported by lib.rs. The persistence slice implements part of this DRAFT API; other rows remain obligations for the future service.
+Status: DRAFT. ADR-01/03/05/06/07 await review. Types are in `../crates/raft-verified/src/io.rs`, reexported by lib.rs. The supplied host drives this DRAFT API; handle_event, voting and persistence coordination are unimplemented generation slots. Python-launched Codex generates all protocol behavior and corresponding implementation proofs. Host storage execution is distinct from the protocol decision to persist and authorize a reply.
 
 Recommend `step(event) -> Result<effects, error>` with serial processing in a single-threaded node core. Each external operation receives a node-scoped `(incarnation, sequence)` token; host routing also binds the node. The model calls the sequence `serial`. Incarnation increases durably across recovery; sequence is never reused within an incarnation. Overflow/capacity exhaustion must fail explicitly and stop affected protocol actions, never wrap.
 
@@ -29,3 +29,5 @@ Entries distinguish `Client(request_id, command)` from `NoOp`. Only actual valid
 `A-S-ID/STORAGE/COMPLETION/APP` are external premises. Unique vote counting, log freshness, current-term commitment and stale-token filtering are library proof obligations, not host assumptions. `PO-IO`, `PO-RECOVERY` and `PO-REFINE-STEP` cover errors, crashes and I/O interleavings.
 
 The current coordinator rejects new writes while one is pending (Busy); submission updates volatile hard state while the disk remains host-owned. Both NotPerformed and Unknown currently take the model's conservative fail-stop path, with distinct errors and no dependent reply. A direct known-failure retry would require a reviewed extension; a new token must be allocated after implemented recovery. No recovery path is fabricated in the driver. Returning `Option<Message>` from the partial dispatcher is an interim DRAFT boundary; integrating general Effect values and independently identified sends remains RUNTIME-DISPATCH work.
+
+The new cluster host calls `handle_event(Event) -> Result<Vec<Effect>, InputError>` exclusively. The older `step -> Option<Message>` is retained only for the existing coordinator compatibility experiments. Recover.incarnation is the fresh incarnation supplied by the host, consistent with the existing OperationId comment; it is not an instruction to increment that value again. The host records that incarnation alongside the whole-image store using the Persist operation token. The interpretation and storage/application choices remain DRAFT, not newly approved assumptions.

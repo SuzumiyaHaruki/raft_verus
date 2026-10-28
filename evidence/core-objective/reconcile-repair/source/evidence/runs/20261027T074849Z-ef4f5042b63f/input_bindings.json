@@ -1,7 +1,0 @@
-{
-  "contract_digest": "0c5f818cd220f655434c4c7ee60556effbd1d71881a9a7e48b38ecc78cbab7b8",
-  "protected_manifest_digest": "24d8a6125fbee4a2d2c8580975bda0c8994926e64cb31487e27b0ac57e3f1ffc",
-  "checker_policy_digest": "b7eb4c4834c96d11ff2ce721f33dd6b64284a3be85382c092598b9b82cf21f9a",
-  "toolchain_manifest_digest": "8d209f94029742bc3c5107e5d318ad7cdc4e832802e3b55b9183d4e458d78745",
-  "trust_baseline_digest": "a49178bfbeca3117bd41f782e1e3acfbf54a5e762487d0d91a780e253b8bf696"
-}

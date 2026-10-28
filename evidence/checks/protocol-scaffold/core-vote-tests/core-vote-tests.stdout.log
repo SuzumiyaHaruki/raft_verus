@@ -1,0 +1,32 @@
+
+running 3 tests
+test storage_error_and_callback_correlation ... FAILED
+test vote_freshness_and_single_vote_per_term ... FAILED
+test persistence_barrier ... FAILED
+
+failures:
+
+---- storage_error_and_callback_correlation stdout ----
+
+thread 'storage_error_and_callback_correlation' (2559) panicked at crates/raft-verified/tests/protocol.rs:5:42:
+called `Result::unwrap()` on an `Err` value: InvalidMembership
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- vote_freshness_and_single_vote_per_term stdout ----
+
+thread 'vote_freshness_and_single_vote_per_term' (2560) panicked at crates/raft-verified/tests/protocol.rs:5:42:
+called `Result::unwrap()` on an `Err` value: InvalidMembership
+
+---- persistence_barrier stdout ----
+
+thread 'persistence_barrier' (2558) panicked at crates/raft-verified/tests/protocol.rs:5:42:
+called `Result::unwrap()` on an `Err` value: InvalidMembership
+
+
+failures:
+    persistence_barrier
+    storage_error_and_callback_correlation
+    vote_freshness_and_single_vote_per_term
+
+test result: FAILED. 0 passed; 3 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
