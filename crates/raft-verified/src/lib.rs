@@ -19,3 +19,6 @@ pub use state::{DurableState, InitError, Node, Observation, Role};
 pub mod io;
 pub mod persistence;
 pub use io::*;
+
+#[cfg(feature = "madraft-poc")]
+pub mod madraft;

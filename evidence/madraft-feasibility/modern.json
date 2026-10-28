@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "run",
+    "--manifest-path",
+    "/home/nitro/Desktop/raft_verus/experiments/madraft-poc/Cargo.toml"
+  ],
+  "cwd": "/home/nitro/Desktop/raft_verus",
+  "exit_code": 0,
+  "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+  "cargo_home": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+  "generation_kind": "MAINTENANCE_AUTHORED",
+  "check_evidence_kind": "REAL_LOCAL"
+}

@@ -1,0 +1,73 @@
+{
+  "schema_version": "1",
+  "check_id": "node-tests",
+  "run_id": "20261028T034525Z-047d7a52e9e2",
+  "check_kind": "functional-tests",
+  "profile_id": "node-tests",
+  "purpose": "test",
+  "required": true,
+  "expected_targets": [
+    "all eight independent node initialization cases"
+  ],
+  "expected_obligation_ids": [],
+  "entrypoints": [
+    "crates/raft-verified/tests/node_init.rs",
+    "crates/raft-verified/check.py"
+  ],
+  "expected_behavior": "Configured targets and required observations succeed",
+  "result": "FAIL",
+  "argv": [
+    "python3",
+    "crates/raft-verified/check.py",
+    "test",
+    "--test",
+    "node_init"
+  ],
+  "working_directory": "/home/nitro/Desktop/raft_verus",
+  "input_manifest_digest": "fdd919bdfed92df9ee402e34b41f11a215798b91fa9347fc66fcd1663cb41430",
+  "tool_versions": {},
+  "started_at": "2026-10-28T03:45:25.425803+00:00",
+  "finished_at": "2026-10-28T03:45:26.267894+00:00",
+  "exit_code": 101,
+  "stdout_digest": "68bc9f57bc207965d9671c0b1031b4f0880a1ba2d9f00e6424f5f4f5113db9ba",
+  "stderr_digest": "730cc34fe5afe3079a9d7cb12b1d461fe95b641dd57d4b8e62ad114f2cc1b7c3",
+  "evidence_paths": [
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261028T034525Z-047d7a52e9e2/node-tests.stdout.log",
+    "/home/nitro/Desktop/raft_verus/evidence/runs/20261028T034525Z-047d7a52e9e2/node-tests.stderr.log"
+  ],
+  "obligation_ids_checked": [],
+  "coverage_findings": [],
+  "policy_findings": [],
+  "evidence_kind": "REAL_LOCAL",
+  "contract_status": "DRAFT",
+  "full_acceptance": false,
+  "resolved_toolchain": {
+    "paths": {
+      "verus": "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "vstd": "/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+      "z3": "/home/nitro/.local/share/raft-verus/verus-x86-linux/z3",
+      "rustc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "cargo": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "rustdoc": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc"
+    },
+    "missing": [],
+    "environment": {
+      "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo"
+    }
+  },
+  "tool_environment": {
+    "RAFT_TOOLCHAIN_ROOT": "/home/nitro/.local/share/raft-verus",
+    "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+    "CARGO_HOME": "/home/nitro/.local/share/raft-verus/cargo",
+    "RAFT_WORKFLOW_CONFIG": "/home/nitro/Desktop/raft_verus/workflow.toml"
+  },
+  "failed_tests": [
+    "membership_order_is_not_a_precondition",
+    "maximum_identity_is_not_a_sentinel",
+    "one_member",
+    "several_members"
+  ],
+  "reason": "configured build/test success evidence absent"
+}

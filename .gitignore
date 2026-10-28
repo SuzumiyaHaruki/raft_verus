@@ -12,3 +12,4 @@ __pycache__/
 /evidence/from-zero/**/agent-build/
 /evidence/joint-design/**/build/
 /evidence/joint-design/**/agent-build/
+/evidence/madraft-feasibility/**/build/

@@ -7,3 +7,7 @@ publish = false
 
 [lib]
 path = "src/lib.rs"
+
+[features]
+# DRAFT maintenance feasibility code; disabled in the from-zero experiment.
+madraft-poc = []

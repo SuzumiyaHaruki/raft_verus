@@ -1,0 +1,104 @@
+warning: field `request` has inconsistent type or visibility in different variants
+         ->request syntax will not be available for this field
+         use #[allow(inconsistent_fields)] on the struct to silence the warnign
+   --> crates/raft-proofs/../raft-verified/src/io.rs:89:1
+    |
+ 89 | / #[derive(Clone, Debug, Eq, PartialEq)]
+ 90 | | pub enum Effect {
+ 91 | |     Send {
+ 92 | |         operation: OperationId,
+...   |
+124 | |     },
+125 | | }
+    | |_^
+
+warning: autoderive Clone impl does not take the form Verus expects; continuing, but without adding a specification for the derived Clone impl
+ --> crates/raft-proofs/../raft-verified/src/types.rs:9:10
+  |
+9 | #[derive(Clone, Debug, Eq, PartialEq)]
+  |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/types.rs:12:10
+   |
+12 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> crates/raft-proofs/../raft-verified/src/state.rs:8:10
+  |
+8 | #[derive(Clone, Debug, Eq, PartialEq)]
+  |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/state.rs:21:10
+   |
+21 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/state.rs:27:10
+   |
+27 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> crates/raft-proofs/../raft-verified/src/node_state.rs:6:10
+  |
+6 | #[derive(Clone, Debug, Eq, PartialEq)]
+  |          ^^^^^
+
+warning: autoderive Clone impl does not take the form Verus expects; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/io.rs:16:10
+   |
+16 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/io.rs:37:10
+   |
+37 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+warning: autoderive Clone impl does not take the form Verus expects; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/io.rs:62:10
+   |
+62 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+warning: autoderive Clone impl does not take the form Verus expects; continuing, but without adding a specification for the derived Clone impl
+  --> crates/raft-proofs/../raft-verified/src/io.rs:89:10
+   |
+89 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |          ^^^^^
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> crates/raft-proofs/../raft-verified/src/madraft.rs:67:5
+   |
+67 |     pub fn handle_request_vote(&mut self, m: Message) -> (r: Result<VoteAction, InputError>)
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+   --> crates/raft-proofs/../raft-verified/src/madraft.rs:70:13
+    |
+ 70 |               crate::vote_spec::result(old(self).view(), self.view(), m, r),
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+103 |               if grant { return Ok(VoteAction::Reply(Message { from: self.state.id, to: m.from,
+    |  ________________________-
+104 | |                 term: self.state.hard.term, rpc: m.rpc, body: MessageBody::VoteResponse { granted: true } })); }
+    | |_____________________________________________________________________________________________________________- at this exit
+
+error: postcondition not satisfied
+   --> crates/raft-proofs/../raft-verified/src/madraft.rs:71:13
+    |
+ 71 |               crate::vote_spec::no_early_grant(r),
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+103 |               if grant { return Ok(VoteAction::Reply(Message { from: self.state.id, to: m.from,
+    |  ________________________-
+104 | |                 term: self.state.hard.term, rpc: m.rpc, body: MessageBody::VoteResponse { granted: true } })); }
+    | |_____________________________________________________________________________________________________________- at this exit
+
+error: aborting due to 2 previous errors; 11 warnings emitted
+

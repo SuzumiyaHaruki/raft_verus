@@ -1,0 +1,5 @@
+madraft-poc-build PASS None profile checks passed locally; no full Raft acceptance
+madraft-poc-runtime PASS None profile checks passed locally; no full Raft acceptance
+madraft-poc-fault PASS None profile checks passed locally; no full Raft acceptance
+madraft-poc-verus PASS {'verified': 32, 'errors': 0} profile checks passed locally; no full Raft acceptance
+madraft-poc-negative PASS None profile checks passed locally; no full Raft acceptance

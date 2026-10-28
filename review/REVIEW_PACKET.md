@@ -1,5 +1,7 @@
 # Joint implementation and specification generation
 
+Latest delivery: [MadRaft/MadSim feasibility report](MADRAFT_FEASIBILITY_REPORT.md), 2026-10-28, **PARTIAL — RUNTIME ONLY**. It adds an explicitly maintenance-authored optional vote slice, real MadSim tests and same-source local proofs while preserving the default seeds. The remainder of this packet records the previous revision and its historical results.
+
 Status: DRAFT. Delivered 2026-10-27 for review after delivery. This revision lets the experiment generate Rust behavior, implementation-layer Verus specifications, representation/invariants and proofs together, while independent callers still require the intended observable behavior. No real Codex task, recursive agent, merge, push, publication, download or system-toolchain replacement occurred.
 
 ## Changes and cleanup

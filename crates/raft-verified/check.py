@@ -11,6 +11,25 @@ import subprocess
 import sys
 
 
+def cargo_environment(selected, extra_flags=()):
+    """Use the same installed macro erasure and Rust selection for core and hosts."""
+    verus = Path(selected["paths"]["verus"])
+    paths = selected["paths"]
+    env = os.environ.copy()
+    env.update(selected["environment"])
+    env["RUSTC"] = paths["rustc"]
+    env["RUSTDOC"] = paths["rustdoc"]
+    flags = ["--extern", f"vstd={verus.parent / 'libvstd.rlib'}",
+             "-L", f"dependency={verus.parent}", "--check-cfg",
+             "cfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"]
+    flags += list(extra_flags)
+    # Use structured flag boundaries; the runner never invokes a shell.
+    env["CARGO_ENCODED_RUSTFLAGS"] = "\x1f".join(flags)
+    env["CARGO_ENCODED_RUSTDOCFLAGS"] = "\x1f".join(flags)
+    env.pop("RUSTFLAGS", None)
+    return env
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("check", choices=("build", "test", "replay", "bench", "proof", "node-proof", "node-replay", "node-bench", "persist-proof", "persist-replay", "persist-bench", "progress-proof"))
@@ -28,17 +47,7 @@ def main():
     paths = selected["paths"]
     verus = Path(paths["verus"])
     rust = Path(paths["rustc"]).parent
-    env = os.environ.copy()
-    env.update(selected["environment"])
-    env["RUSTC"] = paths["rustc"]
-    env["RUSTDOC"] = paths["rustdoc"]
-    flags = ["--extern", f"vstd={verus.parent / 'libvstd.rlib'}",
-             "-L", f"dependency={verus.parent}", "--check-cfg",
-             "cfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"]
-    # Use structured flag boundaries; the runner never invokes a shell.
-    env["CARGO_ENCODED_RUSTFLAGS"] = "\x1f".join(flags)
-    env["CARGO_ENCODED_RUSTDOCFLAGS"] = "\x1f".join(flags)
-    env.pop("RUSTFLAGS", None)
+    env = cargo_environment(selected)
     if args.check in {"proof", "node-proof", "persist-proof", "progress-proof"}:
         command = [str(verus), "--crate-type", "lib", "--no-cheating", "--triggers-mode", "silent",
                    "crates/raft-proofs/" + {"proof": "reconcile.rs", "node-proof": "node_init.rs", "persist-proof": "persistence.rs", "progress-proof": "progress.rs"}[args.check]]

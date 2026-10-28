@@ -1,6 +1,6 @@
 # Rust Raft generation with Verus
 
-Status: DRAFT. The experiment starts without working Raft behavior. AI must generate one Rust Raft implementation and its Verus proofs incrementally, using functional/fault tests and measurements as independent feedback. Global safety, conditional liveness and implementation/cluster refinement remain open.
+Status: DRAFT. The generation experiment's default paths remain unfinished seeds. AI must generate one Rust Raft implementation and its Verus proofs incrementally, using functional/fault tests and measurements as independent feedback. A separate, explicitly requested maintenance-authored MadSim feasibility slice now exists behind the `madraft-poc` feature; see its [report](review/MADRAFT_FEASIBILITY_REPORT.md). Global safety, conditional liveness and implementation/cluster refinement remain open.
 
 The experiment supplies English requirements, observable types, behavioral targets, independent tests/proof callers, replay/measurement harnesses and the Python controller. The LLM generates executable logic **and its implementation-layer contracts, representation, invariants and proofs**. Independent callers require that generated design to satisfy the supplied behavioral targets. A proof of a self-written weak contract alone is insufficient. Read [the input boundary](input/starting-point.md) and [actual review results](review/REVIEW_PACKET.md).
 
@@ -45,7 +45,7 @@ Use a new output directory. This explicitly injects SIMULATED edits through a fa
 
 Direct checking uses `python3 crates/raft-verified/check.py build`, `test`, `node-proof`, `proof`, `persist-proof` or `progress-proof`. Build succeeds on the supplied scaffold; behavior tests and corresponding proofs intentionally fail until their implementations are generated. `spec` is only TYPECHECKED. Measurements are eligible only after the required correctness checks; there is no approved performance target.
 
-Cargo and Verus check the same executable source using the installed compatible toolchain selected in `workflow.toml`. No downloads or system-toolchain replacement occur. See [tools](docs/tools.md), [proof entrypoints](crates/raft-proofs/README.md) and [workflow](docs/workflow.md) for scope, budgets, history, regression repair, optional comparable measurements and commands.
+Cargo and Verus check the same executable source using the installed compatible toolchain selected in `workflow.toml`. Normal checks are offline and do not replace system toolchains. The separate [MadSim experiment](docs/experiments/madraft-poc.md) adds pinned dependencies and an explicit fetch command; its local RequestVote proofs and real simulation checks do not finish the default tasks. See [tools](docs/tools.md), [proof entrypoints](crates/raft-proofs/README.md) and [workflow](docs/workflow.md) for scope, budgets, history, regression repair, optional comparable measurements and commands.
 
 ## Actual directory layout
 
@@ -72,6 +72,7 @@ raft_verus/
 │   │   └── check.py          Installed-tool build/run wrapper
 │   ├── raft-proofs/          Protected consumers and editable auxiliary proof files
 │   └── proof-smoke/          Positive/negative verifier calibration samples
+├── experiments/madraft-poc/  Optional real MadSim host, fault tests and negative control
 ├── orchestrator/             Existing Python controller and CLI
 │   ├── wire/                 Internal agent/check subprocess report schemas
 │   └── tests/                Controller regressions and scripted process fixtures
@@ -83,4 +84,4 @@ raft_verus/
 
 The maintenance workspace originally had empty read-only `.git`, `.agents`, `.codex` and `.aws` directories; those were preserved. That observation describes this local environment, not a normal GitHub clone. Cargo manifests, `AGENTS.md` and `.gitignore` also live at the root. Generated caches and build metadata are not maintained input material.
 
-All LLM-facing material is English, with one physical line per Markdown prose paragraph. Python 3.10+ on Linux/POSIX is supported. Existing jsonschema and TOML support suffice; no new dependencies are required. Candidate copying and input exclusion prevent accidental answer inclusion, not hostile same-user access outside the candidate.
+All LLM-facing material is English, with one physical line per Markdown prose paragraph. Python 3.10+ on Linux/POSIX is supported; the controller still uses its existing dependencies. Candidate copying is not hostile same-user isolation. The optional maintenance vote source is visible in normal copies even though its feature is disabled: declare it as supplied code, or explicitly isolate it before claiming a future experiment starts without a supplied protocol solution. No real generation was run with it.

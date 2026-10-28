@@ -1,0 +1,3 @@
+interface-check PASS None
+node-proof FAIL {'verified': 23, 'errors': 1}
+persist-proof FAIL {'verified': 29, 'errors': 3}

@@ -4,7 +4,7 @@
 allow_real_codex = true
 isolation = "local-development"
 context = []
-protected_paths = ["AGENTS.md", "Cargo.toml", "Cargo.lock", "input", "workflow.toml", "crates/raft-spec", "crates/proof-smoke", "crates/raft-proofs/reconcile.rs", "crates/raft-proofs/node_init.rs", "crates/raft-proofs/observation.rs", "crates/raft-verified/src/state.rs", "crates/raft-verified/src/types.rs", "crates/raft-verified/src/io.rs", "crates/raft-proofs/persistence.rs", "crates/raft-proofs/progress.rs", "crates/raft-verified/tests/persistence.rs", "crates/raft-verified/tests/node_init.rs", "orchestrator", "crates/raft-verified/check.py", "crates/raft-verified/tests/reconcile.rs", "crates/raft-verified/examples"]
+protected_paths = ["AGENTS.md", "Cargo.toml", "Cargo.lock", "input", "workflow.toml", "crates/raft-spec", "crates/proof-smoke", "crates/raft-proofs/reconcile.rs", "crates/raft-proofs/node_init.rs", "crates/raft-proofs/observation.rs", "crates/raft-proofs/madraft_vote.rs", "experiments/madraft-poc", "crates/raft-verified/src/state.rs", "crates/raft-verified/src/types.rs", "crates/raft-verified/src/io.rs", "crates/raft-proofs/persistence.rs", "crates/raft-proofs/progress.rs", "crates/raft-verified/tests/persistence.rs", "crates/raft-verified/tests/node_init.rs", "orchestrator", "crates/raft-verified/check.py", "crates/raft-verified/tests/reconcile.rs", "crates/raft-verified/examples"]
 
 [codex]
 executable = "codex"
@@ -35,6 +35,9 @@ call_timeout_seconds = 300
 task_timeout_seconds = 1200
 
 [local_obligations]
+LOCAL-MADRAFT-VOTE = "Dedicated RequestVote decisions and durable-intended updates; no reply grant before completion."
+LOCAL-MADRAFT-DURABLE = "The exact completion function releases only the correlated pending reply on matching truthful success."
+LOCAL-MADRAFT-INIT = "The dedicated feasibility constructor establishes legitimate fresh membership and the vote invariant."
 LOCAL-PERSIST = "Exact executable submit/completion/partial dispatcher contracts, including matching, withholding, fresh identity and fail-stop errors; not legal Raft transitions."
 LOCAL-PERSIST-VIEW = "Submitted images and successful callbacks correspond to the storage projection; host durability and legal caller transitions remain external obligations."
 LOCAL-PROGRESS = "A fairly serviced matching successful completion releases its pending reply through actual dispatcher contracts, under explicit noninterference; not global Raft liveness."
@@ -506,3 +509,63 @@ edit = ["crates/raft-proofs/progress_lemmas.rs"]
 outputs = ["crates/raft-proofs/progress_lemmas.rs"]
 obligations = ["LOCAL-PROGRESS"]
 checks = ["persist-proof", "progress-proof", "persist-tests", "persist-replay"]
+
+[checks.madraft-poc-build]
+purpose = "build"
+adapter = "command-text-v1"
+argv = ["python3", "experiments/madraft-poc/check.py", "build"]
+entrypoints = ["experiments/madraft-poc/check.py", "experiments/madraft-poc/src/lib.rs", "experiments/madraft-poc/tests/scenarios.rs", "crates/raft-verified/src/madraft.rs"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "workflow.toml", "crates/raft-verified", "crates/raft-spec", "crates/raft-proofs/madraft_vote.rs", "crates/raft-proofs/observation.rs", "experiments/madraft-poc"]
+expected_targets = ["Actual MadSim build with the same raft-verified source"]
+expected_obligation_ids = []
+success_pattern = "Finished.*dev"
+timeout_seconds = 300
+
+[checks.madraft-poc-runtime]
+purpose = "test"
+adapter = "command-text-v1"
+argv = ["python3", "experiments/madraft-poc/check.py", "runtime"]
+entrypoints = ["experiments/madraft-poc/check.py", "experiments/madraft-poc/src/lib.rs", "experiments/madraft-poc/tests/scenarios.rs", "crates/raft-verified/src/madraft.rs"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "workflow.toml", "crates/raft-verified", "crates/raft-spec", "crates/raft-proofs/madraft_vote.rs", "crates/raft-proofs/observation.rs", "experiments/madraft-poc"]
+expected_targets = ["Actual MadSim runtime with the same raft-verified source"]
+expected_obligation_ids = []
+success_pattern = "test result: ok"
+timeout_seconds = 300
+minimum_tests = 8
+
+[checks.madraft-poc-fault]
+purpose = "test"
+adapter = "command-text-v1"
+argv = ["python3", "experiments/madraft-poc/check.py", "fault"]
+entrypoints = ["experiments/madraft-poc/check.py", "experiments/madraft-poc/src/lib.rs", "experiments/madraft-poc/tests/scenarios.rs", "crates/raft-verified/src/madraft.rs"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "workflow.toml", "crates/raft-verified", "crates/raft-spec", "crates/raft-proofs/madraft_vote.rs", "crates/raft-proofs/observation.rs", "experiments/madraft-poc"]
+expected_targets = ["Actual MadSim fault with the same raft-verified source"]
+expected_obligation_ids = []
+success_pattern = "test result: ok"
+timeout_seconds = 300
+minimum_tests = 3
+
+[checks.madraft-poc-verus]
+purpose = "proof"
+adapter = "verus-calibrated-text-v1"
+argv = ["{verus}", "--crate-type", "lib", "--no-cheating", "--output-json", "--time-expanded", "--triggers-mode", "silent", "crates/raft-proofs/madraft_vote.rs"]
+entrypoints = ["crates/raft-proofs/madraft_vote.rs", "crates/raft-proofs/observation.rs", "crates/raft-verified/src/madraft.rs", "crates/raft-spec/src/madraft_vote.rs"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "workflow.toml", "crates/raft-verified", "crates/raft-spec", "crates/raft-proofs/madraft_vote.rs", "crates/raft-proofs/observation.rs", "experiments/madraft-poc"]
+proof_entrypoints = ["crates/raft-proofs/madraft_vote.rs"]
+expected_targets = ["check_follower", "check_vote", "check_durable_reply", "handle_request_vote", "finish_vote", "feasibility_follower", "check_freshness_projection"]
+expected_obligation_ids = ["LOCAL-MADRAFT-VOTE", "LOCAL-MADRAFT-DURABLE", "LOCAL-MADRAFT-INIT"]
+proof_targets = { LOCAL-MADRAFT-VOTE = "madraft_vote::check_vote", LOCAL-MADRAFT-DURABLE = "madraft_vote::check_durable_reply", LOCAL-MADRAFT-INIT = "madraft_vote::check_follower" }
+minimum_verified = 1
+
+[checks.madraft-poc-negative]
+purpose = "test"
+adapter = "command-text-v1"
+argv = ["python3", "experiments/madraft-poc/negative.py"]
+entrypoints = ["experiments/madraft-poc/negative.py", "experiments/madraft-poc/tests/scenarios.rs", "crates/raft-verified/src/madraft.rs", "crates/raft-proofs/madraft_vote.rs"]
+source_inputs = ["Cargo.toml", "Cargo.lock", "workflow.toml", "crates/raft-verified", "crates/raft-spec", "crates/raft-proofs/madraft_vote.rs", "crates/raft-proofs/observation.rs", "experiments/madraft-poc"]
+expected_targets = ["Real test and proof reject early grant, both pass after scripted repair"]
+expected_obligation_ids = []
+success_pattern = "NEGATIVE_CONTROL_PASS"
+selected_count_pattern = 'NEGATIVE_CONTROL_PASS selected=(?P<count>[0-9]+)'
+minimum_tests = 4
+timeout_seconds = 360

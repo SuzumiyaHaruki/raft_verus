@@ -1,0 +1,2428 @@
+rustc 1.92.0 (ded5c06cf 2025-12-08)
+binary: rustc
+commit-hash: ded5c06cf21d2b93bffd5d884aa6e96934ee4234
+commit-date: 2025-12-08
+host: x86_64-unknown-linux-gnu
+release: 1.92.0
+LLVM version: 21.1.3
+cargo 1.92.0 (344c4567c 2025-10-21)
+Actual command: ["/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo", "test", "--manifest-path", "/home/nitro/Desktop/raft_verus/experiments/madraft-poc/Cargo.toml", "--locked", "--offline", "--test", "scenarios", "--", "--nocapture", "--test-threads=1"]
+
+running 8 tests
+test core_boundary_errors_and_token_correlation ... ok
+test fault_crash_after_durable_before_callback ... TRACE_BEGIN
+Trace {
+    records: [
+        Receive(
+            Message {
+                from: 1,
+                to: 2,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: RequestVote {
+                    last_index: 0,
+                    last_term: 0,
+                },
+            },
+        ),
+        Decision(
+            "Ok(Persist { operation: OperationId { incarnation: 0, sequence: 0 }, retry: false })",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 0,
+                    voted_for: Some(
+                        1,
+                    ),
+                    log: [],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 1,
+                deadline: 1,
+                pending_write: Some(
+                    PendingWrite {
+                        operation: OperationId {
+                            incarnation: 0,
+                            sequence: 0,
+                        },
+                        reply: Some(
+                            Message {
+                                from: 2,
+                                to: 1,
+                                term: 0,
+                                rpc: OperationId {
+                                    incarnation: 0,
+                                    sequence: 1,
+                                },
+                                body: VoteResponse {
+                                    granted: true,
+                                },
+                            },
+                        ),
+                    },
+                ),
+                recovery_required: false,
+            },
+        ),
+        Persist(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            DurableState {
+                term: 0,
+                voted_for: Some(
+                    1,
+                ),
+                log: [],
+            },
+            false,
+        ),
+        Durable(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            DurableState {
+                term: 0,
+                voted_for: Some(
+                    1,
+                ),
+                log: [],
+            },
+        ),
+        Crash,
+    ],
+    disk: Some(
+        DurableState {
+            term: 0,
+            voted_for: Some(
+                1,
+            ),
+            log: [],
+        },
+    ),
+    final_state: Observation {
+        id: 2,
+        members: [
+            1,
+            2,
+            3,
+        ],
+        hard: DurableState {
+            term: 0,
+            voted_for: Some(
+                1,
+            ),
+            log: [],
+        },
+        role: Follower,
+        commit: 0,
+        delivered: 0,
+        application_cursor: 0,
+        incarnation: 0,
+        serial: 1,
+        deadline: 1,
+        pending_write: Some(
+            PendingWrite {
+                operation: OperationId {
+                    incarnation: 0,
+                    sequence: 0,
+                },
+                reply: Some(
+                    Message {
+                        from: 2,
+                        to: 1,
+                        term: 0,
+                        rpc: OperationId {
+                            incarnation: 0,
+                            sequence: 1,
+                        },
+                        body: VoteResponse {
+                            granted: true,
+                        },
+                    },
+                ),
+            },
+        ),
+        recovery_required: false,
+    },
+}
+TRACE_END
+ok
+test fault_loss_duplicate_delay_repeats ... TRACE_BEGIN
+Trace {
+    records: [
+        Loss(
+            true,
+        ),
+        Checkpoint,
+        Loss(
+            false,
+        ),
+        Duplicate,
+        Receive(
+            Message {
+                from: 1,
+                to: 2,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: RequestVote {
+                    last_index: 0,
+                    last_term: 0,
+                },
+            },
+        ),
+        Decision(
+            "Ok(Persist { operation: OperationId { incarnation: 0, sequence: 0 }, retry: false })",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 0,
+                    voted_for: Some(
+                        1,
+                    ),
+                    log: [],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 1,
+                deadline: 1,
+                pending_write: Some(
+                    PendingWrite {
+                        operation: OperationId {
+                            incarnation: 0,
+                            sequence: 0,
+                        },
+                        reply: Some(
+                            Message {
+                                from: 2,
+                                to: 1,
+                                term: 0,
+                                rpc: OperationId {
+                                    incarnation: 0,
+                                    sequence: 1,
+                                },
+                                body: VoteResponse {
+                                    granted: true,
+                                },
+                            },
+                        ),
+                    },
+                ),
+                recovery_required: false,
+            },
+        ),
+        Persist(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            DurableState {
+                term: 0,
+                voted_for: Some(
+                    1,
+                ),
+                log: [],
+            },
+            false,
+        ),
+        Receive(
+            Message {
+                from: 1,
+                to: 2,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: RequestVote {
+                    last_index: 0,
+                    last_term: 0,
+                },
+            },
+        ),
+        Decision(
+            "Err(Busy)",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 0,
+                    voted_for: Some(
+                        1,
+                    ),
+                    log: [],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 1,
+                deadline: 1,
+                pending_write: Some(
+                    PendingWrite {
+                        operation: OperationId {
+                            incarnation: 0,
+                            sequence: 0,
+                        },
+                        reply: Some(
+                            Message {
+                                from: 2,
+                                to: 1,
+                                term: 0,
+                                rpc: OperationId {
+                                    incarnation: 0,
+                                    sequence: 1,
+                                },
+                                body: VoteResponse {
+                                    granted: true,
+                                },
+                            },
+                        ),
+                    },
+                ),
+                recovery_required: false,
+            },
+        ),
+        Durable(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            DurableState {
+                term: 0,
+                voted_for: Some(
+                    1,
+                ),
+                log: [],
+            },
+        ),
+        Complete(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            Success,
+            Ok(
+                Some(
+                    Message {
+                        from: 2,
+                        to: 1,
+                        term: 0,
+                        rpc: OperationId {
+                            incarnation: 0,
+                            sequence: 1,
+                        },
+                        body: VoteResponse {
+                            granted: true,
+                        },
+                    },
+                ),
+            ),
+        ),
+        Send(
+            Message {
+                from: 2,
+                to: 1,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: VoteResponse {
+                    granted: true,
+                },
+            },
+        ),
+        Delivered(
+            Message {
+                from: 2,
+                to: 1,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: VoteResponse {
+                    granted: true,
+                },
+            },
+        ),
+        Timer(
+            "Err(UnsupportedEvent)",
+        ),
+    ],
+    disk: Some(
+        DurableState {
+            term: 0,
+            voted_for: Some(
+                1,
+            ),
+            log: [],
+        },
+    ),
+    final_state: Observation {
+        id: 2,
+        members: [
+            1,
+            2,
+            3,
+        ],
+        hard: DurableState {
+            term: 0,
+            voted_for: Some(
+                1,
+            ),
+            log: [],
+        },
+        role: Follower,
+        commit: 0,
+        delivered: 0,
+        application_cursor: 0,
+        incarnation: 0,
+        serial: 1,
+        deadline: 1,
+        pending_write: None,
+        recovery_required: false,
+    },
+}
+TRACE_END
+TRACE_BEGIN
+Trace {
+    records: [
+        Loss(
+            true,
+        ),
+        Checkpoint,
+        Loss(
+            false,
+        ),
+        Duplicate,
+        Receive(
+            Message {
+                from: 1,
+                to: 2,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: RequestVote {
+                    last_index: 0,
+                    last_term: 0,
+                },
+            },
+        ),
+        Decision(
+            "Ok(Persist { operation: OperationId { incarnation: 0, sequence: 0 }, retry: false })",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 0,
+                    voted_for: Some(
+                        1,
+                    ),
+                    log: [],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 1,
+                deadline: 1,
+                pending_write: Some(
+                    PendingWrite {
+                        operation: OperationId {
+                            incarnation: 0,
+                            sequence: 0,
+                        },
+                        reply: Some(
+                            Message {
+                                from: 2,
+                                to: 1,
+                                term: 0,
+                                rpc: OperationId {
+                                    incarnation: 0,
+                                    sequence: 1,
+                                },
+                                body: VoteResponse {
+                                    granted: true,
+                                },
+                            },
+                        ),
+                    },
+                ),
+                recovery_required: false,
+            },
+        ),
+        Persist(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            DurableState {
+                term: 0,
+                voted_for: Some(
+                    1,
+                ),
+                log: [],
+            },
+            false,
+        ),
+        Receive(
+            Message {
+                from: 1,
+                to: 2,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: RequestVote {
+                    last_index: 0,
+                    last_term: 0,
+                },
+            },
+        ),
+        Decision(
+            "Err(Busy)",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 0,
+                    voted_for: Some(
+                        1,
+                    ),
+                    log: [],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 1,
+                deadline: 1,
+                pending_write: Some(
+                    PendingWrite {
+                        operation: OperationId {
+                            incarnation: 0,
+                            sequence: 0,
+                        },
+                        reply: Some(
+                            Message {
+                                from: 2,
+                                to: 1,
+                                term: 0,
+                                rpc: OperationId {
+                                    incarnation: 0,
+                                    sequence: 1,
+                                },
+                                body: VoteResponse {
+                                    granted: true,
+                                },
+                            },
+                        ),
+                    },
+                ),
+                recovery_required: false,
+            },
+        ),
+        Durable(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            DurableState {
+                term: 0,
+                voted_for: Some(
+                    1,
+                ),
+                log: [],
+            },
+        ),
+        Complete(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            Success,
+            Ok(
+                Some(
+                    Message {
+                        from: 2,
+                        to: 1,
+                        term: 0,
+                        rpc: OperationId {
+                            incarnation: 0,
+                            sequence: 1,
+                        },
+                        body: VoteResponse {
+                            granted: true,
+                        },
+                    },
+                ),
+            ),
+        ),
+        Send(
+            Message {
+                from: 2,
+                to: 1,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: VoteResponse {
+                    granted: true,
+                },
+            },
+        ),
+        Delivered(
+            Message {
+                from: 2,
+                to: 1,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: VoteResponse {
+                    granted: true,
+                },
+            },
+        ),
+        Timer(
+            "Err(UnsupportedEvent)",
+        ),
+    ],
+    disk: Some(
+        DurableState {
+            term: 0,
+            voted_for: Some(
+                1,
+            ),
+            log: [],
+        },
+    ),
+    final_state: Observation {
+        id: 2,
+        members: [
+            1,
+            2,
+            3,
+        ],
+        hard: DurableState {
+            term: 0,
+            voted_for: Some(
+                1,
+            ),
+            log: [],
+        },
+        role: Follower,
+        commit: 0,
+        delivered: 0,
+        application_cursor: 0,
+        incarnation: 0,
+        serial: 1,
+        deadline: 1,
+        pending_write: None,
+        recovery_required: false,
+    },
+}
+TRACE_END
+ok
+test fault_storage_failure_and_unknown_never_grant ... TRACE_BEGIN
+Trace {
+    records: [
+        Receive(
+            Message {
+                from: 1,
+                to: 2,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: RequestVote {
+                    last_index: 0,
+                    last_term: 0,
+                },
+            },
+        ),
+        Decision(
+            "Ok(Persist { operation: OperationId { incarnation: 0, sequence: 0 }, retry: false })",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 0,
+                    voted_for: Some(
+                        1,
+                    ),
+                    log: [],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 1,
+                deadline: 1,
+                pending_write: Some(
+                    PendingWrite {
+                        operation: OperationId {
+                            incarnation: 0,
+                            sequence: 0,
+                        },
+                        reply: Some(
+                            Message {
+                                from: 2,
+                                to: 1,
+                                term: 0,
+                                rpc: OperationId {
+                                    incarnation: 0,
+                                    sequence: 1,
+                                },
+                                body: VoteResponse {
+                                    granted: true,
+                                },
+                            },
+                        ),
+                    },
+                ),
+                recovery_required: false,
+            },
+        ),
+        Persist(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            DurableState {
+                term: 0,
+                voted_for: Some(
+                    1,
+                ),
+                log: [],
+            },
+            false,
+        ),
+        Complete(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            NotPerformed,
+            Err(
+                StorageFailure,
+            ),
+        ),
+        Timer(
+            "Err(UnsupportedEvent)",
+        ),
+    ],
+    disk: Some(
+        DurableState {
+            term: 0,
+            voted_for: None,
+            log: [],
+        },
+    ),
+    final_state: Observation {
+        id: 2,
+        members: [
+            1,
+            2,
+            3,
+        ],
+        hard: DurableState {
+            term: 0,
+            voted_for: Some(
+                1,
+            ),
+            log: [],
+        },
+        role: Follower,
+        commit: 0,
+        delivered: 0,
+        application_cursor: 0,
+        incarnation: 0,
+        serial: 1,
+        deadline: 1,
+        pending_write: None,
+        recovery_required: true,
+    },
+}
+TRACE_END
+TRACE_BEGIN
+Trace {
+    records: [
+        Receive(
+            Message {
+                from: 1,
+                to: 2,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: RequestVote {
+                    last_index: 0,
+                    last_term: 0,
+                },
+            },
+        ),
+        Decision(
+            "Ok(Persist { operation: OperationId { incarnation: 0, sequence: 0 }, retry: false })",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 0,
+                    voted_for: Some(
+                        1,
+                    ),
+                    log: [],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 1,
+                deadline: 1,
+                pending_write: Some(
+                    PendingWrite {
+                        operation: OperationId {
+                            incarnation: 0,
+                            sequence: 0,
+                        },
+                        reply: Some(
+                            Message {
+                                from: 2,
+                                to: 1,
+                                term: 0,
+                                rpc: OperationId {
+                                    incarnation: 0,
+                                    sequence: 1,
+                                },
+                                body: VoteResponse {
+                                    granted: true,
+                                },
+                            },
+                        ),
+                    },
+                ),
+                recovery_required: false,
+            },
+        ),
+        Persist(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            DurableState {
+                term: 0,
+                voted_for: Some(
+                    1,
+                ),
+                log: [],
+            },
+            false,
+        ),
+        Durable(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            DurableState {
+                term: 0,
+                voted_for: Some(
+                    1,
+                ),
+                log: [],
+            },
+        ),
+        Complete(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            Unknown,
+            Err(
+                RecoveryRequired,
+            ),
+        ),
+        Timer(
+            "Err(UnsupportedEvent)",
+        ),
+    ],
+    disk: Some(
+        DurableState {
+            term: 0,
+            voted_for: Some(
+                1,
+            ),
+            log: [],
+        },
+    ),
+    final_state: Observation {
+        id: 2,
+        members: [
+            1,
+            2,
+            3,
+        ],
+        hard: DurableState {
+            term: 0,
+            voted_for: Some(
+                1,
+            ),
+            log: [],
+        },
+        role: Follower,
+        commit: 0,
+        delivered: 0,
+        application_cursor: 0,
+        incarnation: 0,
+        serial: 1,
+        deadline: 1,
+        pending_write: None,
+        recovery_required: true,
+    },
+}
+TRACE_END
+ok
+test nominal_exchange ... TRACE_BEGIN
+Trace {
+    records: [
+        Receive(
+            Message {
+                from: 1,
+                to: 2,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: RequestVote {
+                    last_index: 0,
+                    last_term: 0,
+                },
+            },
+        ),
+        Decision(
+            "Ok(Persist { operation: OperationId { incarnation: 0, sequence: 0 }, retry: false })",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 0,
+                    voted_for: Some(
+                        1,
+                    ),
+                    log: [],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 1,
+                deadline: 1,
+                pending_write: Some(
+                    PendingWrite {
+                        operation: OperationId {
+                            incarnation: 0,
+                            sequence: 0,
+                        },
+                        reply: Some(
+                            Message {
+                                from: 2,
+                                to: 1,
+                                term: 0,
+                                rpc: OperationId {
+                                    incarnation: 0,
+                                    sequence: 1,
+                                },
+                                body: VoteResponse {
+                                    granted: true,
+                                },
+                            },
+                        ),
+                    },
+                ),
+                recovery_required: false,
+            },
+        ),
+        Persist(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            DurableState {
+                term: 0,
+                voted_for: Some(
+                    1,
+                ),
+                log: [],
+            },
+            false,
+        ),
+        Durable(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            DurableState {
+                term: 0,
+                voted_for: Some(
+                    1,
+                ),
+                log: [],
+            },
+        ),
+        Complete(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            Success,
+            Ok(
+                Some(
+                    Message {
+                        from: 2,
+                        to: 1,
+                        term: 0,
+                        rpc: OperationId {
+                            incarnation: 0,
+                            sequence: 1,
+                        },
+                        body: VoteResponse {
+                            granted: true,
+                        },
+                    },
+                ),
+            ),
+        ),
+        Send(
+            Message {
+                from: 2,
+                to: 1,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: VoteResponse {
+                    granted: true,
+                },
+            },
+        ),
+        Delivered(
+            Message {
+                from: 2,
+                to: 1,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: VoteResponse {
+                    granted: true,
+                },
+            },
+        ),
+        Timer(
+            "Err(UnsupportedEvent)",
+        ),
+    ],
+    disk: Some(
+        DurableState {
+            term: 0,
+            voted_for: Some(
+                1,
+            ),
+            log: [],
+        },
+    ),
+    final_state: Observation {
+        id: 2,
+        members: [
+            1,
+            2,
+            3,
+        ],
+        hard: DurableState {
+            term: 0,
+            voted_for: Some(
+                1,
+            ),
+            log: [],
+        },
+        role: Follower,
+        commit: 0,
+        delivered: 0,
+        application_cursor: 0,
+        incarnation: 0,
+        serial: 1,
+        deadline: 1,
+        pending_write: None,
+        recovery_required: false,
+    },
+}
+TRACE_END
+ok
+test persistence_barrier ... TRACE_BEGIN
+Trace {
+    records: [
+        Receive(
+            Message {
+                from: 1,
+                to: 2,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: RequestVote {
+                    last_index: 0,
+                    last_term: 0,
+                },
+            },
+        ),
+        Decision(
+            "Ok(Persist { operation: OperationId { incarnation: 0, sequence: 0 }, retry: false })",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 0,
+                    voted_for: Some(
+                        1,
+                    ),
+                    log: [],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 1,
+                deadline: 1,
+                pending_write: Some(
+                    PendingWrite {
+                        operation: OperationId {
+                            incarnation: 0,
+                            sequence: 0,
+                        },
+                        reply: Some(
+                            Message {
+                                from: 2,
+                                to: 1,
+                                term: 0,
+                                rpc: OperationId {
+                                    incarnation: 0,
+                                    sequence: 1,
+                                },
+                                body: VoteResponse {
+                                    granted: true,
+                                },
+                            },
+                        ),
+                    },
+                ),
+                recovery_required: false,
+            },
+        ),
+        Persist(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            DurableState {
+                term: 0,
+                voted_for: Some(
+                    1,
+                ),
+                log: [],
+            },
+            false,
+        ),
+        Durable(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            DurableState {
+                term: 0,
+                voted_for: Some(
+                    1,
+                ),
+                log: [],
+            },
+        ),
+        Checkpoint,
+        Complete(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            Success,
+            Ok(
+                Some(
+                    Message {
+                        from: 2,
+                        to: 1,
+                        term: 0,
+                        rpc: OperationId {
+                            incarnation: 0,
+                            sequence: 1,
+                        },
+                        body: VoteResponse {
+                            granted: true,
+                        },
+                    },
+                ),
+            ),
+        ),
+        Send(
+            Message {
+                from: 2,
+                to: 1,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: VoteResponse {
+                    granted: true,
+                },
+            },
+        ),
+        Delivered(
+            Message {
+                from: 2,
+                to: 1,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: VoteResponse {
+                    granted: true,
+                },
+            },
+        ),
+        Timer(
+            "Err(UnsupportedEvent)",
+        ),
+    ],
+    disk: Some(
+        DurableState {
+            term: 0,
+            voted_for: Some(
+                1,
+            ),
+            log: [],
+        },
+    ),
+    final_state: Observation {
+        id: 2,
+        members: [
+            1,
+            2,
+            3,
+        ],
+        hard: DurableState {
+            term: 0,
+            voted_for: Some(
+                1,
+            ),
+            log: [],
+        },
+        role: Follower,
+        commit: 0,
+        delivered: 0,
+        application_cursor: 0,
+        incarnation: 0,
+        serial: 1,
+        deadline: 1,
+        pending_write: None,
+        recovery_required: false,
+    },
+}
+TRACE_END
+ok
+test synthetic_log_boundary ... TRACE_BEGIN
+Trace {
+    records: [
+        BoundaryFixture,
+        Receive(
+            Message {
+                from: 1,
+                to: 2,
+                term: 2,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: RequestVote {
+                    last_index: 99,
+                    last_term: 1,
+                },
+            },
+        ),
+        Decision(
+            "Ok(Reply(Message { from: 2, to: 1, term: 2, rpc: OperationId { incarnation: 0, sequence: 1 }, body: VoteResponse { granted: false } }))",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 2,
+                    voted_for: None,
+                    log: [
+                        Entry {
+                            term: 2,
+                            command: Noop,
+                        },
+                    ],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 0,
+                deadline: 1,
+                pending_write: None,
+                recovery_required: false,
+            },
+        ),
+        Send(
+            Message {
+                from: 2,
+                to: 1,
+                term: 2,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: VoteResponse {
+                    granted: false,
+                },
+            },
+        ),
+        Delivered(
+            Message {
+                from: 2,
+                to: 1,
+                term: 2,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: VoteResponse {
+                    granted: false,
+                },
+            },
+        ),
+        Receive(
+            Message {
+                from: 1,
+                to: 2,
+                term: 2,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 2,
+                },
+                body: RequestVote {
+                    last_index: 0,
+                    last_term: 2,
+                },
+            },
+        ),
+        Decision(
+            "Ok(Reply(Message { from: 2, to: 1, term: 2, rpc: OperationId { incarnation: 0, sequence: 2 }, body: VoteResponse { granted: false } }))",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 2,
+                    voted_for: None,
+                    log: [
+                        Entry {
+                            term: 2,
+                            command: Noop,
+                        },
+                    ],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 0,
+                deadline: 1,
+                pending_write: None,
+                recovery_required: false,
+            },
+        ),
+        Send(
+            Message {
+                from: 2,
+                to: 1,
+                term: 2,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 2,
+                },
+                body: VoteResponse {
+                    granted: false,
+                },
+            },
+        ),
+        Delivered(
+            Message {
+                from: 2,
+                to: 1,
+                term: 2,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 2,
+                },
+                body: VoteResponse {
+                    granted: false,
+                },
+            },
+        ),
+        Receive(
+            Message {
+                from: 1,
+                to: 2,
+                term: 2,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 3,
+                },
+                body: RequestVote {
+                    last_index: 1,
+                    last_term: 2,
+                },
+            },
+        ),
+        Decision(
+            "Ok(Persist { operation: OperationId { incarnation: 0, sequence: 0 }, retry: false })",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 2,
+                    voted_for: Some(
+                        1,
+                    ),
+                    log: [
+                        Entry {
+                            term: 2,
+                            command: Noop,
+                        },
+                    ],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 1,
+                deadline: 1,
+                pending_write: Some(
+                    PendingWrite {
+                        operation: OperationId {
+                            incarnation: 0,
+                            sequence: 0,
+                        },
+                        reply: Some(
+                            Message {
+                                from: 2,
+                                to: 1,
+                                term: 2,
+                                rpc: OperationId {
+                                    incarnation: 0,
+                                    sequence: 3,
+                                },
+                                body: VoteResponse {
+                                    granted: true,
+                                },
+                            },
+                        ),
+                    },
+                ),
+                recovery_required: false,
+            },
+        ),
+        Persist(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            DurableState {
+                term: 2,
+                voted_for: Some(
+                    1,
+                ),
+                log: [
+                    Entry {
+                        term: 2,
+                        command: Noop,
+                    },
+                ],
+            },
+            false,
+        ),
+        Durable(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            DurableState {
+                term: 2,
+                voted_for: Some(
+                    1,
+                ),
+                log: [
+                    Entry {
+                        term: 2,
+                        command: Noop,
+                    },
+                ],
+            },
+        ),
+        Complete(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            Success,
+            Ok(
+                Some(
+                    Message {
+                        from: 2,
+                        to: 1,
+                        term: 2,
+                        rpc: OperationId {
+                            incarnation: 0,
+                            sequence: 3,
+                        },
+                        body: VoteResponse {
+                            granted: true,
+                        },
+                    },
+                ),
+            ),
+        ),
+        Send(
+            Message {
+                from: 2,
+                to: 1,
+                term: 2,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 3,
+                },
+                body: VoteResponse {
+                    granted: true,
+                },
+            },
+        ),
+        Delivered(
+            Message {
+                from: 2,
+                to: 1,
+                term: 2,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 3,
+                },
+                body: VoteResponse {
+                    granted: true,
+                },
+            },
+        ),
+        Timer(
+            "Err(UnsupportedEvent)",
+        ),
+    ],
+    disk: Some(
+        DurableState {
+            term: 2,
+            voted_for: Some(
+                1,
+            ),
+            log: [
+                Entry {
+                    term: 2,
+                    command: Noop,
+                },
+            ],
+        },
+    ),
+    final_state: Observation {
+        id: 2,
+        members: [
+            1,
+            2,
+            3,
+        ],
+        hard: DurableState {
+            term: 2,
+            voted_for: Some(
+                1,
+            ),
+            log: [
+                Entry {
+                    term: 2,
+                    command: Noop,
+                },
+            ],
+        },
+        role: Follower,
+        commit: 0,
+        delivered: 0,
+        application_cursor: 0,
+        incarnation: 0,
+        serial: 1,
+        deadline: 1,
+        pending_write: None,
+        recovery_required: false,
+    },
+}
+TRACE_END
+ok
+test vote_edges ... TRACE_BEGIN
+Trace {
+    records: [
+        Receive(
+            Message {
+                from: 1,
+                to: 2,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: RequestVote {
+                    last_index: 0,
+                    last_term: 0,
+                },
+            },
+        ),
+        Decision(
+            "Ok(Persist { operation: OperationId { incarnation: 0, sequence: 0 }, retry: false })",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 0,
+                    voted_for: Some(
+                        1,
+                    ),
+                    log: [],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 1,
+                deadline: 1,
+                pending_write: Some(
+                    PendingWrite {
+                        operation: OperationId {
+                            incarnation: 0,
+                            sequence: 0,
+                        },
+                        reply: Some(
+                            Message {
+                                from: 2,
+                                to: 1,
+                                term: 0,
+                                rpc: OperationId {
+                                    incarnation: 0,
+                                    sequence: 1,
+                                },
+                                body: VoteResponse {
+                                    granted: true,
+                                },
+                            },
+                        ),
+                    },
+                ),
+                recovery_required: false,
+            },
+        ),
+        Persist(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            DurableState {
+                term: 0,
+                voted_for: Some(
+                    1,
+                ),
+                log: [],
+            },
+            false,
+        ),
+        Durable(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            DurableState {
+                term: 0,
+                voted_for: Some(
+                    1,
+                ),
+                log: [],
+            },
+        ),
+        Complete(
+            OperationId {
+                incarnation: 0,
+                sequence: 0,
+            },
+            Success,
+            Ok(
+                Some(
+                    Message {
+                        from: 2,
+                        to: 1,
+                        term: 0,
+                        rpc: OperationId {
+                            incarnation: 0,
+                            sequence: 1,
+                        },
+                        body: VoteResponse {
+                            granted: true,
+                        },
+                    },
+                ),
+            ),
+        ),
+        Send(
+            Message {
+                from: 2,
+                to: 1,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: VoteResponse {
+                    granted: true,
+                },
+            },
+        ),
+        Delivered(
+            Message {
+                from: 2,
+                to: 1,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 1,
+                },
+                body: VoteResponse {
+                    granted: true,
+                },
+            },
+        ),
+        Receive(
+            Message {
+                from: 1,
+                to: 2,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 2,
+                },
+                body: RequestVote {
+                    last_index: 0,
+                    last_term: 0,
+                },
+            },
+        ),
+        Decision(
+            "Ok(Persist { operation: OperationId { incarnation: 0, sequence: 1 }, retry: false })",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 0,
+                    voted_for: Some(
+                        1,
+                    ),
+                    log: [],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 2,
+                deadline: 1,
+                pending_write: Some(
+                    PendingWrite {
+                        operation: OperationId {
+                            incarnation: 0,
+                            sequence: 1,
+                        },
+                        reply: Some(
+                            Message {
+                                from: 2,
+                                to: 1,
+                                term: 0,
+                                rpc: OperationId {
+                                    incarnation: 0,
+                                    sequence: 2,
+                                },
+                                body: VoteResponse {
+                                    granted: true,
+                                },
+                            },
+                        ),
+                    },
+                ),
+                recovery_required: false,
+            },
+        ),
+        Persist(
+            OperationId {
+                incarnation: 0,
+                sequence: 1,
+            },
+            DurableState {
+                term: 0,
+                voted_for: Some(
+                    1,
+                ),
+                log: [],
+            },
+            false,
+        ),
+        Durable(
+            OperationId {
+                incarnation: 0,
+                sequence: 1,
+            },
+            DurableState {
+                term: 0,
+                voted_for: Some(
+                    1,
+                ),
+                log: [],
+            },
+        ),
+        Complete(
+            OperationId {
+                incarnation: 0,
+                sequence: 1,
+            },
+            Success,
+            Ok(
+                Some(
+                    Message {
+                        from: 2,
+                        to: 1,
+                        term: 0,
+                        rpc: OperationId {
+                            incarnation: 0,
+                            sequence: 2,
+                        },
+                        body: VoteResponse {
+                            granted: true,
+                        },
+                    },
+                ),
+            ),
+        ),
+        Send(
+            Message {
+                from: 2,
+                to: 1,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 2,
+                },
+                body: VoteResponse {
+                    granted: true,
+                },
+            },
+        ),
+        Delivered(
+            Message {
+                from: 2,
+                to: 1,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 2,
+                },
+                body: VoteResponse {
+                    granted: true,
+                },
+            },
+        ),
+        Receive(
+            Message {
+                from: 3,
+                to: 2,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 3,
+                },
+                body: RequestVote {
+                    last_index: 0,
+                    last_term: 0,
+                },
+            },
+        ),
+        Decision(
+            "Ok(Reply(Message { from: 2, to: 3, term: 0, rpc: OperationId { incarnation: 0, sequence: 3 }, body: VoteResponse { granted: false } }))",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 0,
+                    voted_for: Some(
+                        1,
+                    ),
+                    log: [],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 2,
+                deadline: 1,
+                pending_write: None,
+                recovery_required: false,
+            },
+        ),
+        Send(
+            Message {
+                from: 2,
+                to: 3,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 3,
+                },
+                body: VoteResponse {
+                    granted: false,
+                },
+            },
+        ),
+        Delivered(
+            Message {
+                from: 2,
+                to: 3,
+                term: 0,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 3,
+                },
+                body: VoteResponse {
+                    granted: false,
+                },
+            },
+        ),
+        Receive(
+            Message {
+                from: 3,
+                to: 2,
+                term: 2,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 4,
+                },
+                body: RequestVote {
+                    last_index: 0,
+                    last_term: 0,
+                },
+            },
+        ),
+        Decision(
+            "Ok(Persist { operation: OperationId { incarnation: 0, sequence: 2 }, retry: true })",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 2,
+                    voted_for: None,
+                    log: [],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 3,
+                deadline: 1,
+                pending_write: Some(
+                    PendingWrite {
+                        operation: OperationId {
+                            incarnation: 0,
+                            sequence: 2,
+                        },
+                        reply: None,
+                    },
+                ),
+                recovery_required: false,
+            },
+        ),
+        Persist(
+            OperationId {
+                incarnation: 0,
+                sequence: 2,
+            },
+            DurableState {
+                term: 2,
+                voted_for: None,
+                log: [],
+            },
+            true,
+        ),
+        Durable(
+            OperationId {
+                incarnation: 0,
+                sequence: 2,
+            },
+            DurableState {
+                term: 2,
+                voted_for: None,
+                log: [],
+            },
+        ),
+        Complete(
+            OperationId {
+                incarnation: 0,
+                sequence: 2,
+            },
+            Success,
+            Ok(
+                None,
+            ),
+        ),
+        Receive(
+            Message {
+                from: 3,
+                to: 2,
+                term: 2,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 4,
+                },
+                body: RequestVote {
+                    last_index: 0,
+                    last_term: 0,
+                },
+            },
+        ),
+        Decision(
+            "Ok(Persist { operation: OperationId { incarnation: 0, sequence: 3 }, retry: false })",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 2,
+                    voted_for: Some(
+                        3,
+                    ),
+                    log: [],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 4,
+                deadline: 1,
+                pending_write: Some(
+                    PendingWrite {
+                        operation: OperationId {
+                            incarnation: 0,
+                            sequence: 3,
+                        },
+                        reply: Some(
+                            Message {
+                                from: 2,
+                                to: 3,
+                                term: 2,
+                                rpc: OperationId {
+                                    incarnation: 0,
+                                    sequence: 4,
+                                },
+                                body: VoteResponse {
+                                    granted: true,
+                                },
+                            },
+                        ),
+                    },
+                ),
+                recovery_required: false,
+            },
+        ),
+        Persist(
+            OperationId {
+                incarnation: 0,
+                sequence: 3,
+            },
+            DurableState {
+                term: 2,
+                voted_for: Some(
+                    3,
+                ),
+                log: [],
+            },
+            false,
+        ),
+        Durable(
+            OperationId {
+                incarnation: 0,
+                sequence: 3,
+            },
+            DurableState {
+                term: 2,
+                voted_for: Some(
+                    3,
+                ),
+                log: [],
+            },
+        ),
+        Complete(
+            OperationId {
+                incarnation: 0,
+                sequence: 3,
+            },
+            Success,
+            Ok(
+                Some(
+                    Message {
+                        from: 2,
+                        to: 3,
+                        term: 2,
+                        rpc: OperationId {
+                            incarnation: 0,
+                            sequence: 4,
+                        },
+                        body: VoteResponse {
+                            granted: true,
+                        },
+                    },
+                ),
+            ),
+        ),
+        Send(
+            Message {
+                from: 2,
+                to: 3,
+                term: 2,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 4,
+                },
+                body: VoteResponse {
+                    granted: true,
+                },
+            },
+        ),
+        Delivered(
+            Message {
+                from: 2,
+                to: 3,
+                term: 2,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 4,
+                },
+                body: VoteResponse {
+                    granted: true,
+                },
+            },
+        ),
+        Receive(
+            Message {
+                from: 1,
+                to: 2,
+                term: 1,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 5,
+                },
+                body: RequestVote {
+                    last_index: 0,
+                    last_term: 0,
+                },
+            },
+        ),
+        Decision(
+            "Ok(Reply(Message { from: 2, to: 1, term: 2, rpc: OperationId { incarnation: 0, sequence: 5 }, body: VoteResponse { granted: false } }))",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 2,
+                    voted_for: Some(
+                        3,
+                    ),
+                    log: [],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 4,
+                deadline: 1,
+                pending_write: None,
+                recovery_required: false,
+            },
+        ),
+        Send(
+            Message {
+                from: 2,
+                to: 1,
+                term: 2,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 5,
+                },
+                body: VoteResponse {
+                    granted: false,
+                },
+            },
+        ),
+        Delivered(
+            Message {
+                from: 2,
+                to: 1,
+                term: 2,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 5,
+                },
+                body: VoteResponse {
+                    granted: false,
+                },
+            },
+        ),
+        Receive(
+            Message {
+                from: 1,
+                to: 2,
+                term: 2,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 6,
+                },
+                body: RequestVote {
+                    last_index: 0,
+                    last_term: 0,
+                },
+            },
+        ),
+        Decision(
+            "Ok(Reply(Message { from: 2, to: 1, term: 2, rpc: OperationId { incarnation: 0, sequence: 6 }, body: VoteResponse { granted: false } }))",
+            Observation {
+                id: 2,
+                members: [
+                    1,
+                    2,
+                    3,
+                ],
+                hard: DurableState {
+                    term: 2,
+                    voted_for: Some(
+                        3,
+                    ),
+                    log: [],
+                },
+                role: Follower,
+                commit: 0,
+                delivered: 0,
+                application_cursor: 0,
+                incarnation: 0,
+                serial: 4,
+                deadline: 1,
+                pending_write: None,
+                recovery_required: false,
+            },
+        ),
+        Send(
+            Message {
+                from: 2,
+                to: 1,
+                term: 2,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 6,
+                },
+                body: VoteResponse {
+                    granted: false,
+                },
+            },
+        ),
+        Delivered(
+            Message {
+                from: 2,
+                to: 1,
+                term: 2,
+                rpc: OperationId {
+                    incarnation: 0,
+                    sequence: 6,
+                },
+                body: VoteResponse {
+                    granted: false,
+                },
+            },
+        ),
+        Timer(
+            "Err(UnsupportedEvent)",
+        ),
+    ],
+    disk: Some(
+        DurableState {
+            term: 2,
+            voted_for: Some(
+                3,
+            ),
+            log: [],
+        },
+    ),
+    final_state: Observation {
+        id: 2,
+        members: [
+            1,
+            2,
+            3,
+        ],
+        hard: DurableState {
+            term: 2,
+            voted_for: Some(
+                3,
+            ),
+            log: [],
+        },
+        role: Follower,
+        commit: 0,
+        delivered: 0,
+        application_cursor: 0,
+        incarnation: 0,
+        serial: 4,
+        deadline: 1,
+        pending_write: None,
+        recovery_required: false,
+    },
+}
+TRACE_END
+ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

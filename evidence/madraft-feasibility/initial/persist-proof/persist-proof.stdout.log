@@ -1,0 +1,598 @@
+{
+  "verification-results": {
+    "encountered-error": true,
+    "encountered-vir-error": false,
+    "success": false,
+    "verified": 29,
+    "errors": 3,
+    "is-verifying-entire-crate": true
+  },
+  "times-ms": {
+    "verus-build": {
+      "profile": "release",
+      "version": "0.2026.01.23.1650a05"
+    },
+    "num-threads": 3,
+    "total": 1765,
+    "estimated-cpu-time": 2693,
+    "rust": {
+      "total": 398,
+      "init-and-types": 312,
+      "trait-conflicts": 86,
+      "compile": 0
+    },
+    "verification": {
+      "total": 1281,
+      "vir": {
+        "total": 666,
+        "hir": 120,
+        "import": 250,
+        "rust-to-vir": 86
+      }
+    },
+    "total-verify": 1463,
+    "total-verify-module-times": [
+      {
+        "module": "",
+        "time": 289
+      },
+      {
+        "module": "persistence_lemmas",
+        "time": 190
+      },
+      {
+        "module": "observation",
+        "time": 156
+      },
+      {
+        "module": "node_state",
+        "time": 146
+      },
+      {
+        "module": "io",
+        "time": 134
+      },
+      {
+        "module": "model",
+        "time": 111
+      },
+      {
+        "module": "state",
+        "time": 100
+      },
+      {
+        "module": "persistence",
+        "time": 89
+      },
+      {
+        "module": "types",
+        "time": 77
+      },
+      {
+        "module": "initialization",
+        "time": 63
+      },
+      {
+        "module": "contracts",
+        "time": 42
+      },
+      {
+        "module": "persistence_spec",
+        "time": 39
+      },
+      {
+        "module": "representation",
+        "time": 21
+      }
+    ],
+    "air": {
+      "total": 686,
+      "module-times": [
+        {
+          "module": "",
+          "time": 152
+        },
+        {
+          "module": "observation",
+          "time": 108
+        },
+        {
+          "module": "node_state",
+          "time": 76
+        },
+        {
+          "module": "persistence_lemmas",
+          "time": 76
+        },
+        {
+          "module": "io",
+          "time": 63
+        },
+        {
+          "module": "state",
+          "time": 53
+        },
+        {
+          "module": "persistence",
+          "time": 48
+        },
+        {
+          "module": "types",
+          "time": 42
+        },
+        {
+          "module": "model",
+          "time": 29
+        },
+        {
+          "module": "persistence_spec",
+          "time": 11
+        },
+        {
+          "module": "initialization",
+          "time": 10
+        },
+        {
+          "module": "contracts",
+          "time": 7
+        },
+        {
+          "module": "representation",
+          "time": 4
+        }
+      ]
+    },
+    "smt": {
+      "total": 252,
+      "smt-init": 135,
+      "smt-init-module-times": [
+        {
+          "module": "",
+          "time": 26,
+          "time-micros": 26759,
+          "rlimit-count": 192197
+        },
+        {
+          "module": "io",
+          "time": 24,
+          "time-micros": 24109,
+          "rlimit-count": 123145
+        },
+        {
+          "module": "node_state",
+          "time": 20,
+          "time-micros": 20562,
+          "rlimit-count": 94285
+        },
+        {
+          "module": "persistence_lemmas",
+          "time": 16,
+          "time-micros": 16617,
+          "rlimit-count": 161827
+        },
+        {
+          "module": "observation",
+          "time": 14,
+          "time-micros": 14327,
+          "rlimit-count": 62764
+        },
+        {
+          "module": "state",
+          "time": 14,
+          "time-micros": 14086,
+          "rlimit-count": 89179
+        },
+        {
+          "module": "persistence",
+          "time": 9,
+          "time-micros": 9748,
+          "rlimit-count": 71765
+        },
+        {
+          "module": "types",
+          "time": 9,
+          "time-micros": 9155,
+          "rlimit-count": 68613
+        },
+        {
+          "module": "initialization",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "representation",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "model",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "persistence_spec",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        },
+        {
+          "module": "contracts",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0
+        }
+      ],
+      "smt-run": 117,
+      "smt-run-module-times": [
+        {
+          "module": "persistence_lemmas",
+          "time": 51,
+          "time-micros": 51390,
+          "rlimit-count": 161827,
+          "function-breakdown": [
+            {
+              "function": "persistence::persistence_lemmas::submit_projection",
+              "mode:": "proof",
+              "time": 31,
+              "time-micros": 31486,
+              "rlimit-count": 12217,
+              "success": true
+            },
+            {
+              "function": "persistence::persistence_lemmas::completion_projection",
+              "mode:": "proof",
+              "time": 19,
+              "time-micros": 19903,
+              "rlimit-count": 149610,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "",
+          "time": 39,
+          "time-micros": 39267,
+          "rlimit-count": 192197,
+          "function-breakdown": [
+            {
+              "function": "persistence::check_complete",
+              "mode:": "exec",
+              "time": 8,
+              "time-micros": 8687,
+              "rlimit-count": 11872,
+              "success": false
+            },
+            {
+              "function": "persistence::check_completion_projection",
+              "mode:": "proof",
+              "time": 11,
+              "time-micros": 11750,
+              "rlimit-count": 15732,
+              "success": true
+            },
+            {
+              "function": "persistence::check_storage_projection",
+              "mode:": "proof",
+              "time": 7,
+              "time-micros": 7080,
+              "rlimit-count": 99,
+              "success": true
+            },
+            {
+              "function": "persistence::check_dispatch",
+              "mode:": "exec",
+              "time": 3,
+              "time-micros": 3995,
+              "rlimit-count": 7566,
+              "success": false
+            },
+            {
+              "function": "persistence::check_submit",
+              "mode:": "exec",
+              "time": 7,
+              "time-micros": 7753,
+              "rlimit-count": 156928,
+              "success": false
+            }
+          ]
+        },
+        {
+          "module": "node_state",
+          "time": 9,
+          "time-micros": 9469,
+          "rlimit-count": 94285,
+          "function-breakdown": [
+            {
+              "function": "persistence::node_state::Node::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 201,
+              "rlimit-count": 8073,
+              "success": true
+            },
+            {
+              "function": "persistence::node_state::Node::observe",
+              "mode:": "exec",
+              "time": 7,
+              "time-micros": 7078,
+              "rlimit-count": 82078,
+              "success": true
+            },
+            {
+              "function": "persistence::node_state::Node::from_observation",
+              "mode:": "exec",
+              "time": 2,
+              "time-micros": 2189,
+              "rlimit-count": 4134,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "observation",
+          "time": 7,
+          "time-micros": 7672,
+          "rlimit-count": 62764,
+          "function-breakdown": [
+            {
+              "function": "persistence::observation::check_observe",
+              "mode:": "exec",
+              "time": 6,
+              "time-micros": 6630,
+              "rlimit-count": 5318,
+              "success": true
+            },
+            {
+              "function": "persistence::observation::check_observation_input",
+              "mode:": "exec",
+              "time": 1,
+              "time-micros": 1041,
+              "rlimit-count": 57446,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "persistence",
+          "time": 4,
+          "time-micros": 4952,
+          "rlimit-count": 71765,
+          "function-breakdown": [
+            {
+              "function": "persistence::node_state::Node::step",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 904,
+              "rlimit-count": 2336,
+              "success": true
+            },
+            {
+              "function": "persistence::node_state::Node::complete_persist",
+              "mode:": "exec",
+              "time": 1,
+              "time-micros": 1255,
+              "rlimit-count": 63425,
+              "success": true
+            },
+            {
+              "function": "persistence::node_state::Node::submit_persist",
+              "mode:": "exec",
+              "time": 2,
+              "time-micros": 2792,
+              "rlimit-count": 6004,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "io",
+          "time": 3,
+          "time-micros": 3680,
+          "rlimit-count": 123145,
+          "function-breakdown": [
+            {
+              "function": "persistence::io::OperationId::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 296,
+              "rlimit-count": 10470,
+              "success": true
+            },
+            {
+              "function": "persistence::io::Message::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 186,
+              "rlimit-count": 2461,
+              "success": true
+            },
+            {
+              "function": "persistence::io::CompletionKind::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 143,
+              "rlimit-count": 144,
+              "success": true
+            },
+            {
+              "function": "persistence::io::Effect::clone",
+              "mode:": "exec",
+              "time": 1,
+              "time-micros": 1319,
+              "rlimit-count": 539,
+              "success": true
+            },
+            {
+              "function": "persistence::io::InputError::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 155,
+              "rlimit-count": 4048,
+              "success": true
+            },
+            {
+              "function": "persistence::io::MessageBody::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 792,
+              "rlimit-count": 104323,
+              "success": true
+            },
+            {
+              "function": "persistence::io::CompletionOutcome::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 73,
+              "rlimit-count": 621,
+              "success": true
+            },
+            {
+              "function": "persistence::io::Event::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 713,
+              "rlimit-count": 539,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "state",
+          "time": 0,
+          "time-micros": 775,
+          "rlimit-count": 89179,
+          "function-breakdown": [
+            {
+              "function": "persistence::state::Observation::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 145,
+              "rlimit-count": 599,
+              "success": true
+            },
+            {
+              "function": "persistence::state::PendingWrite::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 139,
+              "rlimit-count": 567,
+              "success": true
+            },
+            {
+              "function": "persistence::state::Role::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 179,
+              "rlimit-count": 79979,
+              "success": true
+            },
+            {
+              "function": "persistence::state::InitError::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 116,
+              "rlimit-count": 171,
+              "success": true
+            },
+            {
+              "function": "persistence::state::DurableState::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 196,
+              "rlimit-count": 7863,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "types",
+          "time": 0,
+          "time-micros": 580,
+          "rlimit-count": 68613,
+          "function-breakdown": [
+            {
+              "function": "persistence::types::RequestId::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 145,
+              "rlimit-count": 6076,
+              "success": true
+            },
+            {
+              "function": "persistence::types::Command::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 151,
+              "rlimit-count": 62050,
+              "success": true
+            },
+            {
+              "function": "persistence::types::Entry::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 148,
+              "rlimit-count": 376,
+              "success": true
+            },
+            {
+              "function": "persistence::types::ReconcileError::clone",
+              "mode:": "exec",
+              "time": 0,
+              "time-micros": 135,
+              "rlimit-count": 111,
+              "success": true
+            }
+          ]
+        },
+        {
+          "module": "initialization",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "representation",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "model",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "persistence_spec",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        },
+        {
+          "module": "contracts",
+          "time": 0,
+          "time-micros": 0,
+          "rlimit-count": 0,
+          "function-breakdown": []
+        }
+      ]
+    }
+  },
+  "verus": {
+    "profile": "release",
+    "version": "0.2026.01.23.1650a05",
+    "platform": {
+      "os": "linux",
+      "arch": "x86_64"
+    },
+    "toolchain": "1.92.0-x86_64-unknown-linux-gnu",
+    "commit": "1650a05d64219fdd1d150f32d0d7d5b19b8defcd"
+  }
+}

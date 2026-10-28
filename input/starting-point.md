@@ -1,6 +1,8 @@
 # Experiment inputs and generated design
 
-Status: DRAFT. Start without working Raft protocol behavior. The experiment generates one Rust implementation and its implementation-layer Verus specifications and proofs together. Supplied interfaces and independent requirements remain explicit inputs; this is not unconstrained synthesis from blank files.
+Status: DRAFT. The default constructor/persistence/reconciliation paths remain unfinished. The experiment generates one Rust implementation and its implementation-layer Verus specifications and proofs together. Supplied interfaces and independent requirements remain explicit inputs; this is not unconstrained synthesis from blank files.
+
+The separate, explicitly requested MadSim feasibility experiment added maintenance-authored `src/madraft.rs` behind the disabled-by-default `madraft-poc` feature. It does not replace the original seeds. These optional source and proof files are nevertheless visible in ordinary candidate copies; they must be declared as supplied implementation, not credited to generation or silently reused as a from-zero solution. Before a new from-zero study, explicitly isolate those files and their host/check inputs. No real generation was performed in this maintenance revision. See the [feasibility report](../review/MADRAFT_FEASIBILITY_REPORT.md).
 
 ## Supplied requirements and checks
 

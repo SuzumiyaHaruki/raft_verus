@@ -1,0 +1,13 @@
+   Compiling raft-verified v0.0.0 (/tmp/raft-madraft-negative-qv3disb3/candidate/crates/raft-verified)
+warning: unused variable: `log`
+  --> /tmp/raft-madraft-negative-qv3disb3/candidate/crates/raft-verified/src/reconcile.rs:18:22
+   |
+18 | pub fn reconcile_log(log: &mut Vec<Entry>, previous: usize, incoming: Vec<Entry>)
+   |                      ^^^ help: if this is intentional, prefix it with an underscore: `_log`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+   Compiling raft-host-madsim v0.0.0 (/tmp/raft-madraft-negative-qv3disb3/candidate/experiments/madraft-poc)
+warning: `raft-verified` (lib) generated 1 warning (run `cargo fix --lib -p raft-verified` to apply 1 suggestion)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.83s
+     Running tests/scenarios.rs (/home/nitro/Desktop/raft_verus/evidence/runs/20261028T034450Z-ce2b48847445/negative-control/build/debug/deps/scenarios-c30ae0a13f9282c6)
