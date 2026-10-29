@@ -1,0 +1,10 @@
+verification results:: 30 verified, 0 errors
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:6:17
+  |
+6 | #[derive(Debug, Clone, PartialEq, Eq)]
+  |                 ^^^^^
+
+warning: 1 warning emitted
+
+Raw check output: /home/nitro/Desktop/raft_verus/runs/sol-high-01/runs/checks/1793192531393602771-proof.log

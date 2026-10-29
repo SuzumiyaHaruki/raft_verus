@@ -1,0 +1,10 @@
+2026-10-28T12:44:02.171475Z ERROR codex_core::tools::router: error=apply_patch verification failed: invalid patch: multiple operations target /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/src/raft/state.rs
+2026-10-28T12:46:49.728374Z ERROR codex_models_manager::manager: failed to refresh available models: request timed out
+2026-10-28T12:51:24.735050Z ERROR codex_models_manager::manager: failed to refresh available models: request timed out
+2026-10-28T12:56:10.525990Z ERROR codex_models_manager::manager: failed to refresh available models: request timed out
+2026-10-28T13:00:48.921879Z ERROR codex_models_manager::manager: failed to refresh available models: request timed out
+2026-10-28T13:05:23.931155Z ERROR codex_models_manager::manager: failed to refresh available models: request timed out
+2026-10-28T13:19:06.858339Z ERROR codex_models_manager::manager: failed to refresh available models: request timed out
+2026-10-28T13:23:41.872816Z ERROR codex_models_manager::manager: failed to refresh available models: request timed out
+2026-10-28T13:28:16.881122Z ERROR codex_models_manager::manager: failed to refresh available models: request timed out
+2026-10-28T13:32:51.887412Z ERROR codex_models_manager::manager: failed to refresh available models: request timed out

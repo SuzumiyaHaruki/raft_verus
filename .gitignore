@@ -1,10 +1,9 @@
+/runs/*
+!/runs/sol-high-01/
 /target/
+/madraft/target/
 __pycache__/
 *.pyc
-*.egg-info/
-/.venv/
-/orchestrator/build/
-/evidence/runs/
-/evidence/workspaces/
-/evidence/**/build/
-/evidence/**/agent-build/
+.verus-log/
+*.rlib
+*.rmeta

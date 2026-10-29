@@ -1,0 +1,42 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 49 verified, 2 errors
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:6:17
+  |
+6 | #[derive(Debug, Clone, PartialEq, Eq)]
+  |                 ^^^^^
+
+note: while loop: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:268:5
+    |
+268 |     while i < entries.len()
+    |     ^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:233:9
+    |
+233 |         log_view(log@).take((commit - base) as int) == log_view(old(log)@).take((commit - base) as int),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+284 |         if !ok { return MergeResult { success: false, next, commit }; }
+    |                  --------------------------------------------------- at this exit
+
+error: precondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:252:20
+    |
+ 65 |     requires base as int + log.len() <= u64::MAX,
+    |              ----------------------------------- failed precondition
+...
+252 |                 if term_at(log, base, base_term, first - 1) != Some(term) { break; }
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: invariant not satisfied at end of loop body
+   --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:280:13
+    |
+280 |             forall|j: int| 0 <= j < i ==> entry_view(log@[offset as int + j]) == entry_view(entries@[j]),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 3 previous errors; 1 warning emitted
+
+
+process=COMPLETED exit=1

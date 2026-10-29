@@ -1,0 +1,12 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 43 verified, 0 errors
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:6:17
+  |
+6 | #[derive(Debug, Clone, PartialEq, Eq)]
+  |                 ^^^^^
+
+warning: 1 warning emitted
+
+
+process=COMPLETED exit=0

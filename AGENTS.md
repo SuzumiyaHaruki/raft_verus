@@ -1,19 +1,30 @@
-# Rust Raft development — DRAFT
+# Generate MadRaft implementation and Verus proofs together — DRAFT
 
-Maintenance agents: read `Agent.md` when present and prepare the foundation, inputs and checks; do not preimplement the experiment. The generator is Codex launched by the Python controller. Experiment candidates omit `Agent.md` and follow their selected English assignment in `input/`.
+Complete the student work in the actual pinned MadRaft project and prove that its executable Raft logic satisfies the five supplied safety targets. Read `requirements/scope.md`, `requirements/safety.md` and `requirements/environment.md`.
 
-Build an independent, fixed-membership Rust Raft library with Verus safety and conditional-liveness proofs. Read [README.md](README.md), the selected module assignment linked from [input/roadmap.md](input/roadmap.md). The active experiment extends the supplied MadRaft-inspired MadSim host and protocol scaffold through a serial event interface. Generate the complete core and proofs of the five global safety properties and conditional election/commitment/delivery liveness. Current global proof consumers remain incomplete; local checks do not establish these goals.
+All implementation and proof changes belong to this workspace's `madraft/` copy. Never modify the preparation checkout or another experiment.
 
-Generate implementation, implementation-layer specifications and proofs together within scope; internal layouts and local predicates are editable, while independent behavioral targets remain protected. Each new experiment starts in a fresh directory from the supplied foundation described in [input/starting-point.md](input/starting-point.md); only explicit resume continues that experiment. All Raft protocol behavior and its implementation-layer proofs, including initialization, voting and persistence coordination, must be generated during the recorded Python-launched Codex run. The host drivers, interfaces and independent targets are supplied; no completed vote or durable-reply implementation is supplied. Do not retrieve offline fixtures or prior implementations outside the candidate. Continue from the run's own checked code; never silently inject a maintenance solution.
+Start from the supplied placeholders. Do not retrieve earlier implementations, offline solutions or another experiment's source. Choose and revise your own internal representations, synchronous-core extraction, local contracts, auxiliary specifications, reachable-state invariants and proof strategy. Keep the upstream async host and lab interfaces recognizable. Tests and proofs must use the same executable decision logic. Do not hide consensus decisions in an unverified wrapper or prove a separate model without executable refinement.
 
-- `crates/raft-verified` holds executable code, tests, replay and measurements; `crates/raft-spec` defines the candidate model; `crates/raft-proofs` and local proof blocks establish correspondence. Test and prove the same executable logic.
-- `input/` explains requirements and complete modules with bounded steps; `workflow.toml` selects a module document, named step, scoped inputs, edits and independent checks. Reuse `orchestrator/`, standard libraries and existing interfaces. Do not build a generic orchestration framework.
-- Start with `python3 -m orchestrator validate` and the selected task's commands. Run relevant tests and proofs after code changes. A typecheck is not a proof; step completion is not module completion or whole-project acceptance. Record missing checks honestly.
-- All material supplied to an LLM must be English. Preserve original diagnostic evidence unchanged; label English summaries and link to the raw output.
-- Preserve user work and the read-only `.git`, `.agents`, `.codex` and `.aws`. Do not reset or clean the checkout. Do not add hashes, frozen contracts, baselines or gates without a concrete failure scenario and why ordinary mechanisms do not suffice. Preserve existing safeguards; binding rationale is in [docs/workflow.md](docs/workflow.md).
-- Specifications, contracts and new tools remain DRAFT pending review. Proved helper lemmas and auxiliary invariants are ordinary development. Public behavior, top-level targets, assumptions, TCB and acceptance-policy changes require review; never weaken a target to make a failing check pass. Do not use `assume`, `admit`, skipped verification or fabricated evidence to cover gaps.
-- Ordinary repairs cannot edit their independent oracles or checker policy. Fixtures simulate generation; only actual Rust/Verus runs supply real checking evidence. AGENTS.md and candidate copies are not OS permission isolation.
-- Human review is after code delivery, for discussion and revision with the user. Local start/resume needs no approval file or human checkpoint. Explicit execution settings, sandboxing, scoped edits and independent checks still apply; source specifications remain DRAFT and a successful run is not permission to merge.
-- Maintenance supplies the experiment; the Python-launched generator implements the selected bounded module step. Configure explicitly launched experiments without running real agents during this setup. Do not recursively invoke Codex, merge, push or publish. Stop at the updated review packet for human review.
+For each meaningful increment, identify the behavior and obligation it advances; change executable code and its contracts/proofs together; run the relevant real Cargo tests and Verus entrypoint; preserve exact diagnostics and replay seeds; repair based on the evidence. A proof failure alone does not establish an executable bug. If the approach stalls, record why and change representation/decomposition or revert that increment without losing unrelated work. Recheck affected earlier results. Continue toward the complete labs and all five global targets, including snapshots and restart, rather than stopping after local helpers.
 
-Use the minimal complete implementation and inspect callers, tests and formats before editing, following [Ponytail's guide](https://github.com/DietrichGebert/ponytail/blob/main/AGENTS.md).
+Maintain one short `PROGRESS.md`: change, actual check results, open premises, failed approach and next obstacle. Use `runs/` for raw output. End with one current `RESULT.md` listing all lab outcomes, the five theorem outcomes, executable linkage, snapshot/recovery coverage, host/TCB assumptions and exact reproduction commands. Say explicitly what is incomplete if the budget ends. Conditional liveness and application-level correctness beyond the five Raft properties remain separate goals.
+
+You may create and edit `madraft/proof/implementation.rs`, `madraft/proof/progress.rs`, all proof bodies and auxiliary specifications. The interfaces in `requirements/final.rs` are consumers of your generated implementation, not a ban on writing the missing proof. `execution` must characterize initialization and transitions of the actual assembled code under the stated environment, without assuming an unproved protocol invariant. Prove initialization, every admitted transition and full observation coverage. Keep conditional lemmas explicitly conditional until their premises are discharged by real callers or an initialized and preserved invariant.
+
+Protect the meaning of the five targets, environment assumptions, observations and original test expectations. Report a semantic mismatch; do not quietly weaken it. Do not modify independent check scripts or original tests to make failures disappear. Necessary additional regressions and auxiliary proof files are encouraged. Do not use `assume`, `admit`, external/skipped consensus bodies or fabricated results to close a gap. Intermediate aggregate failure is allowed; final proof composition must have no undischarged candidate assumptions. Never call typechecking, a finite simulation or a collection of local handler proofs a cluster-level theorem.
+
+Run these commands from this workspace. `test` accepts a family or test-name filter; without one it runs all retained tests. A missing aggregate proof file is an actual incomplete result, not permission to omit it. Tool paths are in `tools.ini`; checking uses the existing dependencies offline and the Rust compiler matching Verus.
+
+```bash
+python3 scripts/check.py build
+python3 scripts/check.py inventory
+python3 scripts/check.py test raft::tests::initial_election_2a --seed 1
+python3 scripts/check.py test
+python3 scripts/check.py definitions
+python3 scripts/check.py proof madraft/proof/progress.rs
+python3 scripts/check.py safety
+python3 scripts/check.py final --timeout 3600
+```
+
+The final independent check is run on delivered files, not your narrative. Preserve the original attribution and license.  Keep each Markdown prose paragraph on one physical line. Preserve metadata, credentials, unrelated user files and global tool settings. Do not merge, push or publish.

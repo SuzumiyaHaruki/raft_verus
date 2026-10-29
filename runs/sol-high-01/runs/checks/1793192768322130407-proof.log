@@ -1,0 +1,22 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+error[E0308]: `if` and `else` have incompatible types
+   --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:201:56
+    |
+201 |     ensures r == if index == u64::MAX { index } else { index + 1 },
+    |                                         -----          ^^^^^^^^^ expected `u64`, found `int`
+    |                                         |
+    |                                         expected because of this
+
+error[E0308]: `if` and `else` have incompatible types
+   --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:277:79
+    |
+277 |             log.len() <= if original_len > offset + i { original_len } else { offset + i },
+    |                                                         ------------          ^^^^^^^^^^ expected `usize`, found `int`
+    |                                                         |
+    |                                                         expected because of this
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0308`.
+
+process=COMPLETED exit=1

@@ -1,0 +1,36 @@
+error: cannot use function `progress::state::Role::eq` which is ignored because it is either declared outside the verus! macro or it is marked as `external`.
+   --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/core.rs:195:12
+    |
+195 |         if self.state.role == Role::Candidate && self.state.term == sent && r.term == sent && r.granted {
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: The following declaration may resolve this error:
+            pub assume_specification [<crate::state::Role as std::cmp::PartialEq>::crate::eq] (_0: &crate::state::Role, _1: &crate::state::Role) -> bool;
+
+error: `alloc::vec::partial_eq::impl&%3::eq` is not supported (note: you may be able to add a Verus specification to this function with `assume_specification`) (note: the vstd library provides some specification for the Rust std library, but it is currently limited)
+   --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/core.rs:340:57
+    |
+340 |         index == self.base && term == self.base_term && data == self.snapshot
+    |                                                         ^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: The following declaration may resolve this error:
+            pub assume_specification<'a, T, U, A> [<&'a [T] as std::cmp::PartialEq<std::vec::Vec<U, A>>>::eq] (_0: &&'a [T], _1: &std::vec::Vec<U, A>) -> bool
+            where
+            A: std::alloc::Allocator,
+            T: std::cmp::PartialEq<U>,;
+
+error: `core::tuple::impl&%10::ne` is not supported (note: you may be able to add a Verus specification to this function with `assume_specification`) (note: the vstd library provides some specification for the Rust std library, but it is currently limited)
+   --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/core.rs:185:36
+    |
+185 |         self.dirty = self.dirty || before != (self.state.term, self.state.voted_for);
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: The following declaration may resolve this error:
+            pub assume_specification<U, T> [<(U, T) as std::cmp::PartialEq>::ne] (_0: &(U, T), _1: &(U, T)) -> bool
+            where
+            T: std::cmp::PartialEq,
+            U: std::cmp::PartialEq,;
+
+error: aborting due to 3 previous errors
+
+Raw check output: /home/nitro/Desktop/raft_verus/runs/sol-high-01/runs/checks/1793193238383575733-proof.log

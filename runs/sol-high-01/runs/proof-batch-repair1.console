@@ -1,0 +1,17 @@
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:6:17
+  |
+6 | #[derive(Debug, Clone, PartialEq, Eq)]
+  |                 ^^^^^
+
+error: Could not automatically infer triggers for this quantifier.  Use #[trigger] annotations to manually mark trigger terms instead.
+   --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:205:19
+    |
+205 |       ensures ok == (forall|i: int| 0 <= i < entries.len() ==> entries@[i].term <= current
+    |  ___________________^
+206 | |         && entries@[i].term >= if i == 0 { previous } else { entries@[i - 1].term }),
+    | |____________________________________________________________________________________^
+
+error: aborting due to 1 previous error; 1 warning emitted
+
+Raw check output: /home/nitro/Desktop/raft_verus/runs/sol-high-01/runs/checks/1793192782276689947-proof.log

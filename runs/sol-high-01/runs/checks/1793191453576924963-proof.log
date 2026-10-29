@@ -1,0 +1,11 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+error: not yet implemented: lhs of compound assignment
+  --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/state.rs:44:9
+   |
+44 |         self.term += 1;
+   |         ^^^^^^^^^
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

@@ -1,0 +1,13 @@
+{
+  "thread_id": "01a18288-417c-7361-9bbf-4974b8235205",
+  "seconds_spent": 3496.9732365300006,
+  "attempts": 1,
+  "last_message": "/home/nitro/Desktop/raft_verus/runs/sol-high-01/runs/agent-1.md",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "codex": "codex",
+  "total_seconds": 3600.0,
+  "in_flight": false,
+  "last_exit": 0,
+  "last_process": "COMPLETED"
+}

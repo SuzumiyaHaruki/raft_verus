@@ -1,0 +1,92 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 23 verified, 2 errors
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:6:17
+  |
+6 | #[derive(Debug, Clone, PartialEq, Eq)]
+  |                 ^^^^^
+
+note: while loop: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:80:5
+   |
+80 |     while log.len() > keep
+   |     ^^^^^^^^^^^^^^^^^^^^^^
+
+note: recommendation not met
+  --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:88:69
+   |
+88 |         assert forall|j: int| 0 <= j < log.len() implies log@[j] == old(log)@[j] by {
+   |                                                                     ^^^^^^^^^^^^
+   |
+  ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/seq.rs:62:13
+   |
+62 |             0 <= i < self.len(),
+   |             ------------------- recommendation not met
+
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:90:20
+   |
+90 |             assert(before[j] == old(log)@[j]);
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed
+
+note: recommendation not met
+  --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:90:33
+   |
+90 |             assert(before[j] == old(log)@[j]);
+   |                                 ^^^^^^^^^^^^
+   |
+  ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/seq.rs:62:13
+   |
+62 |             0 <= i < self.len(),
+   |             ------------------- recommendation not met
+
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:92:16
+   |
+92 |         assert(log@ =~= old(log)@.take(log.len() as int));
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed
+
+note: while loop: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:102:5
+    |
+102 |     while i < log.len()
+    |     ^^^^^^^^^^^^^^^^^^^
+
+error: assertion failed
+   --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:111:13
+    |
+111 |             entry_view(remaining@[j]) == entry_view(log@[j + count]) by {
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed
+
+note: recommendation not met
+   --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:111:53
+    |
+111 |             entry_view(remaining@[j]) == entry_view(log@[j + count]) by {
+    |                                                     ^^^^^^^^^^^^^^^
+    |
+   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/seq.rs:62:13
+    |
+ 62 |             0 <= i < self.len(),
+    |             ------------------- recommendation not met
+
+error: assertion failed
+   --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:113:24
+    |
+113 |                 assert(entry_view(before[j]) == log_view(log@)[j + count]);
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed
+
+note: recommendation not met
+   --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:113:49
+    |
+113 |                 assert(entry_view(before[j]) == log_view(log@)[j + count]);
+    |                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/seq.rs:62:13
+    |
+ 62 |             0 <= i < self.len(),
+    |             ------------------- recommendation not met
+
+error: aborting due to 4 previous errors; 1 warning emitted
+
+
+process=COMPLETED exit=1

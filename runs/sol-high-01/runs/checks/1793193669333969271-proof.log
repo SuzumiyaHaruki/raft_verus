@@ -1,0 +1,33 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 82 verified, 3 errors
+error: precondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/core.rs:253:9
+    |
+253 |         self.advance_commit();
+    |         ^^^^^^^^^^^^^^^^^^^^^
+...
+329 |         requires old(self).wf(),
+    |                  -------------- failed precondition
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/core.rs:343:17
+    |
+343 |         ensures self.wf(), self.me == old(self).me, self.members == old(self).members,
+    |                 ^^^^^^^^^ failed this postcondition
+...
+353 |         true
+    |         ---- at the end of the function body
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/core.rs:357:17
+    |
+357 |         ensures self.wf(), self.me == old(self).me, self.members == old(self).members,
+    |                 ^^^^^^^^^ failed this postcondition
+...
+371 |         InstallReply { term: self.state.term, accepted: true }
+    |         ------------------------------------------------------ at the end of the function body
+
+error: aborting due to 3 previous errors
+
+
+process=COMPLETED exit=1

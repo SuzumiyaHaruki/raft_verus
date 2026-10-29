@@ -1,0 +1,22 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:6:17
+  |
+6 | #[derive(Debug, Clone, PartialEq, Eq)]
+  |                 ^^^^^
+
+error: `alloc::slice::impl&%0::to_vec` is not supported (note: you may be able to add a Verus specification to this function with `assume_specification`) (note: the vstd library provides some specification for the Rust std library, but it is currently limited)
+  --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:24:34
+   |
+24 |     log.push(Entry { term, data: data.to_vec() });
+   |                                  ^^^^^^^^^^^^^
+   |
+   = help: The following declaration may resolve this error:
+           pub assume_specification<T> [std::slice::<impl [T]>::to_vec] (_0: &[T]) -> std::vec::Vec<T>
+           where
+           T: std::clone::Clone,;
+
+error: aborting due to 1 previous error; 1 warning emitted
+
+
+process=COMPLETED exit=1

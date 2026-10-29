@@ -1,0 +1,46 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 52 verified, 2 errors
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/log.rs:6:17
+  |
+6 | #[derive(Debug, Clone, PartialEq, Eq)]
+  |                 ^^^^^
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/cursor.rs:23:1
+   |
+23 | / pub fn compact(log: &mut Vec<Entry>, base: &mut u64, base_term: &mut u64,
+24 | |     applied: u64, commit: u64, index: u64) -> (ok: bool)
+   | |_______________________________________________________^
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/cursor.rs:28:9
+   |
+28 |         *base <= applied <= commit <= *base as int + log.len() <= u64::MAX,
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+41 |     true
+   |     ---- at the end of the function body
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/cursor.rs:29:9
+   |
+29 |         *base as int + log.len() == *old(base) as int + old(log).len(),
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+41 |     true
+   |     ---- at the end of the function body
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/cursor.rs:51:9
+   |
+51 |         *base <= *applied <= *commit <= *base as int + log.len() <= u64::MAX,
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+71 |     true
+   |     ---- at the end of the function body
+
+error: aborting due to 3 previous errors; 1 warning emitted
+
+
+process=COMPLETED exit=1

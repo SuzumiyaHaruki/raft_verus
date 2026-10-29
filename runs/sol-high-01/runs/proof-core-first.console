@@ -1,0 +1,9 @@
+error: panic is not supported (if you used Rust's `assert!` macro, you may have meant to use Verus's `assert` function)
+  --> /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/../src/raft/core.rs:78:9
+   |
+78 |         assert!(members > 0 && me < members);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 1 previous error
+
+Raw check output: /home/nitro/Desktop/raft_verus/runs/sol-high-01/runs/checks/1793193190693233352-proof.log
