@@ -1,0 +1,24 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793252361212644836/candidate/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793252361212644836/candidate/madraft/proof/../src/raft/election.rs:8:17
+  |
+8 | #[derive(Debug, Clone)]
+  |                 ^^^^^
+
+error: Could not automatically infer triggers for this quantifier.  Use #[trigger] annotations to manually mark trigger terms instead.
+  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793252361212644836/candidate/madraft/proof/implementation.rs:45:8
+   |
+45 |       && forall |t: int| 0 <= t < run.actions.len() ==> {
+   |  ________^
+46 | |         let k = run.actions[t].who;
+47 | |         run.states[t].contains_key(k) && run.states[t+1].contains_key(k)
+48 | |         && run.states[t+1].dom() == run.states[t].dom()
+...  |
+51 | |             ==> run.states[t+1][other] == run.states[t][other]
+52 | |     }
+   | |_____^
+
+error: aborting due to 1 previous error; 1 warning emitted
+
+
+process=COMPLETED exit=1

@@ -1,0 +1,25 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793252480944494749/candidate/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 12 verified, 1 errors
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793252480944494749/candidate/madraft/proof/../src/raft/election.rs:8:17
+  |
+8 | #[derive(Debug, Clone)]
+  |                 ^^^^^
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793252480944494749/candidate/madraft/proof/../src/raft/election.rs:93:17
+    |
+ 93 |           ensures members > 0 && me < members ==> r.is_some() && r.unwrap().valid()
+    |  _________________^
+ 94 | |             && r.unwrap().term == 0 && r.unwrap().role == Role::Follower
+ 95 | |             && r.unwrap().voted_for.is_none() && initial(r.unwrap().image()),
+    | |____________________________________________________________________________^ failed this postcondition
+...
+106 | /         Some(Self { term: 0, role: Role::Follower, voted_for: None,
+107 | |             me, members, last_term: 0, last_index: 0, grants, grant_count: 0 })
+    | |_______________________________________________________________________________- at the end of the function body
+
+error: aborting due to 1 previous error; 1 warning emitted
+
+
+process=COMPLETED exit=1

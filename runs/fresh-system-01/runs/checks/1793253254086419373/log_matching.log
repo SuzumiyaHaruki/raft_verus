@@ -1,0 +1,26 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253254086419373/log_matching-caller.rs --crate-type lib --no-cheating --triggers-mode silent
+warning: field `matched` has inconsistent type or visibility in different variants
+         ->matched syntax will not be available for this field
+         use #[allow(inconsistent_fields)] on the struct to silence the warnign
+  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253254086419373/candidate/madraft/proof/execution.rs:16:1
+   |
+16 | / pub enum Input {
+17 | |     Election(election::Input),
+18 | |     Propose(replication::Entry),
+19 | |     Append { index: u64, entry: replication::Entry },
+...  |
+26 | |     Restart,
+27 | | }
+   | |_^
+
+error[E0425]: cannot find function `prove_log_matching` in module `implementation`
+  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253254086419373/log_matching-caller.rs:15:19
+   |
+15 | { implementation::prove_log_matching(run); }
+   |                   ^^^^^^^^^^^^^^^^^^ not found in `implementation`
+
+error: aborting due to 1 previous error; 1 warning emitted
+
+For more information about this error, try `rustc --explain E0425`.
+
+process=COMPLETED exit=1

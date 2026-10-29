@@ -1,0 +1,47 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253569142046826/candidate/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+warning: field `matched` has inconsistent type or visibility in different variants
+         ->matched syntax will not be available for this field
+         use #[allow(inconsistent_fields)] on the struct to silence the warnign
+  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253569142046826/candidate/madraft/proof/execution.rs:16:1
+   |
+16 | / pub enum Input {
+17 | |     Election(election::Input),
+18 | |     Propose(replication::Entry),
+19 | |     Append { index: u64, entry: replication::Entry },
+...  |
+26 | |     Restart,
+27 | | }
+   | |_^
+
+error[E0308]: mismatched types
+   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253569142046826/candidate/madraft/proof/../src/raft/replication.rs:161:63
+    |
+161 |                         count == tally(matched@, peer as nat, self.base+index as u64, me),
+    |                                  -----                        ^^^^^^^^^^^^^^^^^^^^^^ expected `u64`, found `int`
+    |                                  |
+    |                                  arguments to this function are incorrect
+    |
+note: function defined here
+   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253569142046826/candidate/madraft/proof/../src/raft/replication.rs:34:18
+    |
+ 34 | pub open spec fn tally(matched: Seq<u64>, upto: nat, index: u64, me: usize) -> nat
+    |                  ^^^^^                               ----------
+
+error[E0063]: missing fields `base` and `base_term` in initializer of `execution::replication::Image`
+  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253569142046826/candidate/madraft/proof/execution.rs:93:25
+   |
+93 |                 let l = replication::Image { entries: d.entries, commit: d.commit, applied: 0 };
+   |                         ^^^^^^^^^^^^^^^^^^ missing `base` and `base_term`
+
+error[E0063]: missing fields `base` and `base_term` in initializer of `execution::replication::Image`
+   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253569142046826/candidate/madraft/proof/execution.rs:198:34
+    |
+198 |     let zero=Node{election:e,log:replication::Image{entries:Seq::empty(),commit:0,applied:0},
+    |                                  ^^^^^^^^^^^^^^^^^^ missing `base` and `base_term`
+
+error: aborting due to 3 previous errors; 1 warning emitted
+
+Some errors have detailed explanations: E0063, E0308.
+For more information about an error, try `rustc --explain E0063`.
+
+process=COMPLETED exit=1

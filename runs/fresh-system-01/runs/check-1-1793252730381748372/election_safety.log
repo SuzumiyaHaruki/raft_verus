@@ -1,0 +1,12 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/.controller/fresh-system-01/check-1-1793252730381748372/election_safety-caller.rs --crate-type lib --no-cheating --triggers-mode silent
+error[E0425]: cannot find function `prove_election_safety` in module `implementation`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/fresh-system-01/check-1-1793252730381748372/election_safety-caller.rs:15:19
+   |
+15 | { implementation::prove_election_safety(run); }
+   |                   ^^^^^^^^^^^^^^^^^^^^^ not found in `implementation`
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0425`.
+
+process=COMPLETED exit=1

@@ -86,4 +86,4 @@ shardkv::tests::challenge2_unaffected_4b
 shardkv::tests::challenge2_partial_4b
 ```
 
-Run a family with `python3 scripts/check.py test FAMILY::tests:: --seed 1`, or all families with `python3 scripts/check.py test`. Set `MADSIM_TEST_NUM=100` for repeated seeds or `MADSIM_TEST_CHECK_DETERMINISTIC=1` for the simulator replay check. A simulator result is finite testing, never a universal safety or liveness proof.
+Run a family with `python3 scripts/check.py test FAMILY::tests:: --seed 1`, or all families with `python3 scripts/check.py test`. Full independent acceptance runs every configured seed (default 1–5), or an explicitly selected `--seeds` set, against the same candidate. Required test names must appear and pass; the single original ignored placeholder remains outside passing coverage. A simulator result is finite testing, never a universal safety or liveness proof.

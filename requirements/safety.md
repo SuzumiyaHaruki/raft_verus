@@ -18,4 +18,4 @@ Cover every role change, actual commit-cursor advancement, application, snapshot
 
 Prove that resident, created, installed, persisted, restored and applied snapshots faithfully represent an earlier committed prefix: boundary index and term agree, and the actual decoder yields the application state obtained by executing that prefix. Connect this claim to the real service and storage paths, retained suffix boundaries and committed/applied-prefix contract. A snapshot need not preserve a reversible command history.
 
-Run `python3 scripts/check.py safety` to verify the complete proof composition. Definition checks and local lemmas do not establish implementation safety. Keep incomplete properties OPEN, and report gaps in executable coverage and the trust boundary for review.
+Run `python3 scripts/check.py safety` for complete test and proof acceptance; `top NAME` checks one proof unit for feedback. Definition checks and local lemmas do not establish implementation safety. Keep incomplete properties OPEN, and report gaps in executable coverage and the trust boundary for review.

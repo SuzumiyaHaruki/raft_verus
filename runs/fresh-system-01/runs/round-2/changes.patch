@@ -1,0 +1,877 @@
+--- before/madraft/proof/execution.rs
++++ after/madraft/proof/execution.rs
+@@ -0,0 +1,227 @@
++//! Developing cluster execution, including real log and storage effects.
++#[path = "../src/raft/election.rs"]
++pub mod election;
++#[path = "../src/raft/replication.rs"]
++pub mod replication;
++use crate::targets;
++use vstd::prelude::*;
++
++verus! {
++pub struct Stored { pub term: u64, pub vote: Option<usize>, pub entries: Seq<replication::Entry>, pub commit: u64 }
++pub enum Disk { Missing, Incomplete, Complete(Stored) }
++pub struct Node {
++    pub election: election::Image, pub log: replication::Image,
++    pub disk: Disk, pub pending: Option<Stored>, pub alive: bool,
++}
++pub enum Input {
++    Election(election::Input),
++    Propose(replication::Entry),
++    Append { index: u64, entry: replication::Entry },
++    FollowerCommit { advertised: u64, matched: u64 },
++    LeaderCommit { matched: Seq<u64> },
++    Apply { delivered: bool },
++    BeginWrite,
++    CompleteWrite,
++    Crash,
++    Restart,
++}
++pub struct Action { pub who: targets::Key, pub input: Input }
++pub struct Execution { pub states: Seq<Map<targets::Key, Node>>, pub actions: Seq<Action> }
++pub open spec fn capture(n: Node) -> Stored {
++    Stored { term: n.election.term, vote: n.election.vote, entries: n.log.entries, commit: n.log.commit }
++}
++pub open spec fn tip(entries: Seq<replication::Entry>) -> u64 {
++    if entries.len() == 0 { 0 } else { entries.last().term }
++}
++pub open spec fn sync(e: election::Image, l: replication::Image) -> election::Image {
++    election::Image { last_index: l.entries.len() as u64, last_term: tip(l.entries), ..e }
++}
++pub open spec fn initial(n: Node, key: targets::Key) -> bool {
++    election::initial(n.election) && n.election.me == key.node
++    && n.log.entries.len() == 0 && n.log.commit == 0 && n.log.applied == 0
++    && n.disk is Missing && n.pending.is_none() && n.alive
++}
++pub open spec fn stored_valid(d: Stored, members: usize) -> bool {
++    d.entries.len() <= u64::MAX && d.entries.len() <= usize::MAX && d.commit <= d.entries.len()
++    && (d.vote.is_some() ==> d.vote.unwrap() < members)
++}
++pub open spec fn local(n: Node) -> bool {
++    election::well_formed(n.election) && replication::valid_image(n.log)
++    && n.election.last_index == n.log.entries.len() && n.election.last_term == tip(n.log.entries)
++    && (match n.disk { Disk::Complete(d) => stored_valid(d, n.election.members), _ => true })
++    && (n.pending.is_some() ==> stored_valid(n.pending.unwrap(), n.election.members))
++}
++pub open spec fn preserved_host(a: Node, b: Node) -> bool {
++    b.disk == a.disk && b.pending == a.pending && b.alive == a.alive
++}
++pub open spec fn core_step(a: Node, input: Input, b: Node) -> bool {
++    preserved_host(a,b) && a.alive && a.pending.is_none()
++    && match input {
++        Input::Election(i) => !(i is Crash) && !(i is Restart)
++            && b.election == election::next(a.election,i) && b.log == a.log,
++        Input::Propose(entry) => a.election.role == election::Role::Leader
++            && entry.term == a.election.term && a.log.entries.len() < u64::MAX && a.log.entries.len() < usize::MAX
++            && b.log == replication::Image { entries: a.log.entries.push(entry), ..a.log }
++            && b.election == sync(a.election,b.log),
++        Input::Append { index,entry } => b.log == replication::appended(a.log,index,entry)
++            && b.election == sync(a.election,b.log),
++        Input::FollowerCommit { advertised,matched } => {
++            let bound = replication::min64(replication::min64(advertised,matched),a.log.entries.len() as u64);
++            b.log == replication::Image { commit: if bound > a.log.commit { bound } else { a.log.commit }, ..a.log }
++            && b.election == a.election
++        },
++        Input::LeaderCommit { matched } => b.election == a.election && b.log.entries == a.log.entries
++            && b.log.applied == a.log.applied && a.log.commit <= b.log.commit <= a.log.entries.len()
++            && (b.log.commit > a.log.commit ==> matched.len() > 0 && a.election.me < matched.len()
++                && a.log.entries[b.log.commit as int-1].term == a.election.term
++                && replication::tally(matched,matched.len(),b.log.commit,a.election.me) > matched.len()/2),
++        Input::Apply { delivered: _ } => b.election == a.election && b.log == replication::Image {
++            applied: if a.log.applied < a.log.commit { (a.log.applied+1) as u64 } else { a.log.applied }, ..a.log },
++        _ => false,
++    }
++}
++pub open spec fn step(a: Node, input: Input, b: Node) -> bool {
++    match input {
++        Input::BeginWrite => a.alive && a.pending.is_none() && b == Node {
++            disk: Disk::Incomplete, pending: Some(capture(a)), ..a },
++        Input::CompleteWrite => a.alive && a.pending.is_some() && b == Node {
++            disk: Disk::Complete(a.pending.unwrap()), pending: None, ..a },
++        Input::Crash => b == Node { alive: false, pending: None,
++            election: election::Image { role: election::Role::Follower, ..a.election }, ..a },
++        Input::Restart => !a.alive && match a.disk {
++            Disk::Complete(d) => {
++                let l = replication::Image { entries: d.entries, commit: d.commit, applied: 0 };
++                b == Node { alive: true, pending: None, log: l, election: sync(election::Image {
++                    term: d.term, role: election::Role::Follower, vote: d.vote,
++                    grants: Seq::new(a.election.members as nat, |j:int| false), count: 0, ..a.election },l), ..a }
++            },
++            // Missing initial storage has never authorized protocol outputs.
++            // An incomplete existing image fails construction and emits nothing.
++            _ => b == a,
++        },
++        _ => core_step(a,input,b),
++    }
++}
++pub open spec fn execution(run: Execution) -> bool {
++    run.states.len() == run.actions.len()+1
++    && (forall |k:targets::Key| run.states[0].contains_key(k) ==> initial(run.states[0][k],k))
++    && forall |t:int| #![trigger run.actions[t]] 0 <= t < run.actions.len() ==> {
++        let k=run.actions[t].who;
++        run.states[t].contains_key(k) && run.states[t+1].contains_key(k)
++        && run.states[t+1].dom() == run.states[t].dom()
++        && step(run.states[t][k],run.actions[t].input,run.states[t+1][k])
++        && forall |other:targets::Key| other != k && run.states[t].contains_key(other)
++            ==> run.states[t+1][other] == run.states[t][other]
++    }
++}
++pub proof fn step_preserves(a: Node, input: Input, b: Node)
++    requires local(a), step(a,input,b),
++    ensures local(b),
++{
++    match input {
++        Input::Election(i) => { election::next_preserves(a.election,i); },
++        Input::Append {index,entry} => {},
++        _ => {},
++    }
++}
++pub proof fn state_induction(run: Execution,t:int)
++    requires execution(run),0<=t<run.states.len(),
++    ensures forall |k:targets::Key| run.states[t].contains_key(k) ==> local(run.states[t][k]),
++    decreases t,
++{
++    if t==0 {
++        assert forall |k:targets::Key| run.states[0].contains_key(k) implies local(run.states[0][k]) by {
++            assert(initial(run.states[0][k],k));
++        }
++    } else {
++        state_induction(run,t-1);
++        let action=run.actions[t-1];
++        assert(run.states[t].dom() == run.states[t-1].dom());
++        assert(step(run.states[t-1][action.who], action.input, run.states[t][action.who]));
++        assert forall |k:targets::Key| run.states[t].contains_key(k) implies local(run.states[t][k]) by {
++            assert(run.states[t-1].contains_key(k));
++            if k==action.who { step_preserves(run.states[t-1][k],action.input,run.states[t][k]); }
++            else { assert(run.states[t][k]==run.states[t-1][k]); }
++        }
++    }
++}
++pub open spec fn view(n:Node) -> targets::View {
++    targets::View { term:n.election.term as nat, leader:n.alive && n.election.role==election::Role::Leader,
++        log:Seq::new(n.log.entries.len(),|i:int| targets::Entry {
++            term:n.log.entries[i].term as nat,command:n.log.entries[i].data@ }),snapshot:None }
++}
++pub open spec fn event(k:targets::Key,a:Node,b:Node,input:Input) -> targets::Event {
++    match input {
++        Input::Apply {delivered} => if delivered && b.log.applied>a.log.applied {
++            targets::Event::Apply {who:k,index:b.log.applied as nat,
++                entry:targets::Entry {term:a.log.entries[a.log.applied as int].term as nat,
++                    command:a.log.entries[a.log.applied as int].data@}}
++        } else {targets::Event::Silent},
++        _ => if b.log.commit>a.log.commit {
++            targets::Event::Commit {who:k,term:b.election.term as nat,through:b.log.commit as nat}
++        } else if a.election.role!=election::Role::Leader && b.election.role==election::Role::Leader && b.alive {
++            targets::Event::Elect {who:k,term:b.election.term as nat}
++        } else {targets::Event::Silent},
++    }
++}
++pub open spec fn observe(run:Execution) -> targets::History {
++    targets::History {states:Seq::new(run.states.len(),|t:int| Map::new(
++        |k:targets::Key| run.states[t].contains_key(k),|k:targets::Key|view(run.states[t][k]))),
++        events:Seq::new(run.actions.len(),|t:int| {
++            let k=run.actions[t].who;
++            event(k,run.states[t][k],run.states[t+1][k],run.actions[t].input)
++        })}
++}
++pub proof fn observation_shape(run:Execution)
++    requires execution(run), ensures targets::shape(observe(run)),
++{
++    let h=observe(run);
++    assert forall |t:int| 0<=t<h.events.len() implies match #[trigger] h.events[t] {
++        targets::Event::Elect{who,term} => h.states[t+1].contains_key(who) && h.states[t+1][who].leader && h.states[t+1][who].term==term,
++        targets::Event::Commit{who,term,through} => h.states[t+1].contains_key(who) && h.states[t+1][who].term==term && 1<=through<=h.states[t+1][who].log.len(),
++        targets::Event::Apply{who:_,index,entry:_} => index>=1,
++        _=>true,
++    } by {
++        state_induction(run,t+1);
++        let k=run.actions[t].who;
++        assert(step(run.states[t][k],run.actions[t].input,run.states[t+1][k]));
++        assert(run.states[t+1].contains_key(k));
++    }
++}
++pub proof fn execution_witness() -> (run:Execution)
++    ensures execution(run),targets::shape(observe(run)),
++        exists |i:int| 0<=i<observe(run).events.len() && !(observe(run).events[i] is Silent),
++{
++    let k=targets::Key{group:0,node:0};
++    let e=election::Image{term:0,role:election::Role::Follower,vote:None,me:0,members:1,
++        last_term:0,last_index:0,grants:seq![false],count:0};
++    let zero=Node{election:e,log:replication::Image{entries:Seq::empty(),commit:0,applied:0},
++        disk:Disk::Missing,pending:None,alive:true};
++    let campaign=Node{election:election::next(e,election::Input::Timeout),..zero};
++    let reply=election::Input::Reply{term:1,peer:0,granted:true};
++    let leader=Node{election:election::next(campaign.election,reply),..campaign};
++    let a=Map::empty().insert(k,zero);
++    let b=Map::empty().insert(k,campaign);
++    let c=Map::empty().insert(k,leader);
++    let run=Execution{states:seq![a,b,c],actions:seq![
++        Action{who:k,input:Input::Election(election::Input::Timeout)},
++        Action{who:k,input:Input::Election(reply)}]};
++    assert(e.grants =~= Seq::new(1,|j:int|false));
++    assert forall |key:targets::Key| a.contains_key(key) implies initial(a[key],key) by {
++        assert(key==k);
++    }
++    assert forall |t:int| #![trigger run.actions[t]] 0<=t<run.actions.len() implies {
++        let key=run.actions[t].who;
++        run.states[t].contains_key(key) && run.states[t+1].contains_key(key)
++        && run.states[t+1].dom()==run.states[t].dom()
++        && step(run.states[t][key],run.actions[t].input,run.states[t+1][key])
++        && forall |other:targets::Key| other!=key && run.states[t].contains_key(other)
++            ==> run.states[t+1][other]==run.states[t][other]
++    } by { assert(t==0 || t==1); }
++    assert(execution(run));
++    observation_shape(run);
++    assert(observe(run).events[1] is Elect);
++    run
++}
++
++}
+--- before/madraft/proof/implementation.rs
++++ after/madraft/proof/implementation.rs
+@@ -1,142 +1,4 @@
+-//! Incremental execution interface. This unit does not yet claim full refinement.
+-//! All safety theorems remain open until message/storage/host induction is closed.
+-#[path = "../src/raft/election.rs"]
+-pub mod election;
+-use vstd::prelude::*;
+-use crate::targets;
+-
+-verus! {
+-// An overapproximation of the currently implemented election boundary. Network
+-// authenticity and durable write completion will constrain these actions in
+-// the next increment. In particular, Reply is not yet a quorum certificate.
+-pub use election::Input;
+-pub struct Action { pub who: targets::Key, pub input: Input }
+-pub struct Execution {
+-    pub states: Seq<Map<targets::Key, election::Image>>,
+-    pub actions: Seq<Action>,
+-}
+-pub open spec fn initialized(s: Map<targets::Key, election::Image>) -> bool {
+-    forall |k: targets::Key| s.contains_key(k) ==> {
+-        let v = s[k];
+-        election::initial(v) && v.me == k.node
+-    }
+-}
+-// Full transition equations and induction are developed here, rather than
+-// assuming reachable-state safety. This deliberately unfinished relation is
+-// broad: it retains all inputs and does not impose any target as a premise.
+-pub open spec fn permitted(before: election::Image, input: Input, after: election::Image) -> bool {
+-    match input {
+-        // Broad recovery abstraction: a crash may lose a volatile term or vote.
+-        // This does NOT assert that an arbitrary recovered vote is durable.
+-        // Storage provenance is still open, so no safety theorem consumes it.
+-        Input::Crash | Input::Restart => election::well_formed(after)
+-            && after.me == before.me && after.members == before.members
+-            && after.last_index == 0 && after.last_term == 0
+-            && after.role == election::Role::Follower,
+-        _ => after == election::next(before, input),
+-    }
+-}
+-pub open spec fn execution(run: Execution) -> bool {
+-    run.states.len() == run.actions.len() + 1 && initialized(run.states[0])
+-    && forall |t: int| #![trigger run.actions[t]] 0 <= t < run.actions.len() ==> {
+-        let k = run.actions[t].who;
+-        run.states[t].contains_key(k) && run.states[t+1].contains_key(k)
+-        && run.states[t+1].dom() == run.states[t].dom()
+-        && permitted(run.states[t][k], run.actions[t].input, run.states[t+1][k])
+-        && forall |other: targets::Key| other != k && run.states[t].contains_key(other)
+-            ==> run.states[t+1][other] == run.states[t][other]
+-    }
+-}
+-pub proof fn state_induction(run: Execution, t: int)
+-    requires execution(run), 0 <= t < run.states.len(),
+-    ensures forall |k: targets::Key| run.states[t].contains_key(k)
+-        ==> election::well_formed(run.states[t][k]),
+-    decreases t,
+-{
+-    if t == 0 {
+-        assert forall |k: targets::Key| run.states[t].contains_key(k)
+-            implies election::well_formed(run.states[t][k]) by {
+-            assert(election::initial(run.states[0][k]));
+-        }
+-    } else {
+-        state_induction(run, t-1);
+-        let action = run.actions[t-1];
+-        assert forall |k: targets::Key| run.states[t].contains_key(k)
+-            implies election::well_formed(run.states[t][k]) by {
+-            assert(run.states[t-1].contains_key(k));
+-            if k == action.who {
+-                let before = run.states[t-1][k];
+-                assert(permitted(before, action.input, run.states[t][k]));
+-                election::next_preserves(before, action.input);
+-            } else { assert(run.states[t][k] == run.states[t-1][k]); }
+-        }
+-    }
+-}
+-pub open spec fn view(v: election::Image) -> targets::View {
+-    targets::View { term: v.term as nat, leader: v.role == election::Role::Leader,
+-        log: Seq::empty(), snapshot: None }
+-}
+-pub open spec fn observe(run: Execution) -> targets::History {
+-    targets::History {
+-        states: Seq::new(run.states.len(), |t: int| Map::new(
+-            |k: targets::Key| run.states[t].contains_key(k), |k: targets::Key| view(run.states[t][k]))),
+-        events: Seq::new(run.actions.len(), |t: int| {
+-            let k = run.actions[t].who;
+-            if run.states[t].contains_key(k) && run.states[t+1].contains_key(k)
+-                && run.states[t][k].role != election::Role::Leader
+-                && run.states[t+1][k].role == election::Role::Leader {
+-                targets::Event::Elect { who: k, term: run.states[t+1][k].term as nat }
+-            } else { targets::Event::Silent }
+-        }),
+-    }
+-}
+-pub proof fn observation_shape(run: Execution)
+-    requires execution(run),
+-    ensures targets::shape(observe(run)),
+-{
+-    let h = observe(run);
+-    assert forall |t: int| 0 <= t < h.events.len() implies match #[trigger] h.events[t] {
+-        targets::Event::Elect { who, term } => h.states[t+1].contains_key(who)
+-            && h.states[t+1][who].leader && h.states[t+1][who].term == term,
+-        targets::Event::Commit { who, term, through } => h.states[t+1].contains_key(who)
+-            && h.states[t+1][who].term == term && 1 <= through <= h.states[t+1][who].log.len(),
+-        targets::Event::Apply { who: _, index, entry: _ } => index >= 1,
+-        _ => true,
+-    } by {
+-        let k = run.actions[t].who;
+-        assert(run.states[t+1].contains_key(k));
+-    }
+-}
+-pub proof fn execution_witness() -> (run: Execution)
+-    ensures execution(run), targets::shape(observe(run)),
+-        exists |i: int| 0 <= i < observe(run).events.len()
+-            && !(observe(run).events[i] is Silent),
+-{
+-    let k = targets::Key { group: 0, node: 0 };
+-    let zero = election::Image { term: 0, role: election::Role::Follower, vote: None,
+-        me: 0, members: 1, last_term: 0, last_index: 0, grants: seq![false], count: 0 };
+-    let campaigning = election::next(zero, Input::Timeout);
+-    let reply = Input::Reply { term: 1, peer: 0, granted: true };
+-    let leader = election::next(campaigning, reply);
+-    let a = Map::empty().insert(k, zero);
+-    let b = Map::empty().insert(k, campaigning);
+-    let c = Map::empty().insert(k, leader);
+-    let run = Execution { states: seq![a,b,c], actions: seq![
+-        Action { who: k, input: Input::Timeout }, Action { who: k, input: reply }] };
+-    assert(zero.grants =~= Seq::new(1, |j: int| false));
+-    assert(initialized(a));
+-    assert forall |t: int| #![trigger run.actions[t]] 0 <= t < run.actions.len() implies {
+-        let who = run.actions[t].who;
+-        run.states[t].contains_key(who) && run.states[t+1].contains_key(who)
+-        && run.states[t+1].dom() == run.states[t].dom()
+-        && permitted(run.states[t][who], run.actions[t].input, run.states[t+1][who])
+-        && forall |other: targets::Key| other != who && run.states[t].contains_key(other)
+-            ==> run.states[t+1][other] == run.states[t][other]
+-    } by { assert(t == 0 || t == 1); }
+-    assert(execution(run));
+-    observation_shape(run);
+-    assert(observe(run).events[1] is Elect);
+-    run
+-}
+-
+-}
++//! Full composition is under development; exported APIs will not assume invariants.
++#[path = "execution.rs"]
++mod model;
++pub use model::*;
+--- before/madraft/proof/progress.rs
++++ after/madraft/proof/progress.rs
+@@ -1,4 +1,4 @@
+ #[path = "../../requirements/targets.rs"]
+ pub mod targets;
+-#[path = "implementation.rs"]
+-pub mod implementation;
++#[path = "execution.rs"]
++pub mod execution;
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -59,6 +59,9 @@
+ #[path = "election.rs"]
+ mod election;
+ use election::Election;
++#[path = "replication.rs"]
++mod replication;
++use replication::{Entry, Log};
+ 
+ struct Raft {
+     peers: Vec<SocketAddr>,
+@@ -67,12 +70,18 @@
+     state: Election,
+     deadline: Instant,
+     heartbeat_due: Instant,
++    log: Log,
++    next: Vec<u64>,
++    matched: Vec<u64>,
++    inflight: Vec<Option<u64>>,
+ }
+ 
+ #[derive(Debug, Clone, Serialize, Deserialize)]
+ struct Persist {
+     term: u64,
+     voted_for: Option<usize>,
++    entries: Vec<Entry>,
++    commit: u64,
+ }
+ 
+ impl fmt::Debug for Raft {
+@@ -87,6 +96,8 @@
+         let (apply_ch, recver) = mpsc::unbounded();
+         let state = Election::new(peers.len(), me).expect("valid membership");
+         let inner = Arc::new(Mutex::new(Raft {
++            next: vec![1; peers.len()], matched: vec![0; peers.len()],
++            inflight: vec![None; peers.len()], log: Log::new(),
+             peers, me, apply_ch, state,
+             deadline: Instant::now() + Raft::election_timeout(),
+             heartbeat_due: Instant::now(),
+@@ -98,10 +109,24 @@
+         (handle, recver)
+     }
+ 
+-    pub async fn start(&self, _cmd: &[u8]) -> Result<Start> {
+-        let raft = self.inner.lock().unwrap();
+-        if !raft.state.is_leader() { return Err(Error::NotLeader((raft.me + 1) % raft.peers.len())); }
+-        todo!("2B proposals")
++    pub async fn start(&self, cmd: &[u8]) -> Result<Start> {
++        let _serial = self.serial.lock().await;
++        let result = {
++            let mut raft = self.inner.lock().unwrap();
++            if !raft.state.is_leader() { return Err(Error::NotLeader((raft.me + 1) % raft.peers.len())); }
++            let term = raft.state.term;
++            let index = raft.log.propose(term, cmd.to_vec()).ok_or_else(||
++                io::Error::new(io::ErrorKind::Other, "log exhausted"))?;
++            raft.sync_log_tip();
++            raft.advance_commit();
++            raft.heartbeat_due = Instant::now();
++            Start { term, index }
++        };
++        self.persist().await?;
++        self.inner.lock().unwrap().apply();
++        drop(_serial);
++        self.broadcast();
++        Ok(result)
+     }
+     pub fn term(&self) -> u64 { self.inner.lock().unwrap().state.term }
+     pub fn is_leader(&self) -> bool { self.inner.lock().unwrap().state.is_leader() }
+@@ -118,7 +143,8 @@
+     async fn persist(&self) -> io::Result<()> {
+         let bytes = {
+             let raft = self.inner.lock().unwrap();
+-            bincode::serialize(&Persist { term: raft.state.term, voted_for: raft.state.voted_for })
++            bincode::serialize(&Persist { term: raft.state.term, voted_for: raft.state.voted_for,
++                entries: raft.log.entries.clone(), commit: raft.log.commit })
+                 .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?
+         };
+         let file = fs::File::create("state").await?;
+@@ -132,9 +158,14 @@
+                 let image: Persist = bincode::deserialize(&bytes)
+                     .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+                 let mut raft = self.inner.lock().unwrap();
++                let log = Log::restore(image.entries, image.commit).ok_or_else(||
++                    io::Error::new(io::ErrorKind::InvalidData, "invalid durable log"))?;
+                 if !raft.state.recover(image.term, image.voted_for) {
+                     return Err(io::Error::new(io::ErrorKind::InvalidData, "invalid durable voter"));
+                 }
++                raft.log = log;
++                raft.sync_log_tip();
++                raft.apply();
+             }
+             Err(e) if e.kind() == io::ErrorKind::NotFound => { self.persist().await?; }
+             Err(e) => return Err(e),
+@@ -148,9 +179,9 @@
+             async move { this.request_vote(args).await.expect("vote storage failed: node halted") }
+         });
+         let this = self.clone();
+-        self.endpoint.add_rpc_handler(move |args: HeartbeatArgs| {
++        self.endpoint.add_rpc_handler(move |args: AppendArgs| {
+             let this = this.clone();
+-            async move { this.heartbeat(args).await.expect("heartbeat storage failed: node halted") }
++            async move { this.append(args).await.expect("append storage failed: node halted") }
+         });
+     }
+     async fn request_vote(&self, args: RequestVoteArgs) -> Result<RequestVoteReply> {
+@@ -164,15 +195,34 @@
+         self.persist().await?;
+         Ok(reply)
+     }
+-    async fn heartbeat(&self, args: HeartbeatArgs) -> Result<RequestVoteReply> {
++    async fn append(&self, args: AppendArgs) -> Result<AppendReply> {
+         let _serial = self.serial.lock().await;
+         let reply = {
+             let mut raft = self.inner.lock().unwrap();
+             let accepted = raft.state.heartbeat(args.term, args.leader);
+             if accepted { raft.reset_deadline(); }
+-            RequestVoteReply { term: raft.state.term, granted: accepted }
++            let mut success = false;
++            let mut hint = raft.log.last_index().saturating_add(1);
++            if accepted && raft.log.term_at(args.prev_index) == Some(args.prev_term) {
++                success = true;
++                let mut index = args.prev_index;
++                for entry in args.entries {
++                    if let Some(next) = index.checked_add(1) {
++                        index = next;
++                        if !raft.log.append_one(index, entry) { success = false; break; }
++                    } else { success = false; break; }
++                }
++                if success { raft.log.follower_commit(args.commit, index); }
++                raft.sync_log_tip();
++            } else if args.prev_index <= raft.log.last_index() && args.prev_index > 0 {
++                let bad_term = raft.log.term_at(args.prev_index);
++                hint = args.prev_index;
++                while hint > 1 && raft.log.term_at(hint - 1) == bad_term { hint -= 1; }
++            }
++            AppendReply { term: raft.state.term, success, hint }
+         };
+         self.persist().await?;
++        self.inner.lock().unwrap().apply();
+         Ok(reply)
+     }
+     fn start_timer(&self) {
+@@ -186,66 +236,122 @@
+     }
+     async fn tick(&self) {
+         let _serial = self.serial.lock().await;
+-        let (votes, heartbeat) = {
++        let votes = {
+             let mut raft = self.inner.lock().unwrap();
+             let now = Instant::now();
+             if raft.state.is_leader() {
+                 if now < raft.heartbeat_due { return; }
+                 raft.heartbeat_due = now + Duration::from_millis(80);
+-                (None, Some(HeartbeatArgs { term: raft.state.term, leader: raft.me }))
++                None
+             } else {
+                 if now < raft.deadline { return; }
+                 raft.reset_deadline();
+                 if !raft.state.campaign() { return; }
+                 let args = RequestVoteArgs { term: raft.state.term, candidate: raft.me,
+                     last_term: raft.state.last_term, last_index: raft.state.last_index };
+-                // The self-vote also handles a singleton group.
+                 let me = raft.me;
+-                raft.state.receive_grant(args.term, me, true);
+-                (Some(args), None)
++                if raft.state.receive_grant(args.term, me, true) { raft.became_leader(); }
++                Some(args)
+             }
+         };
+         self.persist().await.expect("timer storage failed: node halted");
+-        let peers = self.inner.lock().unwrap().peers.clone();
+-        let me = self.inner.lock().unwrap().me;
+-        for (peer, addr) in peers.into_iter().enumerate() {
+-            if peer == me { continue; }
+-            let this = self.clone();
+-            if let Some(args) = votes.clone() {
++        drop(_serial);
++        if let Some(args) = votes {
++            let peers = self.inner.lock().unwrap().peers.clone();
++            for (peer, addr) in peers.into_iter().enumerate() {
++                if peer == args.candidate { continue; }
++                let this = self.clone();
++                let args = args.clone();
+                 task::spawn(async move {
+                     if let Ok(reply) = this.endpoint.call_timeout(addr, args, Duration::from_millis(250)).await {
+                         this.vote_reply(peer, reply).await;
+                     }
+                 });
+-            } else if let Some(args) = heartbeat.clone() {
+-                task::spawn(async move {
+-                    if let Ok(reply) = this.endpoint.call_timeout(addr, args, Duration::from_millis(250)).await {
+-                        this.term_reply(peer, reply).await;
++            }
++        } else { self.broadcast(); }
++    }
++    fn broadcast(&self) {
++        let requests = {
++            let mut raft = self.inner.lock().unwrap();
++            if !raft.state.is_leader() { return; }
++            let mut requests = Vec::new();
++            for peer in 0..raft.peers.len() {
++                if peer == raft.me || raft.inflight[peer].is_some() { continue; }
++                let next = raft.next[peer];
++                if next == 0 { continue; }
++                let prev_index = next - 1;
++                if let Some(prev_term) = raft.log.term_at(prev_index) {
++                    let args = AppendArgs { term: raft.state.term, leader: raft.me, prev_index, prev_term,
++                        entries: raft.log.entries[prev_index as usize..].to_vec(), commit: raft.log.commit };
++                    raft.inflight[peer] = Some(args.term);
++                    requests.push((peer, raft.peers[peer], args));
++                }
++            }
++            requests
++        };
++        for (peer, addr, args) in requests {
++            let this = self.clone();
++            task::spawn(async move {
++                let reply = this.endpoint.call_timeout(addr, args.clone(), Duration::from_millis(250)).await.ok();
++                this.append_reply(peer, args, reply).await;
++            });
++        }
++    }
++    async fn append_reply(&self, peer: usize, args: AppendArgs, reply: Option<AppendReply>) {
++        let _serial = self.serial.lock().await;
++        {
++            let mut raft = self.inner.lock().unwrap();
++            if peer >= raft.peers.len() { return; }
++            if raft.inflight[peer] == Some(args.term) { raft.inflight[peer] = None; }
++            if let Some(reply) = reply {
++                raft.state.observe_term(reply.term);
++                if raft.state.is_leader() && raft.state.term == args.term && reply.term == args.term {
++                    if reply.success {
++                        if let Some(last) = args.prev_index.checked_add(args.entries.len() as u64) {
++                            raft.matched[peer] = raft.matched[peer].max(last);
++                            raft.next[peer] = last.saturating_add(1);
++                            raft.advance_commit();
++                        }
++                    } else {
++                        raft.next[peer] = reply.hint.max(1).min(raft.next[peer].saturating_sub(1).max(1));
++                        raft.heartbeat_due = Instant::now();
+                     }
+-                });
+-            }
+-        }
++                }
++            }
++        }
++        self.persist().await.expect("append reply storage failed: node halted");
++        self.inner.lock().unwrap().apply();
+     }
+     async fn vote_reply(&self, peer: usize, reply: RequestVoteReply) {
+         let _serial = self.serial.lock().await;
+         {
+             let mut raft = self.inner.lock().unwrap();
+             if raft.state.receive_grant(reply.term, peer, reply.granted) {
+-                raft.heartbeat_due = Instant::now();
++                raft.became_leader();
+             }
+         }
+         self.persist().await.expect("reply storage failed: node halted");
+     }
+-    async fn term_reply(&self, peer: usize, reply: RequestVoteReply) {
+-        let _serial = self.serial.lock().await;
+-        {
+-            let mut raft = self.inner.lock().unwrap();
+-            if peer < raft.peers.len() { raft.state.observe_term(reply.term); }
+-        }
+-        self.persist().await.expect("reply storage failed: node halted");
+-    }
++
+ }
+ impl Raft {
++    fn sync_log_tip(&mut self) {
++        self.log.sync_election(&mut self.state);
++    }
++    fn became_leader(&mut self) {
++        let next = self.log.last_index().saturating_add(1);
++        self.next.fill(next);
++        self.matched.fill(0);
++        self.inflight.fill(None);
++        self.heartbeat_due = Instant::now();
++        self.advance_commit();
++    }
++    fn advance_commit(&mut self) { self.log.leader_commit(self.state.term, self.me, &self.matched); }
++    fn apply(&mut self) {
++        while let Some((index, entry)) = self.log.next_application() {
++            if self.apply_ch.unbounded_send(ApplyMsg::Command { data: entry.data, index }).is_err() { break; }
++        }
++    }
+     fn election_timeout() -> Duration {
+         Duration::from_millis(rand::thread_rng().gen_range(350..650))
+     }
+@@ -260,8 +366,10 @@
+     const ID: u64 = 1;
+ }
+ #[derive(Debug, Clone, Serialize, Deserialize)]
+-struct HeartbeatArgs { term: u64, leader: usize }
+-impl net::rpc::Request for HeartbeatArgs {
+-    type Response = RequestVoteReply;
++struct AppendArgs { term: u64, leader: usize, prev_index: u64, prev_term: u64, entries: Vec<Entry>, commit: u64 }
++#[derive(Debug, Clone, Serialize, Deserialize)]
++struct AppendReply { term: u64, success: bool, hint: u64 }
++impl net::rpc::Request for AppendArgs {
++    type Response = AppendReply;
+     const ID: u64 = 10;
+ }
+--- before/madraft/src/raft/replication.rs
++++ after/madraft/src/raft/replication.rs
+@@ -0,0 +1,179 @@
++//! Executable log decisions; the async host transports their selected effects.
++use vstd::prelude::*;
++use super::election::Election;
++
++verus! {
++#[cfg_attr(not(verus_keep_ghost), derive(serde::Serialize, serde::Deserialize))]
++#[derive(Debug, Clone)]
++pub struct Entry { pub term: u64, pub data: Vec<u8> }
++pub struct Record { pub term: u64, pub data: Seq<u8> }
++impl Entry {
++    pub open spec fn view(&self) -> Record { Record { term: self.term, data: self.data@ } }
++    pub fn copy(&self) -> (r: Self)
++        ensures r.view() == self.view(),
++    { Self { term: self.term, data: self.data.clone() } }
++}
++#[derive(Debug)]
++pub struct Log {
++    pub entries: Vec<Entry>,
++    pub commit: u64,
++    pub applied: u64,
++}
++pub open spec fn min64(a: u64, b: u64) -> u64 { if a < b { a } else { b } }
++pub open spec fn records(v: Seq<Entry>) -> Seq<Record> {
++    Seq::new(v.len(), |i: int| v[i].view())
++}
++pub struct Image { pub entries: Seq<Entry>, pub commit: u64, pub applied: u64 }
++pub open spec fn valid_image(i: Image) -> bool {
++    i.applied <= i.commit && i.commit <= i.entries.len() && i.entries.len() <= u64::MAX
++    && i.entries.len() <= usize::MAX
++}
++pub open spec fn tally(matched: Seq<u64>, upto: nat, index: u64, me: usize) -> nat
++    recommends upto <= matched.len(),
++    decreases upto,
++{
++    if upto == 0 { 0 } else { tally(matched, (upto-1) as nat, index, me)
++        + if upto-1 == me || matched[upto as int-1] >= index { 1nat } else { 0nat } }
++}
++pub open spec fn append_allowed(i: Image, index: u64, entry: Entry) -> bool {
++    index > 0 && index-1 <= i.entries.len() && index-1 < usize::MAX
++    && (index > i.entries.len() || i.entries[index as int-1].term == entry.term || index > i.commit)
++}
++pub open spec fn appended(i: Image, index: u64, entry: Entry) -> Image {
++    if !append_allowed(i, index, entry)
++        || (index <= i.entries.len() && i.entries[index as int-1].term == entry.term) { i }
++    else { Image { entries: i.entries.take(index as int-1).push(entry), ..i } }
++}
++impl Log {
++    pub open spec fn image(&self) -> Image {
++        Image { entries: self.entries@, commit: self.commit, applied: self.applied }
++    }
++    pub open spec fn valid(&self) -> bool { valid_image(self.image()) }
++    pub fn new() -> (r: Self)
++        ensures r.valid(), r.entries@ == Seq::<Entry>::empty(), r.commit == 0, r.applied == 0,
++    { Self { entries: Vec::new(), commit: 0, applied: 0 } }
++    pub fn restore(entries: Vec<Entry>, commit: u64) -> (r: Option<Self>)
++        ensures r.is_some() ==> r.unwrap().valid() && r.unwrap().entries@ == entries@
++            && r.unwrap().commit == commit && r.unwrap().applied == 0,
++            r.is_none() ==> commit > entries.len() || entries.len() > u64::MAX,
++    {
++        if entries.len() as u128 > u64::MAX as u128 || commit > entries.len() as u64 { return None; }
++        Some(Self { entries, commit, applied: 0 })
++    }
++    pub fn sync_election(&self, e: &mut Election)
++        requires self.valid(), old(e).valid(),
++        ensures e.valid(), e.last_index == self.entries.len(),
++            e.last_term == if self.entries.len() == 0 {0} else {self.entries@.last().term},
++            e.term == old(e).term, e.role == old(e).role, e.voted_for == old(e).voted_for,
++            e.me == old(e).me, e.members == old(e).members,
++            e.grants@ == old(e).grants@, e.grant_count == old(e).grant_count,
++    {
++        e.last_index = self.entries.len() as u64;
++        e.last_term = if self.entries.len() == 0 { 0 } else { self.entries[self.entries.len()-1].term };
++    }
++    pub fn last_index(&self) -> (r: u64)
++        requires self.valid(), ensures r == self.entries.len(),
++    { self.entries.len() as u64 }
++    pub fn term_at(&self, index: u64) -> (r: Option<u64>)
++        requires self.valid(),
++        ensures r == if index == 0 { Some(0) }
++            else if index <= self.entries.len() { Some(self.entries@[index as int - 1].term) } else { None },
++    {
++        if index == 0 { Some(0) }
++        else if index <= self.entries.len() as u64 { Some(self.entries[(index - 1) as usize].term) }
++        else { None }
++    }
++    pub fn propose(&mut self, term: u64, data: Vec<u8>) -> (r: Option<u64>)
++        requires old(self).valid(),
++        ensures self.valid(), self.commit == old(self).commit, self.applied == old(self).applied,
++            r.is_some() ==> r.unwrap() == self.entries.len()
++                && self.entries@ == old(self).entries@.push(Entry { term, data }),
++            r.is_none() ==> self.entries@ == old(self).entries@,
++    {
++        if self.entries.len() as u64 == u64::MAX || self.entries.len() == usize::MAX { return None; }
++        self.entries.push(Entry { term, data });
++        Some(self.entries.len() as u64)
++    }
++    // One received entry at its original index. Matching entries preserve the
++    // existing suffix; a differing term truncates only the uncommitted suffix.
++    pub fn append_one(&mut self, index: u64, entry: Entry) -> (ok: bool)
++        requires old(self).valid(),
++        ensures self.valid(), ok == append_allowed(old(self).image(), index, entry),
++            self.image() == appended(old(self).image(), index, entry),
++            self.commit == old(self).commit, self.applied == old(self).applied,
++            self.entries@.take(self.commit as int) == old(self).entries@.take(self.commit as int),
++            !ok ==> self.entries@ == old(self).entries@,
++            ok ==> 1 <= index <= self.entries.len(),
++    {
++        let ghost before = self.image();
++        if index == 0 { return false; }
++        let pos64 = index - 1;
++        if pos64 > self.entries.len() as u64 || pos64 >= usize::MAX as u64 { return false; }
++        let pos = pos64 as usize;
++        if pos < self.entries.len() {
++            if self.entries[pos].term == entry.term { return true; }
++            if index <= self.commit { return false; }
++            self.entries.truncate(pos);
++        }
++        proof { assert(self.entries@ =~= before.entries.take(pos as int)); }
++        self.entries.push(entry);
++        true
++    }
++    pub fn follower_commit(&mut self, advertised: u64, matched_through: u64)
++        requires old(self).valid(),
++        ensures self.valid(), self.entries@ == old(self).entries@,
++            self.applied == old(self).applied, self.commit >= old(self).commit,
++            self.commit == if min64(min64(advertised, matched_through), old(self).entries.len() as u64) > old(self).commit {
++                min64(min64(advertised, matched_through), old(self).entries.len() as u64)
++            } else { old(self).commit },
++    {
++        let bound = if advertised < matched_through { advertised } else { matched_through };
++        let bound = if bound < self.entries.len() as u64 { bound } else { self.entries.len() as u64 };
++        if bound > self.commit { self.commit = bound; }
++    }
++    pub fn leader_commit(&mut self, term: u64, me: usize, matched: &Vec<u64>)
++        requires old(self).valid(),
++        ensures self.valid(), self.entries@ == old(self).entries@,
++            self.applied == old(self).applied, self.commit >= old(self).commit,
++            self.commit > old(self).commit ==> self.entries@[self.commit as int - 1].term == term
++                && tally(matched@, matched.len() as nat, self.commit, me) > matched.len() / 2,
++    {
++        if matched.len() == 0 || me >= matched.len() { return; }
++        let mut index = self.entries.len();
++        while index as u64 > self.commit
++            invariant self.valid(), self.entries@ == old(self).entries@,
++                self.applied == old(self).applied, self.commit == old(self).commit,
++                self.commit <= index <= self.entries.len(), me < matched.len(),
++            decreases index,
++        {
++            if self.entries[index - 1].term == term {
++                let mut count: usize = 0;
++                let mut peer: usize = 0;
++                while peer < matched.len()
++                    invariant peer <= matched.len(), count <= peer,
++                        count == tally(matched@, peer as nat, index as u64, me),
++                    decreases matched.len() - peer,
++                {
++                    if peer == me || matched[peer] >= index as u64 { count += 1; }
++                    peer += 1;
++                }
++                if count > matched.len() / 2 { self.commit = index as u64; return; }
++            }
++            index -= 1;
++        }
++    }
++    pub fn next_application(&mut self) -> (r: Option<(u64, Entry)>)
++        requires old(self).valid(),
++        ensures self.valid(), self.entries@ == old(self).entries@, self.commit == old(self).commit,
++            r.is_none() ==> self.applied == old(self).applied,
++            r.is_some() ==> self.applied == old(self).applied + 1 && r.unwrap().0 == self.applied
++                && r.unwrap().1.view() == self.entries@[self.applied as int - 1].view(),
++    {
++        if self.applied >= self.commit { return None; }
++        let index = self.applied + 1;
++        let entry = self.entries[(index - 1) as usize].copy();
++        self.applied = index;
++        Some((index, entry))
++    }
++}
++}

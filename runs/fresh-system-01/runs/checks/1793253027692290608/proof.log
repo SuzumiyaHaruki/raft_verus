@@ -1,0 +1,27 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253027692290608/candidate/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 29 verified, 1 errors
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253027692290608/candidate/madraft/proof/../src/raft/election.rs:8:17
+  |
+8 | #[derive(Debug, Clone)]
+  |                 ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253027692290608/candidate/madraft/proof/../src/raft/replication.rs:6:17
+  |
+6 | #[derive(Debug, Clone)]
+  |                 ^^^^^
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253027692290608/candidate/madraft/proof/../src/raft/replication.rs:82:13
+   |
+82 |             self.image() == appended(old(self).image(), index, entry),
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+98 |         true
+   |         ---- at the end of the function body
+
+error: aborting due to 1 previous error; 2 warnings emitted
+
+
+process=COMPLETED exit=1

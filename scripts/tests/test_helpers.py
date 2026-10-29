@@ -1,200 +1,291 @@
-"""Offline controller tests. Every agent process here is explicitly SIMULATED."""
+"""Offline system regressions. Agent calls/check reports here are SIMULATED."""
+import contextlib
+import io
 import json
 import os
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from process import run_process
+import run as controller
+import check as checker
+from inputs import copy_files, input_files, save_json
+from process import ProcessResult, run_process
 from tools import ROOT
 
 
-class LauncherTests(unittest.TestCase):
+def simulated_report(output, revision, *, passed=(), missing_reason='missing_entry_or_dependency', final=False):
+    output.mkdir(parents=True)
+    log = output / 'SIMULATED.log'
+    log.write_text('SIMULATED checker transport; no Rust or Verus was executed.\n')
+    names = ('build', 'inventory', 'tests_seed_1', 'proof', *checker.OBLIGATIONS, 'linkage_review', 'safety')
+    result = dict(status='MACHINE_CHECKS_PASSED' if final else 'INCOMPLETE', candidate_revision=revision,
+        checks={n: dict(status='PASS' if final or n in passed or n in ('build','inventory','tests_seed_1','proof') else 'OPEN',
+                        reason='checked' if final or n in passed or n in ('build','inventory','tests_seed_1','proof') else missing_reason,
+                        log=str(log), command=['SIMULATED-check', n], diagnostic='SIMULATED missing dependency',
+                        passed_tests=['SIMULATED test'] if n=='tests_seed_1' else []) for n in names})
+    save_json(output / 'results.json', result)
+    return result
+
+
+class LoopTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        (ROOT / 'runs').mkdir(exist_ok=True)
-        self.directory = ROOT / 'runs' / (Path(self.tmp.name).name + '-experiment')
-        self.addCleanup(shutil.rmtree, self.directory, ignore_errors=True)
-        self.personal_home = Path(self.tmp.name) / 'operator-codex'
-        self.personal_home.mkdir()
-        (self.personal_home / 'AGENTS.md').write_text('SIMULATED personal instructions')
-        (self.personal_home / 'AGENTS.override.md').write_text('SIMULATED personal override')
-        (self.personal_home / 'config.toml').write_text('model = "SIMULATED-default"\ndeveloper_instructions = "SIMULATED personal instructions"\n')
-        (self.personal_home / 'auth.json').write_text('{"SIMULATED": "not a credential"}\n')
-        (self.personal_home / 'rules').mkdir()
-        (self.personal_home / 'rules/default.rules').write_text('# SIMULATED execution policy\n')
-        self.env = dict(os.environ, CODEX_HOME=str(self.personal_home))
-        self.fake = Path(self.tmp.name) / 'simulated_codex'
+        self.root = Path(self.tmp.name) / 'prototype'
+        self.root.mkdir()
+        copy_files(ROOT, self.root, input_files(ROOT) + ['scripts/run.py'] + [f'scripts/prompts/{n}.md' for n in controller.PROMPTS])
+        self.workspace = self.root / 'runs/new-experiment'
+        cfg = controller.settings(self.root)
+        cfg['agent'].update(total_seconds='30', slice_seconds='1', check_seconds='1', max_rounds='3',
+                            stall_rounds='2', max_redesigns='1')
+        with (self.root / 'tools.ini').open('w') as f: cfg.write(f)
+        self.home = Path(self.tmp.name) / 'personal'
+        self.home.mkdir()
+        (self.home / 'auth.json').write_text('{"SIMULATED":"not a credential"}')
+        (self.home / 'AGENTS.md').write_text('SIMULATED personal instructions')
+        (self.home / 'config.toml').write_text('model = "SIMULATED-personal-model"')
+        (self.home / 'sessions').mkdir()
+        (self.home / 'sessions/old-answer').write_text('SIMULATED old answer')
+        (self.home / 'rules').mkdir()
+        self.fake = Path(self.tmp.name) / 'simulated-agent'
         self.fake.write_text('#!' + sys.executable + '\n' + '''
-import json, os, pathlib, sys, time
-with pathlib.Path('simulated-homes.jsonl').open('a') as f:
-    f.write(json.dumps(os.environ['CODEX_HOME']) + '\\n')
-with pathlib.Path('simulated-calls.jsonl').open('a') as f:
-    f.write(json.dumps(sys.argv[1:]) + '\\n')
-print(json.dumps({'type':'thread.started','thread_id':'SIMULATED-test-thread'}), flush=True)
-with pathlib.Path('SIMULATED-progress.txt').open('a') as f:
-    f.write('SIMULATED generation; no Rust or Verus check.\\n')
-with pathlib.Path('madraft/src/raft/raft.rs').open('a') as f:
-    f.write('// SIMULATED edit inside the experiment workspace.\\n')
-if pathlib.Path('sleep.txt').exists(): time.sleep(10)
-out = pathlib.Path(sys.argv[sys.argv.index('--output-last-message')+1])
-out.write_text('SIMULATED agent response, not a verification result.\\n')
+import json, pathlib, sys, time
+prompt=sys.stdin.read()
+print(json.dumps({'type':'thread.started','thread_id':'SIMULATED-session'}), flush=True)
+with pathlib.Path('SIMULATED-calls.jsonl').open('a') as f: f.write(json.dumps(sys.argv[1:])+'\\n')
+pathlib.Path('madraft/SIMULATED-edit.txt').write_text('SIMULATED generation; no protocol implementation')
+pathlib.Path('PROGRESS.md').write_text('SIMULATED approach: tried a toy decomposition; actual global dependencies remain open.')
+if pathlib.Path('SIMULATED-sleep').exists(): time.sleep(5)
+pathlib.Path(sys.argv[sys.argv.index('--output-last-message')+1]).write_text('SIMULATED claim: all proved')
 ''')
         self.fake.chmod(0o755)
+        self.calls = []
+        self.plan = []
+        self.patches = [patch.object(controller, 'ROOT', self.root),
+                        patch.object(controller, 'probe_tools', return_value={'status':'PASS','evidence':{'SIMULATED':'capability-only'}}),
+                        patch.object(controller, 'evaluate', side_effect=self.evaluate),
+                        patch.dict(os.environ, {'CODEX_HOME':str(self.home)})]
+        for p in self.patches: p.start(); self.addCleanup(p.stop)
 
-    def run_helper(self, action, *extra):
-        return subprocess.run([sys.executable, str(ROOT / 'scripts/run.py'), action,
-                               str(self.directory), '--codex', str(self.fake), *extra],
-                              capture_output=True, text=True, env=self.env)
+    def evaluate(self, workspace, *, output, revision, initial=False, **kwargs):
+        self.calls.append((workspace, initial, revision))
+        item = self.plan.pop(0) if self.plan else {}
+        return simulated_report(output, revision, **item)
 
-    def test_preview_creates_nothing_and_calls_nothing(self):
-        result = self.run_helper('new')
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn('PREVIEW', result.stdout)
-        self.assertFalse(self.directory.exists())
+    def invoke(self, action='new', *args):
+        argv = ['run.py', action, str(self.workspace), '--codex', str(self.fake), *args]
+        with patch.object(sys, 'argv', argv), contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            try: return controller.main()
+            except SystemExit as exc: return exc.code
 
-    def test_resume_preserves_source_conversation_and_budget(self):
-        prototype = ROOT / 'madraft/src/raft/raft.rs'
-        original = prototype.read_bytes()
-        first = self.run_helper('new', '--execute', '--total-seconds', '20', '--model', 'SIMULATED-model', '--effort', 'medium')
-        self.assertEqual(first.returncode, 0, first.stderr)
-        marker = self.directory / 'madraft' / 'student-progress.txt'
-        marker.write_text('SIMULATED edit retained across resume')
-        statefile = self.directory / 'runs/session.json'
-        before = json.loads(statefile.read_text())
-        resumed = self.run_helper('resume', '--execute')
-        self.assertEqual(resumed.returncode, 0, resumed.stderr)
-        after = json.loads(statefile.read_text())
-        calls = [json.loads(s) for s in (self.directory / 'simulated-calls.jsonl').read_text().splitlines()]
-        self.assertIn('resume', calls[1])
-        self.assertIn('SIMULATED-test-thread', calls[1])
-        self.assertIn('SIMULATED-model', calls[1])
-        self.assertIn('model_reasoning_effort="medium"', calls[1])
+    def state(self):
+        return json.loads((controller.control_path(self.root, self.workspace) / 'state.json').read_text())
+
+    def test_preview_has_no_side_effect_or_call(self):
+        self.assertEqual(self.invoke(), 0)
+        self.assertFalse(self.workspace.exists())
+        self.assertFalse((self.root/'runs/.controller').exists())
+        self.assertFalse(self.calls)
+
+    def test_exit_zero_and_local_pass_continue_same_session(self):
+        self.assertEqual(self.invoke('new', '--execute'), 1)
+        state = self.state()
+        self.assertEqual(state['attempts'], 3)
+        self.assertEqual(state['status'], 'INCOMPLETE')
+        argv = [json.loads(s) for s in (self.workspace/'SIMULATED-calls.jsonl').read_text().splitlines()]
+        self.assertNotIn('resume', argv[0])
+        self.assertIn('resume', argv[1])
+        self.assertIn('SIMULATED-session', argv[1])
+        self.assertIn('--ignore-user-config', argv[0])
+        self.assertIn('--no-daemon', argv[0])
+        prompt = (self.workspace/'runs/round-2/prompt.md').read_text()
+        self.assertIn('missing_entry_or_dependency', prompt)
+        self.assertIn('SIMULATED approach', prompt)
+        self.assertIn('UNVERIFIED', prompt)
+        self.assertIn('execution_link', prompt)
+        self.assertEqual(state['history'][0]['exit'], 0)
+
+    def test_fresh_runs_and_personal_home_do_not_import_prior_answers(self):
+        (self.root/'runs/old/madraft').mkdir(parents=True)
+        (self.root/'runs/old/madraft/SOLUTION.rs').write_text('SIMULATED prior answer')
+        (self.root/'RESULT.md').write_text('SIMULATED operator historical answer')
+        (self.root/'madraft/runs').mkdir()
+        (self.root/'madraft/runs/SOLUTION.rs').write_text('SIMULATED hidden prior answer')
+        original = (self.root/'madraft/src/raft/raft.rs').read_bytes()
+        self.invoke('new', '--execute', '--max-rounds', '1')
+        first = self.workspace
+        self.workspace = first.with_name('another-fresh-experiment')
+        self.invoke('new', '--execute', '--max-rounds', '1')
+        self.assertEqual((self.root/'madraft/src/raft/raft.rs').read_bytes(), original)
+        self.assertFalse((self.workspace/'madraft/runs').exists())
+        self.assertFalse((self.workspace/'RESULT.md').exists())
+        self.assertFalse((self.workspace/'scripts/run.py').exists())
+        self.assertFalse((self.workspace/'README.md').exists())
+        self.assertFalse((self.workspace/'runs/codex-home/sessions').exists())
+        self.assertFalse((self.workspace/'runs/codex-home/AGENTS.md').exists())
+        self.assertTrue((self.workspace/'runs/codex-home/auth.json').samefile(self.home/'auth.json'))
+        self.assertFalse((first/'madraft/src/raft/raft.rs').samefile(self.workspace/'madraft/src/raft/raft.rs'))
+        self.assertNotEqual(json.loads((controller.control_path(self.root, first)/'state.json').read_text())['run_id'], self.state()['run_id'])
+
+    def test_resume_keeps_budget_history_and_rechecks_before_agent(self):
+        self.invoke('new','--execute','--max-rounds','1')
+        before = self.state()
+        self.invoke('resume','--execute','--max-rounds','2')
+        after = self.state()
         self.assertEqual(after['attempts'], 2)
+        self.assertEqual(after['run_id'], before['run_id'])
         self.assertGreater(after['seconds_spent'], before['seconds_spent'])
-        self.assertEqual(after['total_seconds'], 20)
-        self.assertTrue(marker.exists())
-        self.assertEqual(prototype.read_bytes(), original)
-        candidate = self.directory / 'madraft/src/raft/raft.rs'
-        self.assertEqual(candidate.read_text().count('// SIMULATED edit'), 2)
-        self.assertFalse((self.directory / '.git').exists())
-        self.assertFalse((self.directory / 'madraft/target').exists())
-        self.assertFalse((self.directory / 'README.md').exists())
-        self.assertFalse((self.directory / 'docs').exists())
-        self.assertFalse((self.directory / 'requirements/provenance.md').exists())
-        self.assertFalse((self.directory / 'scripts/run.py').exists())
-        self.assertFalse((self.directory / 'scripts/tests').exists())
-        self.assertEqual({p.name for p in (self.directory / 'scripts').iterdir()},
-                         {'check.py', 'tools.py', 'process.py'})
-        self.assertTrue((self.directory / 'AGENTS.md').is_file())
-        self.assertTrue((self.directory / 'madraft/README.md').is_file())
-        self.assertIn('python3 scripts/check.py proof', (self.directory / 'AGENTS.md').read_text())
+        self.assertEqual(len(after['history']), 2)
+        self.assertFalse(self.calls[2][1])
+        self.assertIn('SIMULATED approach', (self.workspace/'runs/round-2/prompt.md').read_text())
 
-    def test_fresh_experiment_does_not_inherit_previous_edits(self):
-        self.assertEqual(self.run_helper('new', '--execute').returncode, 0)
-        first = self.directory
-        (first / 'madraft/student-only.txt').write_text('SIMULATED prior work')
-        (first / 'runs/codex-home/SIMULATED-history.txt').write_text('SIMULATED prior session')
-        self.directory = first.with_name(first.name + '-fresh')
-        self.addCleanup(shutil.rmtree, self.directory, ignore_errors=True)
-        self.assertEqual(self.run_helper('new', '--execute').returncode, 0)
-        self.assertFalse((self.directory / 'madraft/student-only.txt').exists())
-        self.assertFalse((self.directory / 'runs/codex-home/SIMULATED-history.txt').exists())
-        candidate = self.directory / 'madraft/src/raft/raft.rs'
-        self.assertEqual(candidate.read_text().count('// SIMULATED edit'), 1)
-        self.assertFalse(candidate.samefile(first / 'madraft/src/raft/raft.rs'))
-        self.assertFalse(candidate.samefile(ROOT / 'madraft/src/raft/raft.rs'))
+    def test_legacy_state_is_not_a_resume_origin(self):
+        (self.workspace/'runs').mkdir(parents=True)
+        (self.workspace/'runs/session.json').write_text('{"thread_id":"old","attempts":1}')
+        self.assertNotEqual(self.invoke('resume','--execute'), 0)
+        self.assertFalse(self.calls)
 
-    def test_personal_instructions_excluded_and_isolated_home_reused(self):
-        originals = {p: p.read_bytes() for p in self.personal_home.rglob('*') if p.is_file()}
-        self.assertEqual(self.run_helper('new', '--execute').returncode, 0)
-        home = self.directory / 'runs/codex-home'
-        self.assertNotEqual(home, self.personal_home)
-        self.assertEqual(home.stat().st_mode & 0o777, 0o700)
-        self.assertEqual({p.name for p in home.iterdir()}, {'auth.json', 'rules'})
-        for name in ('auth.json', 'rules'):
-            self.assertTrue((home / name).samefile(self.personal_home / name))
-        (home / 'SIMULATED-session.txt').write_text('SIMULATED conversation state')
-        self.assertEqual(self.run_helper('resume', '--execute').returncode, 0)
-        homes = [json.loads(line) for line in (self.directory / 'simulated-homes.jsonl').read_text().splitlines()]
-        self.assertEqual(homes, [str(home), str(home)])
-        self.assertTrue((home / 'SIMULATED-session.txt').exists())
-        self.assertEqual(originals, {p: p.read_bytes() for p in self.personal_home.rglob('*') if p.is_file()})
+    def test_exhausted_budget_cannot_be_reset_by_resume(self):
+        self.invoke('new','--execute','--max-rounds','1')
+        control = controller.control_path(self.root,self.workspace)
+        state=self.state();state['seconds_spent']=state['total_seconds'];save_json(control/'state.json',state)
+        count=len(self.calls)
+        self.assertEqual(self.invoke('resume','--execute'),1)
+        self.assertEqual(len(self.calls),count)
+        self.assertEqual(self.state()['attempts'],1)
 
-    def test_destination_must_be_a_run_workspace(self):
-        for destination in (Path(self.tmp.name) / 'outside', ROOT / 'madraft/new-run',
-                            ROOT / 'runs/another-run/nested'):
-            self.directory = destination
-            for action in ('new', 'resume'):
-                result = self.run_helper(action, '--execute')
-                self.assertNotEqual(result.returncode, 0)
-                self.assertIn('direct child', result.stderr)
-            self.assertFalse(destination.exists())
+    def test_one_top_level_pass_does_not_finish(self):
+        self.plan=[{}, {'passed':['election_safety']}]
+        self.assertEqual(self.invoke('new','--execute','--max-rounds','1'),1)
+        self.assertEqual(self.state()['status'],'INCOMPLETE')
 
-    def test_exhaustion_cannot_reset_on_resume(self):
-        self.assertEqual(self.run_helper('new', '--execute').returncode, 0)
-        statefile = self.directory / 'runs/session.json'
-        state = json.loads(statefile.read_text())
-        state['seconds_spent'] = state['total_seconds']
-        statefile.write_text(json.dumps(state))
-        result = self.run_helper('resume', '--execute')
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn('budget exhausted', result.stderr)
-        self.assertEqual(len((self.directory / 'simulated-calls.jsonl').read_text().splitlines()), 1)
+    def test_five_safety_passes_do_not_replace_refinement(self):
+        self.plan=[{}, {'passed':list(checker.SAFETY)}]
+        self.assertEqual(self.invoke('new','--execute','--max-rounds','1'),1)
+        self.assertIn('execution_link', (self.workspace/'runs/EXPERIMENT.md').read_text())
 
-    def test_missing_tool_is_recorded_honestly(self):
-        self.fake.unlink()
-        result = self.run_helper('new', '--execute')
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn('No such file', (self.directory / 'runs/agent-1.stderr.log').read_text())
-        state = json.loads((self.directory / 'runs/session.json').read_text())
-        self.assertEqual(state['last_process'], 'BLOCKED')
-        self.assertIsNone(state['thread_id'])
+    def test_safety_and_execution_passes_do_not_replace_snapshot_coverage(self):
+        self.plan = [{}, {'passed': [*checker.SAFETY, 'execution_link']}]
+        self.assertEqual(self.invoke('new', '--execute', '--max-rounds', '1'), 1)
+        self.assertIn('snapshot_observation | OPEN', (self.workspace / 'runs/EXPERIMENT.md').read_text())
 
-    def test_existing_directory_is_not_overwritten(self):
-        self.directory.mkdir()
-        result = self.run_helper('new', '--execute')
-        self.assertNotEqual(result.returncode, 0)
-        self.assertFalse((self.directory / 'simulated-calls.jsonl').exists())
+    def test_simulated_full_acceptance_stops_only_after_independent_check(self):
+        self.plan=[{}, {'final':True}]
+        self.assertEqual(self.invoke('new','--execute'),0)
+        self.assertEqual(self.state()['attempts'],1)
+        self.assertEqual(self.state()['status'],'MACHINE_CHECKS_PASSED')
+        # This is solely a SIMULATED state-machine regression, not a Raft result.
+        self.assertIn('SIMULATED', (self.workspace/'runs/round-1/agent.md').read_text())
 
-    def test_interrupted_run_requires_process_recovery(self):
-        self.assertEqual(self.run_helper('new', '--execute').returncode, 0)
-        statefile = self.directory / 'runs/session.json'
-        state = json.loads(statefile.read_text())
-        state['in_flight'] = True
-        statefile.write_text(json.dumps(state))
-        result = self.run_helper('resume', '--execute')
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn('stopped unexpectedly', result.stderr)
+    def test_previous_pass_is_invalidated_on_resume(self):
+        self.plan=[{}, {'final':True}]
+        self.invoke('new','--execute','--max-rounds','1')
+        (self.workspace/'madraft/SIMULATED-edit.txt').write_text('SIMULATED regression')
+        self.plan=[{}]
+        self.assertEqual(self.invoke('resume','--execute'),1)
+        self.assertEqual(self.state()['status'],'INCOMPLETE')
 
-    def test_timeout_records_spending_and_preserves_raw_output(self):
-        self.assertEqual(self.run_helper('new', '--execute', '--total-seconds', '0.5').returncode, 0)
-        (self.directory / 'sleep.txt').touch()
-        result = self.run_helper('resume', '--execute')
-        self.assertNotEqual(result.returncode, 0)
-        state = json.loads((self.directory / 'runs/session.json').read_text())
-        self.assertEqual(state['last_process'], 'TIMEOUT')
-        self.assertGreaterEqual(state['seconds_spent'], 0.5)
-        self.assertIn('SIMULATED', (self.directory / 'runs/agent-2.jsonl').read_text())
+    def test_stagnation_triggers_bounded_redesign(self):
+        self.invoke('new','--execute','--max-rounds','8')
+        state=self.state()
+        self.assertEqual(state['redesigns'],1)
+        self.assertLess(state['attempts'],8)
+        self.assertIn('finite redesign',state['reason'])
+        self.assertTrue(any(h['mode']=='redesign' for h in state['history']))
+        self.assertIn('SIMULATED approach',(self.workspace/'runs/round-3/prompt.md').read_text())
+
+    def test_changed_fixed_inputs_require_review(self):
+        self.invoke('new','--execute','--max-rounds','1')
+        (self.root/'requirements/safety.md').write_text('SIMULATED changed target')
+        self.assertEqual(self.invoke('resume','--execute','--max-rounds','2'),2)
+        self.assertEqual(self.state()['status'],'NEEDS_REVIEW')
+        self.assertEqual(self.state()['attempts'],1)
+
+    def test_missing_tool_stops_before_agent(self):
+        with patch.object(controller,'probe_tools',return_value={'status':'BLOCKED','reason':'SIMULATED missing binary'}):
+            self.assertEqual(self.invoke('new','--execute'),2)
+        self.assertEqual(self.state()['attempts'],0)
+        self.assertFalse((self.workspace/'SIMULATED-calls.jsonl').exists())
+
+    def test_interrupted_reservation_is_not_refunded(self):
+        self.invoke('new','--execute','--max-rounds','1')
+        state=self.state();state['seconds_spent']=10;state['in_flight']={'kind':'agent','pid':None,'allowance':5}
+        save_json(controller.control_path(self.root,self.workspace)/'state.json',state)
+        self.invoke('resume','--execute')
+        self.assertGreaterEqual(self.state()['seconds_spent'],10)
+        self.assertIsNone(self.state()['in_flight'])
+
+    def test_interrupted_history_is_saved_before_independent_check(self):
+        original = self.evaluate
+        def interrupted(workspace, **kwargs):
+            if not kwargs.get('initial'):
+                raise KeyboardInterrupt()
+            return original(workspace, **kwargs)
+        with patch.object(controller, 'evaluate', side_effect=interrupted):
+            self.assertEqual(self.invoke('new', '--execute', '--max-rounds', '1'), 1)
+        before = self.state()
+        self.assertEqual(before['thread_id'], 'SIMULATED-session')
+        self.assertEqual(len(before['history']), 1)
+        self.assertIn('SIMULATED approach', before['history'][0]['progress'])
+        self.assertEqual(before['history'][0]['check_status'], 'INCOMPLETE')
+        self.invoke('resume', '--execute', '--max-rounds', '2')
+        self.assertEqual(len(self.state()['history']), 2)
+
+    def test_changed_real_diagnostics_are_not_stagnation_from_local_counts(self):
+        first = {'checks': {'election_safety': {'status': 'OPEN', 'reason': 'verification_failure',
+                                                'diagnostic': 'SIMULATED: initialization postcondition'}}}
+        second = {'checks': {'election_safety': {'status': 'OPEN', 'reason': 'verification_failure',
+                                                 'diagnostic': 'SIMULATED: transition postcondition'}}}
+        self.assertNotEqual(controller.unresolved(first), controller.unresolved(second))
+        second['checks']['election_safety']['diagnostic'] = first['checks']['election_safety']['diagnostic']
+        second['checks']['proof'] = {'status': 'PASS', 'reason': 'checked', 'diagnostic': '999 verified SIMULATED'}
+        self.assertEqual(controller.unresolved(first), controller.unresolved(second))
+
+    def test_timeout_keeps_candidate_logs_and_same_session(self):
+        self.invoke('new','--execute','--max-rounds','1')
+        (self.workspace/'SIMULATED-sleep').touch()
+        self.assertEqual(self.invoke('resume','--execute','--max-rounds','2'),1)
+        state=self.state()
+        self.assertEqual(state['last_process'],'TIMEOUT')
+        self.assertTrue((self.workspace/'madraft/SIMULATED-edit.txt').exists())
+        self.assertIn('SIMULATED-session',(self.workspace/'runs/round-2/agent.jsonl').read_text())
+
+    def test_lock_prevents_two_writers(self):
+        self.invoke('new','--execute','--max-rounds','1')
+        with (controller.control_path(self.root,self.workspace)/'session.lock').open('w') as lock:
+            controller.fcntl.flock(lock,controller.fcntl.LOCK_EX | controller.fcntl.LOCK_NB)
+            with self.assertRaises(BlockingIOError): self.invoke('resume','--execute')
+        self.assertEqual(self.state()['attempts'],1)
 
 
 class ProcessTests(unittest.TestCase):
-    def test_output_limit_is_a_failure(self):
-        result = run_process([sys.executable, '-c', 'print("x" * 100000)'], ROOT,
-                             max_log_bytes=100, timeout=5)
-        self.assertEqual(result.status, 'LOG_LIMIT')
-        self.assertTrue(result.stdout_truncated)
-        self.assertEqual(len(result.stdout), 100)
+    def test_log_limit_and_nonzero_exit(self):
+        result=run_process([sys.executable,'-c','print("x"*100000)'],ROOT,max_log_bytes=100)
+        self.assertEqual(result.status,'LOG_LIMIT')
+        self.assertEqual(len(result.stdout),100)
+        self.assertEqual(run_process([sys.executable,'-c','raise SystemExit(7)'],ROOT).exit_code,7)
 
-    def test_failure_is_not_hidden(self):
-        result = run_process([sys.executable, '-c', 'raise SystemExit(7)'], ROOT)
-        self.assertEqual(result.exit_code, 7)
+    def test_controller_sigkill_cleans_worker(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);pidfile=root/'pid';marker=root/'leaked'
+            code='import pathlib,time; time.sleep(2); pathlib.Path('+repr(str(marker))+').touch()'
+            parent='import sys,pathlib; sys.path.insert(0,'+repr(str(ROOT/'scripts'))+'); from process import run_process; run_process([sys.executable,"-c",'+repr(code)+'], '+repr(str(root))+', timeout=10, on_start=lambda p:pathlib.Path('+repr(str(pidfile))+').write_text(str(p)))'
+            proc=subprocess.Popen([sys.executable,'-c',parent])
+            try:
+                deadline=time.monotonic()+5
+                while not pidfile.exists() and time.monotonic()<deadline: time.sleep(.02)
+                self.assertTrue(pidfile.exists())
+                proc.kill();proc.wait()
+                time.sleep(2.2)
+                self.assertFalse(marker.exists())
+            finally:
+                if proc.poll() is None: proc.kill();proc.wait()
 
 
-if __name__ == '__main__':
-    unittest.main()
+if __name__=='__main__': unittest.main()

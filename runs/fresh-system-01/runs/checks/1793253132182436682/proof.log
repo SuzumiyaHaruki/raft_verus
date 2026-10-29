@@ -1,0 +1,59 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253132182436682/candidate/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 28 verified, 2 errors
+warning: field `matched` has inconsistent type or visibility in different variants
+         ->matched syntax will not be available for this field
+         use #[allow(inconsistent_fields)] on the struct to silence the warnign
+  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253132182436682/candidate/madraft/proof/execution.rs:16:1
+   |
+16 | / pub enum Input {
+17 | |     Election(election::Input),
+18 | |     Propose(replication::Entry),
+19 | |     Append { index: u64, entry: replication::Entry },
+...  |
+26 | |     Restart,
+27 | | }
+   | |_^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253132182436682/candidate/madraft/proof/../src/raft/election.rs:8:17
+  |
+8 | #[derive(Debug, Clone)]
+  |                 ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253132182436682/candidate/madraft/proof/../src/raft/replication.rs:6:17
+  |
+6 | #[derive(Debug, Clone)]
+  |                 ^^^^^
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253132182436682/candidate/madraft/proof/execution.rs:127:1
+    |
+127 | pub proof fn state_induction(run: Execution,t:int)
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: assertion failed
+   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253132182436682/candidate/madraft/proof/execution.rs:140:20
+    |
+140 |             assert(run.states[t-1].contains_key(k));
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed
+
+error: precondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253132182436682/candidate/madraft/proof/execution.rs:141:32
+    |
+118 |     requires local(a), step(a,input,b),
+    |                        --------------- failed precondition
+...
+141 |             if k==action.who { step_preserves(run.states[t-1][k],action.input,run.states[t][k]); }
+    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: assertion failed
+   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793253132182436682/candidate/madraft/proof/execution.rs:185:16
+    |
+185 |         assert(run.states[t+1].contains_key(k));
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed
+
+error: aborting due to 3 previous errors; 3 warnings emitted
+
+
+process=COMPLETED exit=1

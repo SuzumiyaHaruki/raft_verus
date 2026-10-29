@@ -1,0 +1,942 @@
+--- before/madraft/proof/execution.rs
++++ after/madraft/proof/execution.rs
+@@ -7,10 +7,12 @@
+ use vstd::prelude::*;
+ 
+ verus! {
+-pub struct Stored { pub term: u64, pub vote: Option<usize>, pub entries: Seq<replication::Entry>, pub commit: u64 }
++pub struct Snapshot { pub index:u64,pub term:u64,pub bytes:Seq<u8> }
++pub struct Stored { pub base:u64,pub base_term:u64,pub prefix:Seq<replication::Entry>,pub snapshot:Option<Snapshot>,pub term: u64, pub vote: Option<usize>, pub entries: Seq<replication::Entry>, pub commit: u64 }
+ pub enum Disk { Missing, Incomplete, Complete(Stored) }
+ pub struct Node {
+     pub election: election::Image, pub log: replication::Image,
++    pub prefix:Seq<replication::Entry>,pub snapshot:Option<Snapshot>,
+     pub disk: Disk, pub pending: Option<Stored>, pub alive: bool,
+ }
+ pub enum Input {
+@@ -20,6 +22,9 @@
+     FollowerCommit { advertised: u64, matched: u64 },
+     LeaderCommit { matched: Seq<u64> },
+     Apply { delivered: bool },
++    Compact{index:u64,bytes:Seq<u8>},
++    Install{index:u64,term:u64,bytes:Seq<u8>,prefix:Seq<replication::Entry>},
++    DeliverSnapshot,
+     BeginWrite,
+     CompleteWrite,
+     Crash,
+@@ -28,31 +33,35 @@
+ pub struct Action { pub who: targets::Key, pub input: Input }
+ pub struct Execution { pub states: Seq<Map<targets::Key, Node>>, pub actions: Seq<Action> }
+ pub open spec fn capture(n: Node) -> Stored {
+-    Stored { term: n.election.term, vote: n.election.vote, entries: n.log.entries, commit: n.log.commit }
++    Stored { base:n.log.base,base_term:n.log.base_term,prefix:n.prefix,snapshot:n.snapshot,term: n.election.term, vote: n.election.vote, entries: n.log.entries, commit: n.log.commit }
+ }
+ pub open spec fn tip(entries: Seq<replication::Entry>) -> u64 {
+     if entries.len() == 0 { 0 } else { entries.last().term }
+ }
+ pub open spec fn sync(e: election::Image, l: replication::Image) -> election::Image {
+-    election::Image { last_index: l.entries.len() as u64, last_term: tip(l.entries), ..e }
++    election::Image { last_index: (l.base+l.entries.len()) as u64, last_term: if l.entries.len()==0 {l.base_term}else{tip(l.entries)}, ..e }
+ }
+ pub open spec fn initial(n: Node, key: targets::Key) -> bool {
+     election::initial(n.election) && n.election.me == key.node
+-    && n.log.entries.len() == 0 && n.log.commit == 0 && n.log.applied == 0
++    && n.prefix.len()==0 && n.snapshot.is_none() && n.log.base==0 && n.log.base_term==0 && n.log.entries.len() == 0 && n.log.commit == 0 && n.log.applied == 0
+     && n.disk is Missing && n.pending.is_none() && n.alive
+ }
+ pub open spec fn stored_valid(d: Stored, members: usize) -> bool {
+-    d.entries.len() <= u64::MAX && d.entries.len() <= usize::MAX && d.commit <= d.entries.len()
++    d.base+d.entries.len() <= u64::MAX && d.entries.len() <= usize::MAX && d.base<=d.commit<=d.base+d.entries.len()
++    && d.prefix.len()==d.base && d.base_term==tip(d.prefix)
+     && (d.vote.is_some() ==> d.vote.unwrap() < members)
+ }
+ pub open spec fn local(n: Node) -> bool {
+     election::well_formed(n.election) && replication::valid_image(n.log)
+-    && n.election.last_index == n.log.entries.len() && n.election.last_term == tip(n.log.entries)
++    && n.prefix.len()==n.log.base && n.log.base_term==tip(n.prefix)
++    && n.election.last_index == n.log.base+n.log.entries.len()
++    && n.election.last_term == if n.log.entries.len()==0 {n.log.base_term}else{tip(n.log.entries)}
+     && (match n.disk { Disk::Complete(d) => stored_valid(d, n.election.members), _ => true })
+     && (n.pending.is_some() ==> stored_valid(n.pending.unwrap(), n.election.members))
+ }
+ pub open spec fn preserved_host(a: Node, b: Node) -> bool {
+     b.disk == a.disk && b.pending == a.pending && b.alive == a.alive
++    && b.prefix==a.prefix && b.snapshot==a.snapshot
+ }
+ pub open spec fn core_step(a: Node, input: Input, b: Node) -> bool {
+     preserved_host(a,b) && a.alive && a.pending.is_none()
+@@ -60,20 +69,21 @@
+         Input::Election(i) => !(i is Crash) && !(i is Restart)
+             && b.election == election::next(a.election,i) && b.log == a.log,
+         Input::Propose(entry) => a.election.role == election::Role::Leader
+-            && entry.term == a.election.term && a.log.entries.len() < u64::MAX && a.log.entries.len() < usize::MAX
++            && entry.term == a.election.term && a.log.base+a.log.entries.len() < u64::MAX && a.log.entries.len() < usize::MAX
+             && b.log == replication::Image { entries: a.log.entries.push(entry), ..a.log }
+             && b.election == sync(a.election,b.log),
+-        Input::Append { index,entry } => b.log == replication::appended(a.log,index,entry)
++        Input::Append { index,entry } => a.election.role==election::Role::Follower && b.log == replication::appended(a.log,index,entry)
+             && b.election == sync(a.election,b.log),
+         Input::FollowerCommit { advertised,matched } => {
+-            let bound = replication::min64(replication::min64(advertised,matched),a.log.entries.len() as u64);
++            let bound = replication::min64(replication::min64(advertised,matched),(a.log.base+a.log.entries.len()) as u64);
+             b.log == replication::Image { commit: if bound > a.log.commit { bound } else { a.log.commit }, ..a.log }
+             && b.election == a.election
+         },
+         Input::LeaderCommit { matched } => b.election == a.election && b.log.entries == a.log.entries
+-            && b.log.applied == a.log.applied && a.log.commit <= b.log.commit <= a.log.entries.len()
++            && b.log.applied == a.log.applied && a.log.commit <= b.log.commit <= a.log.base+a.log.entries.len()
++            && b.log.base==a.log.base && b.log.base_term==a.log.base_term
+             && (b.log.commit > a.log.commit ==> matched.len() > 0 && a.election.me < matched.len()
+-                && a.log.entries[b.log.commit as int-1].term == a.election.term
++                && a.log.entries[b.log.commit as int-a.log.base as int-1].term == a.election.term
+                 && replication::tally(matched,matched.len(),b.log.commit,a.election.me) > matched.len()/2),
+         Input::Apply { delivered: _ } => b.election == a.election && b.log == replication::Image {
+             applied: if a.log.applied < a.log.commit { (a.log.applied+1) as u64 } else { a.log.applied }, ..a.log },
+@@ -82,6 +92,19 @@
+ }
+ pub open spec fn step(a: Node, input: Input, b: Node) -> bool {
+     match input {
++        Input::Compact{index,bytes}=>a.alive && a.pending.is_none() && a.log.base<index<=a.log.applied
++            && b==Node{prefix:a.prefix+a.log.entries.take(index as int-a.log.base as int),
++                snapshot:Some(Snapshot{index,term:a.log.entries[index as int-a.log.base as int-1].term,bytes}),
++                log:replication::Image{base:index,base_term:a.log.entries[index as int-a.log.base as int-1].term,
++                    entries:a.log.entries.skip(index as int-a.log.base as int),..a.log},..a},
++        Input::Install{index,term,bytes,prefix}=>a.election.role==election::Role::Follower && a.alive && a.pending.is_none() && index>a.log.commit
++            && prefix.len()==index && tip(prefix)==term
++            && b==Node{prefix,snapshot:Some(Snapshot{index,term,bytes}),
++                election:sync(a.election,b.log),log:replication::Image{base:index,base_term:term,
++                    commit:index,applied:index,entries:if index<=a.log.base+a.log.entries.len()
++                        && a.log.entries[index as int-a.log.base as int-1].term==term {
++                        a.log.entries.skip(index as int-a.log.base as int)}else{Seq::empty()}},..a},
++        Input::DeliverSnapshot=>a.alive && a.snapshot.is_some() && b==a,
+         Input::BeginWrite => a.alive && a.pending.is_none() && b == Node {
+             disk: Disk::Incomplete, pending: Some(capture(a)), ..a },
+         Input::CompleteWrite => a.alive && a.pending.is_some() && b == Node {
+@@ -90,8 +113,8 @@
+             election: election::Image { role: election::Role::Follower, ..a.election }, ..a },
+         Input::Restart => !a.alive && match a.disk {
+             Disk::Complete(d) => {
+-                let l = replication::Image { entries: d.entries, commit: d.commit, applied: 0 };
+-                b == Node { alive: true, pending: None, log: l, election: sync(election::Image {
++                let l = replication::Image { base:d.base,base_term:d.base_term,entries: d.entries, commit: d.commit, applied: d.base };
++                b == Node { alive: true, pending: None, log: l,prefix:d.prefix,snapshot:d.snapshot,election: sync(election::Image {
+                     term: d.term, role: election::Role::Follower, vote: d.vote,
+                     grants: Seq::new(a.election.members as nat, |j:int| false), count: 0, ..a.election },l), ..a }
+             },
+@@ -145,17 +168,29 @@
+         }
+     }
+ }
++pub open spec fn logical(entries:Seq<replication::Entry>)->Seq<targets::Entry>{
++    Seq::new(entries.len(),|i:int|targets::Entry{term:entries[i].term as nat,command:entries[i].data@})
++}
+ pub open spec fn view(n:Node) -> targets::View {
+     targets::View { term:n.election.term as nat, leader:n.alive && n.election.role==election::Role::Leader,
+-        log:Seq::new(n.log.entries.len(),|i:int| targets::Entry {
+-            term:n.log.entries[i].term as nat,command:n.log.entries[i].data@ }),snapshot:None }
++        log:logical(n.prefix+n.log.entries),snapshot:match n.snapshot {
++            None=>None,Some(s)=>Some(targets::Snapshot{through:s.index as nat,last_term:s.term as nat,bytes:s.bytes}) } }
+ }
+ pub open spec fn event(k:targets::Key,a:Node,b:Node,input:Input) -> targets::Event {
+     match input {
++        Input::Compact{..}=>targets::Event::CreateSnapshot{who:k,prefix:logical(b.prefix),snapshot:targets::Snapshot{
++            through:b.log.base as nat,last_term:b.log.base_term as nat,bytes:b.snapshot.unwrap().bytes}},
++        Input::DeliverSnapshot=>targets::Event::ApplySnapshot{who:k,prefix:logical(a.prefix),snapshot:targets::Snapshot{
++            through:a.log.base as nat,last_term:a.log.base_term as nat,bytes:a.snapshot.unwrap().bytes}},
++        Input::CompleteWrite | Input::Restart=>if b.snapshot.is_some(){
++            let snap=targets::Snapshot{through:b.log.base as nat,last_term:b.log.base_term as nat,bytes:b.snapshot.unwrap().bytes};
++            if input is Restart {targets::Event::RestoreSnapshot{who:k,prefix:logical(b.prefix),snapshot:snap}}
++            else{targets::Event::PersistSnapshot{who:k,prefix:logical(b.prefix),snapshot:snap}}
++        }else{targets::Event::Silent},
+         Input::Apply {delivered} => if delivered && b.log.applied>a.log.applied {
+             targets::Event::Apply {who:k,index:b.log.applied as nat,
+-                entry:targets::Entry {term:a.log.entries[a.log.applied as int].term as nat,
+-                    command:a.log.entries[a.log.applied as int].data@}}
++                entry:targets::Entry {term:a.log.entries[a.log.applied as int-a.log.base as int].term as nat,
++                    command:a.log.entries[a.log.applied as int-a.log.base as int].data@}}
+         } else {targets::Event::Silent},
+         _ => if b.log.commit>a.log.commit {
+             targets::Event::Commit {who:k,term:b.election.term as nat,through:b.log.commit as nat}
+@@ -195,7 +230,7 @@
+     let k=targets::Key{group:0,node:0};
+     let e=election::Image{term:0,role:election::Role::Follower,vote:None,me:0,members:1,
+         last_term:0,last_index:0,grants:seq![false],count:0};
+-    let zero=Node{election:e,log:replication::Image{entries:Seq::empty(),commit:0,applied:0},
++    let zero=Node{prefix:Seq::empty(),snapshot:None,election:e,log:replication::Image{base:0,base_term:0,entries:Seq::empty(),commit:0,applied:0},
+         disk:Disk::Missing,pending:None,alive:true};
+     let campaign=Node{election:election::next(e,election::Input::Timeout),..zero};
+     let reply=election::Input::Reply{term:1,peer:0,granted:true};
+@@ -224,4 +259,41 @@
+     run
+ }
+ 
+-}
++pub proof fn leader_step(a:Node,b:Node,input:Input)
++    requires local(a),local(b),step(a,input,b),view(a).leader,view(b).leader,view(a).term==view(b).term,
++    ensures targets::prefix(view(a).log,view(b).log),
++{
++    match input {
++        Input::Compact{index,bytes}=>{
++            let cut=index as int-a.log.base as int;
++            assert(a.log.entries.take(cut)+a.log.entries.skip(cut) =~= a.log.entries);
++            assert((a.prefix+a.log.entries.take(cut))+a.log.entries.skip(cut) =~= a.prefix+a.log.entries);
++        },
++        Input::Propose(entry)=>{
++            assert((b.prefix+b.log.entries).take((a.prefix+a.log.entries).len() as int) =~= a.prefix+a.log.entries);
++        },
++        _=>{},
++    }
++    assert(view(a).log =~= view(b).log.take(view(a).log.len() as int));
++}
++pub proof fn prove_leader_append_only(run:Execution)
++    requires execution(run),ensures targets::leader_append_only(observe(run)),
++{
++    let h=observe(run);
++    assert forall |t:int,k:targets::Key| #![trigger h.states[t][k]] 0<=t<h.events.len()
++        && h.states[t].contains_key(k) && h.states[t+1].contains_key(k)
++        && h.states[t][k].leader && h.states[t+1][k].leader && h.states[t][k].term==h.states[t+1][k].term
++        implies targets::prefix(h.states[t][k].log,h.states[t+1][k].log) by {
++        state_induction(run,t);state_induction(run,t+1);
++        let action=run.actions[t];
++        assert(step(run.states[t][action.who],action.input,run.states[t+1][action.who]));
++        assert(run.states[t].contains_key(k));assert(run.states[t+1].contains_key(k));
++        assert(h.states[t][k]==view(run.states[t][k]));assert(h.states[t+1][k]==view(run.states[t+1][k]));
++        if action.who==k {leader_step(run.states[t][k],run.states[t+1][k],action.input);}
++        else {assert(run.states[t+1][k]==run.states[t][k]);
++            assert(h.states[t][k].log.take(h.states[t][k].log.len() as int) =~= h.states[t][k].log);
++        }
++    }
++}
++
++}
+--- before/madraft/src/kvraft/client.rs
++++ after/madraft/src/kvraft/client.rs
+@@ -1,6 +1,10 @@
+ use super::msg::*;
+ use madsim::{net, time::*};
+-use std::net::SocketAddr;
++use std::{net::SocketAddr,sync::atomic::{AtomicU64,AtomicUsize,Ordering}};
++static CLIENT_ID:AtomicU64=AtomicU64::new(1);
++#[derive(Clone,serde::Serialize,serde::Deserialize)]
++pub(crate) struct Command<T>{pub client:u64,pub seq:u64,pub args:T}
++impl<T:net::rpc::Request+Clone> net::rpc::Request for Command<T>{type Response=T::Response;const ID:u64=T::ID;}
+ 
+ pub struct Clerk {
+     core: ClerkCore<Op, String>,
+@@ -31,6 +35,7 @@
+ 
+ pub struct ClerkCore<Req, Rsp> {
+     servers: Vec<SocketAddr>,
++    id:u64,seq:AtomicU64,leader:AtomicUsize,serial:futures::lock::Mutex<()>,
+     _mark: std::marker::PhantomData<(Req, Rsp)>,
+ }
+ 
+@@ -41,23 +46,24 @@
+ {
+     pub fn new(servers: Vec<SocketAddr>) -> Self {
+         ClerkCore {
+-            servers,
++            servers,id:CLIENT_ID.fetch_update(Ordering::SeqCst,Ordering::SeqCst,|v|v.checked_add(1)).expect("client IDs exhausted"),
++            seq:AtomicU64::new(0),leader:AtomicUsize::new(0),serial:futures::lock::Mutex::new(()),
+             _mark: std::marker::PhantomData,
+         }
+     }
+ 
+-    pub async fn call(&self, args: Req) -> Rsp {
+-        let net = net::Endpoint::bind("0.0.0.0:0").await.expect("bind client RPC");
+-        for i in 0..self.servers.len() {
+-            let ret = net
+-                .call_timeout::<Req>(
+-                    self.servers[i],
+-                    args.clone(),
+-                    Duration::from_millis(500),
+-                )
+-                .await;
+-            todo!("handle RPC results");
++    pub async fn call(&self,args:Req)->Rsp {
++        let _serial=self.serial.lock().await;
++        assert!(!self.servers.is_empty(),"empty server set");
++        let seq=self.seq.fetch_update(Ordering::SeqCst,Ordering::SeqCst,|v|v.checked_add(1)).expect("request IDs exhausted")+1;
++        let cmd=Command{client:self.id,seq,args};
++        let net=net::Endpoint::bind("0.0.0.0:0").await.expect("bind client RPC");
++        let mut peer=self.leader.load(Ordering::SeqCst)%self.servers.len();
++        loop {
++            match net.call_timeout(self.servers[peer],cmd.clone(),Duration::from_millis(800)).await {
++                Ok(Ok(value))=>{self.leader.store(peer,Ordering::SeqCst);return value;},
++                _=>{peer=(peer+1)%self.servers.len();sleep(Duration::from_millis(10)).await;}
++            }
+         }
+-        todo!("handle RPC results");
+     }
+ }
+--- before/madraft/src/kvraft/server.rs
++++ after/madraft/src/kvraft/server.rs
+@@ -1,6 +1,9 @@
+ use super::msg::*;
+ use crate::raft;
+-use madsim::net;
++use madsim::{net,task,time::{timeout,Duration}};
++use futures::{StreamExt,channel::oneshot};
++use super::client::Command;
++use std::{collections::HashMap,sync::Mutex};
+ use serde::{Deserialize, Serialize};
+ use std::{
+     fmt::{self, Debug},
+@@ -15,10 +18,13 @@
+     fn apply(&mut self, cmd: Self::Command) -> Self::Output;
+ }
+ 
++#[derive(Serialize,Deserialize)]
++struct ServiceImage<S>{state:S,sessions:HashMap<u64,(u64,Vec<u8>)>,index:u64}
++struct Inner<S>{image:ServiceImage<S>,pending:HashMap<(u64,u64),Vec<oneshot::Sender<Vec<u8>>>>}
+ pub struct Server<S: State> {
+     rf: raft::RaftHandle,
+     me: usize,
+-    _marker: PhantomData<S>,
++    inner:Mutex<Inner<S>>,
+ }
+ 
+ impl<S: State> fmt::Debug for Server<S> {
+@@ -34,12 +40,48 @@
+         max_raft_state: Option<usize>,
+     ) -> Arc<Self> {
+         // You may need initialization code here.
+-        let (rf, apply_ch) = raft::RaftHandle::new(servers, me).await;
++        let (rf, mut apply_ch) = raft::RaftHandle::new(servers, me).await;
+ 
+         let this = Arc::new(Server {
+             rf,
+             me,
+-            _marker: PhantomData,
++            inner:Mutex::new(Inner{image:ServiceImage{state:S::default(),sessions:HashMap::new(),index:0},pending:HashMap::new()}),
++        });
++        let owner=this.clone();
++        task::spawn(async move {
++            while let Some(msg)=apply_ch.next().await {
++                let snapshot=match msg {
++                    raft::ApplyMsg::Command{data,index}=>{
++                        let cmd:Command<S::Command>=bincode::deserialize(&data).expect("invalid replicated command");
++                        let mut inner=owner.inner.lock().unwrap();
++                        if index<=inner.image.index {continue;}
++                        assert_eq!(index,inner.image.index+1,"application gap");
++                        let value=if let Some((seq,value))=inner.image.sessions.get(&cmd.client) {
++                            if *seq>=cmd.seq {Some(value.clone())} else {None}
++                        } else {None};
++                        let value=value.unwrap_or_else(||bincode::serialize(&inner.image.state.apply(cmd.args.clone())).unwrap());
++                        let old=inner.image.sessions.get(&cmd.client).map(|v|v.0).unwrap_or(0);
++                        if cmd.seq>old {inner.image.sessions.insert(cmd.client,(cmd.seq,value.clone()));}
++                        inner.image.index=index;
++                        if let Some(waiters)=inner.pending.remove(&(cmd.client,cmd.seq)) {
++                            for waiter in waiters {let _=waiter.send(value.clone());}
++                        }
++                        Some((index,bincode::serialize(&inner.image).unwrap()))
++                    },
++                    raft::ApplyMsg::Snapshot{data,term,index}=>{
++                        if owner.rf.cond_install_snapshot(term,index,&data).await {
++                            let image:ServiceImage<S>=bincode::deserialize(&data).expect("invalid service snapshot");
++                            assert_eq!(image.index,index,"snapshot boundary mismatch");
++                            let mut inner=owner.inner.lock().unwrap();
++                            if index>inner.image.index {inner.image=image;}
++                        }
++                        None
++                    }
++                };
++                if let (Some(limit),Some((index,bytes)))=(max_raft_state,snapshot) {
++                    if owner.rf.state_size().await>=limit {owner.rf.snapshot(index,&bytes).await.expect("snapshot storage");}
++                }
++            }
+         });
+         this.start_rpc_server();
+         this
+@@ -49,7 +91,7 @@
+         let net = self.rf.endpoint.clone();
+ 
+         let this = self.clone();
+-        net.add_rpc_handler(move |cmd: S::Command| {
++        net.add_rpc_handler(move |cmd: Command<S::Command>| {
+             let this = this.clone();
+             async move { this.apply(cmd).await }
+         });
+@@ -65,16 +107,32 @@
+         self.rf.is_leader()
+     }
+ 
+-    async fn apply(&self, cmd: S::Command) -> Result<S::Output, Error> {
+-        todo!("apply command");
++    async fn apply(&self,cmd:Command<S::Command>)->Result<S::Output,Error> {
++        if !self.rf.is_leader() {return Err(Error::NotLeader{hint:(self.me+1)});}
++        let key=(cmd.client,cmd.seq);
++        let (send,recv)=oneshot::channel();
++        {
++            let mut inner=self.inner.lock().unwrap();
++            if let Some((seq,value))=inner.image.sessions.get(&cmd.client) {
++                if *seq==cmd.seq {return Ok(bincode::deserialize(value).unwrap());}
++            }
++            inner.pending.entry(key).or_default().push(send);
++        }
++        let bytes=bincode::serialize(&cmd).map_err(|_|Error::Failed)?;
++        if self.rf.start(&bytes).await.is_err() {self.inner.lock().unwrap().pending.remove(&key);return Err(Error::Failed);}
++        match timeout(Duration::from_millis(700),recv).await {
++            Ok(Ok(value))=>bincode::deserialize(&value).map_err(|_|Error::Failed),
++            _=>{self.inner.lock().unwrap().pending.remove(&key);Err(Error::Timeout)}
++        }
+     }
++
+ }
+ 
+ pub type KvServer = Server<Kv>;
+ 
+ #[derive(Debug, Default, Serialize, Deserialize)]
+ pub struct Kv {
+-    // Your data here.
++    data:HashMap<String,String>,
+ }
+ 
+ impl State for Kv {
+@@ -82,6 +140,10 @@
+     type Output = String;
+ 
+     fn apply(&mut self, cmd: Self::Command) -> Self::Output {
+-        todo!("apply command");
++        match cmd {
++            Op::Get{key}=>self.data.get(&key).cloned().unwrap_or_default(),
++            Op::Put{key,value}=>{self.data.insert(key,value);String::new()},
++            Op::Append{key,value}=>{self.data.entry(key).or_default().push_str(&value);String::new()},
++        }
+     }
+ }
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -74,6 +74,7 @@
+     next: Vec<u64>,
+     matched: Vec<u64>,
+     inflight: Vec<Option<u64>>,
++    snapshot: Vec<u8>,
+ }
+ 
+ #[derive(Debug, Clone, Serialize, Deserialize)]
+@@ -82,7 +83,12 @@
+     voted_for: Option<usize>,
+     entries: Vec<Entry>,
+     commit: u64,
+-}
++    base: u64,
++    base_term: u64,
++}
++
++#[derive(Serialize, Deserialize)]
++struct Image { state: Persist, snapshot: Vec<u8> }
+ 
+ impl fmt::Debug for Raft {
+     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result { write!(f, "Raft({})", self.me) }
+@@ -97,7 +103,7 @@
+         let state = Election::new(peers.len(), me).expect("valid membership");
+         let inner = Arc::new(Mutex::new(Raft {
+             next: vec![1; peers.len()], matched: vec![0; peers.len()],
+-            inflight: vec![None; peers.len()], log: Log::new(),
++            inflight: vec![None; peers.len()], log: Log::new(), snapshot: Vec::new(),
+             peers, me, apply_ch, state,
+             deadline: Instant::now() + Raft::election_timeout(),
+             heartbeat_due: Instant::now(),
+@@ -130,45 +136,64 @@
+     }
+     pub fn term(&self) -> u64 { self.inner.lock().unwrap().state.term }
+     pub fn is_leader(&self) -> bool { self.inner.lock().unwrap().state.is_leader() }
+-    pub async fn cond_install_snapshot(&self, _term: u64, _index: u64, _snapshot: &[u8]) -> bool {
+-        todo!("2D snapshot installation")
+-    }
+-    pub async fn snapshot(&self, _index: u64, _snapshot: &[u8]) -> Result<()> {
+-        todo!("2D snapshot creation")
+-    }
+-
+-    // The serial guard covers mutation, durable completion, and reply selection.
+-    // An incomplete/truncated existing image is a fail-stop condition on restore;
+-    // it is never interpreted as permission to discard an unknown prior vote.
++    pub async fn cond_install_snapshot(&self, term: u64, index: u64, data: &[u8]) -> bool {
++        let raft = self.inner.lock().unwrap();
++        raft.log.base == index && raft.log.base_term == term && raft.snapshot == data
++    }
++    pub async fn snapshot(&self, index: u64, data: &[u8]) -> Result<()> {
++        let _serial = self.serial.lock().await;
++        {
++            let mut raft = self.inner.lock().unwrap();
++            if !raft.log.compact(index) { return Ok(()); }
++            raft.snapshot = data.to_vec();
++            raft.sync_log_tip();
++        }
++        self.persist().await?;
++        Ok(())
++    }
++    pub async fn state_size(&self) -> usize {
++        fs::metadata("state").await.map(|m| m.len() as usize).unwrap_or(0)
++    }
++    // The canonical full image makes state/snapshot recovery one coherent read.
++    // The lab files are size-accounting mirrors; recovery never pairs them.
+     async fn persist(&self) -> io::Result<()> {
+-        let bytes = {
++        let image = {
+             let raft = self.inner.lock().unwrap();
+-            bincode::serialize(&Persist { term: raft.state.term, voted_for: raft.state.voted_for,
+-                entries: raft.log.entries.clone(), commit: raft.log.commit })
+-                .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?
+-        };
+-        let file = fs::File::create("state").await?;
+-        file.write_all_at(&bytes, 0).await?;
+-        file.sync_all().await?;
++            Image { state: Persist { term: raft.state.term, voted_for: raft.state.voted_for,
++                entries: raft.log.entries.clone(), commit: raft.log.commit,
++                base: raft.log.base, base_term: raft.log.base_term }, snapshot: raft.snapshot.clone() }
++        };
++        let encode = |value: &Image| bincode::serialize(value).map_err(|e| io::Error::new(io::ErrorKind::InvalidData,e));
++        let full = encode(&image)?;
++        let state = bincode::serialize(&image.state).map_err(|e| io::Error::new(io::ErrorKind::InvalidData,e))?;
++        for (name,bytes) in [("image",full.as_slice()),("state",state.as_slice()),("snapshot",image.snapshot.as_slice())] {
++            let file=fs::File::create(name).await?;
++            file.write_all_at(bytes,0).await?;
++            file.sync_all().await?;
++        }
+         Ok(())
+     }
+     async fn restore(&self) -> io::Result<()> {
+-        match fs::read("state").await {
++        match fs::read("image").await {
+             Ok(bytes) => {
+-                let image: Persist = bincode::deserialize(&bytes)
+-                    .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+-                let mut raft = self.inner.lock().unwrap();
+-                let log = Log::restore(image.entries, image.commit).ok_or_else(||
+-                    io::Error::new(io::ErrorKind::InvalidData, "invalid durable log"))?;
+-                if !raft.state.recover(image.term, image.voted_for) {
+-                    return Err(io::Error::new(io::ErrorKind::InvalidData, "invalid durable voter"));
+-                }
+-                raft.log = log;
++                let image:Image=bincode::deserialize(&bytes).map_err(|e| io::Error::new(io::ErrorKind::InvalidData,e))?;
++                let state=image.state;
++                let log=Log::restore(state.base,state.base_term,state.entries,state.commit).ok_or_else(||
++                    io::Error::new(io::ErrorKind::InvalidData,"invalid durable log"))?;
++                let mut raft=self.inner.lock().unwrap();
++                if !raft.state.recover(state.term,state.voted_for) {
++                    return Err(io::Error::new(io::ErrorKind::InvalidData,"invalid durable vote"));
++                }
++                raft.log=log;
++                raft.snapshot=image.snapshot;
+                 raft.sync_log_tip();
++                if raft.log.base>0 {
++                    let _=raft.apply_ch.unbounded_send(ApplyMsg::Snapshot {data:raft.snapshot.clone(),term:raft.log.base_term,index:raft.log.base});
++                }
+                 raft.apply();
+             }
+-            Err(e) if e.kind() == io::ErrorKind::NotFound => { self.persist().await?; }
+-            Err(e) => return Err(e),
++            Err(e) if e.kind()==io::ErrorKind::NotFound => {self.persist().await?;}
++            Err(e)=>return Err(e),
+         }
+         Ok(())
+     }
+@@ -177,6 +202,11 @@
+         self.endpoint.add_rpc_handler(move |args: RequestVoteArgs| {
+             let this = this.clone();
+             async move { this.request_vote(args).await.expect("vote storage failed: node halted") }
++        });
++        let this=self.clone();
++        self.endpoint.add_rpc_handler(move |args:SnapshotArgs| {
++            let this=this.clone();
++            async move {this.install_snapshot(args).await.expect("snapshot storage failed")}
+         });
+         let this = self.clone();
+         self.endpoint.add_rpc_handler(move |args: AppendArgs| {
+@@ -217,13 +247,30 @@
+             } else if args.prev_index <= raft.log.last_index() && args.prev_index > 0 {
+                 let bad_term = raft.log.term_at(args.prev_index);
+                 hint = args.prev_index;
+-                while hint > 1 && raft.log.term_at(hint - 1) == bad_term { hint -= 1; }
++                while hint > raft.log.base.saturating_add(1) && raft.log.term_at(hint - 1) == bad_term { hint -= 1; }
+             }
+             AppendReply { term: raft.state.term, success, hint }
+         };
+         self.persist().await?;
+         self.inner.lock().unwrap().apply();
+         Ok(reply)
++    }
++    async fn install_snapshot(&self,args:SnapshotArgs)->Result<AppendReply> {
++        let _serial=self.serial.lock().await;
++        let (term,installed)={
++            let mut raft=self.inner.lock().unwrap();
++            let accepted=raft.state.heartbeat(args.term,args.leader);
++            if accepted {raft.reset_deadline();}
++            let installed=accepted && raft.log.install(args.index,args.last_term);
++            if installed {raft.snapshot=args.data.clone();raft.sync_log_tip();}
++            (raft.state.term,installed)
++        };
++        self.persist().await?;
++        if installed {
++            let raft=self.inner.lock().unwrap();
++            let _=raft.apply_ch.unbounded_send(ApplyMsg::Snapshot {data:args.data,term:args.last_term,index:args.index});
++        }
++        Ok(AppendReply{term,success:true,hint:0})
+     }
+     fn start_timer(&self) {
+         let this = self.clone();
+@@ -279,10 +326,21 @@
+                 if peer == raft.me || raft.inflight[peer].is_some() { continue; }
+                 let next = raft.next[peer];
+                 if next == 0 { continue; }
++                if next <= raft.log.base {
++                    let args=SnapshotArgs {term:raft.state.term,leader:raft.me,index:raft.log.base,
++                        last_term:raft.log.base_term,data:raft.snapshot.clone()};
++                    raft.inflight[peer]=Some(args.term);
++                    let this=self.clone();let addr=raft.peers[peer];
++                    task::spawn(async move {
++                        let reply=this.endpoint.call_timeout(addr,args.clone(),Duration::from_millis(250)).await.ok();
++                        this.snapshot_reply(peer,args,reply).await;
++                    });
++                    continue;
++                }
+                 let prev_index = next - 1;
+                 if let Some(prev_term) = raft.log.term_at(prev_index) {
+                     let args = AppendArgs { term: raft.state.term, leader: raft.me, prev_index, prev_term,
+-                        entries: raft.log.entries[prev_index as usize..].to_vec(), commit: raft.log.commit };
++                        entries: raft.log.entries[(prev_index-raft.log.base) as usize..].to_vec(), commit: raft.log.commit };
+                     raft.inflight[peer] = Some(args.term);
+                     requests.push((peer, raft.peers[peer], args));
+                 }
+@@ -296,6 +354,22 @@
+                 this.append_reply(peer, args, reply).await;
+             });
+         }
++    }
++    async fn snapshot_reply(&self,peer:usize,args:SnapshotArgs,reply:Option<AppendReply>) {
++        let _serial=self.serial.lock().await;
++        {
++            let mut raft=self.inner.lock().unwrap();
++            if raft.inflight[peer]==Some(args.term) {raft.inflight[peer]=None;}
++            if let Some(reply)=reply {
++                raft.state.observe_term(reply.term);
++                if raft.state.is_leader() && raft.state.term==args.term && reply.term==args.term {
++                    raft.matched[peer]=raft.matched[peer].max(args.index);
++                    raft.next[peer]=raft.matched[peer].saturating_add(1);
++                    raft.heartbeat_due=Instant::now();
++                }
++            }
++        }
++        self.persist().await.expect("snapshot reply storage failed");
+     }
+     async fn append_reply(&self, peer: usize, args: AppendArgs, reply: Option<AppendReply>) {
+         let _serial = self.serial.lock().await;
+@@ -373,3 +447,7 @@
+     type Response = AppendReply;
+     const ID: u64 = 10;
+ }
++
++#[derive(Debug,Clone,Serialize,Deserialize)]
++struct SnapshotArgs {term:u64,leader:usize,index:u64,last_term:u64,data:Vec<u8>}
++impl net::rpc::Request for SnapshotArgs {type Response=AppendReply;const ID:u64=11;}
+--- before/madraft/src/raft/replication.rs
++++ after/madraft/src/raft/replication.rs
+@@ -15,6 +15,8 @@
+ }
+ #[derive(Debug)]
+ pub struct Log {
++    pub base: u64,
++    pub base_term: u64,
+     pub entries: Vec<Entry>,
+     pub commit: u64,
+     pub applied: u64,
+@@ -23,9 +25,10 @@
+ pub open spec fn records(v: Seq<Entry>) -> Seq<Record> {
+     Seq::new(v.len(), |i: int| v[i].view())
+ }
+-pub struct Image { pub entries: Seq<Entry>, pub commit: u64, pub applied: u64 }
++pub struct Image { pub base: u64, pub base_term: u64, pub entries: Seq<Entry>, pub commit: u64, pub applied: u64 }
+ pub open spec fn valid_image(i: Image) -> bool {
+-    i.applied <= i.commit && i.commit <= i.entries.len() && i.entries.len() <= u64::MAX
++    i.base <= i.applied <= i.commit && i.commit <= i.base + i.entries.len()
++    && i.base + i.entries.len() <= u64::MAX
+     && i.entries.len() <= usize::MAX
+ }
+ pub open spec fn tally(matched: Seq<u64>, upto: nat, index: u64, me: usize) -> nat
+@@ -36,78 +39,82 @@
+         + if upto-1 == me || matched[upto as int-1] >= index { 1nat } else { 0nat } }
+ }
+ pub open spec fn append_allowed(i: Image, index: u64, entry: Entry) -> bool {
+-    index > 0 && index-1 <= i.entries.len() && index-1 < usize::MAX
+-    && (index > i.entries.len() || i.entries[index as int-1].term == entry.term || index > i.commit)
++    index > i.base && index-i.base-1 <= i.entries.len() && index-i.base-1 < usize::MAX
++    && (index > i.base+i.entries.len() || i.entries[index as int-i.base as int-1].term == entry.term || index > i.commit)
+ }
+ pub open spec fn appended(i: Image, index: u64, entry: Entry) -> Image {
+     if !append_allowed(i, index, entry)
+-        || (index <= i.entries.len() && i.entries[index as int-1].term == entry.term) { i }
+-    else { Image { entries: i.entries.take(index as int-1).push(entry), ..i } }
++        || (index <= i.base+i.entries.len() && i.entries[index as int-i.base as int-1].term == entry.term) { i }
++    else { Image { entries: i.entries.take(index as int-i.base as int-1).push(entry), ..i } }
+ }
+ impl Log {
+     pub open spec fn image(&self) -> Image {
+-        Image { entries: self.entries@, commit: self.commit, applied: self.applied }
++        Image { base: self.base, base_term: self.base_term, entries: self.entries@, commit: self.commit, applied: self.applied }
+     }
+     pub open spec fn valid(&self) -> bool { valid_image(self.image()) }
+     pub fn new() -> (r: Self)
+-        ensures r.valid(), r.entries@ == Seq::<Entry>::empty(), r.commit == 0, r.applied == 0,
+-    { Self { entries: Vec::new(), commit: 0, applied: 0 } }
+-    pub fn restore(entries: Vec<Entry>, commit: u64) -> (r: Option<Self>)
++        ensures r.valid(), r.entries@ == Seq::<Entry>::empty(), r.commit == 0, r.applied == 0, r.base == 0, r.base_term == 0,
++    { Self { base: 0, base_term: 0, entries: Vec::new(), commit: 0, applied: 0 } }
++    pub fn restore(base: u64, base_term: u64, entries: Vec<Entry>, commit: u64) -> (r: Option<Self>)
+         ensures r.is_some() ==> r.unwrap().valid() && r.unwrap().entries@ == entries@
+-            && r.unwrap().commit == commit && r.unwrap().applied == 0,
+-            r.is_none() ==> commit > entries.len() || entries.len() > u64::MAX,
+-    {
+-        if entries.len() as u128 > u64::MAX as u128 || commit > entries.len() as u64 { return None; }
+-        Some(Self { entries, commit, applied: 0 })
++            && r.unwrap().base == base && r.unwrap().base_term == base_term
++            && r.unwrap().commit == commit && r.unwrap().applied == base,
++    {
++        if entries.len() as u128 + base as u128 > u64::MAX as u128
++            || commit < base || commit as u128 > base as u128 + entries.len() as u128 { return None; }
++        Some(Self { base, base_term, entries, commit, applied: base })
+     }
+     pub fn sync_election(&self, e: &mut Election)
+         requires self.valid(), old(e).valid(),
+-        ensures e.valid(), e.last_index == self.entries.len(),
+-            e.last_term == if self.entries.len() == 0 {0} else {self.entries@.last().term},
++        ensures e.valid(), e.last_index == self.base + self.entries.len(),
++            e.last_term == if self.entries.len() == 0 {self.base_term} else {self.entries@.last().term},
+             e.term == old(e).term, e.role == old(e).role, e.voted_for == old(e).voted_for,
+             e.me == old(e).me, e.members == old(e).members,
+             e.grants@ == old(e).grants@, e.grant_count == old(e).grant_count,
+     {
+-        e.last_index = self.entries.len() as u64;
+-        e.last_term = if self.entries.len() == 0 { 0 } else { self.entries[self.entries.len()-1].term };
++        e.last_index = self.base + self.entries.len() as u64;
++        e.last_term = if self.entries.len() == 0 { self.base_term } else { self.entries[self.entries.len()-1].term };
+     }
+     pub fn last_index(&self) -> (r: u64)
+-        requires self.valid(), ensures r == self.entries.len(),
+-    { self.entries.len() as u64 }
++        requires self.valid(), ensures r == self.base + self.entries.len(),
++    { self.base + self.entries.len() as u64 }
+     pub fn term_at(&self, index: u64) -> (r: Option<u64>)
+         requires self.valid(),
+-        ensures r == if index == 0 { Some(0) }
+-            else if index <= self.entries.len() { Some(self.entries@[index as int - 1].term) } else { None },
+-    {
+-        if index == 0 { Some(0) }
+-        else if index <= self.entries.len() as u64 { Some(self.entries[(index - 1) as usize].term) }
+-        else { None }
++        ensures r == if index == self.base { Some(self.base_term) }
++            else if self.base < index <= self.base+self.entries.len() {
++                Some(self.entries@[index as int-self.base as int-1].term) } else { None },
++    {
++        if index == self.base { Some(self.base_term) }
++        else if self.base < index && index <= self.last_index() {
++            Some(self.entries[(index-self.base-1) as usize].term)
++        } else { None }
+     }
+     pub fn propose(&mut self, term: u64, data: Vec<u8>) -> (r: Option<u64>)
+         requires old(self).valid(),
+-        ensures self.valid(), self.commit == old(self).commit, self.applied == old(self).applied,
+-            r.is_some() ==> r.unwrap() == self.entries.len()
++        ensures self.valid(), self.base == old(self).base, self.base_term == old(self).base_term,
++            self.commit == old(self).commit, self.applied == old(self).applied,
++            r.is_some() ==> r.unwrap() == self.base+self.entries.len()
+                 && self.entries@ == old(self).entries@.push(Entry { term, data }),
+             r.is_none() ==> self.entries@ == old(self).entries@,
+     {
+-        if self.entries.len() as u64 == u64::MAX || self.entries.len() == usize::MAX { return None; }
++        if self.last_index() == u64::MAX || self.entries.len() == usize::MAX { return None; }
+         self.entries.push(Entry { term, data });
+-        Some(self.entries.len() as u64)
++        Some(self.last_index())
+     }
+     // One received entry at its original index. Matching entries preserve the
+     // existing suffix; a differing term truncates only the uncommitted suffix.
+     pub fn append_one(&mut self, index: u64, entry: Entry) -> (ok: bool)
+         requires old(self).valid(),
+-        ensures self.valid(), ok == append_allowed(old(self).image(), index, entry),
++        ensures self.valid(), self.base == old(self).base, self.base_term == old(self).base_term, ok == append_allowed(old(self).image(), index, entry),
+             self.image() == appended(old(self).image(), index, entry),
+             self.commit == old(self).commit, self.applied == old(self).applied,
+-            self.entries@.take(self.commit as int) == old(self).entries@.take(self.commit as int),
++            self.entries@.take(self.commit as int-self.base as int) == old(self).entries@.take(self.commit as int-self.base as int),
+             !ok ==> self.entries@ == old(self).entries@,
+-            ok ==> 1 <= index <= self.entries.len(),
++            ok ==> self.base < index <= self.base+self.entries.len(),
+     {
+         let ghost before = self.image();
+-        if index == 0 { return false; }
+-        let pos64 = index - 1;
++        if index <= self.base { return false; }
++        let pos64 = index-self.base-1;
+         if pos64 > self.entries.len() as u64 || pos64 >= usize::MAX as u64 { return false; }
+         let pos = pos64 as usize;
+         if pos < self.entries.len() {
+@@ -121,57 +128,90 @@
+     }
+     pub fn follower_commit(&mut self, advertised: u64, matched_through: u64)
+         requires old(self).valid(),
+-        ensures self.valid(), self.entries@ == old(self).entries@,
++        ensures self.valid(), self.base == old(self).base, self.base_term == old(self).base_term, self.entries@ == old(self).entries@,
+             self.applied == old(self).applied, self.commit >= old(self).commit,
+-            self.commit == if min64(min64(advertised, matched_through), old(self).entries.len() as u64) > old(self).commit {
+-                min64(min64(advertised, matched_through), old(self).entries.len() as u64)
++            self.commit == if min64(min64(advertised, matched_through), (old(self).base + old(self).entries.len()) as u64) > old(self).commit {
++                min64(min64(advertised, matched_through), (old(self).base + old(self).entries.len()) as u64)
+             } else { old(self).commit },
+     {
+         let bound = if advertised < matched_through { advertised } else { matched_through };
+-        let bound = if bound < self.entries.len() as u64 { bound } else { self.entries.len() as u64 };
++        let bound = if bound < self.last_index() { bound } else { self.base + self.entries.len() as u64 };
+         if bound > self.commit { self.commit = bound; }
+     }
+     pub fn leader_commit(&mut self, term: u64, me: usize, matched: &Vec<u64>)
+         requires old(self).valid(),
+-        ensures self.valid(), self.entries@ == old(self).entries@,
++        ensures self.valid(), self.base == old(self).base, self.base_term == old(self).base_term, self.entries@ == old(self).entries@,
+             self.applied == old(self).applied, self.commit >= old(self).commit,
+-            self.commit > old(self).commit ==> self.entries@[self.commit as int - 1].term == term
++            self.commit > old(self).commit ==> self.entries@[self.commit as int-self.base as int-1].term == term
+                 && tally(matched@, matched.len() as nat, self.commit, me) > matched.len() / 2,
+     {
+         if matched.len() == 0 || me >= matched.len() { return; }
+         let mut index = self.entries.len();
+-        while index as u64 > self.commit
++        while self.base+index as u64 > self.commit
+             invariant self.valid(), self.entries@ == old(self).entries@,
+                 self.applied == old(self).applied, self.commit == old(self).commit,
+-                self.commit <= index <= self.entries.len(), me < matched.len(),
++                self.commit <= self.base+index, index <= self.entries.len(), self.base == old(self).base, self.base_term == old(self).base_term, me < matched.len(),
+             decreases index,
+         {
+             if self.entries[index - 1].term == term {
++                let absolute = self.base+index as u64;
+                 let mut count: usize = 0;
+                 let mut peer: usize = 0;
+                 while peer < matched.len()
+                     invariant peer <= matched.len(), count <= peer,
+-                        count == tally(matched@, peer as nat, index as u64, me),
++                        count == tally(matched@, peer as nat, absolute, me),
+                     decreases matched.len() - peer,
+                 {
+-                    if peer == me || matched[peer] >= index as u64 { count += 1; }
++                    if peer == me || matched[peer] >= absolute { count += 1; }
+                     peer += 1;
+                 }
+-                if count > matched.len() / 2 { self.commit = index as u64; return; }
++                if count > matched.len() / 2 { self.commit = self.base+index as u64; return; }
+             }
+             index -= 1;
+         }
+     }
++    pub fn compact(&mut self, index: u64) -> (ok: bool)
++        requires old(self).valid(),
++        ensures self.valid(), self.commit == old(self).commit, self.applied == old(self).applied,
++            !ok ==> self.image() == old(self).image(),
++            ok ==> self.base == index && self.entries@ == old(self).entries@.skip((index-old(self).base) as int)
++                && self.base_term == old(self).entries@[index as int-old(self).base as int-1].term,
++    {
++        if index <= self.base || index > self.applied { return false; }
++        let count = (index-self.base) as usize;
++        let term = self.entries[count-1].term;
++        let suffix = self.entries.split_off(count);
++        self.entries = suffix;
++        self.base = index;
++        self.base_term = term;
++        true
++    }
++    pub fn install(&mut self, index: u64, term: u64) -> (ok: bool)
++        requires old(self).valid(),
++        ensures self.valid(), !ok ==> self.image() == old(self).image(),
++            ok ==> self.base == index && self.base_term == term && self.commit == index && self.applied == index,
++    {
++        if index <= self.commit { return false; }
++        if self.term_at(index) == Some(term) {
++            let suffix = self.entries.split_off((index-self.base) as usize);
++            self.entries = suffix;
++        } else { self.entries = Vec::new(); }
++        self.base = index;
++        self.base_term = term;
++        self.commit = index;
++        self.applied = index;
++        true
++    }
+     pub fn next_application(&mut self) -> (r: Option<(u64, Entry)>)
+         requires old(self).valid(),
+-        ensures self.valid(), self.entries@ == old(self).entries@, self.commit == old(self).commit,
++        ensures self.valid(), self.base == old(self).base, self.base_term == old(self).base_term, self.entries@ == old(self).entries@, self.commit == old(self).commit,
+             r.is_none() ==> self.applied == old(self).applied,
+             r.is_some() ==> self.applied == old(self).applied + 1 && r.unwrap().0 == self.applied
+-                && r.unwrap().1.view() == self.entries@[self.applied as int - 1].view(),
++                && r.unwrap().1.view() == self.entries@[self.applied as int-self.base as int-1].view(),
+     {
+         if self.applied >= self.commit { return None; }
+         let index = self.applied + 1;
+-        let entry = self.entries[(index - 1) as usize].copy();
++        let entry = self.entries[(index-self.base-1) as usize].copy();
+         self.applied = index;
+         Some((index, entry))
+     }
+--- before/madraft/src/shard_ctrler/server.rs
++++ after/madraft/src/shard_ctrler/server.rs
+@@ -1,19 +1,47 @@
+ use super::msg::*;
+ use crate::kvraft::server::{Server, State};
+ use serde::{Deserialize, Serialize};
+-
++use std::{collections::BTreeMap,convert::TryFrom};
+ pub type ShardCtrler = Server<ShardInfo>;
+-
+-#[derive(Debug, Default, Serialize, Deserialize)]
+-pub struct ShardInfo {
+-    // Your data here.
+-}
+-
+-impl State for ShardInfo {
+-    type Command = Op;
+-    type Output = Option<Config>;
+-
+-    fn apply(&mut self, cmd: Self::Command) -> Self::Output {
+-        todo!("apply command");
++#[derive(Debug,Default,Serialize,Deserialize)]
++pub struct ShardInfo { configs:Vec<Config> }
++impl ShardInfo {
++    fn balance(config:&mut Config) {
++        let mut groups:BTreeMap<u64,Vec<usize>>=config.groups.keys().map(|g|(*g,Vec::new())).collect();
++        if groups.is_empty() {config.shards.fill(0);return;}
++        let mut pool=Vec::new();
++        for (shard,gid) in config.shards.iter().enumerate() {
++            if let Some(shards)=groups.get_mut(gid) {shards.push(shard);} else {pool.push(shard);}
++        }
++        let count=groups.len();
++        for (ordinal,(_,shards)) in groups.iter_mut().enumerate() {
++            let target=super::N_SHARDS/count+usize::from(ordinal<super::N_SHARDS%count);
++            while shards.len()>target {pool.push(shards.pop().unwrap());}
++        }
++        pool.sort_unstable();
++        let mut next=pool.into_iter();
++        for (ordinal,(gid,shards)) in groups.iter_mut().enumerate() {
++            let target=super::N_SHARDS/count+usize::from(ordinal<super::N_SHARDS%count);
++            while shards.len()<target {shards.push(next.next().unwrap());}
++            for shard in shards {config.shards[*shard]=*gid;}
++        }
+     }
+ }
++impl State for ShardInfo {
++    type Command=Op;type Output=Option<Config>;
++    fn apply(&mut self,cmd:Op)->Option<Config> {
++        if self.configs.is_empty() {self.configs.push(Config::default());}
++        if let Op::Query{num}=cmd {
++            return Some(self.configs.get(usize::try_from(num).unwrap_or(usize::MAX)).unwrap_or(self.configs.last().unwrap()).clone());
++        }
++        let mut config=self.configs.last().unwrap().clone();
++        config.num=config.num.checked_add(1).expect("configuration exhausted");
++        match cmd {
++            Op::Join{groups}=>{for(gid,servers)in groups {if gid!=0 {config.groups.insert(gid,servers);}}Self::balance(&mut config);},
++            Op::Leave{gids}=>{for gid in gids {config.groups.remove(&gid);}Self::balance(&mut config);},
++            Op::Move{shard,gid}=>{if shard<super::N_SHARDS {config.shards[shard]=gid;}},
++            Op::Query{..}=>unreachable!(),
++        }
++        self.configs.push(config);None
++    }
++}

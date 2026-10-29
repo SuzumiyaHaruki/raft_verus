@@ -29,4 +29,11 @@ def environment(root=ROOT):
     env['CARGO_ENCODED_RUSTFLAGS'] = '\x1f'.join(flags)
     env['CARGO_ENCODED_RUSTDOCFLAGS'] = env['CARGO_ENCODED_RUSTFLAGS']
     env.pop('RUSTFLAGS', None)
+    env.pop('RUSTDOCFLAGS', None)
+    # The checker selects its own target directory and seed repetitions. Never
+    # inherit another experiment's compiled protocol or a compiler wrapper.
+    for key in ('CARGO_TARGET_DIR', 'RUSTC_WRAPPER', 'RUSTC_WORKSPACE_WRAPPER',
+                'CARGO_BUILD_RUSTC_WRAPPER', 'CARGO_BUILD_RUSTC_WORKSPACE_WRAPPER',
+                'MADSIM_TEST_NUM'):
+        env.pop(key, None)
     return cfg, env

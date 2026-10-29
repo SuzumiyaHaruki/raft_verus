@@ -1,1 +1,0 @@
-Read AGENTS.md and the requirements. Complete the MadRaft student work and jointly construct and repair proofs of the actual executable implementation. Start from the supplied student scaffold in the current working directory; modify only its MadRaft copy, never the preparation checkout. Record real commands and remaining gaps in PROGRESS.md and finish with RESULT.md.

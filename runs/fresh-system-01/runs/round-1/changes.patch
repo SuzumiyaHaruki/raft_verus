@@ -1,0 +1,839 @@
+--- before/madraft/proof/implementation.rs
++++ after/madraft/proof/implementation.rs
+@@ -0,0 +1,142 @@
++//! Incremental execution interface. This unit does not yet claim full refinement.
++//! All safety theorems remain open until message/storage/host induction is closed.
++#[path = "../src/raft/election.rs"]
++pub mod election;
++use vstd::prelude::*;
++use crate::targets;
++
++verus! {
++// An overapproximation of the currently implemented election boundary. Network
++// authenticity and durable write completion will constrain these actions in
++// the next increment. In particular, Reply is not yet a quorum certificate.
++pub use election::Input;
++pub struct Action { pub who: targets::Key, pub input: Input }
++pub struct Execution {
++    pub states: Seq<Map<targets::Key, election::Image>>,
++    pub actions: Seq<Action>,
++}
++pub open spec fn initialized(s: Map<targets::Key, election::Image>) -> bool {
++    forall |k: targets::Key| s.contains_key(k) ==> {
++        let v = s[k];
++        election::initial(v) && v.me == k.node
++    }
++}
++// Full transition equations and induction are developed here, rather than
++// assuming reachable-state safety. This deliberately unfinished relation is
++// broad: it retains all inputs and does not impose any target as a premise.
++pub open spec fn permitted(before: election::Image, input: Input, after: election::Image) -> bool {
++    match input {
++        // Broad recovery abstraction: a crash may lose a volatile term or vote.
++        // This does NOT assert that an arbitrary recovered vote is durable.
++        // Storage provenance is still open, so no safety theorem consumes it.
++        Input::Crash | Input::Restart => election::well_formed(after)
++            && after.me == before.me && after.members == before.members
++            && after.last_index == 0 && after.last_term == 0
++            && after.role == election::Role::Follower,
++        _ => after == election::next(before, input),
++    }
++}
++pub open spec fn execution(run: Execution) -> bool {
++    run.states.len() == run.actions.len() + 1 && initialized(run.states[0])
++    && forall |t: int| #![trigger run.actions[t]] 0 <= t < run.actions.len() ==> {
++        let k = run.actions[t].who;
++        run.states[t].contains_key(k) && run.states[t+1].contains_key(k)
++        && run.states[t+1].dom() == run.states[t].dom()
++        && permitted(run.states[t][k], run.actions[t].input, run.states[t+1][k])
++        && forall |other: targets::Key| other != k && run.states[t].contains_key(other)
++            ==> run.states[t+1][other] == run.states[t][other]
++    }
++}
++pub proof fn state_induction(run: Execution, t: int)
++    requires execution(run), 0 <= t < run.states.len(),
++    ensures forall |k: targets::Key| run.states[t].contains_key(k)
++        ==> election::well_formed(run.states[t][k]),
++    decreases t,
++{
++    if t == 0 {
++        assert forall |k: targets::Key| run.states[t].contains_key(k)
++            implies election::well_formed(run.states[t][k]) by {
++            assert(election::initial(run.states[0][k]));
++        }
++    } else {
++        state_induction(run, t-1);
++        let action = run.actions[t-1];
++        assert forall |k: targets::Key| run.states[t].contains_key(k)
++            implies election::well_formed(run.states[t][k]) by {
++            assert(run.states[t-1].contains_key(k));
++            if k == action.who {
++                let before = run.states[t-1][k];
++                assert(permitted(before, action.input, run.states[t][k]));
++                election::next_preserves(before, action.input);
++            } else { assert(run.states[t][k] == run.states[t-1][k]); }
++        }
++    }
++}
++pub open spec fn view(v: election::Image) -> targets::View {
++    targets::View { term: v.term as nat, leader: v.role == election::Role::Leader,
++        log: Seq::empty(), snapshot: None }
++}
++pub open spec fn observe(run: Execution) -> targets::History {
++    targets::History {
++        states: Seq::new(run.states.len(), |t: int| Map::new(
++            |k: targets::Key| run.states[t].contains_key(k), |k: targets::Key| view(run.states[t][k]))),
++        events: Seq::new(run.actions.len(), |t: int| {
++            let k = run.actions[t].who;
++            if run.states[t].contains_key(k) && run.states[t+1].contains_key(k)
++                && run.states[t][k].role != election::Role::Leader
++                && run.states[t+1][k].role == election::Role::Leader {
++                targets::Event::Elect { who: k, term: run.states[t+1][k].term as nat }
++            } else { targets::Event::Silent }
++        }),
++    }
++}
++pub proof fn observation_shape(run: Execution)
++    requires execution(run),
++    ensures targets::shape(observe(run)),
++{
++    let h = observe(run);
++    assert forall |t: int| 0 <= t < h.events.len() implies match #[trigger] h.events[t] {
++        targets::Event::Elect { who, term } => h.states[t+1].contains_key(who)
++            && h.states[t+1][who].leader && h.states[t+1][who].term == term,
++        targets::Event::Commit { who, term, through } => h.states[t+1].contains_key(who)
++            && h.states[t+1][who].term == term && 1 <= through <= h.states[t+1][who].log.len(),
++        targets::Event::Apply { who: _, index, entry: _ } => index >= 1,
++        _ => true,
++    } by {
++        let k = run.actions[t].who;
++        assert(run.states[t+1].contains_key(k));
++    }
++}
++pub proof fn execution_witness() -> (run: Execution)
++    ensures execution(run), targets::shape(observe(run)),
++        exists |i: int| 0 <= i < observe(run).events.len()
++            && !(observe(run).events[i] is Silent),
++{
++    let k = targets::Key { group: 0, node: 0 };
++    let zero = election::Image { term: 0, role: election::Role::Follower, vote: None,
++        me: 0, members: 1, last_term: 0, last_index: 0, grants: seq![false], count: 0 };
++    let campaigning = election::next(zero, Input::Timeout);
++    let reply = Input::Reply { term: 1, peer: 0, granted: true };
++    let leader = election::next(campaigning, reply);
++    let a = Map::empty().insert(k, zero);
++    let b = Map::empty().insert(k, campaigning);
++    let c = Map::empty().insert(k, leader);
++    let run = Execution { states: seq![a,b,c], actions: seq![
++        Action { who: k, input: Input::Timeout }, Action { who: k, input: reply }] };
++    assert(zero.grants =~= Seq::new(1, |j: int| false));
++    assert(initialized(a));
++    assert forall |t: int| #![trigger run.actions[t]] 0 <= t < run.actions.len() implies {
++        let who = run.actions[t].who;
++        run.states[t].contains_key(who) && run.states[t+1].contains_key(who)
++        && run.states[t+1].dom() == run.states[t].dom()
++        && permitted(run.states[t][who], run.actions[t].input, run.states[t+1][who])
++        && forall |other: targets::Key| other != who && run.states[t].contains_key(other)
++            ==> run.states[t+1][other] == run.states[t][other]
++    } by { assert(t == 0 || t == 1); }
++    assert(execution(run));
++    observation_shape(run);
++    assert(observe(run).events[1] is Elect);
++    run
++}
++
++}
+--- before/madraft/proof/progress.rs
++++ after/madraft/proof/progress.rs
+@@ -1,4 +1,4 @@
+-//! DRAFT tool smoke: only the existing upstream role observer.
+-//! The generator replaces/extends this entrypoint as implementation progresses.
+-#[path = "../src/raft/state.rs"]
+-mod state;
++#[path = "../../requirements/targets.rs"]
++pub mod targets;
++#[path = "implementation.rs"]
++pub mod implementation;
+--- before/madraft/src/raft/election.rs
++++ after/madraft/src/raft/election.rs
+@@ -0,0 +1,261 @@
++//! Synchronous election decisions shared by the host and Verus.
++use vstd::prelude::*;
++
++verus! {
++#[derive(Debug, Clone, Copy, PartialEq, Eq)]
++pub enum Role { Follower, Candidate, Leader }
++
++#[derive(Debug, Clone)]
++pub struct Election {
++    pub term: u64,
++    pub role: Role,
++    pub voted_for: Option<usize>,
++    pub me: usize,
++    pub members: usize,
++    pub last_term: u64,
++    pub last_index: u64,
++    pub grants: Vec<bool>,
++    pub grant_count: usize,
++}
++
++pub struct Image {
++    pub term: u64, pub role: Role, pub vote: Option<usize>,
++    pub me: usize, pub members: usize,
++    pub last_term: u64, pub last_index: u64,
++    pub grants: Seq<bool>, pub count: usize,
++}
++
++pub enum Input {
++    Timeout,
++    Vote { term: u64, candidate: usize, last_term: u64, last_index: u64 },
++    Reply { term: u64, peer: usize, granted: bool },
++    Heartbeat { term: u64, leader: usize },
++    Observe { term: u64 },
++    Crash,
++    Restart,
++}
++pub open spec fn well_formed(i: Image) -> bool {
++    i.members > 0 && i.me < i.members && i.grants.len() == i.members
++    && i.count <= i.members && (i.vote.is_some() ==> i.vote.unwrap() < i.members)
++}
++pub open spec fn advance(i: Image, term: u64) -> Image {
++    if term > i.term { Image { term, role: Role::Follower, vote: None, ..i } } else { i }
++}
++pub open spec fn initial(i: Image) -> bool {
++    i.term == 0 && i.role == Role::Follower && i.vote.is_none()
++    && i.members > 0 && i.me < i.members && i.last_index == 0 && i.last_term == 0
++    && i.count == 0 && i.grants == Seq::new(i.members as nat, |j: int| false)
++}
++pub open spec fn next(i: Image, input: Input) -> Image {
++    match input {
++        Input::Timeout => if i.term == u64::MAX { i } else {
++            Image { term: (i.term + 1) as u64, role: Role::Candidate, vote: Some(i.me),
++                grants: Seq::new(i.members as nat, |j: int| j == i.me), count: 1, ..i }
++        },
++        Input::Observe { term } => advance(i, term),
++        Input::Vote { term, candidate, last_term, last_index } => {
++            if candidate >= i.members { i } else {
++                let b = advance(i, term);
++                if term == b.term && (last_term > b.last_term || (last_term == b.last_term && last_index >= b.last_index))
++                    && (b.vote.is_none() || b.vote == Some(candidate)) {
++                    Image { vote: Some(candidate), ..b }
++                } else { b }
++            }
++        },
++        Input::Reply { term, peer, granted } => {
++            if peer >= i.members { i } else {
++                let b = advance(i, term);
++                if term != b.term || b.role != Role::Candidate { b } else {
++                    let add = granted && !b.grants[peer as int] && b.count < b.members;
++                    let n = if add { (b.count + 1) as usize } else { b.count };
++                    Image { grants: if add { b.grants.update(peer as int, true) } else { b.grants },
++                        count: n, role: if n > b.members / 2 { Role::Leader } else { b.role }, ..b }
++                }
++            }
++        },
++        Input::Heartbeat { term, leader } => if leader >= i.members { i } else {
++            let b = advance(i, term);
++            if term == b.term { Image { role: Role::Follower, ..b } } else { b }
++        },
++        // These are provisional crash abstractions, not yet a storage refinement.
++        Input::Crash | Input::Restart => Image { role: Role::Follower, ..i },
++    }
++}
++
++pub proof fn next_preserves(i: Image, input: Input)
++    requires well_formed(i),
++    ensures well_formed(next(i, input)),
++{
++    match input {
++        Input::Timeout => {},
++        Input::Vote { term, candidate, last_term, last_index } => {},
++        Input::Reply { term, peer, granted } => {},
++        Input::Heartbeat { term, leader } => {},
++        Input::Observe { term } => {},
++        Input::Crash | Input::Restart => {},
++    }
++}
++
++impl Election {
++    pub open spec fn image(&self) -> Image {
++        Image { term: self.term, role: self.role, vote: self.voted_for,
++            me: self.me, members: self.members, last_term: self.last_term,
++            last_index: self.last_index, grants: self.grants@, count: self.grant_count }
++    }
++    pub open spec fn valid(&self) -> bool {
++        well_formed(self.image())
++    }
++    pub fn new(members: usize, me: usize) -> (r: Option<Self>)
++        ensures members > 0 && me < members ==> r.is_some() && r.unwrap().valid()
++            && r.unwrap().term == 0 && r.unwrap().role == Role::Follower
++            && r.unwrap().voted_for.is_none() && initial(r.unwrap().image()),
++            !(members > 0 && me < members) ==> r.is_none(),
++    {
++        if members == 0 || me >= members { return None; }
++        let mut grants: Vec<bool> = Vec::new();
++        let mut i = 0;
++        while i < members
++            invariant i <= members, grants.len() == i,
++                forall |j: int| 0 <= j < i ==> !grants@[j],
++            decreases members - i,
++        { grants.push(false); i += 1; }
++        proof { assert(grants@ =~= Seq::new(members as nat, |j: int| false)); }
++        Some(Self { term: 0, role: Role::Follower, voted_for: None,
++            me, members, last_term: 0, last_index: 0, grants, grant_count: 0 })
++    }
++    pub fn recover(&mut self, term: u64, vote: Option<usize>) -> (ok: bool)
++        requires old(self).valid(),
++        ensures self.valid(),
++            ok ==> self.term == term && self.voted_for == vote && self.role == Role::Follower,
++            !ok ==> self.image() == old(self).image(),
++            ok == (vote.is_none() || vote.unwrap() < old(self).members),
++            self.me == old(self).me, self.members == old(self).members,
++            self.last_term == old(self).last_term, self.last_index == old(self).last_index,
++    {
++        match vote {
++            Some(id) => { if id >= self.members { return false; } },
++            None => {},
++        }
++        self.term = term;
++        self.voted_for = vote;
++        self.role = Role::Follower;
++        true
++    }
++    pub fn is_leader(&self) -> (r: bool)
++        ensures r == (self.role == Role::Leader),
++    { matches!(self.role, Role::Leader) }
++
++    pub fn observe_term(&mut self, term: u64)
++        requires old(self).valid(),
++        ensures self.valid(), self.image() == advance(old(self).image(), term),
++            self.term == if term > old(self).term { term } else { old(self).term },
++            term <= old(self).term ==> self.image() == old(self).image(),
++            term > old(self).term ==> self.role == Role::Follower && self.voted_for.is_none(),
++            self.me == old(self).me, self.members == old(self).members,
++            self.last_term == old(self).last_term, self.last_index == old(self).last_index,
++    {
++        if term > self.term {
++            self.term = term;
++            self.role = Role::Follower;
++            self.voted_for = None;
++        }
++    }
++    pub fn campaign(&mut self) -> (ok: bool)
++        requires old(self).valid(),
++        ensures self.valid(), self.image() == next(old(self).image(), Input::Timeout),
++            self.me == old(self).me, self.members == old(self).members,
++            self.last_term == old(self).last_term, self.last_index == old(self).last_index,
++            ok ==> self.term == old(self).term + 1 && self.role == Role::Candidate
++                && self.voted_for == Some(self.me) && self.grant_count == 1,
++            !ok ==> self.image() == old(self).image(),
++            ok == (old(self).term < u64::MAX),
++    {
++        if self.term == u64::MAX { return false; }
++        self.term = self.term + 1;
++        self.role = Role::Candidate;
++        self.voted_for = Some(self.me);
++        let mut i = 0;
++        while i < self.members
++            invariant self.valid(), i <= self.members,
++                self.me == old(self).me, self.members == old(self).members,
++                self.term == old(self).term + 1, self.role == Role::Candidate,
++                self.voted_for == Some(self.me),
++                self.last_term == old(self).last_term, self.last_index == old(self).last_index,
++                self.grant_count == old(self).grant_count,
++                forall |j: int| 0 <= j < i ==> !self.grants@[j],
++            decreases self.members - i,
++        { self.grants.set(i, false); i += 1; }
++        proof {
++            assert(self.grants@ == Seq::new(self.members as nat, |j: int| false));
++        }
++        self.grants.set(self.me, true);
++        proof {
++            assert(self.grants@ =~= Seq::new(self.members as nat, |j: int| j == self.me));
++        }
++        self.grant_count = 1;
++        true
++    }
++    pub fn request_vote(&mut self, term: u64, candidate: usize, last_term: u64, last_index: u64) -> (granted: bool)
++        requires old(self).valid(),
++        ensures self.valid(), self.image() == next(old(self).image(), Input::Vote { term, candidate, last_term, last_index }),
++            self.term >= old(self).term,
++            self.me == old(self).me, self.members == old(self).members,
++            self.last_term == old(self).last_term, self.last_index == old(self).last_index,
++            granted ==> candidate < self.members && term == self.term
++                && self.voted_for == Some(candidate)
++                && (last_term > self.last_term || (last_term == self.last_term && last_index >= self.last_index)),
++            self.term == old(self).term && old(self).voted_for.is_some() ==> self.voted_for == old(self).voted_for,
++            candidate >= old(self).members ==> self.image() == old(self).image(),
++    {
++        if candidate >= self.members { return false; }
++        self.observe_term(term);
++        if term != self.term { return false; }
++        if last_term < self.last_term || (last_term == self.last_term && last_index < self.last_index) { return false; }
++        match self.voted_for {
++            Some(id) => { if id != candidate { return false; } }
++            None => {}
++        }
++        self.voted_for = Some(candidate);
++        true
++    }
++    pub fn receive_grant(&mut self, term: u64, peer: usize, granted: bool) -> (elected: bool)
++        requires old(self).valid(),
++        ensures self.valid(), self.image() == next(old(self).image(), Input::Reply { term, peer, granted }),
++            self.term >= old(self).term,
++            self.me == old(self).me, self.members == old(self).members,
++            self.last_term == old(self).last_term, self.last_index == old(self).last_index,
++            elected ==> old(self).role == Role::Candidate && self.role == Role::Leader
++                && self.term == term && self.grant_count > self.members / 2,
++            peer >= old(self).members ==> self.image() == old(self).image(),
++    {
++        if peer >= self.members { return false; }
++        self.observe_term(term);
++        if term != self.term || !matches!(self.role, Role::Candidate) { return false; }
++        if granted && !self.grants[peer] && self.grant_count < self.members {
++            self.grants.set(peer, true);
++            self.grant_count = self.grant_count + 1;
++        }
++        if self.grant_count > self.members / 2 {
++            self.role = Role::Leader;
++            return true;
++        }
++        false
++    }
++    pub fn heartbeat(&mut self, term: u64, leader: usize) -> (accepted: bool)
++        requires old(self).valid(),
++        ensures self.valid(), self.image() == next(old(self).image(), Input::Heartbeat { term, leader }),
++            self.term >= old(self).term,
++            self.me == old(self).me, self.members == old(self).members,
++            self.last_term == old(self).last_term, self.last_index == old(self).last_index,
++            accepted ==> self.term == term && self.role == Role::Follower,
++            self.term == old(self).term ==> self.voted_for == old(self).voted_for,
++            leader >= old(self).members ==> self.image() == old(self).image(),
++    {
++        if leader >= self.members { return false; }
++        self.observe_term(term);
++        if term != self.term { return false; }
++        self.role = Role::Follower;
++        true
++    }
++}
++}
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -1,4 +1,4 @@
+-use futures::{channel::mpsc, stream::FuturesUnordered, StreamExt};
++use futures::channel::mpsc;
+ use madsim::{
+     fs, net,
+     rand::{self, Rng},
+@@ -16,6 +16,7 @@
+ pub struct RaftHandle {
+     pub(crate) endpoint: net::Endpoint,
+     inner: Arc<Mutex<Raft>>,
++    serial: Arc<futures::lock::Mutex<()>>,
+ }
+ 
+ type MsgSender = mpsc::UnboundedSender<ApplyMsg>;
+@@ -55,236 +56,212 @@
+ 
+ pub type Result<T> = std::result::Result<T, Error>;
+ 
++#[path = "election.rs"]
++mod election;
++use election::Election;
++
+ struct Raft {
+-    endpoint: net::Endpoint,
+     peers: Vec<SocketAddr>,
+     me: usize,
+     apply_ch: MsgSender,
+-
+-    // Your data here (2A, 2B, 2C).
+-    // Look at the paper's Figure 2 for a description of what
+-    // state a Raft server must maintain.
+-    state: State,
+-}
+-
+-#[path = "state.rs"]
+-mod state;
+-use state::{State, Role};
+-
+-/// Data needs to be persisted.
++    state: Election,
++    deadline: Instant,
++    heartbeat_due: Instant,
++}
++
+ #[derive(Debug, Clone, Serialize, Deserialize)]
+ struct Persist {
+-    // Your data here.
++    term: u64,
++    voted_for: Option<usize>,
+ }
+ 
+ impl fmt::Debug for Raft {
+-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+-        write!(f, "Raft({})", self.me)
+-    }
+-}
+-
+-// HINT: put async functions here
++    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result { write!(f, "Raft({})", self.me) }
++}
++
+ impl RaftHandle {
+     pub async fn new(peers: Vec<SocketAddr>, me: usize) -> (Self, MsgRecver) {
++        assert!(!peers.is_empty() && me < peers.len(), "invalid membership");
++        assert!((0..peers.len()).all(|i| (0..i).all(|j| peers[i] != peers[j])), "duplicate peer");
+         let endpoint = net::Endpoint::bind(peers[me]).await.expect("bind Raft RPC");
+         let (apply_ch, recver) = mpsc::unbounded();
++        let state = Election::new(peers.len(), me).expect("valid membership");
+         let inner = Arc::new(Mutex::new(Raft {
+-            endpoint: endpoint.clone(),
+-            peers,
+-            me,
+-            apply_ch,
+-            state: State::default(),
++            peers, me, apply_ch, state,
++            deadline: Instant::now() + Raft::election_timeout(),
++            heartbeat_due: Instant::now(),
+         }));
+-        let handle = RaftHandle { inner, endpoint };
+-        // initialize from state persisted before a crash
+-        handle.restore().await.expect("failed to restore");
++        let handle = Self { inner, endpoint, serial: Arc::new(futures::lock::Mutex::new(())) };
++        handle.restore().await.expect("invalid or unavailable durable image: node halted");
+         handle.start_rpc_server();
+-
++        handle.start_timer();
+         (handle, recver)
+     }
+ 
+-    /// Start agreement on the next command to be appended to Raft's log.
+-    ///
+-    /// If this server isn't the leader, returns [`Error::NotLeader`].
+-    /// Otherwise start the agreement and return immediately.
+-    ///
+-    /// There is no guarantee that this command will ever be committed to the
+-    /// Raft log, since the leader may fail or lose an election.
+-    pub async fn start(&self, cmd: &[u8]) -> Result<Start> {
+-        let mut raft = self.inner.lock().unwrap();
+-        info!("{:?} start", *raft);
+-        raft.start(cmd)
+-    }
+-
+-    /// The current term of this peer.
+-    pub fn term(&self) -> u64 {
++    pub async fn start(&self, _cmd: &[u8]) -> Result<Start> {
+         let raft = self.inner.lock().unwrap();
+-        raft.state.term
+-    }
+-
+-    /// Whether this peer believes it is the leader.
+-    pub fn is_leader(&self) -> bool {
+-        let raft = self.inner.lock().unwrap();
+-        raft.state.is_leader()
+-    }
+-
+-    /// A service wants to switch to snapshot.  
+-    ///
+-    /// Only do so if Raft hasn't have more recent info since it communicate
+-    /// the snapshot on `apply_ch`.
+-    pub async fn cond_install_snapshot(
+-        &self,
+-        last_included_term: u64,
+-        last_included_index: u64,
+-        snapshot: &[u8],
+-    ) -> bool {
+-        todo!()
+-    }
+-
+-    /// The service says it has created a snapshot that has all info up to and
+-    /// including index. This means the service no longer needs the log through
+-    /// (and including) that index. Raft should now trim its log as much as
+-    /// possible.
+-    pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {
+-        todo!()
+-    }
+-
+-    /// save Raft's persistent state to stable storage,
+-    /// where it can later be retrieved after a crash and restart.
+-    /// see paper's Figure 2 for a description of what should be persistent.
++        if !raft.state.is_leader() { return Err(Error::NotLeader((raft.me + 1) % raft.peers.len())); }
++        todo!("2B proposals")
++    }
++    pub fn term(&self) -> u64 { self.inner.lock().unwrap().state.term }
++    pub fn is_leader(&self) -> bool { self.inner.lock().unwrap().state.is_leader() }
++    pub async fn cond_install_snapshot(&self, _term: u64, _index: u64, _snapshot: &[u8]) -> bool {
++        todo!("2D snapshot installation")
++    }
++    pub async fn snapshot(&self, _index: u64, _snapshot: &[u8]) -> Result<()> {
++        todo!("2D snapshot creation")
++    }
++
++    // The serial guard covers mutation, durable completion, and reply selection.
++    // An incomplete/truncated existing image is a fail-stop condition on restore;
++    // it is never interpreted as permission to discard an unknown prior vote.
+     async fn persist(&self) -> io::Result<()> {
+-        let persist: Persist = todo!("persist state");
+-        let snapshot: Vec<u8> = todo!("persist snapshot");
+-        let state = bincode::serialize(&persist).unwrap();
+-
+-        // you need to store persistent state in file "state"
+-        // and store snapshot in file "snapshot".
+-        // DO NOT change the file names.
++        let bytes = {
++            let raft = self.inner.lock().unwrap();
++            bincode::serialize(&Persist { term: raft.state.term, voted_for: raft.state.voted_for })
++                .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?
++        };
+         let file = fs::File::create("state").await?;
+-        file.write_all_at(&state, 0).await?;
+-        // make sure data is flushed to the disk,
+-        // otherwise data will be lost on power fail.
+-        file.sync_all().await?;
+-
+-        let file = fs::File::create("snapshot").await?;
+-        file.write_all_at(&snapshot, 0).await?;
++        file.write_all_at(&bytes, 0).await?;
+         file.sync_all().await?;
+         Ok(())
+     }
+-
+-    /// Restore previously persisted state.
+     async fn restore(&self) -> io::Result<()> {
+-        match fs::read("snapshot").await {
+-            Ok(snapshot) => {
+-                todo!("restore snapshot");
+-            }
+-            Err(e) if e.kind() == io::ErrorKind::NotFound => {}
++        match fs::read("state").await {
++            Ok(bytes) => {
++                let image: Persist = bincode::deserialize(&bytes)
++                    .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
++                let mut raft = self.inner.lock().unwrap();
++                if !raft.state.recover(image.term, image.voted_for) {
++                    return Err(io::Error::new(io::ErrorKind::InvalidData, "invalid durable voter"));
++                }
++            }
++            Err(e) if e.kind() == io::ErrorKind::NotFound => { self.persist().await?; }
+             Err(e) => return Err(e),
+         }
+-        match fs::read("state").await {
+-            Ok(state) => {
+-                let persist: Persist = bincode::deserialize(&state).unwrap();
+-                todo!("restore state");
+-            }
+-            Err(e) if e.kind() == io::ErrorKind::NotFound => {}
+-            Err(e) => return Err(e),
+-        }
+         Ok(())
+     }
+-
+     fn start_rpc_server(&self) {
+-        let net = self.endpoint.clone();
+-
+         let this = self.clone();
+-        net.add_rpc_handler(move |args: RequestVoteArgs| {
++        self.endpoint.add_rpc_handler(move |args: RequestVoteArgs| {
+             let this = this.clone();
+-            async move { this.request_vote(args).await.unwrap() }
++            async move { this.request_vote(args).await.expect("vote storage failed: node halted") }
+         });
+-        // add more RPC handers here
+-    }
+-
++        let this = self.clone();
++        self.endpoint.add_rpc_handler(move |args: HeartbeatArgs| {
++            let this = this.clone();
++            async move { this.heartbeat(args).await.expect("heartbeat storage failed: node halted") }
++        });
++    }
+     async fn request_vote(&self, args: RequestVoteArgs) -> Result<RequestVoteReply> {
++        let _serial = self.serial.lock().await;
+         let reply = {
+-            let mut this = self.inner.lock().unwrap();
+-            this.request_vote(args)
+-        };
+-        // if you need to persist or call async functions here,
+-        // make sure the lock is scoped and dropped.
+-        self.persist().await.expect("failed to persist");
++            let mut raft = self.inner.lock().unwrap();
++            let granted = raft.state.request_vote(args.term, args.candidate, args.last_term, args.last_index);
++            if granted { raft.reset_deadline(); }
++            RequestVoteReply { term: raft.state.term, granted }
++        };
++        self.persist().await?;
+         Ok(reply)
+     }
+-}
+-
+-// HINT: put mutable non-async functions here
++    async fn heartbeat(&self, args: HeartbeatArgs) -> Result<RequestVoteReply> {
++        let _serial = self.serial.lock().await;
++        let reply = {
++            let mut raft = self.inner.lock().unwrap();
++            let accepted = raft.state.heartbeat(args.term, args.leader);
++            if accepted { raft.reset_deadline(); }
++            RequestVoteReply { term: raft.state.term, granted: accepted }
++        };
++        self.persist().await?;
++        Ok(reply)
++    }
++    fn start_timer(&self) {
++        let this = self.clone();
++        task::spawn(async move {
++            loop {
++                sleep(Duration::from_millis(10)).await;
++                this.tick().await;
++            }
++        });
++    }
++    async fn tick(&self) {
++        let _serial = self.serial.lock().await;
++        let (votes, heartbeat) = {
++            let mut raft = self.inner.lock().unwrap();
++            let now = Instant::now();
++            if raft.state.is_leader() {
++                if now < raft.heartbeat_due { return; }
++                raft.heartbeat_due = now + Duration::from_millis(80);
++                (None, Some(HeartbeatArgs { term: raft.state.term, leader: raft.me }))
++            } else {
++                if now < raft.deadline { return; }
++                raft.reset_deadline();
++                if !raft.state.campaign() { return; }
++                let args = RequestVoteArgs { term: raft.state.term, candidate: raft.me,
++                    last_term: raft.state.last_term, last_index: raft.state.last_index };
++                // The self-vote also handles a singleton group.
++                let me = raft.me;
++                raft.state.receive_grant(args.term, me, true);
++                (Some(args), None)
++            }
++        };
++        self.persist().await.expect("timer storage failed: node halted");
++        let peers = self.inner.lock().unwrap().peers.clone();
++        let me = self.inner.lock().unwrap().me;
++        for (peer, addr) in peers.into_iter().enumerate() {
++            if peer == me { continue; }
++            let this = self.clone();
++            if let Some(args) = votes.clone() {
++                task::spawn(async move {
++                    if let Ok(reply) = this.endpoint.call_timeout(addr, args, Duration::from_millis(250)).await {
++                        this.vote_reply(peer, reply).await;
++                    }
++                });
++            } else if let Some(args) = heartbeat.clone() {
++                task::spawn(async move {
++                    if let Ok(reply) = this.endpoint.call_timeout(addr, args, Duration::from_millis(250)).await {
++                        this.term_reply(peer, reply).await;
++                    }
++                });
++            }
++        }
++    }
++    async fn vote_reply(&self, peer: usize, reply: RequestVoteReply) {
++        let _serial = self.serial.lock().await;
++        {
++            let mut raft = self.inner.lock().unwrap();
++            if raft.state.receive_grant(reply.term, peer, reply.granted) {
++                raft.heartbeat_due = Instant::now();
++            }
++        }
++        self.persist().await.expect("reply storage failed: node halted");
++    }
++    async fn term_reply(&self, peer: usize, reply: RequestVoteReply) {
++        let _serial = self.serial.lock().await;
++        {
++            let mut raft = self.inner.lock().unwrap();
++            if peer < raft.peers.len() { raft.state.observe_term(reply.term); }
++        }
++        self.persist().await.expect("reply storage failed: node halted");
++    }
++}
+ impl Raft {
+-    fn start(&mut self, data: &[u8]) -> Result<Start> {
+-        if !self.state.is_leader() {
+-            let leader = (self.me + 1) % self.peers.len();
+-            return Err(Error::NotLeader(leader));
+-        }
+-        todo!("start agreement");
+-    }
+-
+-    // Here is an example to apply committed message.
+-    fn apply(&self) {
+-        let msg = ApplyMsg::Command {
+-            data: todo!("apply msg"),
+-            index: todo!("apply msg"),
+-        };
+-        self.apply_ch.unbounded_send(msg).unwrap();
+-    }
+-
+-    fn request_vote(&mut self, args: RequestVoteArgs) -> RequestVoteReply {
+-        todo!("handle RequestVote RPC");
+-    }
+-
+-    // Here is an example to generate random number.
+-    fn generate_election_timeout() -> Duration {
+-        // see rand crate for more details
+-        Duration::from_millis(rand::thread_rng().gen_range(150..300))
+-    }
+-
+-    // Here is an example to send RPC and manage concurrent tasks.
+-    fn send_vote_request(&mut self) {
+-        let args: RequestVoteArgs = todo!("construct RPC request");
+-        let timeout = Self::generate_election_timeout();
+-        let net = self.endpoint.clone();
+-
+-        let mut rpcs = FuturesUnordered::new();
+-        for (i, &peer) in self.peers.iter().enumerate() {
+-            if i == self.me {
+-                continue;
+-            }
+-            // NOTE: `call` function takes ownerships
+-            let net = net.clone();
+-            let args = args.clone();
+-            rpcs.push(async move {
+-                net.call_timeout::<RequestVoteArgs>(peer, args, timeout)
+-                    .await
+-            });
+-        }
+-
+-        // spawn a concurrent task
+-        task::spawn(async move {
+-            // handle RPC tasks in completion order
+-            while let Some(res) = rpcs.next().await {
+-                todo!("handle RPC results");
+-            }
+-        }); // MadSim 0.2 detaches JoinHandle on drop.
+-    }
+-}
+-
+-#[derive(Debug, Clone, Serialize, Deserialize)]
+-struct RequestVoteArgs {
+-    // Your data here.
+-}
+-
+-#[derive(Debug, Clone, Serialize, Deserialize)]
+-struct RequestVoteReply {
+-    // Your data here.
+-}
+-
++    fn election_timeout() -> Duration {
++        Duration::from_millis(rand::thread_rng().gen_range(350..650))
++    }
++    fn reset_deadline(&mut self) { self.deadline = Instant::now() + Self::election_timeout(); }
++}
++#[derive(Debug, Clone, Serialize, Deserialize)]
++struct RequestVoteArgs { term: u64, candidate: usize, last_term: u64, last_index: u64 }
++#[derive(Debug, Clone, Serialize, Deserialize)]
++struct RequestVoteReply { term: u64, granted: bool }
+ impl net::rpc::Request for RequestVoteArgs {
+     type Response = RequestVoteReply;
+     const ID: u64 = 1;
+ }
++#[derive(Debug, Clone, Serialize, Deserialize)]
++struct HeartbeatArgs { term: u64, leader: usize }
++impl net::rpc::Request for HeartbeatArgs {
++    type Response = RequestVoteReply;
++    const ID: u64 = 10;
++}

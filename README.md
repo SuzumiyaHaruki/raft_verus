@@ -1,64 +1,84 @@
-# One MadRaft code-and-proof experiment — DRAFT
+# Joint MadRaft implementation and proof experiment — DRAFT
 
-The experiment asks Codex to complete the actual MadRaft student project and jointly construct Verus proofs of the executable Raft implementation. This checkout supplies the problem, original test coverage and tools. It does not supply a Raft solution. Preparation and a completed experiment are different outcomes; see [RESULT.md](RESULT.md) for the actual current result.
+This project supplies an unfinished MadRaft student scaffold, fixed safety requirements and a bounded Python experiment loop. The experiment Codex generates and repairs the implementation and proofs together. Maintenance work improves that loop; it does not supply a Raft solution. See [RESULT.md](RESULT.md) for the current system revision and actual maintenance checks.
 
 | Path | Purpose |
 | --- | --- |
-| `madraft/src/raft/` | Upstream Raft interfaces, student placeholders and election, replication, persistence and snapshot tests. |
-| `madraft/src/kvraft/` | Replicated KV service and clients, including retry and snapshot work. |
-| `madraft/src/shard_ctrler/` | Shard-assignment service built on Raft; its `Config` interface is retained. |
-| `madraft/src/shardkv/` | Sharded KV clients, servers and migration/recovery tests. |
-| `madraft/proof/` | The generator's local proof entrypoints and final executable correspondence. Initially only an existing observer is checked; protocol proofs are absent. |
-| `requirements/` | English scope, safety definitions, environment/TCB, original test inventory and independent Verus callers. |
-| `docs/` | Source provenance and preparation records for the operator; not copied into experiments. |
-| `scripts/` | Thin launch/resume helper, real checker and offline helper tests. |
-| `runs/` | Fresh experiment workspaces and raw outputs, all git-ignored. |
-| `target/` | Existing local dependency cache only, git-ignored. No previous protocol source is copied into experiments. |
+| `madraft/` | Initial student source, original lab tests, license and a local Verus smoke entry. It remains the input to every new experiment. |
+| `requirements/` | Scope, five fixed safety definitions, environment, test inventory, independent callers and execution-coverage responsibilities. |
+| `scripts/run.py` | Fresh workspace/session creation, cumulative budgets, independent checks, feedback and bounded same-session continuation/redesign. |
+| `scripts/check.py` | Real Cargo/Verus checking, required-test coverage, per-obligation diagnostics and full acceptance. |
+| `scripts/prompts/` | Short start, continuation and redesign prompts. They are passed by the controller, not copied from an old experiment. |
+| `scripts/tests/` | Offline system regressions and real Rust/Verus micro-examples. No complete Raft solution fixture. |
+| `docs/` | Operator-only source provenance. |
+| `runs/<name>/` | One experiment's editable MadRaft copy, isolated Codex home, prompts, generation logs, progress and feedback. |
+| `runs/.controller/<name>/` | Preparation-side origin, fixed inputs, lock, cumulative state and independent check evidence. It is outside the agent's writable workspace. |
+| `target/` | Shared dependency/tool cache. Experiment protocol build outputs are not reused as inputs. |
 
-This README is for the experiment operator and is not copied into experiment workspaces. [AGENTS.md](AGENTS.md) supplies the main instruction and local check commands. [scope.md](requirements/scope.md) describes the whole assignment. [provenance.md](docs/provenance.md) records upstream versions, compatibility edits and preparation history for operator review only. The START/CONTINUE prompts and the supplied MadRaft documentation and source comments also guide the experiment. Every authored specification is DRAFT. Human review happens after delivery; no approval file is used during execution.
+This README, maintenance tests, operator reports and provenance are not supplied to the agent. `AGENTS.md`, the requirements, original MadRaft documentation/source and the current controller prompt are its authored materials. Git tracks `runs/fresh-system-01`, including its source, proofs, prompts and check evidence; credentials, the Codex home and build caches remain excluded. Old `runs/sol-high-01` remains available locally and in Git history, and is not used by new experiments.
 
-## Run an experiment
+## Start and continue
 
-Python 3.10+ and the paths in [tools.ini](tools.ini) are required. The local configuration selects the already installed Verus/Rust pair and a repository-local Cargo cache. It does not install tools or change global configuration. `MADRAFT_VERUS`, `MADRAFT_RUST_BIN`, `MADRAFT_RUSTUP_HOME` and `MADRAFT_CARGO_HOME` override paths. The experiment explicitly selects `gpt-6-astra` with `high` reasoning, preserving the previously effective selection; `--model` and `--effort` override it. An empty model setting uses the CLI default, not the operator's personal configuration.
-
-Each experiment uses `runs/<name>/runs/codex-home` as its own `CODEX_HOME`, also retained on resume. Only the operator's existing `auth.json` and execution `rules/` are linked, preserving authentication and command safeguards without copying credentials. Personal `config.toml`, `AGENTS.md`, `AGENTS.override.md`, earlier sessions, memories and agent definitions are not linked or copied. This excludes automatic loading from the personal Codex home; it is not filesystem isolation. Automatic credential reuse supports the current file-based login; keyring-only authentication and custom providers need experiment-specific setup. The prompts no longer prohibit subagents; no fixed delegation scheme is imposed.
+Use Python 3.10+ and the already installed tools configured in `tools.ini`. The default remains `gpt-6-astra` with `high` reasoning; overrides are explicit. The following command selects `gpt-6.1-sol` with `high` without changing the global configuration.
 
 ```bash
-# Preview: zero agent calls, zero workspace creation.
-python3 scripts/run.py new runs/experiment
+# Maintenance regressions only; simulated agent calls are labeled SIMULATED.
+python3 -m unittest discover -s scripts/tests -v
 
-# Explicitly start the real agent in a fresh directory.
-python3 scripts/run.py new runs/experiment --execute
+# Preview: no candidate, tools or model invocation.
+python3 scripts/run.py new runs/fresh-system-01 --model gpt-6.1-sol --effort high
 
-# Resume its conversation and evolving files; the wall-clock budget is cumulative.
-python3 scripts/run.py resume runs/experiment --execute
+# Real experiment, explicitly authorized by the operator.
+python3 scripts/run.py new runs/fresh-system-01 --model gpt-6.1-sol --effort high --execute
 
-# Explicitly extend the cumulative budget when needed.
-python3 scripts/run.py resume runs/experiment --total-seconds 7200 --execute
+# Continue only this new-system experiment, preserving its thread and spending.
+python3 scripts/run.py resume runs/fresh-system-01 --execute
+
+# Explicitly extend the cumulative limits; this does not reset prior spending.
+python3 scripts/run.py resume runs/fresh-system-01 --total-seconds 7200 --max-rounds 12 --execute
+
+# Independent check from the preparation checkout.
+python3 scripts/check.py final --workspace runs/fresh-system-01 --timeout 3600 --json
 ```
 
-Each new experiment requires a fresh direct child of this checkout's `runs/`, such as `runs/experiment/`. The launcher copies `madraft/`, `requirements/`, `AGENTS.md`, `tools.ini`, `.gitignore` and the three local checking helpers into it, then invokes `codex exec` once with that new directory as its working directory. All generated implementation and proof edits belong to `runs/experiment/madraft/`; the supplied root `madraft/` remains the starting point for later experiments. Files are copied, not moved or linked, and generated changes are never copied back automatically. The operator README, `docs/`, launcher, maintenance tests, prior results and previous run output are not supplied. `madraft/README.md` remains with the upstream project as assignment context and attribution.
+A new run accepts an unused direct child of `runs/`. Its input whitelist contains the initial MadRaft source, fixed requirements, AGENTS, tool configuration and local check helpers. Nested run output, previous solutions, patches, sessions and build products are excluded. An origin record stores the input version, Git revision when exposed, exact input copies/file list, tool capabilities, selected model and budgets. Resume requires that new-system origin record, the same workspace and unchanged system inputs/tools. Historical session files alone cannot start a new-system continuation.
 
-A continuation uses the recorded thread ID with `codex exec resume` in the same workspace; it does not recreate source. The agent chooses increments, runs real tools, repairs its code/proofs and writes `PROGRESS.md`. There is no task DAG or automatic agent loop. Raw prompt, JSONL and stderr are retained in that workspace's `runs/`. The configured budget bounds wall-clock runtime, not token cost. Output size is also bounded. A timeout preserves the workspace. A controller crash is recorded conservatively as spent budget; inspect the recorded process and logs before recovering it. A successful Codex exit is not proof acceptance. The input-copy policy and working-directory selection are not an additional OS isolation mechanism; the configured Codex sandbox still applies.
+Each experiment gets its own `CODEX_HOME`. Only existing authentication and execution rules are linked; personal configuration, instructions, memories and sessions are excluded. The controller probes the installed CLI help and actual new/resume argument shapes before generation. It uses `--no-daemon`, `--ignore-user-config`, workspace-write sandboxing and no interactive approval. It never silently substitutes a model or installs a toolchain. `MADRAFT_VERUS`, `MADRAFT_RUST_BIN`, `MADRAFT_RUSTUP_HOME` and `MADRAFT_CARGO_HOME` select explicit local tool paths.
 
-## Check current or delivered files
+These controls isolate inputs and writes under the available Codex sandbox. They do not provide an OS-level prohibition on reading every other directory or public reference. The instructions explicitly forbid other experiment answers and operator sessions; strict information-flow isolation is not claimed. Authentication providers unsupported by the existing file-based login produce a recorded blocker, not a silent fallback.
+
+## Automatic loop and termination
+
+After capability checks and an initial-scaffold check, Codex works in a finite slice. The controller stops/reaps that process group, checks a source-only snapshot using preparation-side requirements, tests and helpers, then feeds actual diagnostics and this run's attempted approaches back to the same conversation. The agent chooses implementation order, local contracts, invariants and proof decomposition. Repeated unchanged check gaps trigger a bounded redesign prompt; they do not reset the workspace or import another answer.
+
+Defaults in `tools.ini` are 3,600 cumulative seconds, at most 600 seconds per model slice, 300 seconds per independent check phase, eight total rounds, two unchanged rounds before redesign, and one redesign. Checks and tool probes consume the same cumulative wall-time budget. Resume does not reset time, round, stagnation or redesign counters. A process-group watcher kills workers if the controller dies; an interrupted phase keeps its whole reserved allowance charged. OS locking prevents two controllers writing the same run. A subsequent resume rechecks the candidate before further generation and never reuses stale PASS results.
+
+| Terminal state | Meaning |
+| --- | --- |
+| `MACHINE_CHECKS_PASSED` | Complete required tests, all five top-level callers, executable refinement, snapshot/observation and nonempty-witness checks passed on one stopped candidate, including the aggregate caller. Semantic adequacy/TCB boundaries remain disclosed. |
+| `INCOMPLETE` | Required work remains and time, rounds or bounded redesign are exhausted, or the controller was interrupted. |
+| `BLOCKED` | A tool, dependency, authentication or execution environment prevents continuing real checks/generation. |
+| `NEEDS_REVIEW` | Fixed input, tool, test or trust-boundary differences need resolution; the controller does not quietly weaken them. |
+
+An agent exit code or a statement in its RESULT.md cannot produce success. The authoritative ledger is preparation-side `state.json`; the readable terminal report is the experiment's `runs/EXPERIMENT.md`. Each round retains its prompt, raw JSONL/stderr, source diff, candidate progress note and independent diagnostics. Check snapshots contain only the checked project source and fixed requirements, so the recorded commands remain inspectable without copying session homes or build trees. Human review is after delivery; no approval file or per-round approval checkpoint exists.
+
+## Checks and their limits
 
 ```bash
-python3 -m unittest discover -s scripts/tests -v
 python3 scripts/check.py build
 python3 scripts/check.py inventory
 python3 scripts/check.py test raft::tests::initial_election_2a --seed 1
-python3 scripts/check.py test kvraft::tests:: --seed 1
-python3 scripts/check.py test shard_ctrler::tests:: --seed 1
-python3 scripts/check.py test shardkv::tests:: --seed 1
-python3 scripts/check.py definitions
-
-# Current local proof entrypoint; the agent extends it while developing:
-python3 scripts/check.py proof madraft/proof/progress.rs --workspace runs/experiment
-python3 scripts/check.py safety --workspace runs/experiment
-python3 scripts/check.py final --workspace runs/experiment --timeout 3600
+python3 scripts/check.py proof madraft/proof/progress.rs
+python3 scripts/check.py top election_safety
+python3 scripts/check.py top execution_link
+python3 scripts/check.py top snapshot_observation
+python3 scripts/check.py top nonempty_execution
+python3 scripts/check.py safety
+python3 scripts/check.py final --seeds 1,2,3,4,5 --timeout 3600
 ```
 
-`test` without a filter runs every lab and added regression; `inventory` lists them. `definitions` verifies definition regressions, not Raft correctness. `proof` checks a complete local proof entrypoint (initially the existing role observer, not protocol safety). `safety` checks all five final callers and snapshot/executable correspondence together with `--no-cheating`; a missing generated file produces a real compiler failure. `final` runs tests and that aggregate check independently using the invoking checkout's tools and target definitions. It does not trust an agent's success message. Review the generated execution relation, host boundary, source coverage and any test-plumbing changes before accepting semantic adequacy. No script can infer that an arbitrary model describes every real operation merely from the existence of a proof.
+Local commands check the calling workspace; `--workspace` lets the preparation-side checker inspect a delivered workspace against its independent standards. `safety` is an alias of the complete `final` acceptance; use `top NAME` for proof-only feedback. Both complete commands and each post-generation controller check use the full configured seed set, currently 1–5, on one source snapshot. The initial-scaffold probe uses the initial-election test at seed 1. Required test names are checked individually, including all lab families and three supplied host regressions. The original ignored empty upstream test remains disclosed; empty selections, dropped families or newly ignored required tests do not pass. Candidate changes to test sources, fixed requirements, check helpers, Cargo inputs or tool configuration are reported, and the independent snapshot uses the preparation-side standards.
 
-All Cargo checks use the locked dependencies, offline mode, `--cfg madsim` and the Rust compiler matching Verus. The same `vstd` macro erases proof syntax in executable builds. If the dependency cache is absent, fetch the locked dependencies explicitly with that Cargo and `CARGO_HOME`; checking never downloads tools or silently switches a compiler. `MADSIM_TEST_NUM` and `MADSIM_TEST_CHECK_DETERMINISTIC` remain available for the original simulator's repeated-seed and replay modes. See [test-inventory.md](requirements/test-inventory.md).
+Structured results include check scope, candidate/input revision, actual command, selected tool environment, process outcome, raw diagnostic path and missing coverage. Compiler errors, failed proof obligations, timeouts, missing dependencies and absent entries are distinct. Partial top-level checks verify an entire imported unit; there is no function-filter shortcut. Full acceptance always runs the combined caller, so a Python table of partial PASS results cannot substitute for mathematical composition.
+
+The nonempty witness and limited source-link/vacuity inspection reject some known empty or disconnected constructions. They do not prove that arbitrary generated `execution`, `observe` or `refines_executable` definitions faithfully describe all running behavior. Review constructors, handlers, every allowed path, event completeness, crash history, snapshot decoder fidelity, caller preconditions and exact host contracts as specified in `requirements/coverage.md`. A machine pass is not a claim of full implementation-level correctness, application-level correctness or conditional liveness. Liveness remains explicitly OPEN.

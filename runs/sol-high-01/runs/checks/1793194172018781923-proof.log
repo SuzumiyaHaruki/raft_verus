@@ -1,4 +1,0 @@
-$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/sol-high-01/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
-verification results:: 85 verified, 0 errors
-
-process=COMPLETED exit=0

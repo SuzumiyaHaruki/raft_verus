@@ -1,0 +1,20 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793252465499638685/candidate/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+error[E0282]: type annotations needed for `std::vec::Vec<_>`
+   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-01/runs/checks/1793252465499638685/candidate/madraft/proof/../src/raft/election.rs:99:13
+    |
+ 99 |         let mut grants = Vec::new();
+    |             ^^^^^^^^^^
+...
+103 |                 forall |j: int| 0 <= j < i ==> !grants@[j],
+    |                                                ----------- type must be known at this point
+    |
+help: consider giving `grants` an explicit type, where the type for type parameter `A` is specified
+    |
+ 99 |         let mut grants: std::vec::Vec<T> = Vec::new();
+    |                       ++++++++++++++++++
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0282`.
+
+process=COMPLETED exit=1
