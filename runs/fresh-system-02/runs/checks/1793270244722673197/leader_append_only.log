@@ -1,0 +1,35 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270244722673197/leader_append_only-caller.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 33 verified, 1 errors
+warning: field `node` has inconsistent type or visibility in different variants
+         ->node syntax will not be available for this field
+         use #[allow(inconsistent_fields)] on the struct to silence the warnign
+  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270244722673197/candidate/madraft/proof/segments.rs:8:1
+   |
+ 8 | / pub enum Input {
+ 9 | |     SelfElect,
+10 | |     Propose { entry: Entry },
+11 | |     Insert { at: nat, entry: Entry },
+...  |
+19 | |     Deliver { delivery: Delivery<Message>, last_term: u64, last_index: u64 },
+20 | | }
+   | |_^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270244722673197/candidate/madraft/proof/../src/raft/log.rs:9:10
+  |
+9 | #[derive(Clone, Debug)]
+  |          ^^^^^
+
+error: precondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270244722673197/candidate/madraft/proof/implementation.rs:100:9
+    |
+ 82 |     requires a.len() <= b.len(),b.take(a.len() as int) == a,
+    |                                 --------------------------- failed precondition
+...
+100 |         log_prefix_map(h.states[j][k].log,h.states[j+1][k].log);
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 1 previous error; 2 warnings emitted
+
+
+process=COMPLETED exit=1

@@ -1,0 +1,23 @@
+{
+  "status": "INCOMPLETE",
+  "reason": "Insufficient budget for useful work, feedback and final checks, or maximum rounds reached",
+  "run_id": "f15aca92-c9c9-4fee-b16a-8eb5a0dbb631",
+  "input_version": "madraft-joint-proof-3",
+  "git_revision": "UNAVAILABLE: Git metadata not exposed",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "attempts": 5,
+  "redesigns": 0,
+  "seconds_spent": 2661.2273335489954,
+  "total_seconds": 3600.0,
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "last_check": "/home/nitro/Desktop/raft_verus/runs/.controller/fresh-system-02/check-5-1793271672184810316/results.json",
+  "semantic_boundary": "Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.",
+  "liveness": "OPEN"
+}

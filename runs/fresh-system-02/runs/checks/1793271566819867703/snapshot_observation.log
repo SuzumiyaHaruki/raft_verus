@@ -1,0 +1,26 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793271566819867703/snapshot_observation-caller.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 63 verified, 0 errors
+warning: field `node` has inconsistent type or visibility in different variants
+         ->node syntax will not be available for this field
+         use #[allow(inconsistent_fields)] on the struct to silence the warnign
+  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793271566819867703/candidate/madraft/proof/segments.rs:8:1
+   |
+ 8 | / pub enum Input {
+ 9 | |     SelfElect,
+10 | |     Propose { entry: Entry },
+11 | |     Insert { at: nat, entry: Entry },
+...  |
+19 | |     Deliver { delivery: Delivery<Message>, last_term: u64, last_index: u64 },
+20 | | }
+   | |_^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793271566819867703/candidate/madraft/proof/../src/raft/log.rs:10:10
+   |
+10 | #[derive(Clone, Debug)]
+   |          ^^^^^
+
+warning: 2 warnings emitted
+
+
+process=COMPLETED exit=0

@@ -33,6 +33,12 @@ class CheckerTests(unittest.TestCase):
         self.serial+=1
         return check.Checks(self.workspace,ROOT,ROOT,self.directory/f'check-{self.serial}',30,'SIMULATED-revision')
 
+    def test_nonfinite_call_cap_is_rejected_before_starting_a_process(self):
+        cfg = settings(ROOT)
+        cfg['checks']['proof_case_seconds'] = 'nan'
+        with patch.object(check, 'settings', return_value=cfg), self.assertRaises(ValueError):
+            self.checker()
+
     def test_expected_inventory_has_all_families_and_host_tests(self):
         names=check.required_tests(ROOT)
         self.assertEqual(len(names),60)
@@ -85,9 +91,73 @@ class CheckerTests(unittest.TestCase):
         def verus(self,kind,entry=None,obligation=None):return self.record(obligation or kind,'OPEN','SIMULATED missing proof')
         with patch.object(check.Checks,'cargo',cargo),patch.object(check.Checks,'verus',verus):
             report=check.evaluate(self.workspace,output=self.directory/'suite',timeout=20)
-        self.assertEqual([s for s,p in observed],[1,2,3,4,5])
+        self.assertEqual([s for s,p in observed],[s for s in range(1,6) for _ in check.FAMILIES])
+        self.assertTrue(set(check.OBLIGATIONS).issubset(report['required']))
+        self.assertIn('foundation', report['required'])
+        self.assertIn('safety', report['required'])
         self.assertEqual(len({p for s,p in observed}),1)
         self.assertEqual(report['status'],'INCOMPLETE')
+
+    def test_safety_never_calls_cargo(self):
+        def verus(self, kind, entry=None, obligation=None):
+            return self.record(obligation or kind, 'OPEN', 'SIMULATED')
+        with patch.object(check.Checks, 'cargo', side_effect=AssertionError('Cargo must not run')), patch.object(check.Checks,'verus',verus):
+            report = check.evaluate(self.workspace, output=self.directory/'formal-only', mode='safety', timeout=10)
+        self.assertTrue(set(check.OBLIGATIONS).issubset(report['required']))
+
+    def test_hung_test_cannot_consume_proof_reservation(self):
+        clock = [0.0]
+        calls = []
+        def tool(argv, cwd, **kwargs):
+            calls.append((argv, kwargs['timeout']))
+            if '--no-run' in argv: return simulated_output()
+            if '--list' in argv:
+                return simulated_output('\n'.join(n+': test' for n in check.required_tests(ROOT)))
+            if 'test' in argv:
+                clock[0] += kwargs['timeout']
+                return simulated_output('', None, 'TIMEOUT')
+            return simulated_output('verification results:: 1 verified, 0 errors')
+        with patch.object(check.time, 'monotonic', side_effect=lambda:clock[0]), patch.object(check,'run_process',side_effect=tool):
+            report = check.evaluate(self.workspace, output=self.directory/'hung-test', timeout=10, mode='feedback')
+        test = next(v for k,v in report['checks'].items() if k.startswith('tests_seed'))
+        self.assertEqual(test['reason'],'test_timeout')
+        self.assertEqual(report['checks']['foundation']['status'],'PASS')
+        self.assertTrue(any('--no-cheating' in argv and seconds >= 6 for argv,seconds in calls))
+
+    def test_shared_errors_are_grouped_by_function_and_location(self):
+        c = self.checker()
+        path=c.snapshot/'madraft/src/toy.rs'
+        path.write_text('proof fn failing_dependency() {\n    assert(false);\n}\n')
+        raw=f'error: assertion failed\n  --> {path}:2:5\n'
+        errors=check.error_locations(raw,c.snapshot,'election_safety')
+        self.assertEqual(errors[0]['function'],'failing_dependency')
+        items={n:dict(status='OPEN',reason='verification_failure',errors=errors,log=n+'.log') for n in check.SAFETY}
+        groups=check.group_diagnostics(items)
+        self.assertEqual(len(groups),1)
+        self.assertEqual(groups[0]['affected'],list(check.SAFETY))
+        self.assertEqual(len(groups[0]['logs']),5)
+
+    def test_unavailable_verifier_is_reported_once_with_unrun_dependents(self):
+        c=self.checker()
+        with patch.object(check,'run_process',return_value=simulated_output('SIMULATED missing verifier',None,'BLOCKED')) as process:
+            c.verus('foundation')
+            result=c.verus('definitions')
+        self.assertEqual(process.call_count,1)
+        self.assertEqual(result['status'],'BLOCKED')
+        self.assertEqual(result['category'],'not_run')
+        self.assertEqual(result['dependency'],'foundation')
+
+    def test_shared_dependency_compile_failure_is_not_rerun_or_passed(self):
+        c=self.checker()
+        entry=c.snapshot/'madraft/proof/implementation.rs'
+        entry.write_text('pub fn bad() { unknown(); }')
+        raw=f'error[E0425]: cannot find function unknown\n  --> {entry}:1:16\n'
+        with patch.object(check,'run_process',return_value=simulated_output(raw,1)) as process:
+            c.verus('top',obligation='election_safety')
+            item=c.verus('top',obligation='log_matching')
+        self.assertEqual(process.call_count,1)
+        self.assertEqual(item['status'],'OPEN')
+        self.assertEqual(item['dependency'],'election_safety')
 
     def test_edit_during_checks_invalidates_results(self):
         c=self.checker();c.record('SIMULATED','PASS','SIMULATED')
@@ -112,18 +182,20 @@ class CheckerTests(unittest.TestCase):
 
     def test_top_caller_uses_the_copied_fixed_requirements(self):
         c = self.checker()
+        (c.snapshot/'madraft/proof/implementation.rs').write_text('// SIMULATED candidate interface')
         with patch.object(check, 'run_process', return_value=simulated_output('verification results:: 1 verified, 0 errors')):
             c.verus('top', obligation='election_safety')
         caller = (c.output / 'election_safety-caller.rs').read_text()
         self.assertIn(str(c.snapshot / 'requirements/targets.rs'), caller)
         self.assertNotIn(str(ROOT / 'requirements/targets.rs'), caller)
 
-    def test_safety_cli_includes_full_tests_and_proof_acceptance(self):
+    def test_safety_cli_requests_formal_only(self):
         with patch.object(sys, 'argv', ['check.py', 'safety', '--json']), \
              patch.object(check, 'evaluate', return_value={'status': 'INCOMPLETE'}) as evaluate, \
              contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(check.main(), 1)
         evaluate.assert_called_once()
+        self.assertEqual(evaluate.call_args.kwargs['mode'], 'safety')
 
     def test_single_caller_keeps_fixed_target_and_no_function_filter(self):
         path=self.workspace/'madraft/proof/implementation.rs'
@@ -134,6 +206,7 @@ class CheckerTests(unittest.TestCase):
         full=check.caller_text(ROOT,path)
         for goal in check.OBLIGATIONS:self.assertIn('// obligation: '+goal,full)
         c=self.checker()
+        (c.snapshot/'madraft/proof/implementation.rs').write_text('// SIMULATED candidate interface')
         with patch.object(check,'run_process',return_value=simulated_output('verification results:: 1 verified, 0 errors')) as run:
             c.verus('top',obligation='election_safety')
         argv=run.call_args.args[0]

@@ -1,0 +1,663 @@
+{
+  "status": "INCOMPLETE",
+  "mode": "safety",
+  "input_version": "madraft-joint-proof-3",
+  "candidate_revision": "standalone",
+  "workspace": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02",
+  "checker_authority": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02",
+  "snapshot": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate",
+  "source_files": [
+    "Cargo.lock",
+    "Cargo.toml",
+    "LICENSE",
+    "README.md",
+    "proof/README.md",
+    "proof/implementation.rs",
+    "proof/progress.rs",
+    "proof/segments.rs",
+    "src/kvraft/client.rs",
+    "src/kvraft/mod.rs",
+    "src/kvraft/msg.rs",
+    "src/kvraft/server.rs",
+    "src/kvraft/tester.rs",
+    "src/kvraft/tests.rs",
+    "src/lib.rs",
+    "src/raft/election.rs",
+    "src/raft/log.rs",
+    "src/raft/mod.rs",
+    "src/raft/quorum.rs",
+    "src/raft/raft.rs",
+    "src/raft/state.rs",
+    "src/raft/tester.rs",
+    "src/raft/tests.rs",
+    "src/shard_ctrler/client.rs",
+    "src/shard_ctrler/mod.rs",
+    "src/shard_ctrler/msg.rs",
+    "src/shard_ctrler/server.rs",
+    "src/shard_ctrler/tester.rs",
+    "src/shard_ctrler/tests.rs",
+    "src/shardkv/client.rs",
+    "src/shardkv/mod.rs",
+    "src/shardkv/msg.rs",
+    "src/shardkv/server.rs",
+    "src/shardkv/tester.rs",
+    "src/shardkv/tests.rs",
+    "src/test_support.rs"
+  ],
+  "checks": {
+    "foundation": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-3",
+      "candidate_revision": "standalone",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate/requirements/support_example.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/foundation.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 1.3168998070032103,
+      "seed": null,
+      "diagnostic": "verification results:: 7 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "definitions": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-3",
+      "candidate_revision": "standalone",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate/requirements/target_checks.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/definitions.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 1.3948084020012175,
+      "seed": null,
+      "diagnostic": "verification results:: 9 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "execution_link": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-3",
+      "candidate_revision": "standalone",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/execution_link-caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/execution_link.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 2.7779245830024593,
+      "seed": null,
+      "diagnostic": "warning: field `node` has inconsistent type or visibility in different variants\n         ->node syntax will not be available for this field\n         use #[allow(inconsistent_fields)] on the struct to silence the warnign\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate/madraft/proof/segments.rs:8:1\n   |\n 8 | / pub enum Input {\n 9 | |     SelfElect,\n10 | |     Propose { entry: Entry },\n11 | |     Insert { at: nat, entry: Entry },\n...  |\n19 | |     Deliver { delivery: Delivery<Message>, last_term: u64, last_index: u64 },\n20 | | }\n   | |_^\n\nwarning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate/madraft/proof/../src/raft/log.rs:10:10\n   |\n10 | #[derive(Clone, Debug)]\n   |          ^^^^^\n\nwarning: 2 warnings emitted\n\nverification results:: 43 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "election_safety": {
+      "status": "OPEN",
+      "reason": "compilation_error",
+      "input_version": "madraft-joint-proof-3",
+      "candidate_revision": "standalone",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/election_safety-caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/election_safety.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 0.3474432910006726,
+      "seed": null,
+      "diagnostic": "warning: field `node` has inconsistent type or visibility in different variants\n         ->node syntax will not be available for this field\n         use #[allow(inconsistent_fields)] on the struct to silence the warnign\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate/madraft/proof/segments.rs:8:1\n   |\n 8 | / pub enum Input {\n 9 | |     SelfElect,\n10 | |     Propose { entry: Entry },\n11 | |     Insert { at: nat, entry: Entry },\n...  |\n19 | |     Deliver { delivery: Delivery<Message>, last_term: u64, last_index: u64 },\n20 | | }\n   | |_^\n\nerror[E0425]: cannot find function `prove_election_safety` in module `c`\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/election_safety-caller.rs:21:6\n   |\n21 | { c::prove_election_safety(run); }\n   |      ^^^^^^^^^^^^^^^^^^^^^ not found in `c`\n\nerror: aborting due to 1 previous error; 1 warning emitted\n\nFor more information about this error, try `rustc --explain E0425`.\n",
+      "errors": [
+        {
+          "file": "election_safety-caller.rs",
+          "function": "election_safety",
+          "line": 21,
+          "column": 6,
+          "message": "cannot find function `prove_election_safety` in module `c`",
+          "category": "target_failure"
+        }
+      ],
+      "category": "dependency_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "leader_append_only": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-3",
+      "candidate_revision": "standalone",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/leader_append_only-caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/leader_append_only.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 2.646067857000162,
+      "seed": null,
+      "diagnostic": "warning: field `node` has inconsistent type or visibility in different variants\n         ->node syntax will not be available for this field\n         use #[allow(inconsistent_fields)] on the struct to silence the warnign\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate/madraft/proof/segments.rs:8:1\n   |\n 8 | / pub enum Input {\n 9 | |     SelfElect,\n10 | |     Propose { entry: Entry },\n11 | |     Insert { at: nat, entry: Entry },\n...  |\n19 | |     Deliver { delivery: Delivery<Message>, last_term: u64, last_index: u64 },\n20 | | }\n   | |_^\n\nwarning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate/madraft/proof/../src/raft/log.rs:10:10\n   |\n10 | #[derive(Clone, Debug)]\n   |          ^^^^^\n\nwarning: 2 warnings emitted\n\nverification results:: 43 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "log_matching": {
+      "status": "OPEN",
+      "reason": "compilation_error",
+      "input_version": "madraft-joint-proof-3",
+      "candidate_revision": "standalone",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/log_matching-caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/log_matching.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 0.4236069290054729,
+      "seed": null,
+      "diagnostic": "warning: field `node` has inconsistent type or visibility in different variants\n         ->node syntax will not be available for this field\n         use #[allow(inconsistent_fields)] on the struct to silence the warnign\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate/madraft/proof/segments.rs:8:1\n   |\n 8 | / pub enum Input {\n 9 | |     SelfElect,\n10 | |     Propose { entry: Entry },\n11 | |     Insert { at: nat, entry: Entry },\n...  |\n19 | |     Deliver { delivery: Delivery<Message>, last_term: u64, last_index: u64 },\n20 | | }\n   | |_^\n\nerror[E0425]: cannot find function `prove_log_matching` in module `c`\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/log_matching-caller.rs:21:6\n   |\n21 | { c::prove_log_matching(run); }\n   |      ^^^^^^^^^^^^^^^^^^ not found in `c`\n\nerror: aborting due to 1 previous error; 1 warning emitted\n\nFor more information about this error, try `rustc --explain E0425`.\n",
+      "errors": [
+        {
+          "file": "log_matching-caller.rs",
+          "function": "log_matching",
+          "line": 21,
+          "column": 6,
+          "message": "cannot find function `prove_log_matching` in module `c`",
+          "category": "target_failure"
+        }
+      ],
+      "category": "dependency_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "leader_completeness": {
+      "status": "OPEN",
+      "reason": "compilation_error",
+      "input_version": "madraft-joint-proof-3",
+      "candidate_revision": "standalone",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/leader_completeness-caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/leader_completeness.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 0.47767548699630424,
+      "seed": null,
+      "diagnostic": "warning: field `node` has inconsistent type or visibility in different variants\n         ->node syntax will not be available for this field\n         use #[allow(inconsistent_fields)] on the struct to silence the warnign\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate/madraft/proof/segments.rs:8:1\n   |\n 8 | / pub enum Input {\n 9 | |     SelfElect,\n10 | |     Propose { entry: Entry },\n11 | |     Insert { at: nat, entry: Entry },\n...  |\n19 | |     Deliver { delivery: Delivery<Message>, last_term: u64, last_index: u64 },\n20 | | }\n   | |_^\n\nerror[E0425]: cannot find function `prove_leader_completeness` in module `c`\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/leader_completeness-caller.rs:21:6\n   |\n21 | { c::prove_leader_completeness(run); }\n   |      ^^^^^^^^^^^^^^^^^^^^^^^^^ not found in `c`\n\nerror: aborting due to 1 previous error; 1 warning emitted\n\nFor more information about this error, try `rustc --explain E0425`.\n",
+      "errors": [
+        {
+          "file": "leader_completeness-caller.rs",
+          "function": "leader_completeness",
+          "line": 21,
+          "column": 6,
+          "message": "cannot find function `prove_leader_completeness` in module `c`",
+          "category": "target_failure"
+        }
+      ],
+      "category": "dependency_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "state_machine_safety": {
+      "status": "OPEN",
+      "reason": "compilation_error",
+      "input_version": "madraft-joint-proof-3",
+      "candidate_revision": "standalone",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/state_machine_safety-caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/state_machine_safety.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 0.3981860839994624,
+      "seed": null,
+      "diagnostic": "warning: field `node` has inconsistent type or visibility in different variants\n         ->node syntax will not be available for this field\n         use #[allow(inconsistent_fields)] on the struct to silence the warnign\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate/madraft/proof/segments.rs:8:1\n   |\n 8 | / pub enum Input {\n 9 | |     SelfElect,\n10 | |     Propose { entry: Entry },\n11 | |     Insert { at: nat, entry: Entry },\n...  |\n19 | |     Deliver { delivery: Delivery<Message>, last_term: u64, last_index: u64 },\n20 | | }\n   | |_^\n\nerror[E0425]: cannot find function `prove_state_machine_safety` in module `c`\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/state_machine_safety-caller.rs:21:6\n   |\n21 | { c::prove_state_machine_safety(run); }\n   |      ^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in `c`\n\nerror: aborting due to 1 previous error; 1 warning emitted\n\nFor more information about this error, try `rustc --explain E0425`.\n",
+      "errors": [
+        {
+          "file": "state_machine_safety-caller.rs",
+          "function": "state_machine_safety",
+          "line": 21,
+          "column": 6,
+          "message": "cannot find function `prove_state_machine_safety` in module `c`",
+          "category": "target_failure"
+        }
+      ],
+      "category": "dependency_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "snapshot_observation": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-3",
+      "candidate_revision": "standalone",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/snapshot_observation-caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/snapshot_observation.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 3.231824566006253,
+      "seed": null,
+      "diagnostic": "warning: field `node` has inconsistent type or visibility in different variants\n         ->node syntax will not be available for this field\n         use #[allow(inconsistent_fields)] on the struct to silence the warnign\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate/madraft/proof/segments.rs:8:1\n   |\n 8 | / pub enum Input {\n 9 | |     SelfElect,\n10 | |     Propose { entry: Entry },\n11 | |     Insert { at: nat, entry: Entry },\n...  |\n19 | |     Deliver { delivery: Delivery<Message>, last_term: u64, last_index: u64 },\n20 | | }\n   | |_^\n\nwarning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate/madraft/proof/../src/raft/log.rs:10:10\n   |\n10 | #[derive(Clone, Debug)]\n   |          ^^^^^\n\nwarning: 2 warnings emitted\n\nverification results:: 43 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "nonempty_execution": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-3",
+      "candidate_revision": "standalone",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/nonempty_execution-caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/nonempty_execution.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 3.1609257430027355,
+      "seed": null,
+      "diagnostic": "warning: field `node` has inconsistent type or visibility in different variants\n         ->node syntax will not be available for this field\n         use #[allow(inconsistent_fields)] on the struct to silence the warnign\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate/madraft/proof/segments.rs:8:1\n   |\n 8 | / pub enum Input {\n 9 | |     SelfElect,\n10 | |     Propose { entry: Entry },\n11 | |     Insert { at: nat, entry: Entry },\n...  |\n19 | |     Deliver { delivery: Delivery<Message>, last_term: u64, last_index: u64 },\n20 | | }\n   | |_^\n\nwarning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate/madraft/proof/../src/raft/log.rs:10:10\n   |\n10 | #[derive(Clone, Debug)]\n   |          ^^^^^\n\nwarning: 2 warnings emitted\n\nverification results:: 43 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "linkage_review": {
+      "status": "PASS",
+      "reason": "limited_source_checks_only",
+      "input_version": "madraft-joint-proof-3",
+      "candidate_revision": "standalone",
+      "command": [],
+      "log": null,
+      "scope": "linkage_review",
+      "linked_executable_files": [
+        "madraft/src/raft/election.rs",
+        "madraft/src/raft/log.rs",
+        "madraft/src/raft/quorum.rs"
+      ],
+      "external_paths": [],
+      "findings": [],
+      "semantic_boundary": "Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN."
+    },
+    "safety": {
+      "status": "OPEN",
+      "reason": "compilation_error",
+      "input_version": "madraft-joint-proof-3",
+      "candidate_revision": "standalone",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/safety-caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/safety.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 0.38628784300090047,
+      "seed": null,
+      "diagnostic": "warning: field `node` has inconsistent type or visibility in different variants\n         ->node syntax will not be available for this field\n         use #[allow(inconsistent_fields)] on the struct to silence the warnign\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate/madraft/proof/segments.rs:8:1\n   |\n 8 | / pub enum Input {\n 9 | |     SelfElect,\n10 | |     Propose { entry: Entry },\n11 | |     Insert { at: nat, entry: Entry },\n...  |\n19 | |     Deliver { delivery: Delivery<Message>, last_term: u64, last_index: u64 },\n20 | | }\n   | |_^\n\nerror[E0425]: cannot find function `prove_election_safety` in module `c`\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/safety-caller.rs:29:6\n   |\n29 | { c::prove_election_safety(run); }\n   |      ^^^^^^^^^^^^^^^^^^^^^ not found in `c`\n\nerror[E0425]: cannot find function `prove_log_matching` in module `c`\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/safety-caller.rs:41:6\n   |\n41 | { c::prove_log_matching(run); }\n   |      ^^^^^^^^^^^^^^^^^^ not found in `c`\n\nerror[E0425]: cannot find function `prove_leader_completeness` in module `c`\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/safety-caller.rs:47:6\n   |\n47 | { c::prove_leader_completeness(run); }\n   |      ^^^^^^^^^^^^^^^^^^^^^^^^^ not found in `c`\n\nerror[E0425]: cannot find function `prove_state_machine_safety` in module `c`\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/safety-caller.rs:53:6\n   |\n53 | { c::prove_state_machine_safety(run); }\n   |      ^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in `c`\n\nerror: aborting due to 4 previous errors; 1 warning emitted\n\nFor more information about this error, try `rustc --explain E0425`.\n",
+      "errors": [
+        {
+          "file": "safety-caller.rs",
+          "function": "election_safety",
+          "line": 29,
+          "column": 6,
+          "message": "cannot find function `prove_election_safety` in module `c`",
+          "category": "target_failure"
+        },
+        {
+          "file": "safety-caller.rs",
+          "function": "log_matching",
+          "line": 41,
+          "column": 6,
+          "message": "cannot find function `prove_log_matching` in module `c`",
+          "category": "target_failure"
+        },
+        {
+          "file": "safety-caller.rs",
+          "function": "leader_completeness",
+          "line": 47,
+          "column": 6,
+          "message": "cannot find function `prove_leader_completeness` in module `c`",
+          "category": "target_failure"
+        },
+        {
+          "file": "safety-caller.rs",
+          "function": "state_machine_safety",
+          "line": 53,
+          "column": 6,
+          "message": "cannot find function `prove_state_machine_safety` in module `c`",
+          "category": "target_failure"
+        }
+      ],
+      "category": "dependency_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "proof": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-3",
+      "candidate_revision": "standalone",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate/madraft/proof/progress.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/proof.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 1.7881898190025822,
+      "seed": null,
+      "diagnostic": "warning: field `node` has inconsistent type or visibility in different variants\n         ->node syntax will not be available for this field\n         use #[allow(inconsistent_fields)] on the struct to silence the warnign\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate/madraft/proof/segments.rs:8:1\n   |\n 8 | / pub enum Input {\n 9 | |     SelfElect,\n10 | |     Propose { entry: Entry },\n11 | |     Insert { at: nat, entry: Entry },\n...  |\n19 | |     Deliver { delivery: Delivery<Message>, last_term: u64, last_index: u64 },\n20 | | }\n   | |_^\n\nwarning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/candidate/madraft/proof/../src/raft/log.rs:10:10\n   |\n10 | #[derive(Clone, Debug)]\n   |          ^^^^^\n\nwarning: 2 warnings emitted\n\nverification results:: 32 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    }
+  },
+  "required": [
+    "foundation",
+    "definitions",
+    "execution_link",
+    "election_safety",
+    "leader_append_only",
+    "log_matching",
+    "leader_completeness",
+    "state_machine_safety",
+    "snapshot_observation",
+    "nonempty_execution",
+    "linkage_review",
+    "safety"
+  ],
+  "diagnostics": [
+    {
+      "file": "election_safety-caller.rs",
+      "function": "election_safety",
+      "line": 21,
+      "column": 6,
+      "message": "cannot find function `prove_election_safety` in module `c`",
+      "category": "target_failure",
+      "affected": [
+        "election_safety"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/election_safety.log"
+      ]
+    },
+    {
+      "file": "log_matching-caller.rs",
+      "function": "log_matching",
+      "line": 21,
+      "column": 6,
+      "message": "cannot find function `prove_log_matching` in module `c`",
+      "category": "target_failure",
+      "affected": [
+        "log_matching"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/log_matching.log"
+      ]
+    },
+    {
+      "file": "leader_completeness-caller.rs",
+      "function": "leader_completeness",
+      "line": 21,
+      "column": 6,
+      "message": "cannot find function `prove_leader_completeness` in module `c`",
+      "category": "target_failure",
+      "affected": [
+        "leader_completeness"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/leader_completeness.log"
+      ]
+    },
+    {
+      "file": "state_machine_safety-caller.rs",
+      "function": "state_machine_safety",
+      "line": 21,
+      "column": 6,
+      "message": "cannot find function `prove_state_machine_safety` in module `c`",
+      "category": "target_failure",
+      "affected": [
+        "state_machine_safety"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/state_machine_safety.log"
+      ]
+    },
+    {
+      "file": "safety-caller.rs",
+      "function": "election_safety",
+      "line": 29,
+      "column": 6,
+      "message": "cannot find function `prove_election_safety` in module `c`",
+      "category": "target_failure",
+      "affected": [
+        "safety"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/safety.log"
+      ]
+    },
+    {
+      "file": "safety-caller.rs",
+      "function": "log_matching",
+      "line": 41,
+      "column": 6,
+      "message": "cannot find function `prove_log_matching` in module `c`",
+      "category": "target_failure",
+      "affected": [
+        "safety"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/safety.log"
+      ]
+    },
+    {
+      "file": "safety-caller.rs",
+      "function": "leader_completeness",
+      "line": 47,
+      "column": 6,
+      "message": "cannot find function `prove_leader_completeness` in module `c`",
+      "category": "target_failure",
+      "affected": [
+        "safety"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/safety.log"
+      ]
+    },
+    {
+      "file": "safety-caller.rs",
+      "function": "state_machine_safety",
+      "line": 53,
+      "column": 6,
+      "message": "cannot find function `prove_state_machine_safety` in module `c`",
+      "category": "target_failure",
+      "affected": [
+        "safety"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270561210875663/safety.log"
+      ]
+    }
+  ],
+  "changed_standards": [],
+  "concurrent_changes": [],
+  "liveness": "OPEN \u2014 not accepted by safety checks",
+  "semantic_boundary": "Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN."
+}

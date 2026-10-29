@@ -1,0 +1,46 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793271501405599037/snapshot_observation-caller.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 61 verified, 1 errors
+warning: field `node` has inconsistent type or visibility in different variants
+         ->node syntax will not be available for this field
+         use #[allow(inconsistent_fields)] on the struct to silence the warnign
+  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793271501405599037/candidate/madraft/proof/segments.rs:8:1
+   |
+ 8 | / pub enum Input {
+ 9 | |     SelfElect,
+10 | |     Propose { entry: Entry },
+11 | |     Insert { at: nat, entry: Entry },
+...  |
+19 | |     Deliver { delivery: Delivery<Message>, last_term: u64, last_index: u64 },
+20 | | }
+   | |_^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793271501405599037/candidate/madraft/proof/../src/raft/log.rs:10:10
+   |
+10 | #[derive(Clone, Debug)]
+   |          ^^^^^
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793271501405599037/candidate/madraft/proof/implementation.rs:359:1
+    |
+359 | pub proof fn histories_between(h:crate::Execution,a:int,b:int)
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: assertion failed
+   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793271501405599037/candidate/madraft/proof/implementation.rs:368:74
+    |
+368 |           assert forall|k:targets::Key|h.states[a].contains_key(k) implies h.states[b].contains_key(k)
+    |  __________________________________________________________________________^
+369 | |             && vote_history::extends(h.states[a][k].history,h.states[b][k].history) by {
+    | |___________________________________________________________________________________^ assertion failed
+
+error: assertion failed
+   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793271501405599037/candidate/madraft/proof/implementation.rs:374:24
+    |
+374 |                 assert(h.states[b-1][k].history.contains_key(term));
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed
+
+error: aborting due to 2 previous errors; 2 warnings emitted
+
+
+process=COMPLETED exit=1

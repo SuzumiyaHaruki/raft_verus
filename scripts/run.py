@@ -3,6 +3,7 @@
 import argparse
 import configparser
 import difflib
+from datetime import datetime, timezone
 import fcntl
 import json
 import math
@@ -15,13 +16,13 @@ import sys
 import time
 import uuid
 
-from check import OBLIGATIONS, SEMANTIC_BOUNDARY, configured_seeds, evaluate
+from check import OBLIGATIONS, SEMANTIC_BOUNDARY, configured_seeds, evaluate, group_diagnostics
 from inputs import INPUT_VERSION, copy_files, differences, files_under, git_revision, input_files, save_json
 from process import run_process
 from tools import ROOT, environment, settings
 
 PROMPTS = ('start', 'continue', 'redesign')
-FORMAT = 'madraft-generate-check-2'
+FORMAT = 'madraft-generate-check-3'
 
 
 def command(state, workspace, output):
@@ -67,7 +68,7 @@ def prepare(root, workspace, state):
                  workspace=str(workspace), source_root=str(root), git_revision=git_revision(root),
                  input_files=names, system_files=system, original_tools=raw_tools,
                  created_at=time.time(), history=[], in_flight=None, tools=None,
-                 status='INCOMPLETE', reason='created', stale_rounds=0, redesigns=0)
+                 status='INCOMPLETE', reason='created', stale_rounds=0, redesigns=0, proof_gaps={})
     save_json(control / 'state.json', state)
     return control
 
@@ -141,43 +142,81 @@ def session_id(log, previous=None):
 
 
 def feedback(authority, state, report, mode, workspace, seconds):
+    soft = max(0, seconds - state['handoff_seconds'])
+    deadline = datetime.fromtimestamp(time.time() + soft, timezone.utc).isoformat(timespec='seconds')
     parts = [(authority / f'scripts/prompts/{mode}.md').read_text().strip(),
-             f'Workspace: {workspace}. Work slice: at most {seconds:.1f} seconds. '
+             f'Workspace: {workspace}. Soft handoff deadline: {deadline} ({soft:.1f} seconds from now). '
+             f'Save code and PROGRESS.md, then return normally by this deadline. '
+             f'The hard watchdog is {seconds:.1f} seconds; it is a last resort, not a planned handoff. '
+             'There is no CLI pause signal. Stop starting long checks near handoff.',
              f'Cumulative budget remaining: {state["total_seconds"] - state["seconds_spent"]:.1f} seconds. '
              f'Round: {state["attempts"] + 1}/{state["max_rounds"]}.',
-             'All diagnostics below belong to this experiment. Snapshot paths identify the stopped candidate; edit this workspace\'s madraft/ files.']
+             'Diagnostics refer to the stopped candidate. Edit this workspace’s madraft/ files, not check snapshots.']
     if report:
         parts.append('Independent candidate revision: ' + report['candidate_revision'])
-        for name, item in report['checks'].items():
-            parts.append(f'{name}: {item["status"]} — {item["reason"]}')
-            if item.get('command'):
-                parts.append('Actual command: ' + shlex.join(item['command']))
-            if item.get('log'):
-                parts.append('Raw diagnostic: ' + item['log'])
-            if item['status'] != 'PASS':
-                parts.append(item.get('diagnostic', '')[-1800:])
-                if item.get('uncovered_tests'):
-                    parts.append('Uncovered required tests: ' + ', '.join(item['uncovered_tests']))
-        parts.append('Reproduce on current files: python3 scripts/check.py final --timeout 300')
+        parts.append('Actual check outcomes:\n' + '\n'.join(
+            f'{name}: {item["status"]} — {item["reason"]}' for name, item in report['checks'].items()))
+        for group in report.get('diagnostics', group_diagnostics(report['checks'])):
+            parts.append('Affected: ' + ', '.join(group['affected']) + '\n' +
+                         json.dumps({k:v for k,v in group.items() if k not in ('affected', 'logs')}, ensure_ascii=False) +
+                         '\nRaw logs: ' + ', '.join(group['logs']))
+        gaps = [(n, g) for n, g in state.get('proof_gaps', {}).items() if g['repeats'] and g.get('active', True)]
+        if gaps:
+            parts.append('Critical proof gaps (functional test progress does not reset these):\n' +
+                         '\n'.join(f'{n}: unchanged for {g["repeats"]} checked rounds' for n,g in gaps))
+        parts.append('Next: select an unresolved top-level goal and its first open dependency; record the chosen next action in PROGRESS.md. '
+                     'Use python3 scripts/check.py top NAME for an isolated unit, feedback for bounded mixed checks, or safety for formal composition. '
+                     'Exact commands, raw errors and uncovered test names are in the independent results.json. Final requires all test families/seeds on one stopped candidate.')
         parts.append(SEMANTIC_BOUNDARY)
-    for record in state['history'][-3:]:
+    for record in state['history'][-2:]:
         parts.append(f'Previous round {record["round"]}: {record["process"]}; independent result {record["check_status"]}.')
-        parts.append('Candidate-reported approach/dependencies (UNVERIFIED, not verifier conclusions):\n' + record.get('progress', '')[-5000:])
-    return '\n\n'.join(p for p in parts if p) + '\n'
+        parts.append('Candidate-reported approach/dependencies (UNVERIFIED):\n' + record.get('progress', '')[-3000:])
+    return '\n\n'.join(parts) + '\n'
 
 
 def unresolved(report):
-    """Compare actual gaps, ignoring changing snapshot paths and local counts."""
-    result = []
-    for name, item in (report or {}).get('checks', {}).items():
-        if name == 'proof':
+    """Proof dependencies only; test totals and local verified counts are irrelevant."""
+    result, dependencies = [], {}
+    for name in (*OBLIGATIONS, 'safety'):
+        item = (report or {}).get('checks', {}).get(name)
+        if not item:
             continue
-        diagnostic = item.get('diagnostic', '') if item['status'] != 'PASS' else ''
+        errors = item.get('errors', [])
+        # Location is shown in feedback, but moving a function is not proof progress.
+        diagnostic = [{k:v for k,v in e.items() if k not in ('line', 'column')} for e in errors] or item.get('diagnostic', '')
+        diagnostic = json.dumps(diagnostic, sort_keys=True)
         for path in (report.get('snapshot'), str(Path(item['log']).parent) if item.get('log') else None):
             if path:
                 diagnostic = diagnostic.replace(path, '<check>')
-        result.append((name, item['status'], item['reason'], item.get('passed_tests', []), diagnostic))
+        result.append((name, item['status'], item['reason'], diagnostic if item['status'] != 'PASS' else ''))
+        for error in errors:
+            if error.get('category') == 'dependency_failure' and error.get('function'):
+                key = 'dependency:' + error['file'] + '::' + error['function']
+                dependencies.setdefault(key, set()).add(error['message'])
+    result.extend((key, 'OPEN', 'dependency_failure', '\n'.join(sorted(messages)))
+                  for key, messages in sorted(dependencies.items()))
     return result
+
+
+def track_proofs(state, report, advance=True):
+    gaps = state.setdefault('proof_gaps', {})
+    for gap in gaps.values():
+        gap['active'] = False
+    for name, status, reason, diagnostic in unresolved(report):
+        signature = [status, reason, diagnostic]
+        old = gaps.get(name, {})
+        not_run = reason in ('check_budget_exhausted', 'not_run_in_feedback')
+        gaps[name] = dict(signature=signature, active=True,
+            repeats=(old.get('repeats', 0) + int(advance) if old.get('signature') == signature else 0)
+                if status != 'PASS' and not not_run else 0,
+            missed=old.get('missed', 0) + int(advance) if not_run else 0)
+    state['stale_rounds'] = max((g['repeats'] for g in gaps.values() if g['active']), default=0)
+
+
+def round_allowance(state):
+    left = state['total_seconds'] - state['seconds_spent']
+    hard = min(state['slice_seconds'], left - state['check_seconds'] - state['final_seconds'])
+    return hard if hard >= state['min_work_seconds'] + state['handoff_seconds'] else 0
 
 
 class Loop:
@@ -216,12 +255,14 @@ class Loop:
             state['in_flight'] = None
             self.save()
 
-    def inspect(self, initial=False):
+    def inspect(self, initial=False, final=False):
         tag = f'check-{self.state["attempts"]}-{time.time_ns()}'
-        report = self.charge('check', self.state['check_seconds'], lambda seconds, started:
+        limit = self.state['final_seconds'] if final else min(self.state['check_seconds'],
+            max(0, self.state['total_seconds'] - self.state['seconds_spent'] - self.state['final_seconds']))
+        report = self.charge('final' if final else 'check', limit, lambda seconds, started:
             evaluate(self.workspace, authority=self.authority, tool_root=self.root,
                      output=self.control / tag, timeout=seconds, seeds=self.state['seeds'],
-                     revision=tag, initial=initial))
+                     revision=tag, initial=initial, mode='final' if final else 'feedback'))
         if report:
             self.state['last_check'] = str(self.control / tag / 'results.json')
             visible = self.workspace / 'runs' / tag
@@ -292,22 +333,37 @@ class Loop:
         self.save()
         # Resume always refreshes checks; no historical PASS is reusable after edits.
         report = self.inspect(initial=state['attempts'] == 0)
+        if report:
+            track_proofs(state, report, advance=False)
+        reason = 'Insufficient budget for useful work, feedback and final checks, or maximum rounds reached'
         while report:
             if report['status'] in ('BLOCKED', 'NEEDS_REVIEW'):
                 return self.stop(report['status'], 'Independent check cannot proceed under the fixed inputs', report)
-            if report['status'] == 'MACHINE_CHECKS_PASSED':
+            if report['status'] == 'MACHINE_CHECKS_PASSED' and report.get('mode') == 'final':
                 return self.stop('MACHINE_CHECKS_PASSED', 'Complete independent checks passed on one stopped candidate', report)
-            left = state['total_seconds'] - state['seconds_spent']
-            if left <= 1 or state['attempts'] >= state['max_rounds']:
+            if report.get('mode') != 'final' and all(report['checks'].get(n, {}).get('status') == 'PASS' for n in (*OBLIGATIONS, 'safety', 'linkage_review')):
+                report = self.inspect(final=True) or report
+                if report and report['status'] == 'MACHINE_CHECKS_PASSED' and report.get('mode') == 'final':
+                    return self.stop('MACHINE_CHECKS_PASSED', 'Complete independent checks passed on one stopped candidate', report)
+            if report['status'] in ('BLOCKED', 'NEEDS_REVIEW'):
+                return self.stop(report['status'], 'Final check cannot proceed under the fixed inputs', report)
+            self.elapsed()
+            allowance = round_allowance(state)
+            if not allowance or state['attempts'] >= state['max_rounds']:
+                break
+            if any(g['active'] and g['missed'] >= state['stall_rounds'] for g in state.get('proof_gaps', {}).values()):
+                reason = 'Proof checks repeatedly not run: scheduling/budget issue; no model redesign inferred'
                 break
             mode = 'start' if state['attempts'] == 0 else 'continue'
             if state['stale_rounds'] >= state['stall_rounds']:
                 if state['redesigns'] >= state['max_redesigns']:
-                    return self.stop('INCOMPLETE', 'Stagnation persisted after the finite redesign budget', report)
+                    reason = 'Stagnation persisted after the finite redesign budget'
+                    break
                 mode = 'redesign'
                 state['redesigns'] += 1
                 state['stale_rounds'] = 0
-            allowance = min(state['slice_seconds'], left - min(state['check_seconds'], left / 3))
+                for gap in state['proof_gaps'].values():
+                    gap['repeats'] = 0
             prompt = feedback(self.authority, state, report, mode, self.workspace, allowance)
             state['attempts'] += 1
             number = state['attempts']
@@ -317,6 +373,7 @@ class Loop:
             before = {n: p.read_bytes() for n, p in files_under(self.workspace / 'madraft').items()}
             argv = command(state, self.workspace, directory / 'agent.md')
             record = dict(round=number, mode=mode, process='INTERRUPTED', exit=None,
+                          soft_seconds=allowance - state['handoff_seconds'], hard_seconds=allowance,
                           command=argv, changed_files=[], checks=None, check_status='INCOMPLETE',
                           progress='(Work slice interrupted before its outcome was saved)')
             state['history'].append(record)
@@ -333,6 +390,7 @@ class Loop:
             state['last_process'], state['last_exit'] = result.status, result.exit_code
             progress = self.workspace / 'PROGRESS.md'
             record.update(process=result.status, exit=result.exit_code,
+                          handoff='normal' if result.status == 'COMPLETED' and result.exit_code == 0 else 'hard_timeout' if result.status == 'TIMEOUT' else 'failed',
                           progress=progress.read_text() if progress.exists() else '(No candidate progress note)')
             self.save()
             after = files_under(self.workspace / 'madraft')
@@ -347,20 +405,23 @@ class Loop:
             self.save()
             if result.status == 'CANCELLED':
                 return self.stop('INCOMPLETE', 'Controller interrupted; candidate and charged budget retained')
-            prior = report
             report = self.inspect()
             record.update(checks=state.get('last_check') if report else None,
                           check_status=(report or {}).get('status', 'INCOMPLETE'))
-            if unresolved(report) == unresolved(prior):
-                state['stale_rounds'] += 1
-            else:
-                state['stale_rounds'] = 0
+            if report:
+                track_proofs(state, report)
             self.save()
             if result.status == 'BLOCKED' or (result.status == 'COMPLETED' and result.exit_code != 0) or not state['thread_id']:
                 return self.stop('BLOCKED', 'Agent execution/authentication failed or no session ID was produced', report)
             # TIMEOUT/LOG_LIMIT are bounded failed slices, not success. A captured
             # thread may continue with actual diagnostics while budgets permit.
-        return self.stop('INCOMPLETE', 'Cumulative time or maximum rounds exhausted', report)
+        # The final reserve belongs to checks of the current stopped candidate.
+        final_report = report if report and report.get('mode') == 'final' else self.inspect(final=True)
+        if final_report:
+            report = final_report
+        if report and report['status'] == 'MACHINE_CHECKS_PASSED' and report.get('mode') == 'final':
+            return self.stop('MACHINE_CHECKS_PASSED', 'Complete independent checks passed on one stopped candidate', report)
+        return self.stop((report or {}).get('status') if (report or {}).get('status') in ('BLOCKED', 'NEEDS_REVIEW') else 'INCOMPLETE', reason, report)
 
 
 def main():
@@ -386,7 +447,7 @@ def main():
         state = dict(thread_id=None, seconds_spent=0.0, attempts=0, model=args.model or a['model'],
                      effort=args.effort or a['reasoning_effort'], codex=args.codex or cfg['tools']['codex'],
                      seeds=configured_seeds(root))
-        for key in ('total_seconds', 'slice_seconds', 'check_seconds'):
+        for key in ('total_seconds', 'slice_seconds', 'check_seconds', 'final_seconds', 'min_work_seconds', 'handoff_seconds'):
             state[key] = float(a[key])
         for key in ('max_rounds', 'stall_rounds', 'max_redesigns', 'max_log_bytes'):
             state[key] = int(a[key])
@@ -403,14 +464,18 @@ def main():
     for key in ('total_seconds', 'max_rounds'):
         if getattr(args, key) is not None:
             state[key] = getattr(args, key)
-    for key in ('total_seconds', 'slice_seconds', 'check_seconds', 'max_rounds', 'stall_rounds', 'max_log_bytes'):
+    for key in ('total_seconds', 'slice_seconds', 'check_seconds', 'final_seconds', 'min_work_seconds', 'handoff_seconds', 'max_rounds', 'stall_rounds', 'max_log_bytes'):
         if not math.isfinite(state[key]) or state[key] <= 0:
             parser.error(key + ' must be finite and positive')
+    if state['slice_seconds'] < state['min_work_seconds'] + state['handoff_seconds']:
+        parser.error('slice_seconds must include minimum work and handoff grace')
     if state['max_redesigns'] < 0 or not state['model']:
         parser.error('Set an explicit model and nonnegative redesign budget')
     print(f'Workspace: {workspace}\nModel: {state["model"]}; effort: {state["effort"]}\n'
           f'Budget remaining: {state["total_seconds"] - state["seconds_spent"]:.1f}s; '
-          f'maximum total rounds: {state["max_rounds"]}; seeds: {state["seeds"]}', flush=True)
+          f'maximum total rounds: {state["max_rounds"]}; seeds: {state["seeds"]}\n'
+          f'Hard slice: {state["slice_seconds"]}s; handoff grace: {state["handoff_seconds"]}s; minimum work: {state["min_work_seconds"]}s; '
+          f'feedback: {state["check_seconds"]}s; final reserve: {state["final_seconds"]}s', flush=True)
     if not args.execute:
         print('PREVIEW: no candidate created, no tools or agent called. Add --execute to run the independent feedback loop.')
         return 0

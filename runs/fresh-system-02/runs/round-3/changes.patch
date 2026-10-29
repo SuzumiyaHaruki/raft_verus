@@ -1,0 +1,449 @@
+--- before/madraft/proof/implementation.rs
++++ after/madraft/proof/implementation.rs
+@@ -1,45 +1,197 @@
+-//! Increment 1: election decision segments only. This is NOT yet an adapter for
+-//! every asynchronous Raft execution. See PROGRESS.md for the open coverage.
++//! Partial cluster adapter. Async completion and crash coverage remain OPEN.
+ #[path = "../src/raft/election.rs"]
+ pub mod election;
++#[path = "../src/raft/log.rs"]
++pub mod log_core;
++#[path = "../src/raft/quorum.rs"]
++pub mod quorum;
+ #[path = "segments.rs"]
+ mod segments;
+-#[path = "../src/raft/log.rs"]
+-pub mod log_core;
+-pub use segments::{State, Input, Output, Message, initial, step, receive, emit};
+-use crate::support::*;
++use crate::{support::*, targets};
+ use vstd::prelude::*;
+ verus! {
+-pub type RuntimeState = log_core::Core;
++pub type Message = segments::Message;
++pub type Output = segments::Output;
++pub type State = Map<targets::Key,segments::State>;
++pub struct RuntimeNode { pub group:u64,pub node:usize,pub members:usize,pub votes:Seq<bool>,pub election:election::Election,
++    pub log:Seq<log_core::Entry>,pub commit:u64,pub applied:u64 }
++pub type RuntimeState = Map<targets::Key,RuntimeNode>;
++pub open spec fn core_state(c:log_core::Core) -> RuntimeNode {
++    RuntimeNode {group:c.group,node:c.node,members:c.members,votes:c.votes@,election:c.election,log:c.log@,commit:c.commit,applied:c.applied}
++}
++pub type RuntimeHistory = History<RuntimeState,Input,Output,Message>;
++pub open spec fn runtime_execution(h:RuntimeHistory) -> bool {
++    valid(h,|s|runtime_initial(s),|s,i,t,o|runtime_step(s,i,t,o),|i|receive(i),|o|emit(o))
++}
++pub open spec fn abstract_execution(h:RuntimeHistory) -> crate::Execution { project(h,|s|view(s)) }
++pub struct Input { pub who: targets::Key, pub action: segments::Input }
++pub open spec fn receive(i: Input) -> Option<Delivery<Message>> { segments::receive(i.action) }
++pub open spec fn emit(o: Output) -> Seq<Envelope<Message>> { o }
++pub open spec fn node_view(c: RuntimeNode) -> segments::State {
++    segments::State {group:c.group as nat,node:c.node as nat,members:c.members as nat,votes:c.votes,election:c.election,log:c.log,commit:c.commit,applied:c.applied}
++}
++pub open spec fn identified(k: targets::Key,s: segments::State) -> bool { k.group == s.group && k.node == s.node }
++pub open spec fn initial(s: State) -> bool {
++    s.dom().finite() && forall|k: targets::Key| s.contains_key(k) ==> identified(k,s[k]) && segments::initial(s[k])
++}
++pub open spec fn step(s: State,i: Input,t: State,o: Output) -> bool {
++    s.contains_key(i.who) && t.contains_key(i.who)
++    && t == s.insert(i.who,t[i.who])
++    && segments::step(s[i.who],i.action,t[i.who],o)
++}
++pub open spec fn view(s: RuntimeState) -> State {
++    Map::new(|k|s.contains_key(k),|k|node_view(s[k]))
++}
+ pub open spec fn runtime_initial(s: RuntimeState) -> bool { initial(view(s)) }
+-pub open spec fn runtime_step(s: RuntimeState,i: Input,t: RuntimeState,o: Output) -> bool { step(view(s),i,view(t),o) }
+-pub open spec fn view(s: RuntimeState) -> State { State {election:s.election, log:s.log@, commit:s.commit,applied:s.applied} }
+-// No global Raft invariant is claimed for this partial decision adapter.
+-pub open spec fn runtime_invariant(s: RuntimeState, sent: Seq<Envelope<Message>>) -> bool { s.election.term <= u64::MAX }
++pub open spec fn runtime_step(s: RuntimeState,i: Input,t: RuntimeState,o: Output) -> bool {
++    s.contains_key(i.who) && t.contains_key(i.who) && t == s.insert(i.who,t[i.who])
++    && segments::step(node_view(s[i.who]),i.action,node_view(t[i.who]),o)
++}
++pub open spec fn runtime_invariant(s: RuntimeState,sent: Seq<Envelope<Message>>) -> bool {
++    view(s).dom().finite() && forall|k:targets::Key| view(s).contains_key(k) ==>
++        identified(k,view(s)[k]) && segments::structure(view(s)[k])
++}
+ pub proof fn prove_runtime_initial(s: RuntimeState)
+-    requires runtime_initial(s),
+-    ensures runtime_invariant(s,Seq::empty()), initial(view(s)),
++    requires runtime_initial(s), ensures runtime_invariant(s,Seq::empty()), initial(view(s)),
+ {}
+-pub proof fn prove_runtime_step(s: RuntimeState,i: Input,t: RuntimeState,o: Output,
+-    a: Seq<Envelope<Message>>,b: Seq<Envelope<Message>>)
+-    requires runtime_invariant(s,a), runtime_step(s,i,t,o), exchange(a,receive(i),emit(o),b),
+-    ensures runtime_invariant(t,b), step(view(s),i,view(t),o),
+-{}
+-pub fn actual_initial() -> (c: RuntimeState)
+-    ensures runtime_initial(c),
+-{ log_core::new_core() }
+-pub fn actual_proposal(c: &mut RuntimeState,entry: log_core::Entry) -> (ok: bool)
++pub proof fn prove_runtime_step(s: RuntimeState,i: Input,t: RuntimeState,o: Output,a: Seq<Envelope<Message>>,b: Seq<Envelope<Message>>)
++    requires runtime_invariant(s,a),runtime_step(s,i,t,o),exchange(a,receive(i),emit(o),b),
++    ensures runtime_invariant(t,b),step(view(s),i,view(t),o),
++{
++    assert(view(t) =~= view(s).insert(i.who,node_view(t[i.who])));
++    assert(view(s).contains_key(i.who));
++    assert(segments::structure(view(s)[i.who]));
++    segments::preserve_structure(node_view(s[i.who]),i.action,node_view(t[i.who]),o);
++    assert(view(t).dom() =~= view(s).dom());
++    assert forall|k:targets::Key| view(t).contains_key(k) implies
++        identified(k,view(t)[k]) && segments::structure(view(t)[k]) by {
++        if k != i.who { assert(t[k]==s[k]); }
++    }
++}
++pub fn actual_initial(group: u64,node: usize,members:usize) -> (c: log_core::Core)
++    requires node < members,
++    ensures segments::initial(node_view(core_state(c))),identified(targets::Key {group:group as nat,node:node as nat},node_view(core_state(c))),
++{ log_core::new_core(group,node,members) }
++pub fn actual_proposal(c: &mut log_core::Core,entry: log_core::Entry) -> (ok: bool)
+     requires old(c).election.role == election::Role::Leader,
+-    ensures ok ==> runtime_step(*old(c),Input::Propose {entry},*c,Seq::empty()),
++    ensures ok ==> segments::step(node_view(core_state(*old(c))),segments::Input::Propose {entry},node_view(core_state(*c)),Seq::empty()),
+         !ok ==> c.log@ == old(c).log@,
++{ log_core::propose(&mut c.log,entry) }
++pub fn actual_insert(c: &mut log_core::Core,at: usize,entry: log_core::Entry) -> (ok: bool)
++    requires !(old(c).election.role == election::Role::Leader),
++    ensures segments::step(node_view(core_state(*old(c))),segments::Input::Insert {at:at as nat,entry},node_view(core_state(*c)),Seq::empty()),
++{ log_core::insert(&mut c.log,at,entry) }
++pub open spec fn observed_log(log: Seq<log_core::Entry>) -> Seq<targets::Entry> {
++    Seq::new(log.len(),|j: int|targets::Entry {term:log[j].term as nat,command:log[j].command@})
++}
++pub open spec fn observed_state(s: State) -> Map<targets::Key,targets::View> {
++    Map::new(|k|s.contains_key(k),|k| targets::View {term:s[k].election.term as nat,
++        leader:s[k].election.role is Leader,log:observed_log(s[k].log),snapshot:None})
++}
++pub open spec fn event(s: State,i: Input,t: State) -> targets::Event {
++    if !(s[i.who].election.role is Leader) && t[i.who].election.role is Leader {
++        targets::Event::Elect {who:i.who,term:t[i.who].election.term as nat}
++    } else if t[i.who].commit > s[i.who].commit {
++        targets::Event::Commit {who:i.who,term:t[i.who].election.term as nat,through:t[i.who].commit as nat}
++    } else if t[i.who].applied > s[i.who].applied {
++        targets::Event::Apply {who:i.who,index:t[i.who].applied as nat,
++            entry:observed_log(t[i.who].log)[t[i.who].applied as int-1]}
++    } else {targets::Event::Silent}
++}
++pub open spec fn observe(h: crate::Execution) -> targets::History {
++    targets::History {states:Seq::new(h.states.len(),|j: int|observed_state(h.states[j])),
++        events:Seq::new(h.inputs.len(),|j: int|event(h.states[j],h.inputs[j],h.states[j+1]))}
++}
++pub proof fn log_prefix_map(a: Seq<log_core::Entry>,b: Seq<log_core::Entry>)
++    requires a.len() <= b.len(),b.take(a.len() as int) == a,
++    ensures targets::prefix(observed_log(a),observed_log(b)),
+ {
+-    log_core::propose(&mut c.log,entry)
++    assert(observed_log(a) =~= observed_log(b).take(a.len() as int));
+ }
+-pub fn actual_insert(c: &mut RuntimeState,at: usize,entry: log_core::Entry) -> (ok: bool)
+-    requires !(old(c).election.role == election::Role::Leader),
+-    ensures runtime_step(*old(c),Input::Insert {at:at as nat,entry},*c,Seq::empty()),
++pub proof fn prove_leader_append_only(h: crate::Execution)
++    requires crate::execution(h), ensures targets::leader_append_only(observe(h)),
+ {
+-    log_core::insert(&mut c.log,at,entry)
++    let obs = observe(h);
++    assert forall|j: int,k: targets::Key| #![trigger obs.states[j][k]]
++        0 <= j < obs.events.len() && obs.states[j].contains_key(k) && obs.states[j+1].contains_key(k)
++        && obs.states[j][k].leader && obs.states[j+1][k].leader && obs.states[j][k].term == obs.states[j+1][k].term
++        implies targets::prefix(obs.states[j][k].log,obs.states[j+1][k].log) by {
++        let i = h.inputs[j];
++        assert(step(h.states[j],i,h.states[j+1],h.outputs[j]));
++        if k == i.who {
++            segments::local_leader_append_only(h.states[j][k],i.action,h.states[j+1][k],h.outputs[j]);
++        } else {
++            assert(h.states[j+1][k] == h.states[j][k]);
++            assert(h.states[j+1][k].log.take(h.states[j][k].log.len() as int) =~= h.states[j][k].log);
++        }
++        log_prefix_map(h.states[j][k].log,h.states[j+1][k].log);
++    }
++}
++pub open spec fn applications() -> Map<nat,targets::Application> { Map::empty() }
++pub proof fn prove_observation_and_snapshots(h:crate::Execution)
++    requires crate::execution(h),
++    ensures targets::shape(observe(h)),targets::snapshot_fidelity(observe(h),applications()),
++{
++    let obs = observe(h);
++    assert forall|j:int| 0 <= j < obs.events.len() implies match #[trigger] obs.events[j] {
++        targets::Event::Elect {who,term} => obs.states[j+1].contains_key(who)
++            && obs.states[j+1][who].leader && obs.states[j+1][who].term == term,
++        targets::Event::Commit {who,term,through} => obs.states[j+1].contains_key(who)
++            && obs.states[j+1][who].term == term && 1 <= through <= obs.states[j+1][who].log.len(),
++        targets::Event::Apply {index,..} => index >= 1,
++        _ => true,
++    } by {
++        let i=h.inputs[j];
++        assert(step(h.states[j],i,h.states[j+1],h.outputs[j]));
++        match i.action { _ => {} }
++    }
++    assert forall|j:int,k:targets::Key| #![trigger obs.states[j][k]]
++        0 <= j < obs.states.len() && obs.states[j].contains_key(k)
++        implies obs.states[j][k].snapshot == None::<targets::Snapshot> by {}
++    assert forall|j:int| 0 <= j < obs.events.len() implies match #[trigger] obs.events[j] {
++        targets::Event::ApplySnapshot {..} | targets::Event::CreateSnapshot {..}
++        | targets::Event::PersistSnapshot {..} | targets::Event::RestoreSnapshot {..} => false,
++        _ => true,
++    } by {}
++}
++pub proof fn execution_witness() -> (h:RuntimeHistory)
++    ensures runtime_execution(h), targets::shape(observe(abstract_execution(h))),
++        exists|j:int| 0 <= j < observe(abstract_execution(h)).events.len()
++            && !(observe(abstract_execution(h)).events[j] is Silent),
++{
++    let key=targets::Key {group:1,node:0};
++    let c=RuntimeNode {group:1,node:0,members:1,votes:seq![false],election:election::fresh(),log:Seq::empty(),commit:0,applied:0};
++    let candidate=RuntimeNode {votes:seq![true],election:election::timeout_result(c.election,0),..c};
++    let leader=RuntimeNode {election:election::Election {role:election::Role::Leader,..candidate.election},..candidate};
++    let s=Map::empty().insert(key,c);
++    let t=s.insert(key,candidate);
++    let u=t.insert(key,leader);
++    let empty=Seq::<Envelope<Message>>::empty();
++    let h=History {states:seq![s,t,u],inputs:seq![Input {who:key,action:segments::Input::Timeout {node:0}},
++        Input {who:key,action:segments::Input::SelfElect}],outputs:seq![empty,empty],sent:seq![empty,empty,empty]};
++    assert(s.dom() =~= set![key]);
++    assert(s.dom().finite());
++    assert(view(s).dom() =~= s.dom());
++    assert(runtime_initial(s));
++    assert forall|k:targets::Key| view(s).contains_key(k) implies identified(k,view(s)[k]) && segments::initial(view(s)[k]) by {}
++    assert(segments::next_votes(node_view(c),segments::Input::Timeout {node:0}) =~= seq![true]);
++    assert forall|j:int| 0 <= j < h.inputs.len() implies runtime_step(h.states[j],#[trigger] h.inputs[j],h.states[j+1],h.outputs[j])
++        && exchange(h.sent[j],receive(h.inputs[j]),emit(h.outputs[j]),h.sent[j+1]) by {
++        assert(j==0 || j==1);
++    }
++    assert(runtime_execution(h));
++    prove_runtime_initial(s);
++    prove_runtime_step(s,h.inputs[0],t,empty,empty,empty);
++    prove_runtime_step(t,h.inputs[1],u,empty,empty,empty);
++    assert(crate::execution(abstract_execution(h))) by {
++        assert forall|j:int| 0 <= j < h.inputs.len() implies step(view(h.states[j]),#[trigger] h.inputs[j],view(h.states[j+1]),h.outputs[j]) by {
++            assert(j==0 || j==1);
++            prove_runtime_step(h.states[j],h.inputs[j],h.states[j+1],h.outputs[j],empty,empty);
++        }
++    }
++    prove_observation_and_snapshots(abstract_execution(h));
++    assert(!(observe(abstract_execution(h)).events[1] is Silent));
++    h
+ }
+ 
+ }
+--- before/madraft/proof/progress.rs
++++ after/madraft/proof/progress.rs
+@@ -7,3 +7,6 @@
+ mod segments;
+ #[path = "../src/raft/log.rs"]
+ mod log_core;
++
++#[path = "../src/raft/quorum.rs"]
++mod quorum;
+--- before/madraft/proof/segments.rs
++++ after/madraft/proof/segments.rs
+@@ -6,6 +6,7 @@
+ verus! {
+ pub enum Message { Request(Vote), Response(Reply), Heartbeat(u64), HeartbeatReply(u64) }
+ pub enum Input {
++    SelfElect,
+     Propose { entry: Entry },
+     Insert { at: nat, entry: Entry },
+     Commit { index: u64, entry_term: u64, term: u64, replicated: usize, members: usize },
+@@ -24,26 +25,54 @@
+         | Input::VoteReplyDelivery { delivery, .. } => Some(delivery), _ => None }
+ }
+ pub open spec fn emit(o: Output) -> Seq<Envelope<Message>> { o }
+-pub struct State { pub election: Election, pub log: Seq<Entry>, pub commit: u64, pub applied: u64 }
++pub struct State { pub group: nat, pub node: nat, pub members:nat,pub votes:Seq<bool>, pub election: Election, pub log: Seq<Entry>, pub commit: u64, pub applied: u64 }
+ pub open spec fn initial(s: State) -> bool {
+-    s.election == fresh() && s.log.len() == 0 && s.commit == 0 && s.applied == 0
++    s.votes.len()==s.members && (forall|j:int|0<=j<s.votes.len() ==> !#[trigger] s.votes[j]) && 0 < s.members && s.node < s.members && s.election == fresh() && s.log.len() == 0 && s.commit == 0 && s.applied == 0
+ }
+ pub open spec fn step(s: State,i: Input,t: State,o: Output) -> bool {
+     match i {
++        Input::SelfElect => s.members == 1 && s.election.role is Candidate && s.election.voted_for == Some(s.node as u64)
++            && t == (State {election: Election {role:Role::Leader,..s.election}, ..s}) && o.len() == 0,
+         Input::Propose {entry} => s.election.role is Leader && s.log.len() < usize::MAX
+             && t == (State { log:s.log.push(entry), ..s }) && o.len() == 0,
+         Input::Insert {at,entry} => !(s.election.role is Leader)
+             && t == (State { log:inserted(s.log,at,entry), ..s }) && o.len() == 0,
+         Input::Commit {index,entry_term,term,replicated,members} =>
+-            t == (State {commit: if index > s.commit && entry_term == term && replicated > members/2 {index} else {s.commit}, ..s}) && o.len() == 0,
++            1 <= index <= s.log.len() && term == s.election.term && entry_term == s.log[index as int-1].term && t == (State {commit: if index > s.commit && entry_term == term && replicated > members/2 {index} else {s.commit}, ..s}) && o.len() == 0,
+         Input::Apply => s.applied < s.commit && s.commit <= s.log.len()
+             && t == (State {applied:(s.applied+1) as u64, ..s}) && o.len() == 0,
+-        _ => election_step(s.election,i,t.election,o) && t.log == s.log && t.commit == s.commit && t.applied == s.applied,
++        _ => input_valid(s,i) && election_step(s.election,i,t.election,o) && t.group == s.group
++            && t.node == s.node && t.members == s.members && t.votes == next_votes(s,i) && t.log == s.log && t.commit == s.commit && t.applied == s.applied,
++    }
++}
++pub open spec fn next_votes(s:State,i:Input) -> Seq<bool> {
++    match i {
++        Input::Timeout {node} => Seq::new(s.members,|j:int|j==node),
++        Input::VoteReplyDelivery {delivery:d,started,..} => match d.message.body {
++            Message::Response(r) => if s.election.role is Candidate && s.election.term==started && r.term<=s.election.term
++                && r.granted && d.message.sender<s.members {s.votes.update(d.message.sender as int,true)} else {s.votes},
++            _ => s.votes,
++        },
++        _ => s.votes,
++    }
++}
++pub open spec fn input_valid(s:State,i:Input) -> bool {
++    match i {
++        Input::Timeout {node} => node == s.node,
++        Input::SendVote {group,node,peer,last_term,last_index} => group == s.group && node == s.node
++            && peer < s.members && last_index == s.log.len()
++            && last_term == (if s.log.len()==0 {0u64} else {s.log.last().term}),
++        Input::SendHeartbeat {group,node,peer} => group == s.group && node == s.node && peer < s.members,
++        Input::Deliver {delivery:d,last_term,last_index} => d.message.group == s.group && d.message.recipient == s.node
++            && last_index == s.log.len() && last_term == (if s.log.len()==0 {0u64} else {s.log.last().term}),
++        Input::VoteReplyDelivery {delivery:d,members,votes,..} => d.message.group == s.group && d.message.recipient == s.node && members == s.members && d.message.sender<s.members && votes == super::quorum::tally(next_votes(s,i),s.members),
++        Input::HeartbeatDelivery {delivery:d} => d.message.group == s.group && d.message.recipient == s.node,
++        _ => true,
+     }
+ }
+ pub open spec fn election_step(s: Election, i: Input, t: Election, o: Output) -> bool {
+     match i {
+-        Input::Propose {..} | Input::Insert {..} | Input::Commit {..} | Input::Apply => false,
++        Input::SelfElect | Input::Propose {..} | Input::Insert {..} | Input::Commit {..} | Input::Apply => false,
+         Input::SendHeartbeat { group,node,peer } => t == s && o == seq![Envelope {
+             group, sender: node, recipient: peer, body: Message::Heartbeat(s.term) }],
+         Input::HeartbeatDelivery { delivery: d } => match d.message.body {
+@@ -99,7 +128,7 @@
+         t.term == s.term && s.voted_for.is_some() ==> t.voted_for == s.voted_for,
+ {
+     match i {
+-        Input::Propose {..} | Input::Insert {..} | Input::Commit {..} | Input::Apply => {},
++        Input::SelfElect | Input::Propose {..} | Input::Insert {..} | Input::Commit {..} | Input::Apply => {},
+         Input::Timeout { .. } => {},
+         Input::SendVote { .. } => {},
+         Input::SendHeartbeat { .. } => {},
+@@ -124,4 +153,10 @@
+     }
+ }
+ 
++pub open spec fn structure(s:State) -> bool { 0<s.members && s.node<s.members && s.votes.len()==s.members }
++pub proof fn preserve_structure(s:State,i:Input,t:State,o:Output)
++    requires structure(s),step(s,i,t,o),
++    ensures structure(t),t.group==s.group,t.node==s.node,t.members==s.members,
++{match i {_=>{}}}
++
+ }
+--- before/madraft/src/raft/log.rs
++++ after/madraft/src/raft/log.rs
+@@ -1,11 +1,12 @@
+ //! Executable log mutations shared with the formal development.
+ use vstd::prelude::*;
+ use super::election::*;
++use super::quorum;
+ verus! {
+-pub struct Core { pub election: Election, pub log: Vec<Entry>, pub commit: u64, pub applied: u64 }
+-pub fn new_core() -> (c: Core)
+-    ensures c.election == fresh(), c.log.len() == 0, c.commit == 0, c.applied == 0,
+-{ Core { election: new(), log: Vec::new(), commit: 0, applied: 0 } }
++pub struct Core { pub group: u64, pub node: usize, pub members:usize,pub votes:Vec<bool>, pub election: Election, pub log: Vec<Entry>, pub commit: u64, pub applied: u64 }
++pub fn new_core(group: u64,node: usize,members:usize) -> (c: Core)
++    ensures c.group == group, c.node == node, c.members == members,c.votes.len()==members,forall|j:int|0<=j<c.votes.len() ==> !#[trigger] c.votes@[j], c.election == fresh(), c.log.len() == 0, c.commit == 0, c.applied == 0,
++{ Core { group,node,members,votes:quorum::empty(members),election: new(), log: Vec::new(), commit: 0, applied: 0 } }
+ #[derive(Clone, Debug)]
+ #[cfg_attr(not(verus_keep_ghost), derive(serde::Serialize, serde::Deserialize))]
+ pub struct Entry { pub term: u64, pub command: Vec<u8> }
+--- before/madraft/src/raft/quorum.rs
++++ after/madraft/src/raft/quorum.rs
+@@ -0,0 +1,37 @@
++//! Distinct-member vote counting, shared by host and proof.
++use vstd::prelude::*;
++verus! {
++pub open spec fn tally(v: Seq<bool>, n: nat) -> nat
++    recommends n <= v.len(), decreases n,
++{ if n == 0 {0} else {tally(v,(n-1) as nat) + if v[n as int-1] {1nat} else {0nat}} }
++pub fn count(v:&Vec<bool>) -> (n:usize)
++    ensures n == tally(v@,v.len() as nat),n <= v.len(),
++{
++    let mut i=0usize;let mut n=0usize;
++    while i<v.len()
++        invariant i<=v.len(),n<=i,n == tally(v@,i as nat),
++        decreases v.len()-i,
++    {
++        if v[i] {n+=1;}
++        i+=1;
++    }
++    n
++}
++pub fn record(v:&mut Vec<bool>,peer:usize) -> (n:usize)
++    ensures v@ == (if peer < old(v).len() {old(v)@.update(peer as int,true)} else {old(v)@}),
++        n == tally(v@,v.len() as nat),n<=v.len(),
++{
++    if peer<v.len() {v.set(peer,true);}
++    count(v)
++}
++pub fn empty(members:usize) -> (v:Vec<bool>)
++    ensures v.len()==members,forall|j:int|0<=j<v.len() ==> !#[trigger] v@[j],
++{
++    let mut v:Vec<bool>=Vec::new();
++    while v.len()<members
++        invariant v.len()<=members,forall|j:int|0<=j<v.len() ==> !#[trigger] v@[j],
++        decreases members-v.len(),
++    {v.push(false);}
++    v
++}
++}
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -66,7 +66,6 @@
+     // Look at the paper's Figure 2 for a description of what
+     // state a Raft server must maintain.
+     core: log_core::Core,
+-    voted: Vec<bool>,
+     deadline: Instant,
+     journal_len: u64,
+     leader: usize,
+@@ -82,6 +81,8 @@
+ #[path = "log.rs"]
+ mod log_core;
+ use log_core::Entry;
++#[path = "quorum.rs"]
++mod quorum;
+ 
+ #[derive(Serialize, Deserialize)]
+ struct Durable { generation: u64, term: u64, vote: Option<u64>, log: Vec<Entry> }
+@@ -96,6 +97,11 @@
+ // HINT: put async functions here
+ impl RaftHandle {
+     pub async fn new(peers: Vec<SocketAddr>, me: usize) -> (Self, MsgRecver) {
++        assert!(!peers.is_empty() && me < peers.len(), "invalid membership");
++        let group = match peers[0] {
++            SocketAddr::V4(a) => ((u32::from(*a.ip()) as u64) << 16) | a.port() as u64,
++            SocketAddr::V6(_) => panic!("IPv6 group identities are not supported"),
++        };
+         let endpoint = net::Endpoint::bind(peers[me]).await.expect("bind Raft RPC");
+         let (apply_ch, recver) = mpsc::unbounded();
+         let inner = Arc::new(Mutex::new(Raft {
+@@ -103,8 +109,7 @@
+             peers: peers.clone(),
+             me,
+             apply_ch,
+-            core: log_core::new_core(),
+-            voted: vec![false; peers.len()],
++            core: log_core::new_core(group,me,peers.len()),
+             deadline: Instant::now() + Raft::generate_election_timeout(),
+             journal_len: 0,
+             leader: me,
+@@ -233,8 +238,8 @@
+                         (None, true)
+                     } else if !matches!(r.core.election.role,Role::Leader) && Instant::now() >= r.deadline && r.core.election.term < u64::MAX {
+                         r.core.election = election::timeout(r.core.election, r.me as u64);
+-                        r.voted.fill(false);
+-                        let me = r.me; r.voted[me] = true;
++                        r.core.votes.fill(false);
++                        let me = r.me; r.core.votes[me] = true;
+                         r.deadline = Instant::now() + Raft::generate_election_timeout();
+                         let v = election::make_vote(r.core.election, r.me as u64, r.last_term(), r.core.log.len() as u64);
+                         if r.peers.len() == 1 { r.become_leader(); }
+@@ -263,8 +268,8 @@
+                         let mut r = this.inner.lock().unwrap();
+                         r.core.election = election::advance(r.core.election, reply.term);
+                         if r.core.election.term == args.term && matches!(r.core.election.role, Role::Candidate) && reply.granted {
+-                            r.voted[peer] = true;
+-                            let votes = r.voted.iter().filter(|v| **v).count();
++                            r.core.votes[peer] = true;
++                            let votes = quorum::count(&r.core.votes);
+                             r.core.election = election::reply(r.core.election,reply.term,args.term,reply.granted,votes,r.peers.len());
+                             if matches!(r.core.election.role,Role::Leader) { r.become_leader(); }
+                         }

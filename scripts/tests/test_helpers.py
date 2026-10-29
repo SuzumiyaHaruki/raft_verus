@@ -19,12 +19,12 @@ from process import ProcessResult, run_process
 from tools import ROOT
 
 
-def simulated_report(output, revision, *, passed=(), missing_reason='missing_entry_or_dependency', final=False):
+def simulated_report(output, revision, *, passed=(), missing_reason='missing_entry_or_dependency', final=False, mode='feedback'):
     output.mkdir(parents=True)
     log = output / 'SIMULATED.log'
     log.write_text('SIMULATED checker transport; no Rust or Verus was executed.\n')
     names = ('build', 'inventory', 'tests_seed_1', 'proof', *checker.OBLIGATIONS, 'linkage_review', 'safety')
-    result = dict(status='MACHINE_CHECKS_PASSED' if final else 'INCOMPLETE', candidate_revision=revision,
+    result = dict(status='MACHINE_CHECKS_PASSED' if final and mode == 'final' else 'INCOMPLETE', mode=mode, candidate_revision=revision,
         checks={n: dict(status='PASS' if final or n in passed or n in ('build','inventory','tests_seed_1','proof') else 'OPEN',
                         reason='checked' if final or n in passed or n in ('build','inventory','tests_seed_1','proof') else missing_reason,
                         log=str(log), command=['SIMULATED-check', n], diagnostic='SIMULATED missing dependency',
@@ -43,7 +43,7 @@ class LoopTests(unittest.TestCase):
         self.workspace = self.root / 'runs/new-experiment'
         cfg = controller.settings(self.root)
         cfg['agent'].update(total_seconds='30', slice_seconds='1', check_seconds='1', max_rounds='3',
-                            stall_rounds='2', max_redesigns='1')
+                            stall_rounds='2', max_redesigns='1', min_work_seconds='.1', handoff_seconds='.1', final_seconds='1')
         with (self.root / 'tools.ini').open('w') as f: cfg.write(f)
         self.home = Path(self.tmp.name) / 'personal'
         self.home.mkdir()
@@ -76,7 +76,7 @@ pathlib.Path(sys.argv[sys.argv.index('--output-last-message')+1]).write_text('SI
     def evaluate(self, workspace, *, output, revision, initial=False, **kwargs):
         self.calls.append((workspace, initial, revision))
         item = self.plan.pop(0) if self.plan else {}
-        return simulated_report(output, revision, **item)
+        return simulated_report(output, revision, mode='initial' if initial else kwargs.get('mode','feedback'), **item)
 
     def invoke(self, action='new', *args):
         argv = ['run.py', action, str(self.workspace), '--codex', str(self.fake), *args]
@@ -176,15 +176,17 @@ pathlib.Path(sys.argv[sys.argv.index('--output-last-message')+1]).write_text('SI
         self.assertIn('snapshot_observation | OPEN', (self.workspace / 'runs/EXPERIMENT.md').read_text())
 
     def test_simulated_full_acceptance_stops_only_after_independent_check(self):
-        self.plan=[{}, {'final':True}]
+        self.plan=[{}, {'final':True}, {'final':True}]
         self.assertEqual(self.invoke('new','--execute'),0)
         self.assertEqual(self.state()['attempts'],1)
         self.assertEqual(self.state()['status'],'MACHINE_CHECKS_PASSED')
+        final = json.loads(Path(self.state()['last_check']).read_text())
+        self.assertEqual(final['mode'], 'final')
         # This is solely a SIMULATED state-machine regression, not a Raft result.
         self.assertIn('SIMULATED', (self.workspace/'runs/round-1/agent.md').read_text())
 
     def test_previous_pass_is_invalidated_on_resume(self):
-        self.plan=[{}, {'final':True}]
+        self.plan=[{}, {'final':True}, {'final':True}]
         self.invoke('new','--execute','--max-rounds','1')
         (self.workspace/'madraft/SIMULATED-edit.txt').write_text('SIMULATED regression')
         self.plan=[{}]
@@ -253,8 +255,67 @@ pathlib.Path(sys.argv[sys.argv.index('--output-last-message')+1]).write_text('SI
         self.assertEqual(self.invoke('resume','--execute','--max-rounds','2'),1)
         state=self.state()
         self.assertEqual(state['last_process'],'TIMEOUT')
+        self.assertEqual(state['history'][-1]['handoff'], 'hard_timeout')
         self.assertTrue((self.workspace/'madraft/SIMULATED-edit.txt').exists())
         self.assertIn('SIMULATED-session',(self.workspace/'runs/round-2/agent.jsonl').read_text())
+
+    def test_insufficient_useful_round_budget_never_calls_model(self):
+        self.assertEqual(self.invoke('new', '--execute', '--total-seconds', '1.1'), 1)
+        self.assertEqual(self.state()['attempts'], 0)
+        self.assertFalse((self.workspace/'SIMULATED-calls.jsonl').exists())
+        self.assertIn('Insufficient', self.state()['reason'])
+
+    def test_soft_handoff_and_hard_timeout_are_distinct(self):
+        self.invoke('new', '--execute', '--max-rounds', '1')
+        state = self.state()
+        record = state['history'][0]
+        self.assertLess(record['soft_seconds'], record['hard_seconds'])
+        self.assertEqual(record['handoff'], 'normal')
+        prompt = (self.workspace/'runs/round-1/prompt.md').read_text()
+        self.assertIn('Soft handoff deadline:', prompt)
+        self.assertIn('return normally', prompt)
+
+    def test_test_progress_does_not_reset_individual_proof_stagnation(self):
+        state = {'proof_gaps': {}}
+        report = {'checks': {'execution_link': {'status':'OPEN', 'reason':'verification_failure',
+                                              'diagnostic':'SIMULATED same init lemma'},
+                             'election_safety': {'status':'OPEN', 'reason':'verification_failure',
+                                                'diagnostic':'SIMULATED election'},
+                             'tests_seed_1': {'status':'OPEN', 'reason':'test_failure', 'passed_tests':[]}}}
+        controller.track_proofs(state, report)
+        for n in range(3):
+            report['checks']['tests_seed_1']['passed_tests'].append(str(n))
+            report['checks']['election_safety']['diagnostic'] += ' changed'
+            controller.track_proofs(state, report)
+        self.assertEqual(state['proof_gaps']['execution_link']['repeats'], 3)
+        self.assertEqual(state['proof_gaps']['election_safety']['repeats'], 0)
+
+    def test_common_dependency_remains_stalled_when_other_errors_change(self):
+        state = {'proof_gaps': {}}
+        error = dict(file='madraft/src/core.rs', function='actual_step', line=10, column=1,
+                     message='postcondition not satisfied', category='dependency_failure')
+        report = {'checks': {'execution_link': {'status':'OPEN','reason':'verification_failure','errors':[error]}}}
+        controller.track_proofs(state, report)
+        error['line'] = 20  # Moving code is not mathematical progress.
+        report['checks']['execution_link']['errors'].append(dict(error, function='another_lemma'))
+        controller.track_proofs(state, report)
+        self.assertEqual(state['proof_gaps']['dependency:madraft/src/core.rs::actual_step']['repeats'], 1)
+
+    def test_resume_recheck_does_not_count_as_another_generation_round(self):
+        state = {'proof_gaps': {}}
+        report = {'checks': {'execution_link': {'status':'OPEN','reason':'verification_failure','diagnostic':'SIMULATED'}}}
+        controller.track_proofs(state, report)
+        controller.track_proofs(state, report)
+        before = state['stale_rounds']
+        controller.track_proofs(state, report, advance=False)
+        self.assertEqual(state['stale_rounds'], before)
+
+    def test_unrun_proof_is_a_scheduling_problem_not_redesign(self):
+        state = {'proof_gaps': {}}
+        report = {'checks': {'execution_link': {'status':'OPEN', 'reason':'check_budget_exhausted'}}}
+        for _ in range(3): controller.track_proofs(state, report)
+        self.assertEqual(state['stale_rounds'], 0)
+        self.assertEqual(state['proof_gaps']['execution_link']['missed'], 3)
 
     def test_lock_prevents_two_writers(self):
         self.invoke('new','--execute','--max-rounds','1')

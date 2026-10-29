@@ -17,7 +17,7 @@ class RealVerusTests(unittest.TestCase):
         cls.cfg, cls.env = environment()
         if not Path(cls.cfg['verus']).is_file() or not (Path(cls.cfg['rust_bin'])/'rustc').is_file():
             raise unittest.SkipTest('Actual Rust/Verus unavailable; real checks NOT RUN')
-        cls.logs = ROOT / 'runs/maintenance-revision' / ('real-tools-' + str(time.time_ns()))
+        cls.logs = ROOT / 'runs/maintenance-v3' / ('real-tools-' + str(time.time_ns()))
         cls.logs.mkdir(parents=True)
 
     def execute(self, name, argv, directory):
@@ -83,67 +83,101 @@ proof fn incorrect_claim() {
         self.assertNotEqual(result.exit_code,0)
         self.assertIn('assertion failed',result.stderr)
 
-    def test_single_top_caller_does_not_skip_other_imported_bodies(self):
-        # Intentionally vacuous ghost-only interface, never a Raft implementation.
-        module=self.logs/'invalid-dependency.rs'
-        module.write_text('''
+    def toy_adapter(self, name, wrong=False):
+        # Reuse only the new protocol-independent example, never an old Raft run.
+        toy = self.logs/'toy.rs'
+        source = (ROOT/'requirements/support_example.rs').read_text().replace(
+            '#[path = "support.rs"]\nmod support;\nuse support::*;', 'use crate::support::*;')
+        toy.write_text(source)
+        module = self.logs/(name+'-module.rs')
+        module.write_text('''#[path = "toy.rs"] mod toy;
 use vstd::prelude::*;
-use crate::targets;
+use crate::{support::*, targets, Execution, execution};
+pub use toy::{initial as runtime_initial, step as runtime_step, receive, emitted as emit,
+              model_initial as initial, bounded as runtime_invariant};
 verus! {
-pub type Execution = nat;
-pub open spec fn execution(run: Execution) -> bool { false }
-pub open spec fn observe(run: Execution) -> targets::History {
-    targets::History { states: Seq::empty(), events: Seq::empty() }
+pub type RuntimeState = u64;
+pub type State = nat;
+pub type Input = Option<Delivery<u64>>;
+pub type Output = (u64, u64);
+pub type Message = u64;
+pub open spec fn view(s: u64) -> nat { s as nat }
+pub open spec fn step(s: nat, i: Input, t: nat, o: Output) -> bool {
+    toy::model_step(s,i,t,o) WRONG
 }
-pub proof fn prove_election_safety(run: Execution)
-    requires execution(run), ensures targets::election_safety(observe(run)), {}
-pub proof fn broken_dependency() { assert(false); }
+pub open spec fn refines_executable() -> bool { true } // Deliberate decoy, never consumed.
+pub proof fn prove_runtime_initial(s: u64)
+    requires runtime_initial(s),
+    ensures runtime_invariant(s, Seq::empty()), initial(view(s)), {}
+pub proof fn prove_runtime_step(s: u64, i: Input, t: u64, o: Output,
+    a: Seq<Envelope<u64>>, b: Seq<Envelope<u64>>)
+    requires runtime_invariant(s,a), runtime_step(s,i,t,o), exchange(a,receive(i),emit(o),b),
+    ensures runtime_invariant(t,b), step(view(s),i,view(t),o), {}
+// Empty observations intentionally fail nonempty coverage; this is not Raft.
+pub open spec fn observe(h: Execution) -> targets::History {
+    targets::History { states: seq![Map::empty()], events: Seq::empty() }
 }
-''')
-        text=check.caller_text(ROOT,module,'election_safety')
-        result=self.verus('negative-imported-body',text)
+pub open spec fn applications() -> Map<nat, targets::Application> { Map::empty() }
+pub proof fn prove_observation_and_snapshots(h: Execution)
+    requires execution(h),
+    ensures targets::shape(observe(h)), targets::snapshot_fidelity(observe(h), applications()), {}
+}'''.replace('WRONG', '&& t == s + 2' if wrong else ''))
+        for goal in check.SAFETY:
+            with module.open('a') as file:
+                file.write('verus! { pub proof fn prove_'+goal+'(h: Execution) requires execution(h), '
+                           'ensures targets::'+goal+'(observe(h)), {} }\n')
+        return module
+
+    def test_foundation_and_actual_toy_history_verify(self):
+        result = self.execute('foundation', [self.cfg['verus'], str(ROOT/'requirements/support_example.rs'),
+            '--crate-type', 'lib', '--no-cheating', '--triggers-mode', 'silent'], self.logs)
+        self.assertEqual(check.classify(result, True), ('PASS', 'checked'), result.stderr)
+
+    def test_fixed_execution_caller_consumes_real_correspondence(self):
+        for name, wrong in [('toy-link-correct', False), ('toy-link-incorrect', True)]:
+            module = self.toy_adapter(name, wrong)
+            result = self.verus(name, check.caller_text(ROOT, module, 'execution_link'))
+            self.assertEqual(result.exit_code == 0, not wrong, result.stdout + result.stderr)
+            if wrong:
+                self.assertEqual(check.classify(result, True)[1], 'verification_failure')
+                self.assertIn('postcondition not satisfied', result.stderr)
+
+    def test_single_top_caller_does_not_skip_other_imported_bodies(self):
+        module = self.toy_adapter('imported-dependency')
+        with module.open('a') as file:
+            file.write('verus! { pub proof fn broken_dependency() { assert(false); } }')
+        result = self.verus('negative-imported-body',check.caller_text(ROOT,module,'election_safety'))
         self.assertNotEqual(result.exit_code,0)
         self.assertIn('assertion failed',result.stderr)
+        self.assertNotIn('error[E', result.stderr)
 
-    def test_real_witness_caller_rejects_vacuity_and_accepts_an_observable_witness(self):
-        # Ghost-only interface tests, not an executable model or a Raft proof.
-        for name,execution,events,states,ok in [
-            ('false-execution','false','Seq::empty()','seq![Map::empty()]',False),
-            ('zero-step','true','Seq::empty()','seq![Map::empty()]',False),
-            ('silent-observation','true','seq![targets::Event::Silent]','seq![Map::empty(), Map::empty()]',False),
-            ('observable-witness','true',
-             'seq![targets::Event::Apply { who: targets::Key { group: 0, node: 0 }, index: 1, entry: targets::Entry { term: 1, command: Seq::empty() } }]',
-             'seq![Map::empty(), Map::empty()]',True)]:
-            with self.subTest(name=name):
-                module=self.logs/(name+'-module.rs')
-                module.write_text('''
-use vstd::prelude::*;
-use crate::targets;
-verus! {
-pub type Execution = nat;
-pub open spec fn execution(run: Execution) -> bool { EXECUTION }
-pub open spec fn observe(run: Execution) -> targets::History {
-    targets::History { states: STATES, events: EVENTS }
-}
-pub proof fn execution_witness() -> (run: Execution) ensures run == 0nat, { 0 }
-}
-'''.replace('EXECUTION',execution).replace('STATES',states).replace('EVENTS',events))
-                if ok:
-                    # Supply the required witness contract, not just a return
-                    # value. This synthetic history still proves no executable linkage.
-                    module.write_text(module.read_text().replace(
-                        'ensures run == 0nat, { 0 }', '''
-    ensures execution(run), targets::shape(observe(run)),
-        exists|i: int| 0 <= i < observe(run).events.len()
-            && !(observe(run).events[i] is Silent),
+    def test_aggregate_keeps_nonempty_observation_requirement(self):
+        module = self.toy_adapter('empty-observation')
+        with module.open('a') as file:
+            file.write('''verus! {
+pub proof fn execution_witness() -> (h: crate::RuntimeExecution)
+    ensures crate::runtime_execution(h), targets::shape(observe(crate::abstract_execution(h))),
 {
-    assert(!(observe(0nat).events[0] is Silent));
-    0
-}'''))
-                result=self.verus('witness-'+name,check.caller_text(ROOT,module,'nonempty_execution'))
-                self.assertEqual(result.exit_code == 0, ok, result.stdout + result.stderr)
-                if not ok:
-                    self.assertEqual(check.classify(result,True)[1],'verification_failure',result.stderr)
+    History { states: seq![0u64], inputs: Seq::empty(), outputs: Seq::empty(), sent: seq![Seq::empty()] }
+}
+}''')
+        result = self.verus('negative-empty-composition',check.caller_text(ROOT,module))
+        self.assertNotEqual(result.exit_code,0)
+        self.assertIn('assertion failed',result.stderr)
+        self.assertNotIn('error[E',result.stderr)
+
+    def test_unsent_receive_cannot_be_proved_valid(self):
+        text='''#[path = "SUPPORT"] mod support;
+use support::*;
+use vstd::prelude::*;
+verus! { proof fn wrong_network_claim() {
+    let m = Envelope { group: 1, sender: 0, recipient: 1, body: 7u64 };
+    assert(delivered(Seq::empty(), Delivery { send: 0, message: m }));
+} }
+'''.replace('SUPPORT',str(ROOT/'requirements/support.rs'))
+        result=self.verus('negative-unsent-delivery',text)
+        self.assertNotEqual(result.exit_code,0)
+        self.assertIn('assertion failed',result.stderr)
 
     def test_external_consensus_body_cannot_close_a_proof(self):
         result=self.verus('negative-external-body','''

@@ -1,0 +1,289 @@
+{
+  "status": "INCOMPLETE",
+  "mode": "top",
+  "input_version": "madraft-joint-proof-3",
+  "candidate_revision": "standalone-1793270334402804709",
+  "workspace": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02",
+  "checker_authority": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02",
+  "snapshot": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/candidate",
+  "source_files": [
+    "Cargo.lock",
+    "Cargo.toml",
+    "LICENSE",
+    "README.md",
+    "proof/README.md",
+    "proof/implementation.rs",
+    "proof/progress.rs",
+    "proof/segments.rs",
+    "src/kvraft/client.rs",
+    "src/kvraft/mod.rs",
+    "src/kvraft/msg.rs",
+    "src/kvraft/server.rs",
+    "src/kvraft/tester.rs",
+    "src/kvraft/tests.rs",
+    "src/lib.rs",
+    "src/raft/election.rs",
+    "src/raft/log.rs",
+    "src/raft/mod.rs",
+    "src/raft/raft.rs",
+    "src/raft/state.rs",
+    "src/raft/tester.rs",
+    "src/raft/tests.rs",
+    "src/shard_ctrler/client.rs",
+    "src/shard_ctrler/mod.rs",
+    "src/shard_ctrler/msg.rs",
+    "src/shard_ctrler/server.rs",
+    "src/shard_ctrler/tester.rs",
+    "src/shard_ctrler/tests.rs",
+    "src/shardkv/client.rs",
+    "src/shardkv/mod.rs",
+    "src/shardkv/msg.rs",
+    "src/shardkv/server.rs",
+    "src/shardkv/tester.rs",
+    "src/shardkv/tests.rs",
+    "src/test_support.rs"
+  ],
+  "checks": {
+    "snapshot_observation": {
+      "status": "OPEN",
+      "reason": "compilation_error",
+      "input_version": "madraft-joint-proof-3",
+      "candidate_revision": "standalone-1793270334402804709",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/snapshot_observation-caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/snapshot_observation.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 0.5007282520018634,
+      "seed": null,
+      "diagnostic": "warning: field `node` has inconsistent type or visibility in different variants\n         ->node syntax will not be available for this field\n         use #[allow(inconsistent_fields)] on the struct to silence the warnign\n  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/candidate/madraft/proof/segments.rs:8:1\n   |\n 8 | / pub enum Input {\n 9 | |     SelfElect,\n10 | |     Propose { entry: Entry },\n11 | |     Insert { at: nat, entry: Entry },\n...  |\n19 | |     Deliver { delivery: Delivery<Message>, last_term: u64, last_index: u64 },\n20 | | }\n   | |_^\n\nerror[E0412]: cannot find type `RuntimeExecution` in the crate root\n   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/candidate/madraft/proof/implementation.rs:138:47\n    |\n138 | pub proof fn execution_witness() -> (h:crate::RuntimeExecution)\n    |                                               ^^^^^^^^^^^^^^^^ not found in the crate root\n\nerror[E0425]: cannot find function `runtime_execution` in the crate root\n   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/candidate/madraft/proof/implementation.rs:139:20\n    |\n139 |     ensures crate::runtime_execution(h), targets::shape(observe(crate::abstract_execution(h))),\n    |                    ^^^^^^^^^^^^^^^^^ not found in the crate root\n\nerror[E0425]: cannot find function `abstract_execution` in the crate root\n   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/candidate/madraft/proof/implementation.rs:139:72\n    |\n139 |     ensures crate::runtime_execution(h), targets::shape(observe(crate::abstract_execution(h))),\n    |                                                                        ^^^^^^^^^^^^^^^^^^ not found in the crate root\n\nerror[E0425]: cannot find function `abstract_execution` in the crate root\n   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/candidate/madraft/proof/implementation.rs:140:47\n    |\n140 |         exists|j:int| 0 <= j < observe(crate::abstract_execution(h)).events.len()\n    |                                               ^^^^^^^^^^^^^^^^^^ not found in the crate root\n\nerror[E0425]: cannot find function `abstract_execution` in the crate root\n   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/candidate/madraft/proof/implementation.rs:141:33\n    |\n141 |             && !(observe(crate::abstract_execution(h)).events[j] is Silent),\n    |                                 ^^^^^^^^^^^^^^^^^^ not found in the crate root\n\nerror[E0425]: cannot find function `runtime_execution` in the crate root\n   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/candidate/madraft/proof/implementation.rs:160:19\n    |\n160 |     assert(crate::runtime_execution(h));\n    |                   ^^^^^^^^^^^^^^^^^ not found in the crate root\n\nerror[E0425]: cannot find function `abstract_execution` in the crate root\n   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/candidate/madraft/proof/implementation.rs:161:36\n    |\n161 |     assert(crate::execution(crate::abstract_execution(h))) by {\n    |                                    ^^^^^^^^^^^^^^^^^^ not found in the crate root\n\nerror[E0425]: cannot find function `abstract_execution` in the crate root\n   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/candidate/madraft/proof/implementation.rs:167:44\n    |\n167 |     prove_observation_and_snapshots(crate::abstract_execution(h));\n    |                                            ^^^^^^^^^^^^^^^^^^ not found in the crate root\n\nerror[E0425]: cannot find function `abstract_execution` in the crate root\n   --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/candidate/madraft/proof/implementation.rs:168:29\n    |\n168 |     assert(!(observe(crate::abstract_execution(h)).events[1] is Silent));\n    |                             ^^^^^^^^^^^^^^^^^^ not found in the crate root\n\nerror: aborting due to 9 previous errors; 1 warning emitted\n\nSome errors have detailed explanations: E0412, E0425.\nFor more information about an error, try `rustc --explain E0412`.\n",
+      "errors": [
+        {
+          "file": "madraft/proof/implementation.rs",
+          "function": "execution_witness",
+          "line": 138,
+          "column": 47,
+          "message": "cannot find type `RuntimeExecution` in the crate root",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/implementation.rs",
+          "function": "execution_witness",
+          "line": 139,
+          "column": 20,
+          "message": "cannot find function `runtime_execution` in the crate root",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/implementation.rs",
+          "function": "execution_witness",
+          "line": 139,
+          "column": 72,
+          "message": "cannot find function `abstract_execution` in the crate root",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/implementation.rs",
+          "function": "execution_witness",
+          "line": 140,
+          "column": 47,
+          "message": "cannot find function `abstract_execution` in the crate root",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/implementation.rs",
+          "function": "execution_witness",
+          "line": 141,
+          "column": 33,
+          "message": "cannot find function `abstract_execution` in the crate root",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/implementation.rs",
+          "function": "execution_witness",
+          "line": 160,
+          "column": 19,
+          "message": "cannot find function `runtime_execution` in the crate root",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/implementation.rs",
+          "function": "execution_witness",
+          "line": 161,
+          "column": 36,
+          "message": "cannot find function `abstract_execution` in the crate root",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/implementation.rs",
+          "function": "execution_witness",
+          "line": 167,
+          "column": 44,
+          "message": "cannot find function `abstract_execution` in the crate root",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/implementation.rs",
+          "function": "execution_witness",
+          "line": 168,
+          "column": 29,
+          "message": "cannot find function `abstract_execution` in the crate root",
+          "category": "dependency_failure"
+        }
+      ],
+      "category": "dependency_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    }
+  },
+  "required": [
+    "snapshot_observation"
+  ],
+  "diagnostics": [
+    {
+      "file": "madraft/proof/implementation.rs",
+      "function": "execution_witness",
+      "line": 138,
+      "column": 47,
+      "message": "cannot find type `RuntimeExecution` in the crate root",
+      "category": "dependency_failure",
+      "affected": [
+        "snapshot_observation"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/snapshot_observation.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/implementation.rs",
+      "function": "execution_witness",
+      "line": 139,
+      "column": 20,
+      "message": "cannot find function `runtime_execution` in the crate root",
+      "category": "dependency_failure",
+      "affected": [
+        "snapshot_observation"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/snapshot_observation.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/implementation.rs",
+      "function": "execution_witness",
+      "line": 139,
+      "column": 72,
+      "message": "cannot find function `abstract_execution` in the crate root",
+      "category": "dependency_failure",
+      "affected": [
+        "snapshot_observation"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/snapshot_observation.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/implementation.rs",
+      "function": "execution_witness",
+      "line": 140,
+      "column": 47,
+      "message": "cannot find function `abstract_execution` in the crate root",
+      "category": "dependency_failure",
+      "affected": [
+        "snapshot_observation"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/snapshot_observation.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/implementation.rs",
+      "function": "execution_witness",
+      "line": 141,
+      "column": 33,
+      "message": "cannot find function `abstract_execution` in the crate root",
+      "category": "dependency_failure",
+      "affected": [
+        "snapshot_observation"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/snapshot_observation.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/implementation.rs",
+      "function": "execution_witness",
+      "line": 160,
+      "column": 19,
+      "message": "cannot find function `runtime_execution` in the crate root",
+      "category": "dependency_failure",
+      "affected": [
+        "snapshot_observation"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/snapshot_observation.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/implementation.rs",
+      "function": "execution_witness",
+      "line": 161,
+      "column": 36,
+      "message": "cannot find function `abstract_execution` in the crate root",
+      "category": "dependency_failure",
+      "affected": [
+        "snapshot_observation"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/snapshot_observation.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/implementation.rs",
+      "function": "execution_witness",
+      "line": 167,
+      "column": 44,
+      "message": "cannot find function `abstract_execution` in the crate root",
+      "category": "dependency_failure",
+      "affected": [
+        "snapshot_observation"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/snapshot_observation.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/implementation.rs",
+      "function": "execution_witness",
+      "line": 168,
+      "column": 29,
+      "message": "cannot find function `abstract_execution` in the crate root",
+      "category": "dependency_failure",
+      "affected": [
+        "snapshot_observation"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793270334402804709/snapshot_observation.log"
+      ]
+    }
+  ],
+  "changed_standards": [],
+  "concurrent_changes": [],
+  "liveness": "OPEN \u2014 not accepted by safety checks",
+  "semantic_boundary": "Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN."
+}

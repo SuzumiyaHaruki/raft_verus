@@ -7,7 +7,7 @@ import subprocess
 
 HELPERS = ('check.py', 'process.py', 'tools.py', 'inputs.py')
 SKIP = {'target', 'runs', '__pycache__', '.git', '.codex', '.agents', 'codex-home', '.verus-log'}
-INPUT_VERSION = 'madraft-joint-proof-2'
+INPUT_VERSION = 'madraft-joint-proof-3'
 
 
 def files_under(directory):

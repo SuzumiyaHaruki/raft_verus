@@ -1,0 +1,26 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/.controller/fresh-system-02/check-3-1793270664978074609/election_safety-caller.rs --crate-type lib --no-cheating --triggers-mode silent
+warning: field `node` has inconsistent type or visibility in different variants
+         ->node syntax will not be available for this field
+         use #[allow(inconsistent_fields)] on the struct to silence the warnign
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/fresh-system-02/check-3-1793270664978074609/candidate/madraft/proof/segments.rs:8:1
+   |
+ 8 | / pub enum Input {
+ 9 | |     SelfElect,
+10 | |     Propose { entry: Entry },
+11 | |     Insert { at: nat, entry: Entry },
+...  |
+19 | |     Deliver { delivery: Delivery<Message>, last_term: u64, last_index: u64 },
+20 | | }
+   | |_^
+
+error[E0425]: cannot find function `prove_election_safety` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/fresh-system-02/check-3-1793270664978074609/election_safety-caller.rs:21:6
+   |
+21 | { c::prove_election_safety(run); }
+   |      ^^^^^^^^^^^^^^^^^^^^^ not found in `c`
+
+error: aborting due to 1 previous error; 1 warning emitted
+
+For more information about this error, try `rustc --explain E0425`.
+
+process=COMPLETED exit=1

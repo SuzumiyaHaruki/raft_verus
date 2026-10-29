@@ -1,0 +1,300 @@
+--- before/madraft/proof/implementation.rs
++++ after/madraft/proof/implementation.rs
+@@ -33,8 +33,14 @@
+     segments::State {group:c.group as nat,node:c.node as nat,members:c.members as nat,votes:c.votes,history:c.history,election:c.election,log:c.log,commit:c.commit,applied:c.applied}
+ }
+ pub open spec fn identified(k: targets::Key,s: segments::State) -> bool { k.group == s.group && k.node == s.node }
++pub open spec fn membership(s:State) -> bool {
++    (forall|a:targets::Key,b:targets::Key| s.contains_key(a) && s.contains_key(b) && a.group==b.group
++        ==> s[a].members==s[b].members)
++    && (forall|a:targets::Key,j:nat| s.contains_key(a) && j<s[a].members ==>
++        s.contains_key(targets::Key {group:a.group,node:j}))
++}
+ pub open spec fn initial(s: State) -> bool {
+-    s.dom().finite() && forall|k: targets::Key| s.contains_key(k) ==> identified(k,s[k]) && segments::initial(s[k])
++    membership(s) && s.dom().finite() && forall|k: targets::Key| s.contains_key(k) ==> identified(k,s[k]) && segments::initial(s[k])
+ }
+ pub open spec fn step(s: State,i: Input,t: State,o: Output) -> bool {
+     s.contains_key(i.who) && t.contains_key(i.who)
+@@ -88,28 +94,127 @@
+         }
+     }
+ }
+-pub open spec fn runtime_invariant(s: RuntimeState,sent: Seq<Envelope<Message>>) -> bool {
+-    sends_backed(view(s),sent) && view(s).dom().finite() && forall|k:targets::Key| view(s).contains_key(k) ==>
+-        identified(k,view(s)[k]) && segments::structure(view(s)[k]) && segments::valid_history(view(s)[k])
+-}
++pub open spec fn active(s:segments::State) -> bool {s.election.role is Candidate || s.election.role is Leader}
++pub open spec fn back_vote(s:State,g:nat,voter:nat,term:u64,candidate:nat) -> bool {
++    let k=targets::Key {group:g,node:voter};
++    s.contains_key(k) && s[k].history.contains_key(term) && s[k].history[term]==candidate
++}
++pub open spec fn certificates(s:State) -> bool {
++    forall|k:targets::Key,j:int| s.contains_key(k) && active(s[k]) && 0<=j<s[k].votes.len() && #[trigger] s[k].votes[j]
++        ==> back_vote(s,k.group,j as nat,s[k].election.term,k.node)
++}
++pub open spec fn self_votes(s:State) -> bool {
++    forall|k:targets::Key| s.contains_key(k) && active(s[k]) ==>
++        s[k].election.voted_for==Some(k.node as u64) && s[k].votes[k.node as int]
++}
++pub open spec fn histories_extend(s:State,t:State) -> bool {
++    forall|k:targets::Key| s.contains_key(k) ==> t.contains_key(k) && vote_history::extends(s[k].history,t[k].history)
++}
++pub proof fn back_vote_extends(s:State,t:State,g:nat,v:nat,term:u64,c:nat)
++    requires histories_extend(s,t),back_vote(s,g,v,term,c),
++    ensures back_vote(t,g,v,term,c),
++{ let k=targets::Key {group:g,node:v}; assert(vote_history::extends(s[k].history,t[k].history)); }
++pub proof fn preserve_certificates(s:State,i:Input,t:State,o:Output,a:Seq<Envelope<Message>>,b:Seq<Envelope<Message>>)
++    requires step(s,i,t,o),exchange(a,receive(i),o,b),sends_backed(s,a),certificates(s),self_votes(s),histories_extend(s,t),
++        forall|k:targets::Key|s.contains_key(k) ==> identified(k,s[k]) && segments::structure(s[k]) && segments::valid_history(s[k]),
++    ensures certificates(t),self_votes(t),
++{
++    assert forall|k:targets::Key|t.contains_key(k) && active(t[k]) implies
++        t[k].election.voted_for==Some(k.node as u64) && t[k].votes[k.node as int] by {
++        if k!=i.who {assert(t[k]==s[k]);} else {match i.action {_=>{}}}
++    }
++    assert forall|k:targets::Key,j:int| t.contains_key(k) && active(t[k]) && 0<=j<t[k].votes.len() && #[trigger] t[k].votes[j]
++        implies back_vote(t,k.group,j as nat,t[k].election.term,k.node) by {
++        if k!=i.who {
++            assert(t[k]==s[k]);
++            assert(back_vote(s,k.group,j as nat,s[k].election.term,k.node));
++            back_vote_extends(s,t,k.group,j as nat,s[k].election.term,k.node);
++        } else {
++            match i.action {
++                segments::Input::Timeout {node} => {
++                    assert(j==k.node);
++                    assert(t[k].history.contains_key(t[k].election.term));
++                },
++                segments::Input::VoteReplyDelivery {delivery:d,started,..} => {
++                    match d.message.body {
++                        Message::Response {reply,request_term,candidate} => {
++                            if s[k].votes[j] {
++                                assert(active(s[k]) && t[k].election.term==s[k].election.term);
++                                back_vote_extends(s,t,k.group,j as nat,s[k].election.term,k.node);
++                            } else {
++                                assert(d.message.sender==j);
++                                assert(d.message==a[d.send as int]);
++                                assert(vote_backed(s,d.message));
++                                back_vote_extends(s,t,k.group,j as nat,request_term,candidate as nat);
++                            }
++                        },_=>{},
++                    }
++                },
++                _ => {
++                    assert(active(s[k]) && t[k].election.term==s[k].election.term && s[k].votes[j]);
++                    back_vote_extends(s,t,k.group,j as nat,s[k].election.term,k.node);
++                },
++            }
++        }
++    }
++}
++pub open spec fn majorities(s:State) -> bool {
++    forall|k:targets::Key|s.contains_key(k) && s[k].election.role is Leader ==>
++        quorum::tally(s[k].votes,s[k].votes.len())>s[k].members/2
++}
++pub proof fn preserve_majorities(s:State,i:Input,t:State,o:Output)
++    requires step(s,i,t,o),majorities(s),self_votes(s),
++        forall|k:targets::Key|s.contains_key(k) ==> identified(k,s[k]) && segments::structure(s[k]),
++    ensures majorities(t),
++{
++    assert forall|k:targets::Key|t.contains_key(k) && t[k].election.role is Leader implies
++        quorum::tally(t[k].votes,t[k].votes.len())>t[k].members/2 by {
++        if k!=i.who {assert(t[k]==s[k]);} else {match i.action {_=>{}}}
++    }
++}
++pub open spec fn model_invariant(s: State,sent: Seq<Envelope<Message>>) -> bool {
++    majorities(s) && certificates(s) && self_votes(s) && membership(s) && sends_backed(s,sent) && s.dom().finite() && forall|k:targets::Key| s.contains_key(k) ==>
++        identified(k,s[k]) && segments::structure(s[k]) && segments::valid_history(s[k])
++}
++pub open spec fn runtime_invariant(s:RuntimeState,sent:Seq<Envelope<Message>>) -> bool {model_invariant(view(s),sent)}
++pub proof fn prove_model_initial(s:State)
++    requires initial(s),ensures model_invariant(s,Seq::empty()),
++{}
+ pub proof fn prove_runtime_initial(s: RuntimeState)
+     requires runtime_initial(s), ensures runtime_invariant(s,Seq::empty()), initial(view(s)),
+ {}
+-pub proof fn prove_runtime_step(s: RuntimeState,i: Input,t: RuntimeState,o: Output,a: Seq<Envelope<Message>>,b: Seq<Envelope<Message>>)
++pub proof fn prove_model_step(s:State,i:Input,t:State,o:Output,a:Seq<Envelope<Message>>,b:Seq<Envelope<Message>>)
++    requires model_invariant(s,a),step(s,i,t,o),exchange(a,receive(i),emit(o),b),
++    ensures model_invariant(t,b),histories_extend(s,t),t.dom()==s.dom(),
++        forall|k:targets::Key|s.contains_key(k) ==> t[k].members==s[k].members,
++{
++    assert(s.contains_key(i.who));
++    assert(segments::structure(s[i.who]));
++    segments::preserve_structure(s[i.who],i.action,t[i.who],o);
++    segments::preserve_history(s[i.who],i.action,t[i.who],o);
++    assert(histories_extend(s,t)) by {
++        assert forall|k:targets::Key| s.contains_key(k) implies t.contains_key(k)
++            && vote_history::extends(s[k].history,t[k].history) by {if k!=i.who {assert(t[k]==s[k]);}}
++    }
++    preserve_certificates(s,i,t,o,a,b);
++    preserve_sends(s,i,t,o,a,b);
++    assert(t.dom() =~= s.dom());
++    assert(membership(t)) by {
++        assert forall|k:targets::Key|s.contains_key(k) implies t[k].members==s[k].members by {if k!=i.who {assert(t[k]==s[k]);}}
++    }
++    assert forall|k:targets::Key| t.contains_key(k) implies
++        identified(k,t[k]) && segments::structure(t[k]) && segments::valid_history(t[k]) by {
++        if k != i.who { assert(t[k]==s[k]); }
++    }
++
++    preserve_majorities(s,i,t,o);
++}
++pub proof fn prove_runtime_step(s:RuntimeState,i:Input,t:RuntimeState,o:Output,a:Seq<Envelope<Message>>,b:Seq<Envelope<Message>>)
+     requires runtime_invariant(s,a),runtime_step(s,i,t,o),exchange(a,receive(i),emit(o),b),
+     ensures runtime_invariant(t,b),step(view(s),i,view(t),o),
+ {
+     assert(view(t) =~= view(s).insert(i.who,node_view(t[i.who])));
+-    assert(view(s).contains_key(i.who));
+-    assert(segments::structure(view(s)[i.who]));
+-    segments::preserve_structure(node_view(s[i.who]),i.action,node_view(t[i.who]),o);
+-    segments::preserve_history(node_view(s[i.who]),i.action,node_view(t[i.who]),o);
+-    preserve_sends(view(s),i,view(t),o,a,b);
+-    assert(view(t).dom() =~= view(s).dom());
+-    assert forall|k:targets::Key| view(t).contains_key(k) implies
+-        identified(k,view(t)[k]) && segments::structure(view(t)[k]) && segments::valid_history(view(t)[k]) by {
+-        if k != i.who { assert(t[k]==s[k]); }
+-    }
++    prove_model_step(view(s),i,view(t),o,a,b);
+ }
+ pub fn actual_initial(group: u64,node: usize,members:usize) -> (c: log_core::Core)
+     requires node < members,
+@@ -215,6 +320,10 @@
+     assert(s.dom() =~= set![key]);
+     assert(s.dom().finite());
+     assert(view(s).dom() =~= s.dom());
++    assert(membership(view(s))) by {
++        assert forall|a:targets::Key,j:nat| view(s).contains_key(a) && j<view(s)[a].members
++            implies view(s).contains_key(targets::Key {group:a.group,node:j}) by {assert(j==0);}
++    }
+     assert(runtime_initial(s));
+     assert forall|k:targets::Key| view(s).contains_key(k) implies identified(k,view(s)[k]) && segments::initial(view(s)[k]) by {}
+     assert(segments::next_votes(node_view(c),segments::Input::Timeout {node:0}) =~= seq![true]);
+@@ -237,4 +346,72 @@
+     h
+ }
+ 
+-}
++pub proof fn invariant_at(h:crate::Execution,k:int)
++    requires crate::execution(h),0<=k<h.states.len(),
++    ensures model_invariant(h.states[k],h.sent[k]),
++{
++    assert forall|s:State|initial(s) implies #[trigger] model_invariant(s,Seq::empty()) by {prove_model_initial(s);}
++    assert forall|s:State,i:Input,t:State,o:Output,a:Seq<Envelope<Message>>,b:Seq<Envelope<Message>>|
++        #[trigger] model_invariant(s,a) && #[trigger] step(s,i,t,o) && #[trigger] exchange(a,receive(i),emit(o),b)
++        implies model_invariant(t,b) by {prove_model_step(s,i,t,o,a,b);}
++    crate::support::invariant_at(h,|s|initial(s),|s,i,t,o|step(s,i,t,o),|i|receive(i),|o|emit(o),|s,a|model_invariant(s,a),k);
++}
++pub proof fn histories_between(h:crate::Execution,a:int,b:int)
++    requires crate::execution(h),0<=a<=b<h.states.len(),
++    ensures histories_extend(h.states[a],h.states[b]),h.states[a].dom()==h.states[b].dom(),
++        forall|k:targets::Key|h.states[a].contains_key(k) ==> h.states[a][k].members==h.states[b][k].members,
++    decreases b-a,
++{
++    if a<b {
++        histories_between(h,a,b-1);invariant_at(h,b-1);
++        prove_model_step(h.states[b-1],h.inputs[b-1],h.states[b],h.outputs[b-1],h.sent[b-1],h.sent[b]);
++        assert forall|k:targets::Key|h.states[a].contains_key(k) implies h.states[b].contains_key(k)
++            && vote_history::extends(h.states[a][k].history,h.states[b][k].history) by {
++            assert(h.states[b-1].contains_key(k));
++            assert(h.states[b].contains_key(k));
++            assert(vote_history::extends(h.states[a][k].history,h.states[b-1][k].history));
++            assert(vote_history::extends(h.states[b-1][k].history,h.states[b][k].history));
++            vote_history::extends_transitive(h.states[a][k].history,h.states[b-1][k].history,h.states[b][k].history);
++        }
++    }
++}
++pub open spec fn vote_at(s:State,g:nat,v:nat,term:u64) -> Option<nat> {
++    let k=targets::Key {group:g,node:v};
++    if s.contains_key(k) && s[k].history.contains_key(term) {Some(s[k].history[term] as nat)} else {None}
++}
++pub proof fn prove_election_safety(h:crate::Execution)
++    requires crate::execution(h),ensures targets::election_safety(observe(h)),
++{
++    let obs=observe(h);
++    assert forall|i:int,j:int| #![trigger obs.events[i],obs.events[j]]
++        0<=i<obs.events.len() && 0<=j<obs.events.len() implies match (obs.events[i],obs.events[j]) {
++        (targets::Event::Elect {who:a,term:ta},targets::Event::Elect {who:b,term:tb}) =>
++            a.group==b.group && ta==tb ==> a.node==b.node,
++        _=>true,
++    } by {
++        match (obs.events[i],obs.events[j]) {
++            (targets::Event::Elect {who:a,term:ta},targets::Event::Elect {who:b,term:tb}) => {
++                if a.group==b.group && ta==tb {
++                    let x=i+1;let y=j+1;let z=if x>y {x} else {y};
++                    invariant_at(h,x);invariant_at(h,y);invariant_at(h,z);
++                    histories_between(h,x,z);histories_between(h,y,z);
++                    let va=h.states[x][a].votes;let vb=h.states[y][b].votes;
++                    let term=h.states[x][a].election.term;
++                    assert(h.states[x].contains_key(a) && h.states[y].contains_key(b));
++                    assert(va.len()==vb.len());
++                    assert forall|v:int|0<=v<va.len() && #[trigger] va[v] implies vote_at(h.states[z],a.group,v as nat,term)==Some(a.node) by {
++                        assert(back_vote(h.states[x],a.group,v as nat,term,a.node));
++                        back_vote_extends(h.states[x],h.states[z],a.group,v as nat,term,a.node);
++                    }
++                    assert forall|v:int|0<=v<vb.len() && #[trigger] vb[v] implies vote_at(h.states[z],a.group,v as nat,term)==Some(b.node) by {
++                        assert(back_vote(h.states[y],b.group,v as nat,term,b.node));
++                        back_vote_extends(h.states[y],h.states[z],b.group,v as nat,term,b.node);
++                    }
++                    quorum::certificate_unique(va,vb,a.node,b.node,|v:nat|vote_at(h.states[z],a.group,v,term));
++                }
++            },_=>{},
++        }
++    }
++}
++
++}
+--- before/madraft/proof/segments.rs
++++ after/madraft/proof/segments.rs
+@@ -27,7 +27,7 @@
+ pub open spec fn emit(o: Output) -> Seq<Envelope<Message>> { o }
+ pub struct State { pub group: nat, pub node: nat, pub members:nat,pub votes:Seq<bool>,pub history:Map<u64,u64>, pub election: Election, pub log: Seq<Entry>, pub commit: u64, pub applied: u64 }
+ pub open spec fn initial(s: State) -> bool {
+-    s.history == Map::<u64,u64>::empty() && s.votes.len()==s.members && (forall|j:int|0<=j<s.votes.len() ==> !#[trigger] s.votes[j]) && 0 < s.members && s.node < s.members && s.election == fresh() && s.log.len() == 0 && s.commit == 0 && s.applied == 0
++    s.history == Map::<u64,u64>::empty() && s.votes.len()==s.members && (forall|j:int|0<=j<s.votes.len() ==> !#[trigger] s.votes[j]) && 0 < s.members && s.members <= usize::MAX && s.node <= u64::MAX && s.node < s.members && s.election == fresh() && s.log.len() == 0 && s.commit == 0 && s.applied == 0
+ }
+ pub open spec fn step(s: State,i: Input,t: State,o: Output) -> bool {
+     match i {
+@@ -72,7 +72,7 @@
+ }
+ pub open spec fn input_valid(s:State,i:Input) -> bool {
+     match i {
+-        Input::Timeout {node} => node == s.node,
++        Input::Timeout {node} => node == s.node && !(s.election.role is Leader) && s.election.term<u64::MAX,
+         Input::SendVote {group,node,peer,last_term,last_index} => group == s.group && node == s.node
+             && peer < s.members && last_index == s.log.len()
+             && last_term == (if s.log.len()==0 {0u64} else {s.log.last().term}),
+@@ -168,7 +168,7 @@
+     }
+ }
+ 
+-pub open spec fn structure(s:State) -> bool { 0<s.members && s.node<s.members && s.votes.len()==s.members }
++pub open spec fn structure(s:State) -> bool { 0<s.members && s.members<=usize::MAX && s.node<=u64::MAX && s.node<s.members && s.votes.len()==s.members }
+ pub proof fn preserve_structure(s:State,i:Input,t:State,o:Output)
+     requires structure(s),step(s,i,t,o),
+     ensures structure(t),t.group==s.group,t.node==s.node,t.members==s.members,
+--- before/madraft/src/raft/vote_history.rs
++++ after/madraft/src/raft/vote_history.rs
+@@ -8,7 +8,7 @@
+     && v.current.voted_for == (if v.history@.contains_key(v.current.term) {Some(v.history@[v.current.term])} else {None})
+ }
+ pub open spec fn extends(a:Map<u64,u64>,b:Map<u64,u64>) -> bool {
+-    forall|term:u64| a.contains_key(term) ==> b.contains_key(term) && b[term]==a[term]
++    forall|term:u64| #[trigger] a.contains_key(term) ==> b.contains_key(term) && b[term]==a[term]
+ }
+ pub fn new() -> (v:Machine)
+     ensures v.current==election::fresh(),v.history@==Map::<u64,u64>::empty(),valid_vote(v),
+@@ -47,4 +47,13 @@
+     ensures valid_vote(*v),v.current==election::reply_result(old(v).current,term,started,granted,votes,members),
+         v.history@==old(v).history@,
+ {v.current=election::reply(v.current,term,started,granted,votes,members);}
++pub proof fn extends_transitive(a:Map<u64,u64>,b:Map<u64,u64>,c:Map<u64,u64>)
++    requires extends(a,b),extends(b,c),ensures extends(a,c),
++{
++    assert forall|term:u64|a.contains_key(term) implies c.contains_key(term) && c[term]==a[term] by {
++        assert(b.contains_key(term) && b[term]==a[term]);
++        assert(c.contains_key(term) && c[term]==b[term]);
++    }
+ }
++
++}

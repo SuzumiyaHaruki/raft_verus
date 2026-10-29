@@ -1,0 +1,17 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793269217160806938/candidate/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+error[E0282]: type annotations needed
+  --> /home/nitro/Desktop/raft_verus/runs/fresh-system-02/runs/checks/1793269217160806938/candidate/madraft/proof/../src/raft/election.rs:38:41
+   |
+38 |     v.term == a.term && (a.voted_for == None || a.voted_for == Some(v.candidate))
+   |                                         ^^^^ cannot infer type of the type parameter `T` declared on the enum `Option`
+   |
+help: consider specifying the generic argument
+   |
+38 |     v.term == a.term && (a.voted_for == None::<T> || a.voted_for == Some(v.candidate))
+   |                                             +++++
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0282`.
+
+process=COMPLETED exit=1
