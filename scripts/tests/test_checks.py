@@ -243,5 +243,79 @@ class CheckerTests(unittest.TestCase):
         with (self.workspace/'tools.ini').open('w') as f:cfg.write(f)
         self.assertIn('tools.ini',self.checker().changed_standards)
 
+    def test_model_pass_and_vacuous_snapshot_keep_actual_connections_open(self):
+        c = self.checker()
+        for goal in check.OBLIGATIONS: c.record(goal, 'PASS', 'SIMULATED model statement')
+        c.connections()
+        report = c.finish('final', list(c.results))
+        self.assertEqual(report['checks']['election_safety']['status'], 'PASS')
+        self.assertEqual(report['assessments']['election_safety']['implementation_task'], 'OPEN')
+        self.assertEqual(report['assessments']['snapshot_observation']['formula_status'], 'PASS')
+        self.assertIn('madraft/src/raft/raft.rs::snapshot', report['placeholders'])
+        self.assertIn('recovery', report['assessments']['election_safety']['open_connections'])
+        self.assertEqual(report['status'], 'INCOMPLETE')
+
+    def nominate_connections(self):
+        (self.workspace/'madraft/src/connection_toy.rs').write_text('pub fn actual() {}')
+        (self.workspace/'madraft/proof/calls.rs').write_text('#[path = "../src/connection_toy.rs"] mod toy;')
+        rows = ['<!-- connections -->', '| Behavior | Actual functions | Proof entry | Open premises / next step |']
+        rows += [f'| {area} | madraft/src/connection_toy.rs::actual | madraft/proof/calls.rs | Claimed complete |' for area in check.CONNECTIONS]
+        (self.workspace/'PROGRESS.md').write_text('\n'.join(rows+['<!-- /connections -->']))
+
+    def test_verified_nominated_units_and_table_are_not_semantic_acceptance(self):
+        self.nominate_connections()
+        c = self.checker()
+        for goal in check.OBLIGATIONS: c.record(goal, 'PASS', 'SIMULATED')
+        with patch.object(check, 'run_process', return_value=simulated_output('verification results:: 1 verified, 0 errors')) as proc:
+            c.connections()
+        self.assertEqual(proc.call_count, len(check.CONNECTIONS))
+        report = c.finish('final', list(c.results))
+        self.assertEqual(report['status'], 'MACHINE_CHECKS_PASSED')  # Only a SIMULATED aggregation test.
+        self.assertEqual(report['semantic_review'], 'NOT_PERFORMED')
+        self.assertEqual(report['implementation_acceptance'], 'NOT_ESTABLISHED')
+        self.assertEqual(report['assessments']['election_safety']['implementation_task'], 'SEMANTIC_REVIEW_REQUIRED')
+        self.assertEqual(report['checks']['connection_recovery']['claim_status'], 'UNVERIFIED_DECLARATION')
+
+    def test_missing_actual_function_reference_never_becomes_checked_coverage(self):
+        self.nominate_connections()
+        path = self.workspace/'PROGRESS.md'
+        path.write_text(path.read_text().replace('::actual', '::invented'))
+        c = self.checker()
+        with patch.object(check, 'run_process', side_effect=AssertionError('no valid nomination')):
+            c.connections()
+        self.assertTrue(all(i['reason']=='invalid_connection_reference' for i in c.results.values()))
+
+    def test_same_content_is_rechecked_and_changed_source_or_seed_never_reuses_pass(self):
+        with patch.object(check, 'run_process', return_value=simulated_output('verification results:: 1 verified, 0 errors')) as proc:
+            a=self.checker();a.verus('proof')
+            b=self.checker();b.verus('proof')
+            self.assertEqual(a.input_fingerprint,b.input_fingerprint)
+            path=self.workspace/'madraft/src/raft/state.rs';path.write_text(path.read_text()+'\n// changed\n')
+            c=self.checker();c.verus('proof')
+            self.assertNotEqual(a.input_fingerprint,c.input_fingerprint)
+            c.cargo('test',seed=1);c.cargo('test',seed=2)
+        self.assertEqual(proc.call_count,5)
+        self.assertEqual(c.results['tests_seed_2']['seed'],2)
+        self.assertNotEqual(a.results['proof']['log'],b.results['proof']['log'])
+
+    def test_cross_candidate_results_cannot_be_assembled(self):
+        c=self.checker();c.record('model','PASS','SIMULATED')
+        c.results['model']['candidate_revision']='another-candidate'
+        report=c.finish('final',['model'])
+        self.assertEqual(report['status'],'INCOMPLETE')
+        self.assertEqual(report['evidence_mismatches'],['model'])
+
+    def test_rotation_is_deterministic_and_reaches_every_family(self):
+        history={}; seen=[]
+        for round in range(len(check.FAMILIES)):
+            plan=check.feedback_families(['src/raft/raft.rs'],history,1)
+            seen.append(plan[0])
+            # A hung first test exhausted functional time: later checks NOT RUN.
+            history[plan[0]]={'last_attempt':round}
+            self.assertIn('raft::tests::',plan)
+        self.assertEqual(seen,list(check.FAMILIES))
+        self.assertEqual(check.feedback_families(['unknown.rs'],{},1),list(check.FAMILIES))
+        with self.assertRaises(ValueError):check.feedback_families([],{},0)
+
 
 if __name__=='__main__': unittest.main()

@@ -1,0 +1,1011 @@
+--- before/madraft/PROGRESS.md
++++ after/madraft/PROGRESS.md
+@@ -0,0 +1,19 @@
++# Progress — round 1
++
++Implemented randomized Raft election, candidate-specific votes, heartbeat RPCs, log freshness checks, suffix conflict repair, current-term majority commitment, ordered command delivery, compaction, snapshot transfer and restart. Async mutation/persistence is serialized by RaftHandle::gate. Durable state uses two generation-matched pairs (state/snapshot and state.backup/snapshot.backup), replacing the older pair first and accepting only complete pairs on recovery; unknown durable state fails closed. Added shared replicated service, serialized clerk retries with stable request identity, bounded per-client response deduplication, KV operations, service snapshots and deterministic controller rebalancing. Sharded KV remains the original unfinished scaffold.
++
++Actual checks: build PASS before final cache adjustment; all 24 Raft tests PASS on seed 1 and seed 2 before split-pair storage and on seed 3 after split-pair storage. Foundation PASS. Verus progress PASS (7 verified, 0 errors), importing actual state.rs and checking local term/vote contracts plus two distinct same-term vote calls. KV seed 1 first had 12/19 pass with seven log-size failures; after separating snapshot bytes, 18/19 passed with snapshot_size_3b still failing due unbounded dedup history. Replaced that cache with latest response per serialized clerk; final KV seed 1 rerun PASS (19/19), log runs/checks/1793331906721164104/tests_seed_1_kvraft_tests.log. Controller seed 1 timed out twice in basic_4a (latest runs/checks/1793331907905846988/tests_seed_1_shard_ctrler_tests.log); inspect main-node client routing and query/application progress next. Safety check: foundation, definitions and progress PASS; all implementation-dependent goals OPEN because implementation.rs is absent. No five-target, execution correspondence or snapshot fidelity theorem is claimed.
++
++Failed approaches: embedding snapshot bytes in state violated retained log-size bounds; retaining every request response violated the 500-byte snapshot test. Storage now separates the compacted suffix and snapshot, and retry records retain one sequence/result per client. The two-pair crash argument is currently design reasoning, not a machine proof. Local verified voting does not prove durable votes, quorum provenance, or global election safety.
++
++<!-- connections -->
++| Behavior | Actual functions | Proof entry | Open premises / next step |
++| --- | --- | --- | --- |
++| initialization | madraft/src/raft/raft.rs::new,madraft/src/raft/state.rs::default | madraft/proof/progress.rs | Local state methods imported; constructor, membership/group identity and host caller composition unproved. |
++| transitions | madraft/src/raft/state.rs::adopt_term,madraft/src/raft/state.rs::campaign,madraft/src/raft/state.rs::grant_vote,madraft/src/raft/raft.rs::tick,madraft/src/raft/raft.rs::append,madraft/src/raft/raft.rs::vote_reply,madraft/src/raft/raft.rs::append_reply | madraft/proof/progress.rs | Only local term/vote bodies verified; log invariant, RPC provenance, finite bounds and all async callers remain open. |
++| outputs | madraft/src/raft/raft.rs::start,madraft/src/raft/raft.rs::request_vote,madraft/src/raft/raft.rs::apply,madraft/src/raft/raft.rs::advance_commit,madraft/src/raft/raft.rs::persist | madraft/proof/progress.rs | Persistence-before-send and exact emission/application observation relation unproved. |
++| recovery | madraft/src/raft/raft.rs::restore,madraft/src/raft/raft.rs::persist | madraft/proof/progress.rs | Decode refinement, interrupted pair writes, error fail-stop behavior, history retention and post-recovery preconditions unproved. |
++| snapshots | madraft/src/raft/raft.rs::snapshot,madraft/src/raft/raft.rs::cond_install_snapshot,madraft/src/raft/raft.rs::append,madraft/src/kvraft/server.rs::new | madraft/proof/progress.rs | Compacted prefix origin, decoder equivalence, application ordering and service caller contracts unproved. |
++<!-- /connections -->
++
++Next action: diagnose controller basic_4a timeout (including main-node networking), complete shard migration with stable group identity, then extend same-source verified consensus representation and construct implementation.rs with actual history/provenance/observations. All five fixed safety targets, execution link, nonempty witness, snapshot fidelity, full finite-counter proofs and conditional liveness remain OPEN. Existing runtime arithmetic and IO-error paths require review; no resource or disk consistency theorem has been established.
+--- before/madraft/RESULT.md
++++ after/madraft/RESULT.md
+@@ -0,0 +1,11 @@
++# Result — incomplete round 1 candidate
++
++Raft 2A/2B/2C/2D implemented and all retained Raft tests passed on seeds 1, 2 and 3 at successive revisions; seeds 4 and 5 and a single-revision final sweep remain OPEN. KV 3A implemented and seed-1 tests passed; KV 3B implemented and final seed-1 family rerun passed all 19 KV tests after repairing actual size failures. Controller 4A implemented but two seed-1 family runs timed out in basic_4a; diagnosis remains OPEN. Sharded KV 4B remains unfinished. Original tests, requirements, licenses and checker were preserved.
++
++Election Safety, Leader Append-Only, Log Matching, Leader Completeness and State Machine Safety are all OPEN. There is no implementation.rs execution/observation adapter yet. The local progress proof checks executable term monotonicity, checked campaign increment, vote immutability within a term and rejection of two distinct candidates at one node in a term; it does not establish any global target. The safety command passed foundation, definitions and progress; all implementation-dependent goals remained OPEN because implementation.rs is absent. Progress Verus reported 7 verified and 0 errors.
++
++Execution coverage includes actual simulated elections, partitions, conflicting suffixes, concurrent proposals, unreliable RPC, crashes, snapshot compaction/transfer and restored application delivery in retained Raft tests. Formal coverage of actual constructors, host operations, sends, applications, crashes, recovery and snapshot decoding remains OPEN. Group identity is currently implicit in fixed peer endpoints and is not yet represented in a proven observation history. Conditional liveness and application correctness proofs remain OPEN.
++
++Host functions currently used include Endpoint::bind/add_rpc_handler/call_timeout, task::spawn, time::sleep/Instant::now, rand::thread_rng/gen_range/random, std and futures mutex operations, mpsc::unbounded/unbounded_send, fs::read/metadata/File::create/write_all_at/sync_all and serde/bincode serialization. These are unverified host boundaries under the supplied environment; no new trusted consensus body was introduced. FsSim completed writes survive node restart, power_fail is unfinished and sync_all is a no-op. The new two-generation-pair protocol has not been machine proved against all interruptions; no real-disk durability is claimed. Invalid membership fails at construction; durable decode failures refuse restart. Finite resource exhaustion and IO failure behavior still require complete fail-stop composition and proofs.
++
++Reproduce with python3 scripts/check.py build; python3 scripts/check.py test raft::tests:: --seed 3; python3 scripts/check.py test kvraft::tests:: --seed 1; python3 scripts/check.py test shard_ctrler::tests:: --seed 1; python3 scripts/check.py foundation; python3 scripts/check.py proof madraft/proof/progress.rs. Full acceptance still requires python3 scripts/check.py safety and python3 scripts/check.py final --timeout 3600 on one stopped candidate after unfinished dependencies are completed. See PROGRESS.md for the single connection table and next action.
+--- before/madraft/proof/progress.rs
++++ after/madraft/proof/progress.rs
+@@ -1,4 +1,16 @@
+-//! DRAFT tool smoke: only the existing upstream role observer.
+-//! The generator replaces/extends this entrypoint as implementation progresses.
++//! Local executable term/vote contracts only; global election safety remains open.
+ #[path = "../src/raft/state.rs"]
+ mod state;
++use vstd::prelude::*;
++verus! {
++// A real call composition: a second distinct candidate cannot obtain this
++// node's vote at the same term. Durability and quorum intersection are separate.
++fn two_vote_requests(s: &mut state::State, term: u64, a: u64, b: u64) -> (r: (bool, bool))
++    requires a != b,
++    ensures !(r.0 && r.1),
++{
++    let first = s.grant_vote(term, a, true);
++    let second = s.grant_vote(term, b, true);
++    (first, second)
++}
++}
+--- before/madraft/src/kvraft/client.rs
++++ after/madraft/src/kvraft/client.rs
+@@ -31,6 +31,9 @@
+ 
+ pub struct ClerkCore<Req, Rsp> {
+     servers: Vec<SocketAddr>,
++    client: u128,
++    call_gate: futures::lock::Mutex<()>,
++    sequence: std::sync::atomic::AtomicU64,
+     _mark: std::marker::PhantomData<(Req, Rsp)>,
+ }
+ 
+@@ -42,22 +45,27 @@
+     pub fn new(servers: Vec<SocketAddr>) -> Self {
+         ClerkCore {
+             servers,
++            client: madsim::rand::random(),
++            call_gate: futures::lock::Mutex::new(()),
++            sequence: std::sync::atomic::AtomicU64::new(0),
+             _mark: std::marker::PhantomData,
+         }
+     }
+ 
+     pub async fn call(&self, args: Req) -> Rsp {
++        let _call = self.call_gate.lock().await;
+         let net = net::Endpoint::bind("0.0.0.0:0").await.expect("bind client RPC");
+-        for i in 0..self.servers.len() {
+-            let ret = net
+-                .call_timeout::<Req>(
+-                    self.servers[i],
+-                    args.clone(),
+-                    Duration::from_millis(500),
+-                )
+-                .await;
+-            todo!("handle RPC results");
++        let sequence = self.sequence.fetch_update(std::sync::atomic::Ordering::SeqCst,
++            std::sync::atomic::Ordering::SeqCst, |s| s.checked_add(1)).expect("request sequence exhausted");
++        let request = ClientRequest { client: self.client, sequence, command: args };
++        loop {
++            for addr in &self.servers {
++                if let Ok(Ok(response)) = net.call_timeout::<ClientRequest<Req>>(
++                    *addr, request.clone(), Duration::from_millis(700)).await {
++                    return response;
++                }
++            }
++            sleep(Duration::from_millis(30)).await;
+         }
+-        todo!("handle RPC results");
+     }
+ }
+--- before/madraft/src/kvraft/msg.rs
++++ after/madraft/src/kvraft/msg.rs
+@@ -21,3 +21,15 @@
+     type Response = Result<String, crate::kvraft::msg::Error>;
+     const ID: u64 = 2;
+ }
++
++/// Retries carry the same identity through the Raft log and snapshots.
++#[derive(Debug, Clone, Serialize, Deserialize)]
++pub struct ClientRequest<R> {
++    pub client: u128,
++    pub sequence: u64,
++    pub command: R,
++}
++impl<R: madsim::net::rpc::Request> madsim::net::rpc::Request for ClientRequest<R> {
++    type Response = R::Response;
++    const ID: u64 = R::ID + 100;
++}
+--- before/madraft/src/kvraft/server.rs
++++ after/madraft/src/kvraft/server.rs
+@@ -4,9 +4,9 @@
+ use serde::{Deserialize, Serialize};
+ use std::{
+     fmt::{self, Debug},
+-    marker::PhantomData,
++    collections::{HashMap, BTreeMap},
+     net::SocketAddr,
+-    sync::Arc,
++    sync::{Arc, Mutex},
+ };
+ 
+ pub trait State: Serialize + serde::de::DeserializeOwned + Send + Sync + Default + 'static {
+@@ -18,7 +18,7 @@
+ pub struct Server<S: State> {
+     rf: raft::RaftHandle,
+     me: usize,
+-    _marker: PhantomData<S>,
++    image: Mutex<Image<S>>,
+ }
+ 
+ impl<S: State> fmt::Debug for Server<S> {
+@@ -34,12 +34,48 @@
+         max_raft_state: Option<usize>,
+     ) -> Arc<Self> {
+         // You may need initialization code here.
+-        let (rf, apply_ch) = raft::RaftHandle::new(servers, me).await;
++        let (rf, mut apply_ch) = raft::RaftHandle::new(servers, me).await;
+ 
+         let this = Arc::new(Server {
+             rf,
+             me,
+-            _marker: PhantomData,
++            image: Mutex::new(Image { state: S::default(), replies: BTreeMap::new(), applied: 0 }),
++        });
++        let server = this.clone();
++        madsim::task::spawn(async move {
++            use futures::StreamExt;
++            while let Some(message) = apply_ch.next().await {
++                match message {
++                    raft::ApplyMsg::Command { data, index } => {
++                        let request: ClientRequest<S::Command> = bincode::deserialize(&data).expect("replicated request decode");
++                        {
++                            let mut image = server.image.lock().unwrap();
++                            if index <= image.applied { continue; }
++                            assert_eq!(index, image.applied + 1, "application gap");
++                            let key = request.client;
++                            if image.replies.get(&key).map_or(true, |(sequence, _)| *sequence < request.sequence) {
++                                let response = image.state.apply(request.command);
++                                image.replies.insert(key, (request.sequence, bincode::serialize(&response).expect("response encode")));
++                            }
++                            image.applied = index;
++                        }
++                        if let Some(limit) = max_raft_state {
++                            if madsim::fs::metadata("state").await.map_or(false, |m| m.len() as usize >= limit) {
++                                let bytes = bincode::serialize(&*server.image.lock().unwrap()).expect("snapshot encode");
++                                server.rf.snapshot(index, &bytes).await.expect("snapshot persistence");
++                            }
++                        }
++                    }
++                    raft::ApplyMsg::Snapshot { data, term, index } => {
++                        if server.rf.cond_install_snapshot(term, index, &data).await {
++                            let restored: Image<S> = bincode::deserialize(&data).expect("service snapshot decode");
++                            assert_eq!(restored.applied, index);
++                            let mut image = server.image.lock().unwrap();
++                            if index > image.applied { *image = restored; }
++                        }
++                    }
++                }
++            }
+         });
+         this.start_rpc_server();
+         this
+@@ -49,7 +85,7 @@
+         let net = self.rf.endpoint.clone();
+ 
+         let this = self.clone();
+-        net.add_rpc_handler(move |cmd: S::Command| {
++        net.add_rpc_handler(move |cmd: ClientRequest<S::Command>| {
+             let this = this.clone();
+             async move { this.apply(cmd).await }
+         });
+@@ -65,16 +101,39 @@
+         self.rf.is_leader()
+     }
+ 
+-    async fn apply(&self, cmd: S::Command) -> Result<S::Output, Error> {
+-        todo!("apply command");
++    async fn apply(&self, cmd: ClientRequest<S::Command>) -> Result<S::Output, Error> {
++        let key = cmd.client;
++        let sequence = cmd.sequence;
++        if !self.rf.is_leader() { return Err(Error::NotLeader { hint: self.me }); }
++        let bytes = bincode::serialize(&cmd).map_err(|_| Error::Failed)?;
++        let start = self.rf.start(&bytes).await.map_err(|e| match e {
++            raft::Error::NotLeader(hint) => Error::NotLeader { hint }, _ => Error::Failed,
++        })?;
++        let deadline = madsim::time::Instant::now() + madsim::time::Duration::from_millis(600);
++        loop {
++            if let Some((last, bytes)) = self.image.lock().unwrap().replies.get(&key) {
++                if *last == sequence { return bincode::deserialize(bytes).map_err(|_| Error::Failed); }
++                if *last > sequence { return Err(Error::Failed); }
++            }
++            if self.rf.term() != start.term || !self.rf.is_leader() { return Err(Error::Failed); }
++            if madsim::time::Instant::now() >= deadline { return Err(Error::Timeout); }
++            madsim::time::sleep(madsim::time::Duration::from_millis(10)).await;
++        }
+     }
++}
++
++#[derive(Serialize, Deserialize)]
++struct Image<S> {
++    state: S,
++    replies: BTreeMap<u128, (u64, Vec<u8>)>,
++    applied: u64,
+ }
+ 
+ pub type KvServer = Server<Kv>;
+ 
+ #[derive(Debug, Default, Serialize, Deserialize)]
+ pub struct Kv {
+-    // Your data here.
++    values: HashMap<String, String>,
+ }
+ 
+ impl State for Kv {
+@@ -82,6 +141,10 @@
+     type Output = String;
+ 
+     fn apply(&mut self, cmd: Self::Command) -> Self::Output {
+-        todo!("apply command");
++        match cmd {
++            Op::Get { key } => self.values.get(&key).cloned().unwrap_or_default(),
++            Op::Put { key, value } => { self.values.insert(key, value); String::new() },
++            Op::Append { key, value } => { self.values.entry(key).or_default().push_str(&value); String::new() },
++        }
+     }
+ }
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -1,50 +1,26 @@
+-use futures::{channel::mpsc, stream::FuturesUnordered, StreamExt};
+-use madsim::{
+-    fs, net,
+-    rand::{self, Rng},
+-    task,
+-    time::*,
+-};
++use futures::{channel::mpsc, lock::Mutex as AsyncMutex};
++use madsim::{fs, net, rand::{self, Rng}, task, time::*};
+ use serde::{Deserialize, Serialize};
+-use std::{
+-    fmt, io,
+-    net::SocketAddr,
+-    sync::{Arc, Mutex},
+-};
++use std::{fmt, io, net::SocketAddr, sync::{Arc, Mutex}};
++
++#[path = "state.rs"]
++mod state;
++use state::{State, Role};
+ 
+ #[derive(Clone)]
+ pub struct RaftHandle {
+     pub(crate) endpoint: net::Endpoint,
+     inner: Arc<Mutex<Raft>>,
+-}
+-
++    gate: Arc<AsyncMutex<()>>,
++}
+ type MsgSender = mpsc::UnboundedSender<ApplyMsg>;
+ pub type MsgRecver = mpsc::UnboundedReceiver<ApplyMsg>;
+-
+-/// As each Raft peer becomes aware that successive log entries are committed,
+-/// the peer should send an `ApplyMsg` to the service (or tester) on the same
+-/// server, via the `apply_ch` passed to `Raft::new`.
+ pub enum ApplyMsg {
+-    Command {
+-        data: Vec<u8>,
+-        index: u64,
+-    },
+-    // For 2D:
+-    Snapshot {
+-        data: Vec<u8>,
+-        term: u64,
+-        index: u64,
+-    },
+-}
+-
++    Command { data: Vec<u8>, index: u64 },
++    Snapshot { data: Vec<u8>, term: u64, index: u64 },
++}
+ #[derive(Debug)]
+-pub struct Start {
+-    /// The index that the command will appear at if it's ever committed.
+-    pub index: u64,
+-    /// The current term.
+-    pub term: u64,
+-}
+-
++pub struct Start { pub index: u64, pub term: u64 }
+ #[derive(thiserror::Error, Debug)]
+ pub enum Error {
+     #[error("this node is not a leader, next leader: {0}")]
+@@ -52,239 +28,320 @@
+     #[error("IO error")]
+     IO(#[from] io::Error),
+ }
+-
+ pub type Result<T> = std::result::Result<T, Error>;
+-
++#[derive(Debug, Clone, Serialize, Deserialize)]
++struct Entry { term: u64, data: Vec<u8> }
++#[derive(Debug, Clone, Serialize, Deserialize)]
++struct Persist {
++    generation: u64, term: u64, vote: Option<u64>,
++    base: u64, base_term: u64, log: Vec<Entry>,
++    #[serde(skip)]
++    snapshot: Vec<u8>,
++}
+ struct Raft {
+-    endpoint: net::Endpoint,
+-    peers: Vec<SocketAddr>,
+-    me: usize,
+-    apply_ch: MsgSender,
+-
+-    // Your data here (2A, 2B, 2C).
+-    // Look at the paper's Figure 2 for a description of what
+-    // state a Raft server must maintain.
+-    state: State,
+-}
+-
+-#[path = "state.rs"]
+-mod state;
+-use state::{State, Role};
+-
+-/// Data needs to be persisted.
+-#[derive(Debug, Clone, Serialize, Deserialize)]
+-struct Persist {
+-    // Your data here.
+-}
+-
++    peers: Vec<SocketAddr>, me: usize, apply_ch: MsgSender, state: State,
++    disk: Persist, slots: [u64; 2], commit: u64, applied: u64,
++    deadline: Instant, heartbeat: Instant, votes: Vec<bool>, next: Vec<u64>, matched: Vec<u64>,
++}
++fn invalid(message: &str) -> io::Error { io::Error::new(io::ErrorKind::InvalidData, message) }
+ impl fmt::Debug for Raft {
+-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+-        write!(f, "Raft({})", self.me)
+-    }
+-}
+-
+-// HINT: put async functions here
++    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result { write!(f, "Raft({})", self.me) }
++}
++impl Raft {
++    fn timeout() -> Duration { Duration::from_millis(rand::thread_rng().gen_range(350..650)) }
++    fn reset(&mut self) { self.deadline = Instant::now() + Self::timeout(); }
++    fn last(&self) -> u64 { self.disk.base + self.disk.log.len() as u64 }
++    fn term_at(&self, index: u64) -> Option<u64> {
++        if index == self.disk.base { Some(self.disk.base_term) }
++        else if index > self.disk.base { self.disk.log.get((index - self.disk.base - 1) as usize).map(|e| e.term) }
++        else { None }
++    }
++    fn apply(&mut self) {
++        while self.applied < self.commit {
++            self.applied += 1;
++            let entry = &self.disk.log[(self.applied - self.disk.base - 1) as usize];
++            let _ = self.apply_ch.unbounded_send(ApplyMsg::Command { data: entry.data.clone(), index: self.applied });
++        }
++    }
++    fn advance_commit(&mut self) {
++        let mut m = self.matched.clone();
++        m[self.me] = self.last();
++        m.sort_unstable();
++        let index = m[(m.len() - 1) / 2];
++        if index > self.commit && self.term_at(index) == Some(self.state.term) { self.commit = index; }
++        self.apply();
++    }
++    fn become_leader(&mut self) {
++        self.state.role = Role::Leader;
++        let next = self.last().saturating_add(1);
++        self.next.fill(next);
++        self.matched.fill(0);
++        self.heartbeat = Instant::now();
++    }
++}
+ impl RaftHandle {
+     pub async fn new(peers: Vec<SocketAddr>, me: usize) -> (Self, MsgRecver) {
++        assert!(!peers.is_empty() && me < peers.len(), "invalid fixed membership");
+         let endpoint = net::Endpoint::bind(peers[me]).await.expect("bind Raft RPC");
+         let (apply_ch, recver) = mpsc::unbounded();
+-        let inner = Arc::new(Mutex::new(Raft {
+-            endpoint: endpoint.clone(),
+-            peers,
+-            me,
+-            apply_ch,
+-            state: State::default(),
+-        }));
+-        let handle = RaftHandle { inner, endpoint };
+-        // initialize from state persisted before a crash
+-        handle.restore().await.expect("failed to restore");
+-        handle.start_rpc_server();
+-
+-        (handle, recver)
+-    }
+-
+-    /// Start agreement on the next command to be appended to Raft's log.
+-    ///
+-    /// If this server isn't the leader, returns [`Error::NotLeader`].
+-    /// Otherwise start the agreement and return immediately.
+-    ///
+-    /// There is no guarantee that this command will ever be committed to the
+-    /// Raft log, since the leader may fail or lose an election.
++        let n = peers.len();
++        let this = Self { endpoint, gate: Arc::new(AsyncMutex::new(())), inner: Arc::new(Mutex::new(Raft {
++            peers, me, apply_ch, state: State::default(),
++            disk: Persist { generation: 0, term: 0, vote: None, base: 0, base_term: 0, log: vec![], snapshot: vec![] },
++            slots: [0, 0], commit: 0, applied: 0,
++            deadline: Instant::now() + Raft::timeout(), heartbeat: Instant::now(),
++            votes: vec![false; n], next: vec![1; n], matched: vec![0; n],
++        })) };
++        this.restore().await.expect("failed to restore");
++        this.start_rpc_server();
++        let h = this.clone();
++        task::spawn(async move { loop { sleep(Duration::from_millis(10)).await; h.tick().await; } });
++        (this, recver)
++    }
++    pub fn term(&self) -> u64 { self.inner.lock().unwrap().state.term }
++    pub fn is_leader(&self) -> bool { self.inner.lock().unwrap().state.is_leader() }
+     pub async fn start(&self, cmd: &[u8]) -> Result<Start> {
+-        let mut raft = self.inner.lock().unwrap();
+-        info!("{:?} start", *raft);
+-        raft.start(cmd)
+-    }
+-
+-    /// The current term of this peer.
+-    pub fn term(&self) -> u64 {
+-        let raft = self.inner.lock().unwrap();
+-        raft.state.term
+-    }
+-
+-    /// Whether this peer believes it is the leader.
+-    pub fn is_leader(&self) -> bool {
+-        let raft = self.inner.lock().unwrap();
+-        raft.state.is_leader()
+-    }
+-
+-    /// A service wants to switch to snapshot.  
+-    ///
+-    /// Only do so if Raft hasn't have more recent info since it communicate
+-    /// the snapshot on `apply_ch`.
+-    pub async fn cond_install_snapshot(
+-        &self,
+-        last_included_term: u64,
+-        last_included_index: u64,
+-        snapshot: &[u8],
+-    ) -> bool {
+-        todo!()
+-    }
+-
+-    /// The service says it has created a snapshot that has all info up to and
+-    /// including index. This means the service no longer needs the log through
+-    /// (and including) that index. Raft should now trim its log as much as
+-    /// possible.
++        let _gate = self.gate.lock().await;
++        let result = {
++            let mut r = self.inner.lock().unwrap();
++            if !r.state.is_leader() { return Err(Error::NotLeader((r.me + 1) % r.peers.len())); }
++            if r.last() == u64::MAX { return Err(invalid("log exhausted").into()); }
++            let term = r.state.term;
++            r.disk.log.push(Entry { term, data: cmd.to_vec() });
++            r.heartbeat = Instant::now();
++            Start { index: r.last(), term }
++        };
++        self.persist().await?;
++        self.inner.lock().unwrap().advance_commit();
++        Ok(result)
++    }
+     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {
+-        todo!()
+-    }
+-
+-    /// save Raft's persistent state to stable storage,
+-    /// where it can later be retrieved after a crash and restart.
+-    /// see paper's Figure 2 for a description of what should be persistent.
++        let _gate = self.gate.lock().await;
++        {
++            let mut r = self.inner.lock().unwrap();
++            if index <= r.disk.base { return Ok(()); }
++            if index > r.applied { return Err(invalid("snapshot beyond applied prefix").into()); }
++            let term = r.term_at(index).ok_or_else(|| invalid("snapshot boundary"))?;
++            let remove = (index - r.disk.base) as usize;
++            r.disk.log.drain(..remove);
++            r.disk.base = index; r.disk.base_term = term; r.disk.snapshot = snapshot.to_vec();
++        }
++        self.persist().await?;
++        Ok(())
++    }
++    pub async fn cond_install_snapshot(&self, term: u64, index: u64, snapshot: &[u8]) -> bool {
++        let _gate = self.gate.lock().await;
++        let r = self.inner.lock().unwrap();
++        r.disk.base == index && r.disk.base_term == term && r.disk.snapshot == snapshot
++    }
++    // Two generation-matched state/snapshot pairs; replace the older pair first.
++    // Recovery accepts only complete pairs. No cross-file atomicity is required.
+     async fn persist(&self) -> io::Result<()> {
+-        let persist: Persist = todo!("persist state");
+-        let snapshot: Vec<u8> = todo!("persist snapshot");
+-        let state = bincode::serialize(&persist).unwrap();
+-
+-        // you need to store persistent state in file "state"
+-        // and store snapshot in file "snapshot".
+-        // DO NOT change the file names.
+-        let file = fs::File::create("state").await?;
+-        file.write_all_at(&state, 0).await?;
+-        // make sure data is flushed to the disk,
+-        // otherwise data will be lost on power fail.
+-        file.sync_all().await?;
+-
+-        let file = fs::File::create("snapshot").await?;
+-        file.write_all_at(&snapshot, 0).await?;
+-        file.sync_all().await?;
++        let (bytes, snapshot, first, generation) = {
++            let mut r = self.inner.lock().unwrap();
++            r.disk.term = r.state.term; r.disk.vote = r.state.vote;
++            r.disk.generation = r.disk.generation.checked_add(1).ok_or_else(|| invalid("generation exhausted"))?;
++            (bincode::serialize(&r.disk).map_err(|_| invalid("encode state"))?,
++                bincode::serialize(&(r.disk.generation, &r.disk.snapshot)).map_err(|_| invalid("encode snapshot"))?,
++                if r.slots[0] <= r.slots[1] { 0 } else { 1 }, r.disk.generation)
++        };
++        for slot in [first, 1 - first] {
++            // Invalidate/replace the older pair first; the other pair remains recoverable.
++            let snap = fs::File::create(if slot == 0 { "snapshot" } else { "snapshot.backup" }).await?;
++            snap.write_all_at(&snapshot, 0).await?;
++            snap.sync_all().await?;
++            let file = fs::File::create(if slot == 0 { "state" } else { "state.backup" }).await?;
++            file.write_all_at(&bytes, 0).await?;
++            file.sync_all().await?;
++            self.inner.lock().unwrap().slots[slot] = generation;
++        }
+         Ok(())
+     }
+-
+-    /// Restore previously persisted state.
+     async fn restore(&self) -> io::Result<()> {
+-        match fs::read("snapshot").await {
+-            Ok(snapshot) => {
+-                todo!("restore snapshot");
+-            }
+-            Err(e) if e.kind() == io::ErrorKind::NotFound => {}
+-            Err(e) => return Err(e),
+-        }
+-        match fs::read("state").await {
+-            Ok(state) => {
+-                let persist: Persist = bincode::deserialize(&state).unwrap();
+-                todo!("restore state");
+-            }
+-            Err(e) if e.kind() == io::ErrorKind::NotFound => {}
+-            Err(e) => return Err(e),
+-        }
+-        Ok(())
+-    }
+-
++        let mut best: Option<Persist> = None;
++        let mut exists = false;
++        for (slot, name) in ["state", "state.backup"].iter().enumerate() {
++            match fs::read(name).await {
++                Ok(bytes) => {
++                    exists = true;
++                    if let Ok(mut p) = bincode::deserialize::<Persist>(&bytes) {
++                        let snapshot = fs::read(if slot == 0 { "snapshot" } else { "snapshot.backup" }).await;
++                        let decoded = snapshot.ok().and_then(|b| bincode::deserialize::<(u64, Vec<u8>)>(&b).ok());
++                        match decoded {
++                            Some((generation, data)) if generation == p.generation => p.snapshot = data,
++                            _ => continue,
++                        }
++                        self.inner.lock().unwrap().slots[slot] = p.generation;
++                        if best.as_ref().map_or(true, |b| p.generation > b.generation) { best = Some(p); }
++                    }
++                }
++                Err(e) if e.kind() == io::ErrorKind::NotFound => {},
++                Err(e) => return Err(e),
++            }
++        }
++        if exists && best.is_none() { return Err(invalid("no complete durable image; refusing fresh vote")); }
++        if let Some(p) = best {
++            let mut r = self.inner.lock().unwrap();
++            r.state.term = p.term; r.state.vote = p.vote;
++            r.commit = p.base; r.applied = p.base;
++            if p.base > 0 { let _ = r.apply_ch.unbounded_send(ApplyMsg::Snapshot { data: p.snapshot.clone(), term: p.base_term, index: p.base }); }
++            r.disk = p;
++        }
++        self.persist().await
++    }
+     fn start_rpc_server(&self) {
+-        let net = self.endpoint.clone();
+-
+         let this = self.clone();
+-        net.add_rpc_handler(move |args: RequestVoteArgs| {
+-            let this = this.clone();
+-            async move { this.request_vote(args).await.unwrap() }
+-        });
+-        // add more RPC handers here
+-    }
+-
+-    async fn request_vote(&self, args: RequestVoteArgs) -> Result<RequestVoteReply> {
++        self.endpoint.add_rpc_handler(move |a: RequestVoteArgs| { let h = this.clone(); async move { h.request_vote(a).await.expect("vote persistence") } });
++        let this = self.clone();
++        self.endpoint.add_rpc_handler(move |a: AppendArgs| { let h = this.clone(); async move { h.append(a).await.expect("append persistence") } });
++    }
++    async fn request_vote(&self, a: RequestVoteArgs) -> io::Result<RequestVoteReply> {
++        let _gate = self.gate.lock().await;
+         let reply = {
+-            let mut this = self.inner.lock().unwrap();
+-            this.request_vote(args)
+-        };
+-        // if you need to persist or call async functions here,
+-        // make sure the lock is scoped and dropped.
+-        self.persist().await.expect("failed to persist");
++            let mut r = self.inner.lock().unwrap();
++            let fresh = (a.last_term, a.last) >= (r.term_at(r.last()).unwrap(), r.last());
++            let valid = a.candidate < r.peers.len() as u64;
++            let granted = if valid { r.state.grant_vote(a.term, a.candidate, fresh) } else { false };
++            if granted { r.reset(); }
++            RequestVoteReply { term: r.state.term, granted }
++        };
++        self.persist().await?;
+         Ok(reply)
+     }
+-}
+-
+-// HINT: put mutable non-async functions here
+-impl Raft {
+-    fn start(&mut self, data: &[u8]) -> Result<Start> {
+-        if !self.state.is_leader() {
+-            let leader = (self.me + 1) % self.peers.len();
+-            return Err(Error::NotLeader(leader));
+-        }
+-        todo!("start agreement");
+-    }
+-
+-    // Here is an example to apply committed message.
+-    fn apply(&self) {
+-        let msg = ApplyMsg::Command {
+-            data: todo!("apply msg"),
+-            index: todo!("apply msg"),
+-        };
+-        self.apply_ch.unbounded_send(msg).unwrap();
+-    }
+-
+-    fn request_vote(&mut self, args: RequestVoteArgs) -> RequestVoteReply {
+-        todo!("handle RequestVote RPC");
+-    }
+-
+-    // Here is an example to generate random number.
+-    fn generate_election_timeout() -> Duration {
+-        // see rand crate for more details
+-        Duration::from_millis(rand::thread_rng().gen_range(150..300))
+-    }
+-
+-    // Here is an example to send RPC and manage concurrent tasks.
+-    fn send_vote_request(&mut self) {
+-        let args: RequestVoteArgs = todo!("construct RPC request");
+-        let timeout = Self::generate_election_timeout();
+-        let net = self.endpoint.clone();
+-
+-        let mut rpcs = FuturesUnordered::new();
+-        for (i, &peer) in self.peers.iter().enumerate() {
+-            if i == self.me {
+-                continue;
+-            }
+-            // NOTE: `call` function takes ownerships
+-            let net = net.clone();
+-            let args = args.clone();
+-            rpcs.push(async move {
+-                net.call_timeout::<RequestVoteArgs>(peer, args, timeout)
+-                    .await
++    async fn append(&self, a: AppendArgs) -> io::Result<AppendReply> {
++        let mut installed = false;
++        let _gate = self.gate.lock().await;
++        let reply = {
++            let mut r = self.inner.lock().unwrap();
++            let mut success = false;
++            let mut hint = r.last().saturating_add(1);
++            if a.leader < r.peers.len() && a.term >= r.state.term {
++                r.state.adopt_term(a.term); r.state.role = Role::Follower; r.reset();
++                if let Some((base, term, bytes)) = a.snapshot {
++                    if base > r.commit {
++                        if r.term_at(base) == Some(term) {
++                            let remove = (base - r.disk.base) as usize;
++                            r.disk.log.drain(..remove);
++                        } else { r.disk.log.clear(); }
++                        r.disk.base = base; r.disk.base_term = term; r.disk.snapshot = bytes.clone();
++                        r.commit = base; r.applied = base; installed = true;
++                        // Released after the durable write below.
++                    }
++                    success = true;
++                } else if r.term_at(a.prev) == Some(a.prev_term) {
++                    success = true;
++                    let mut index = a.prev;
++                    for entry in a.entries {
++                        if index == u64::MAX { success = false; break; }
++                        index += 1;
++                        if r.term_at(index) != Some(entry.term) {
++                            if index <= r.commit { success = false; break; }
++                            let keep = (index - r.disk.base - 1) as usize;
++                            r.disk.log.truncate(keep); r.disk.log.push(entry);
++                        }
++                    }
++                    if success { r.commit = r.commit.max(a.commit.min(index)); }
++                } else if let Some(term) = r.term_at(a.prev) {
++                    hint = a.prev;
++                    while hint > r.disk.base && r.term_at(hint - 1) == Some(term) { hint -= 1; }
++                }
++            }
++            AppendReply { term: r.state.term, success, hint }
++        };
++        self.persist().await?;
++        let mut r = self.inner.lock().unwrap();
++        if installed {
++            let _ = r.apply_ch.unbounded_send(ApplyMsg::Snapshot { data: r.disk.snapshot.clone(), term: r.disk.base_term, index: r.disk.base });
++        }
++        r.apply();
++        Ok(reply)
++    }
++    async fn tick(&self) {
++        let _gate = self.gate.lock().await;
++        let election = {
++            let mut r = self.inner.lock().unwrap();
++            if !r.state.is_leader() && Instant::now() >= r.deadline {
++                let me = r.me;
++                if !r.state.campaign(me as u64) { r.reset(); return; }
++                r.votes.fill(false); r.votes[me] = true; r.reset();
++                let a = RequestVoteArgs { term: r.state.term, candidate: me as u64, last: r.last(), last_term: r.term_at(r.last()).unwrap() };
++                if r.peers.len() == 1 { r.become_leader(); }
++                Some((a, r.peers.clone(), me))
++            } else { None }
++        };
++        if let Some((a, peers, me)) = election {
++            self.persist().await.expect("campaign persistence");
++            for (peer, addr) in peers.into_iter().enumerate().filter(|(i,_)| *i != me) {
++                let h = self.clone(); let a = a.clone();
++                task::spawn(async move {
++                    if let Ok(reply) = h.endpoint.call_timeout(addr, a.clone(), Duration::from_millis(250)).await {
++                        h.vote_reply(peer, a.term, reply).await;
++                    }
++                });
++            }
++        }
++        let sends = {
++            let mut r = self.inner.lock().unwrap();
++            let mut sends = vec![];
++            if r.state.is_leader() && Instant::now() >= r.heartbeat {
++                r.heartbeat = Instant::now() + Duration::from_millis(80);
++                for peer in 0..r.peers.len() {
++                    if peer == r.me { continue; }
++                    let next = r.next[peer].min(r.last().saturating_add(1));
++                    let snapshot = if next <= r.disk.base { Some((r.disk.base, r.disk.base_term, r.disk.snapshot.clone())) } else { None };
++                    let prev = if snapshot.is_some() { r.disk.base } else { next - 1 };
++                    let entries = if snapshot.is_some() { vec![] } else { r.disk.log[(next - r.disk.base - 1) as usize..].to_vec() };
++                    sends.push((peer, r.peers[peer], AppendArgs { term: r.state.term, leader: r.me, prev, prev_term: r.term_at(prev).unwrap(), entries, commit: r.commit, snapshot }));
++                }
++            }
++            sends
++        };
++        for (peer, addr, a) in sends {
++            let h = self.clone();
++            task::spawn(async move {
++                if let Ok(reply) = h.endpoint.call_timeout(addr, a.clone(), Duration::from_millis(250)).await { h.append_reply(peer, a, reply).await; }
+             });
+         }
+-
+-        // spawn a concurrent task
+-        task::spawn(async move {
+-            // handle RPC tasks in completion order
+-            while let Some(res) = rpcs.next().await {
+-                todo!("handle RPC results");
+-            }
+-        }); // MadSim 0.2 detaches JoinHandle on drop.
+-    }
+-}
+-
+-#[derive(Debug, Clone, Serialize, Deserialize)]
+-struct RequestVoteArgs {
+-    // Your data here.
+-}
+-
+-#[derive(Debug, Clone, Serialize, Deserialize)]
+-struct RequestVoteReply {
+-    // Your data here.
+-}
+-
+-impl net::rpc::Request for RequestVoteArgs {
+-    type Response = RequestVoteReply;
+-    const ID: u64 = 1;
+-}
++    }
++    async fn vote_reply(&self, peer: usize, term: u64, reply: RequestVoteReply) {
++        let _gate = self.gate.lock().await;
++        {
++            let mut r = self.inner.lock().unwrap();
++            r.state.adopt_term(reply.term);
++            if r.state.term == term && r.state.role == Role::Candidate && reply.granted {
++                r.votes[peer] = true;
++                if r.votes.iter().filter(|v| **v).count() > r.peers.len() / 2 { r.become_leader(); }
++            }
++        }
++        self.persist().await.expect("reply persistence");
++    }
++    async fn append_reply(&self, peer: usize, a: AppendArgs, reply: AppendReply) {
++        let _gate = self.gate.lock().await;
++        {
++            let mut r = self.inner.lock().unwrap();
++            r.state.adopt_term(reply.term);
++            if r.state.is_leader() && r.state.term == a.term {
++                if reply.success {
++                    let matched = a.snapshot.as_ref().map_or(a.prev + a.entries.len() as u64, |s| s.0);
++                    r.matched[peer] = r.matched[peer].max(matched);
++                    r.next[peer] = r.matched[peer].saturating_add(1);
++                    r.advance_commit();
++                } else if r.next[peer] == a.prev.saturating_add(1) {
++                    r.next[peer] = reply.hint.min(r.next[peer].saturating_sub(1)).max(1);
++                    r.heartbeat = Instant::now();
++                }
++            }
++        }
++        self.persist().await.expect("reply persistence");
++    }
++}
++#[derive(Debug, Clone, Serialize, Deserialize)]
++struct RequestVoteArgs { term: u64, candidate: u64, last: u64, last_term: u64 }
++#[derive(Debug, Clone, Serialize, Deserialize)]
++struct RequestVoteReply { term: u64, granted: bool }
++impl net::rpc::Request for RequestVoteArgs { type Response = RequestVoteReply; const ID: u64 = 1; }
++#[derive(Debug, Clone, Serialize, Deserialize)]
++struct AppendArgs { term: u64, leader: usize, prev: u64, prev_term: u64, entries: Vec<Entry>, commit: u64, snapshot: Option<(u64,u64,Vec<u8>)> }
++#[derive(Debug, Clone, Serialize, Deserialize)]
++struct AppendReply { term: u64, success: bool, hint: u64 }
++impl net::rpc::Request for AppendArgs { type Response = AppendReply; const ID: u64 = 10; }
+--- before/madraft/src/raft/state.rs
++++ after/madraft/src/raft/state.rs
+@@ -1,37 +1,56 @@
+-// Existing upstream state and accessor, relocated for same-source tool checking.
+ use vstd::prelude::*;
+ 
+ verus! {
+-/// State of a raft peer.
+ #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+ pub(super) struct State {
+     pub(super) term: u64,
+     pub(super) role: Role,
++    pub(super) vote: Option<u64>,
+ }
+-
+ #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+-pub(super) enum Role {
+-    Follower,
+-    Candidate,
+-    Leader,
+-}
+-
++pub(super) enum Role { Follower, Candidate, Leader }
+ impl State {
+     pub(super) fn is_leader(&self) -> (result: bool)
+         ensures result == (self.role is Leader),
++    { matches!(self.role, Role::Leader) }
++
++    pub(super) fn adopt_term(&mut self, term: u64)
++        ensures self.term == if term > old(self).term { term } else { old(self).term },
++            term <= old(self).term ==> *self == *old(self),
++            term > old(self).term ==> self.vote == None::<u64> && self.role is Follower,
+     {
+-        matches!(self.role, Role::Leader)
++        if term > self.term {
++            self.term = term;
++            self.vote = None;
++            self.role = Role::Follower;
++        }
++    }
++
++    pub(super) fn campaign(&mut self, me: u64) -> (ok: bool)
++        ensures ok ==> self.term == old(self).term + 1 && self.vote == Some(me) && self.role is Candidate,
++            !ok ==> *self == *old(self) && self.term == u64::MAX,
++    {
++        if self.term == u64::MAX { return false; }
++        self.term = self.term + 1;
++        self.vote = Some(me);
++        self.role = Role::Candidate;
++        true
++    }
++
++    pub(super) fn grant_vote(&mut self, term: u64, candidate: u64, fresh: bool) -> (granted: bool)
++        ensures self.term >= old(self).term,
++            self.term == old(self).term && old(self).vote.is_some() ==> self.vote == old(self).vote,
++            granted ==> self.term == term && self.vote == Some(candidate) && fresh,
++            self.term == old(self).term || self.term == term,
++    {
++        self.adopt_term(term);
++        if term == self.term && fresh && (self.vote.is_none() || self.vote == Some(candidate)) {
++            self.vote = Some(candidate);
++            true
++        } else { false }
+     }
+ }
+-
+ }
+-
+-impl Default for Role {
+-    fn default() -> Self {
+-        Role::Follower
+-    }
++impl Default for State {
++    fn default() -> Self { Self { term: 0, role: Role::Follower, vote: None } }
+ }
+-
+-impl Default for State {
+-    fn default() -> Self { Self { term: 0, role: Role::default() } }
+-}
+--- before/madraft/src/shard_ctrler/server.rs
++++ after/madraft/src/shard_ctrler/server.rs
+@@ -1,19 +1,54 @@
+ use super::msg::*;
+ use crate::kvraft::server::{Server, State};
+ use serde::{Deserialize, Serialize};
+-
++use std::collections::BTreeMap;
+ pub type ShardCtrler = Server<ShardInfo>;
+-
+-#[derive(Debug, Default, Serialize, Deserialize)]
+-pub struct ShardInfo {
+-    // Your data here.
++#[derive(Debug, Serialize, Deserialize)]
++pub struct ShardInfo { configs: Vec<Config> }
++impl Default for ShardInfo {
++    fn default() -> Self { Self { configs: vec![Config::default()] } }
+ }
+-
++impl ShardInfo {
++    fn rebalance(config: &mut Config) {
++        let mut desired = BTreeMap::new();
++        let mut gids: Vec<_> = config.groups.keys().copied().collect();
++        gids.sort_unstable();
++        if gids.is_empty() { config.shards.fill(0); return; }
++        for (i, gid) in gids.iter().enumerate() {
++            desired.insert(*gid, super::N_SHARDS / gids.len() + usize::from(i < super::N_SHARDS % gids.len()));
++        }
++        let mut counts = BTreeMap::new();
++        for gid in config.shards { *counts.entry(gid).or_insert(0usize) += 1; }
++        let mut free = vec![];
++        for (index, gid) in config.shards.iter().enumerate() {
++            let count = counts.get_mut(gid).unwrap();
++            if *count > desired.get(gid).copied().unwrap_or(0) { *count -= 1; free.push(index); }
++        }
++        for (gid, target) in desired {
++            let count = counts.entry(gid).or_insert(0);
++            while *count < target { config.shards[free.pop().unwrap()] = gid; *count += 1; }
++        }
++    }
++}
+ impl State for ShardInfo {
+     type Command = Op;
+     type Output = Option<Config>;
+-
+-    fn apply(&mut self, cmd: Self::Command) -> Self::Output {
+-        todo!("apply command");
++    fn apply(&mut self, cmd: Op) -> Self::Output {
++        let mut config = self.configs.last().unwrap().clone();
++        match cmd {
++            Op::Query { num } => return Some(self.configs.get(num as usize).unwrap_or(&config).clone()),
++            Op::Join { groups } => {
++                for (gid, servers) in groups { if gid != 0 { config.groups.insert(gid, servers); } }
++                Self::rebalance(&mut config);
++            }
++            Op::Leave { gids } => {
++                for gid in gids { config.groups.remove(&gid); }
++                Self::rebalance(&mut config);
++            }
++            Op::Move { shard, gid } => { if shard < super::N_SHARDS { config.shards[shard] = gid; } }
++        }
++        config.num = self.configs.len() as u64;
++        self.configs.push(config);
++        None
+     }
+ }

@@ -1,0 +1,106 @@
+$ /home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo test --manifest-path madraft/Cargo.toml --locked --offline --release --lib --no-fail-fast raft::tests:: -- --test-threads=1 --skip kvraft:: --skip shardkv::
+
+running 23 tests
+test raft::tests::backup_2b ... ok
+test raft::tests::basic_agree_2b ... ok
+test raft::tests::concurrent_starts_2b ... ok
+test raft::tests::count_2b ... ok
+test raft::tests::fail_agree_2b ... ok
+test raft::tests::fail_no_agree_2b ... ok
+test raft::tests::figure_8_2c ... ok
+test raft::tests::figure_8_unreliable_2c ... ok
+test raft::tests::initial_election_2a ... ok
+test raft::tests::many_election_2a ... ok
+test raft::tests::persist1_2c ... ok
+test raft::tests::persist2_2c ... ok
+test raft::tests::persist3_2c ... ok
+test raft::tests::reelection_2a ... ok
+test raft::tests::rejoin_2b ... ok
+test raft::tests::reliable_churn_2c ... ok
+test raft::tests::snapshot_basic_2d ... ok
+test raft::tests::snapshot_install_2d ... ok
+test raft::tests::snapshot_install_crash_2d ... ok
+test raft::tests::snapshot_install_unreliable_2d ... ok
+test raft::tests::snapshot_install_unreliable_crash_2d ... ok
+test raft::tests::unreliable_agree_2c ... ok
+test raft::tests::unreliable_churn_2c ... ok
+
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 41 filtered out; finished in 0.56s
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+  --> src/kvraft/tester.rs:95:31
+   |
+95 |             NetSim::current().connect2(node_id(&self.handle, self.addrs[i]), node_id(&self.handle, self.addrs[j]));
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+   --> src/kvraft/tester.rs:103:31
+    |
+103 |             NetSim::current().disconnect2(node_id(&self.handle, self.addrs[i]), node_id(&self.handle, self.addrs[j]));
+    |                               ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead
+   --> src/kvraft/tester.rs:148:27
+    |
+148 |         NetSim::current().connect(node_id(&self.handle, addr));
+    |                           ^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+   --> src/kvraft/tester.rs:150:31
+    |
+150 |             NetSim::current().disconnect2(node_id(&self.handle, addr), node_id(&self.handle, self.addrs[i]));
+    |                               ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+   --> src/kvraft/tester.rs:153:31
+    |
+153 |             NetSim::current().connect2(node_id(&self.handle, addr), node_id(&self.handle, self.addrs[i]));
+    |                               ^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect`: use `clog_node` instead
+   --> src/raft/tester.rs:271:27
+    |
+271 |         NetSim::current().disconnect(node_id(&self.handle, self.addrs[i]));
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead
+   --> src/raft/tester.rs:278:27
+    |
+278 |         NetSim::current().connect(node_id(&self.handle, self.addrs[i]));
+    |                           ^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+  --> src/test_support.rs:77:23
+   |
+77 |     NetSim::current().disconnect2(server.id(), client.id());
+   |                       ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+  --> src/test_support.rs:79:23
+   |
+79 |     NetSim::current().connect2(server.id(), client.id());
+   |                       ^^^^^^^^
+
+warning: field `endpoint` is never read
+  --> src/raft/raft.rs:61:5
+   |
+60 | struct Raft {
+   |        ---- field in this struct
+61 |     endpoint: net::Endpoint,
+   |     ^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `next_log_index` is never used
+  --> src/raft/state.rs:11:15
+   |
+11 | pub(super) fn next_log_index(length: u64) -> (index: Option<u64>)
+   |               ^^^^^^^^^^^^^^
+
+warning: `madraft` (lib test) generated 11 warnings
+    Finished `release` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/runs/calls-B-01/runs/checks/cargo-target/release/deps/madraft-9d1fbd9857b1c1bd)
+
+process=COMPLETED exit=0

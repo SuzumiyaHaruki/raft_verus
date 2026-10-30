@@ -1,0 +1,194 @@
+$ /home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo test --manifest-path madraft/Cargo.toml --locked --offline --release --lib --no-fail-fast raft::tests:: -- --test-threads=1 --skip kvraft:: --skip shardkv::
+
+running 23 tests
+test raft::tests::backup_2b ... ok
+test raft::tests::basic_agree_2b ... ok
+test raft::tests::concurrent_starts_2b ... ok
+test raft::tests::count_2b ... ok
+test raft::tests::fail_agree_2b ... ok
+test raft::tests::fail_no_agree_2b ... ok
+test raft::tests::figure_8_2c ... ok
+test raft::tests::figure_8_unreliable_2c ... ok
+test raft::tests::initial_election_2a ... ok
+test raft::tests::many_election_2a ... ok
+test raft::tests::persist1_2c ... ok
+test raft::tests::persist2_2c ... ok
+test raft::tests::persist3_2c ... ok
+test raft::tests::reelection_2a ... ok
+test raft::tests::rejoin_2b ... ok
+test raft::tests::reliable_churn_2c ... ok
+test raft::tests::snapshot_basic_2d ... ok
+test raft::tests::snapshot_install_2d ... ok
+test raft::tests::snapshot_install_crash_2d ... ok
+test raft::tests::snapshot_install_unreliable_2d ... ok
+test raft::tests::snapshot_install_unreliable_crash_2d ... ok
+test raft::tests::unreliable_agree_2c ... ok
+test raft::tests::unreliable_churn_2c ... ok
+
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 41 filtered out; finished in 0.61s
+
+warning: unreachable statement
+  --> src/shardkv/server.rs:20:9
+   |
+19 |         todo!("construct ShardKv");
+   |         -------------------------- any code following this expression is unreachable
+20 |         let inner = Server::new(servers, me, max_raft_state).await;
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unreachable statement
+   |
+   = note: `#[warn(unreachable_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+  --> src/kvraft/tester.rs:95:31
+   |
+95 |             NetSim::current().connect2(node_id(&self.handle, self.addrs[i]), node_id(&self.handle, self.addrs[j]));
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+   --> src/kvraft/tester.rs:103:31
+    |
+103 |             NetSim::current().disconnect2(node_id(&self.handle, self.addrs[i]), node_id(&self.handle, self.addrs[j]));
+    |                               ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead
+   --> src/kvraft/tester.rs:148:27
+    |
+148 |         NetSim::current().connect(node_id(&self.handle, addr));
+    |                           ^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+   --> src/kvraft/tester.rs:150:31
+    |
+150 |             NetSim::current().disconnect2(node_id(&self.handle, addr), node_id(&self.handle, self.addrs[i]));
+    |                               ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+   --> src/kvraft/tester.rs:153:31
+    |
+153 |             NetSim::current().connect2(node_id(&self.handle, addr), node_id(&self.handle, self.addrs[i]));
+    |                               ^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect`: use `clog_node` instead
+   --> src/raft/tester.rs:271:27
+    |
+271 |         NetSim::current().disconnect(node_id(&self.handle, self.addrs[i]));
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead
+   --> src/raft/tester.rs:278:27
+    |
+278 |         NetSim::current().connect(node_id(&self.handle, self.addrs[i]));
+    |                           ^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+  --> src/test_support.rs:77:23
+   |
+77 |     NetSim::current().disconnect2(server.id(), client.id());
+   |                       ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+  --> src/test_support.rs:79:23
+   |
+79 |     NetSim::current().connect2(server.id(), client.id());
+   |                       ^^^^^^^^
+
+warning: unused variable: `key`
+  --> src/shardkv/client.rs:15:29
+   |
+15 |     pub async fn get(&self, key: String) -> String {
+   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `key`
+  --> src/shardkv/client.rs:19:29
+   |
+19 |     pub async fn put(&self, key: String, value: String) {
+   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`
+
+warning: unused variable: `value`
+  --> src/shardkv/client.rs:19:42
+   |
+19 |     pub async fn put(&self, key: String, value: String) {
+   |                                          ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`
+
+warning: unused variable: `key`
+  --> src/shardkv/client.rs:23:32
+   |
+23 |     pub async fn append(&self, key: String, value: String) {
+   |                                ^^^ help: if this is intentional, prefix it with an underscore: `_key`
+
+warning: unused variable: `value`
+  --> src/shardkv/client.rs:23:45
+   |
+23 |     pub async fn append(&self, key: String, value: String) {
+   |                                             ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`
+
+warning: unused variable: `ctrl_ck`
+  --> src/shardkv/server.rs:13:9
+   |
+13 |         ctrl_ck: CtrlerClerk,
+   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_ctrl_ck`
+
+warning: unused variable: `servers`
+  --> src/shardkv/server.rs:14:9
+   |
+14 |         servers: Vec<SocketAddr>,
+   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_servers`
+
+warning: unused variable: `gid`
+  --> src/shardkv/server.rs:15:9
+   |
+15 |         gid: u64,
+   |         ^^^ help: if this is intentional, prefix it with an underscore: `_gid`
+
+warning: unused variable: `me`
+  --> src/shardkv/server.rs:16:9
+   |
+16 |         me: usize,
+   |         ^^ help: if this is intentional, prefix it with an underscore: `_me`
+
+warning: unused variable: `max_raft_state`
+  --> src/shardkv/server.rs:17:9
+   |
+17 |         max_raft_state: Option<usize>,
+   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`
+
+warning: unused variable: `cmd`
+  --> src/shardkv/server.rs:34:25
+   |
+34 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {
+   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`
+
+warning: field `endpoint` is never read
+  --> src/raft/raft.rs:61:5
+   |
+60 | struct Raft {
+   |        ---- field in this struct
+61 |     endpoint: net::Endpoint,
+   |     ^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: field `ctrl_ck` is never read
+ --> src/shardkv/client.rs:5:5
+  |
+4 | pub struct Clerk {
+  |            ----- field in this struct
+5 |     ctrl_ck: CtrlerClerk,
+  |     ^^^^^^^
+
+warning: field `inner` is never read
+ --> src/shardkv/server.rs:8:5
+  |
+7 | pub struct ShardKvServer {
+  |            ------------- field in this struct
+8 |     inner: Arc<Server<ShardKv>>,
+  |     ^^^^^
+
+warning: `madraft` (lib test) generated 24 warnings (run `cargo fix --lib -p madraft --tests` to apply 11 suggestions)
+    Finished `release` profile [optimized] target(s) in 0.10s
+     Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/runs/calls-B-01/runs/checks/cargo-target/release/deps/madraft-9d1fbd9857b1c1bd)
+
+process=COMPLETED exit=0

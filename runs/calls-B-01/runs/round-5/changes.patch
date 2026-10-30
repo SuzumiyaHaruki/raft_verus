@@ -1,0 +1,196 @@
+--- before/madraft/proof/progress.rs
++++ after/madraft/proof/progress.rs
+@@ -5,6 +5,8 @@
+ mod sequence;
+ #[path = "../src/shardkv/transfer.rs"]
+ mod transfer;
++#[path = "../src/raft/log.rs"]
++mod log;
+ use state::{Ballots, State};
+ use vstd::prelude::*;
+ verus! {
+--- before/madraft/src/raft/log.rs
++++ after/madraft/src/raft/log.rs
+@@ -0,0 +1,105 @@
++//! Actual log mutations, shared by Rust execution and Verus.
++use vstd::prelude::*;
++verus! {
++#[cfg_attr(not(verus_keep_ghost), derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize))]
++pub(super) struct LogEntry { pub(super) term: u64, pub(super) data: Vec<u8> }
++
++pub(super) fn fresh_log() -> (log: Vec<LogEntry>)
++    ensures log.len() == 1, log@[0].term == 0, log@[0].data@ == Seq::<u8>::empty(),
++{
++    let mut log = Vec::new();
++    log.push(LogEntry { term: 0, data: Vec::new() });
++    log
++}
++
++pub(super) fn same(a: &LogEntry, b: &LogEntry) -> (yes: bool)
++    ensures yes == (a.term == b.term && a.data@ == b.data@),
++{
++    if a.term != b.term || a.data.len() != b.data.len() { return false; }
++    let mut i = 0;
++    while i < a.data.len()
++        invariant i <= a.data.len(), a.data.len() == b.data.len(),
++            forall|j: int| 0 <= j < i ==> a.data@[j] == b.data@[j],
++        decreases a.data.len() - i,
++    {
++        if a.data[i] != b.data[i] { return false; }
++        i += 1;
++    }
++    proof { assert(a.data@ =~= b.data@); }
++    true
++}
++
++// No unchecked helper preconditions: malformed or exhausted boundaries reject.
++// Real role authorization is the caller's State::is_leader result; its
++// constructor/recovery composition is still a separate proof obligation.
++pub(super) fn propose(log: &mut Vec<LogEntry>, base: usize, term: u64, leader: bool, data: Vec<u8>) -> (accepted: bool)
++    ensures accepted ==> leader && log.len() == old(log).len() + 1
++        && log@.take(old(log).len() as int) == old(log)@
++        && log@[old(log).len() as int].term == term
++        && log@[old(log).len() as int].data@ == data@,
++        !accepted ==> log@ == old(log)@,
++{
++    if !leader || log.len() == 0 || log.len() >= usize::MAX - base { return false; }
++    log.push(LogEntry { term, data });
++    true
++}
++
++pub(super) fn truncate_conflict(log: &mut Vec<LogEntry>, base: usize, committed: usize, offset: usize, incoming: &LogEntry) -> (changed: bool)
++    ensures !changed ==> log@ == old(log)@,
++        changed ==> offset < old(log).len() && log@ == old(log)@.take(offset as int)
++            && base + offset > committed && old(log)@[offset as int].term != incoming.term,
++        // Exact retained content, including each command's bytes.
++        forall|i: int| 0 <= i < log.len() ==> log@[i] == old(log)@[i],
++{
++    if offset >= log.len() || base > usize::MAX - offset { return false; }
++    if base + offset <= committed || log[offset].term == incoming.term { return false; }
++    log.truncate(offset);
++    true
++}
++
++pub(super) fn append_received(log: &mut Vec<LogEntry>, entry: LogEntry) -> (accepted: bool)
++    ensures accepted == (old(log).len() < usize::MAX),
++        accepted ==> log@ == old(log)@.push(entry),
++        !accepted ==> log@ == old(log)@,
++{
++    if log.len() == usize::MAX { return false; }
++    log.push(entry);
++    true
++}
++// Actual proposal caller: derives helper inputs from real consensus state.
++pub(super) fn propose_from_state(state: &super::state::State, log: &mut Vec<LogEntry>, base: usize, data: Vec<u8>) -> (index: Option<usize>)
++    ensures index.is_some() ==> state.role is Leader
++        && index.unwrap() == base + old(log).len()
++        && log.len() == old(log).len() + 1
++        && log@.take(old(log).len() as int) == old(log)@
++        && log@[old(log).len() as int].term == state.term
++        && log@[old(log).len() as int].data@ == data@,
++        index.is_none() ==> log@ == old(log)@,
++{
++    if log.len() == 0 || log.len() >= usize::MAX - base { return None; }
++    let index = base + log.len();
++    let leader = state.is_leader();
++    if propose(log, base, state.term, leader, data) { Some(index) } else { None }
++}
++
++// Actual received-entry call composition. The async handler separately checks
++// term, predecessor and genuine-message provenance; those remain OPEN.
++pub(super) fn receive_entry(log: &mut Vec<LogEntry>, base: usize, committed: usize, index: usize, entry: LogEntry) -> (accepted: bool)
++    ensures !accepted ==> log@ == old(log)@,
++        forall|i: int| 0 <= i < old(log).len() && base as int + i <= committed ==>
++            i < log.len() && log@[i].term == old(log)@[i].term && log@[i].data@ == old(log)@[i].data@,
++        accepted ==> index >= base && index - base < log.len()
++        && log@[index as int-base as int].term == entry.term
++        && log@[index as int-base as int].data@ == entry.data@,
++{
++    if index < base { return false; }
++    let offset = index - base;
++    if offset > log.len() { return false; }
++    if offset < log.len() {
++        if same(&log[offset], &entry) { return true; }
++        if !truncate_conflict(log, base, committed, offset, &entry) { return false; }
++    }
++    append_received(log, entry)
++}
++
++}
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -83,6 +83,9 @@
+ #[path = "state.rs"]
+ mod state;
+ use state::{Ballots, State};
++#[path = "log.rs"]
++mod log;
++use log::LogEntry;
+ 
+ /// Data needs to be persisted.
+ #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+@@ -96,8 +99,6 @@
+     commit: usize,
+ }
+ 
+-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+-struct LogEntry { term: u64, data: Vec<u8> }
+ 
+ impl fmt::Debug for Raft {
+     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+@@ -127,7 +128,7 @@
+             deadline: Instant::now() + Raft::generate_election_timeout(),
+             journal_next: 0,
+             saved: None,
+-            log: vec![LogEntry { term: 0, data: Vec::new() }],
++            log: log::fresh_log(),
+             base: 0,
+             snapshot: Vec::new(),
+             commit: 0,
+@@ -527,9 +528,8 @@
+ 
+     fn start(&mut self, data: &[u8]) -> Result<Start> {
+         if !self.state.is_leader() { return Err(Error::NotLeader((self.me + 1) % self.peers.len())); }
+-        let index = state::next_log_index(self.last_index().checked_add(1).ok_or_else(|| io::Error::new(io::ErrorKind::Other, "index exhausted"))? as u64)
+-            .ok_or_else(|| io::Error::new(io::ErrorKind::Other, "index exhausted"))?;
+-        self.log.push(LogEntry { term: self.state.term, data: data.to_vec() });
++        let index = log::propose_from_state(&self.state, &mut self.log, self.base, data.to_vec())
++            .ok_or_else(|| io::Error::new(io::ErrorKind::Other, "proposal rejected"))? as u64;
+         self.matched[self.me] = self.last_index() as u64;
+         Ok(Start { index, term: self.state.term })
+     }
+@@ -584,11 +584,9 @@
+         }
+         for (offset, entry) in args.entries.into_iter().enumerate() {
+             let index = prev + 1 + offset;
+-            if index <= self.last_index() && self.log[index-self.base] != entry {
+-                if index <= self.commit || self.log[index-self.base].term == entry.term { return no(self.state.term, index as u64); }
+-                self.log.truncate(index-self.base);
+-            }
+-            if index == self.last_index()+1 { self.log.push(entry); }
++            if !log::receive_entry(&mut self.log, self.base, self.commit, index, entry) {
++                return no(self.state.term, index as u64);
++            }
+         }
+         self.commit = state::follower_commit(self.commit as u64, args.leader_commit, through as u64) as usize;
+         AppendReply { term: self.state.term, success: true, next: (through+1) as u64 }
+--- before/madraft/src/shardkv/server.rs
++++ after/madraft/src/shardkv/server.rs
+@@ -103,13 +103,16 @@
+                     self.ready[shard] = new == gid && (old == gid && self.ready[shard] || old == 0);
+                     if new == gid && old == 0 { self.shards[shard] = ShardData::default(); }
+                 }
+-                self.previous = std::mem::replace(&mut self.config, config); Reply::Ok
++                self.previous = std::mem::replace(&mut self.config, config);
++                if self.complete() { self.previous.groups.clear(); }
++                Reply::Ok
+             }
+             Op::Import { epoch, shard, data } => {
+                 if shard < N_SHARDS && super::transfer::can_import(self.config.num, epoch, self.config.shards[shard] == self.gid, self.ready[shard]) {
+                     self.shards[shard] = data; self.ready[shard] = true;
+                     let peers = self.previous.groups.get(&self.previous.shards[shard]).cloned().unwrap_or_default();
+                     self.acks.insert((epoch, shard), peers);
++                    if self.complete() { self.previous.groups.clear(); }
+                 }
+                 Reply::Ok
+             }

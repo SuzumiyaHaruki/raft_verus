@@ -1,0 +1,15 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/calls-B-01/runs/checks/1793336938406854471/candidate/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 40 verified, 1 errors
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/calls-B-01/runs/checks/1793336938406854471/candidate/madraft/proof/../src/raft/log.rs:87:13
+    |
+ 87 |     ensures !accepted ==> log@ == old(log)@,
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+101 |     append_received(log, entry)
+    |     --------------------------- at the end of the function body
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

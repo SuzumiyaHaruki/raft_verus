@@ -1,0 +1,107 @@
+$ /home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo test --manifest-path madraft/Cargo.toml --locked --offline --release --lib --no-fail-fast shardkv::tests:: -- --test-threads=1
+
+running 13 tests
+test shardkv::tests::challenge1_delete_4b ... FAILED
+test shardkv::tests::challenge2_partial_4b ... ok
+test shardkv::tests::challenge2_unaffected_4b ... ok
+test shardkv::tests::concurrent1_4b ... ok
+test shardkv::tests::concurrent2_4b ... ok
+test shardkv::tests::concurrent3_4b ... ok
+test shardkv::tests::join_leave_4b ... ok
+test shardkv::tests::miss_change_4b ... ok
+test shardkv::tests::snapshot_4b ... ok
+test shardkv::tests::static_shards_4b ... ok
+test shardkv::tests::unreliable1_4b ... ok
+test shardkv::tests::unreliable2_4b ... ok
+test shardkv::tests::unreliable3_4b ... ignored
+
+failures:
+
+---- shardkv::tests::challenge1_delete_4b stdout ----
+
+thread '<unnamed>' (11) panicked at src/shardkv/tests.rs:484:5:
+snapshot + persisted Raft state are too big: 117689 > 117000
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+context: node=0 "madsim-main", task=0 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+
+failures:
+    shardkv::tests::challenge1_delete_4b
+
+test result: FAILED. 11 passed; 1 failed; 1 ignored; 0 measured; 51 filtered out; finished in 2.17s
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+  --> src/kvraft/tester.rs:95:31
+   |
+95 |             NetSim::current().connect2(node_id(&self.handle, self.addrs[i]), node_id(&self.handle, self.addrs[j]));
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+   --> src/kvraft/tester.rs:103:31
+    |
+103 |             NetSim::current().disconnect2(node_id(&self.handle, self.addrs[i]), node_id(&self.handle, self.addrs[j]));
+    |                               ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead
+   --> src/kvraft/tester.rs:148:27
+    |
+148 |         NetSim::current().connect(node_id(&self.handle, addr));
+    |                           ^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+   --> src/kvraft/tester.rs:150:31
+    |
+150 |             NetSim::current().disconnect2(node_id(&self.handle, addr), node_id(&self.handle, self.addrs[i]));
+    |                               ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+   --> src/kvraft/tester.rs:153:31
+    |
+153 |             NetSim::current().connect2(node_id(&self.handle, addr), node_id(&self.handle, self.addrs[i]));
+    |                               ^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect`: use `clog_node` instead
+   --> src/raft/tester.rs:271:27
+    |
+271 |         NetSim::current().disconnect(node_id(&self.handle, self.addrs[i]));
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead
+   --> src/raft/tester.rs:278:27
+    |
+278 |         NetSim::current().connect(node_id(&self.handle, self.addrs[i]));
+    |                           ^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+  --> src/test_support.rs:77:23
+   |
+77 |     NetSim::current().disconnect2(server.id(), client.id());
+   |                       ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+  --> src/test_support.rs:79:23
+   |
+79 |     NetSim::current().connect2(server.id(), client.id());
+   |                       ^^^^^^^^
+
+warning: field `endpoint` is never read
+  --> src/raft/raft.rs:61:5
+   |
+60 | struct Raft {
+   |        ---- field in this struct
+61 |     endpoint: net::Endpoint,
+   |     ^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `madraft` (lib test) generated 10 warnings
+    Finished `release` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/runs/calls-B-01/runs/checks/cargo-target/release/deps/madraft-9d1fbd9857b1c1bd)
+error: test failed, to rerun pass `--lib`
+error: 1 target failed:
+    `--lib`
+
+process=COMPLETED exit=101

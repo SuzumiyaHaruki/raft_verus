@@ -1,0 +1,451 @@
+$ /home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo test --manifest-path madraft/Cargo.toml --locked --offline --release --lib --no-fail-fast kvraft::tests:: -- --test-threads=1
+
+running 19 tests
+test kvraft::tests::basic_3a ... FAILED
+test kvraft::tests::concurrent_3a ... FAILED
+test kvraft::tests::many_partitions_many_clients_3a ... FAILED
+test kvraft::tests::many_partitions_one_client_3a ... FAILED
+test kvraft::tests::one_partition_3a ... FAILED
+test kvraft::tests::persist_concurrent_3a ... FAILED
+test kvraft::tests::persist_concurrent_unreliable_3a ... FAILED
+test kvraft::tests::persist_one_client_3a ... FAILED
+test kvraft::tests::persist_partition_3a ... FAILED
+test kvraft::tests::persist_partition_unreliable_3a ... FAILED
+test kvraft::tests::snapshot_recover_3b ... FAILED
+test kvraft::tests::snapshot_recover_many_clients_3b ... FAILED
+test kvraft::tests::snapshot_rpc_3b ... FAILED
+test kvraft::tests::snapshot_size_3b ... FAILED
+test kvraft::tests::snapshot_unreliable_3b ... FAILED
+test kvraft::tests::snapshot_unreliable_recover_3b ... FAILED
+test kvraft::tests::snapshot_unreliable_recover_concurrent_partition_3b ... FAILED
+test kvraft::tests::unreliable_3a ... FAILED
+test kvraft::tests::unreliable_one_key_3a ... FAILED
+
+failures:
+
+---- kvraft::tests::basic_3a stdout ----
+
+thread '<unnamed>' (31491) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+context: node=1 "0.0.1.0:1", task=3 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- kvraft::tests::concurrent_3a stdout ----
+
+thread '<unnamed>' (31493) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+context: node=1 "0.0.1.0:1", task=31 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- kvraft::tests::many_partitions_many_clients_3a stdout ----
+
+thread '<unnamed>' (31495) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+context: node=1 "0.0.1.0:1", task=67 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- kvraft::tests::many_partitions_one_client_3a stdout ----
+
+thread '<unnamed>' (31497) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+context: node=1 "0.0.1.0:1", task=103 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- kvraft::tests::one_partition_3a stdout ----
+
+thread '<unnamed>' (31499) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+context: node=1 "0.0.1.0:1", task=131 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- kvraft::tests::persist_concurrent_3a stdout ----
+
+thread '<unnamed>' (31501) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+context: node=1 "0.0.1.0:1", task=158 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- kvraft::tests::persist_concurrent_unreliable_3a stdout ----
+
+thread '<unnamed>' (31503) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+context: node=1 "0.0.1.0:1", task=194 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- kvraft::tests::persist_one_client_3a stdout ----
+
+thread '<unnamed>' (31505) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+context: node=1 "0.0.1.0:1", task=230 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- kvraft::tests::persist_partition_3a stdout ----
+
+thread '<unnamed>' (31507) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+context: node=1 "0.0.1.0:1", task=258 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- kvraft::tests::persist_partition_unreliable_3a stdout ----
+
+thread '<unnamed>' (31509) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+context: node=1 "0.0.1.0:1", task=294 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- kvraft::tests::snapshot_recover_3b stdout ----
+
+thread '<unnamed>' (31511) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+context: node=1 "0.0.1.0:1", task=330 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- kvraft::tests::snapshot_recover_many_clients_3b stdout ----
+
+thread '<unnamed>' (31513) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+context: node=1 "0.0.1.0:1", task=358 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- kvraft::tests::snapshot_rpc_3b stdout ----
+
+thread '<unnamed>' (31515) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+context: node=1 "0.0.1.0:1", task=424 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- kvraft::tests::snapshot_size_3b stdout ----
+
+thread '<unnamed>' (31517) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+context: node=1 "0.0.1.0:1", task=441 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- kvraft::tests::snapshot_unreliable_3b stdout ----
+
+thread '<unnamed>' (31519) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+context: node=1 "0.0.1.0:1", task=458 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- kvraft::tests::snapshot_unreliable_recover_3b stdout ----
+
+thread '<unnamed>' (31521) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+context: node=1 "0.0.1.0:1", task=494 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- kvraft::tests::snapshot_unreliable_recover_concurrent_partition_3b stdout ----
+
+thread '<unnamed>' (31523) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+context: node=1 "0.0.1.0:1", task=530 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- kvraft::tests::unreliable_3a stdout ----
+
+thread '<unnamed>' (31525) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+context: node=1 "0.0.1.0:1", task=566 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- kvraft::tests::unreliable_one_key_3a stdout ----
+
+thread '<unnamed>' (31527) panicked at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:155:22:
+message type mismatch: Any { .. }
+context: node=1 "0.0.1.0:1", task=602 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/rpc.rs:150:9)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+
+failures:
+    kvraft::tests::basic_3a
+    kvraft::tests::concurrent_3a
+    kvraft::tests::many_partitions_many_clients_3a
+    kvraft::tests::many_partitions_one_client_3a
+    kvraft::tests::one_partition_3a
+    kvraft::tests::persist_concurrent_3a
+    kvraft::tests::persist_concurrent_unreliable_3a
+    kvraft::tests::persist_one_client_3a
+    kvraft::tests::persist_partition_3a
+    kvraft::tests::persist_partition_unreliable_3a
+    kvraft::tests::snapshot_recover_3b
+    kvraft::tests::snapshot_recover_many_clients_3b
+    kvraft::tests::snapshot_rpc_3b
+    kvraft::tests::snapshot_size_3b
+    kvraft::tests::snapshot_unreliable_3b
+    kvraft::tests::snapshot_unreliable_recover_3b
+    kvraft::tests::snapshot_unreliable_recover_concurrent_partition_3b
+    kvraft::tests::unreliable_3a
+    kvraft::tests::unreliable_one_key_3a
+
+test result: FAILED. 0 passed; 19 failed; 0 ignored; 0 measured; 44 filtered out; finished in 0.03s
+
+warning: unreachable statement
+  --> src/shardkv/server.rs:20:9
+   |
+19 |         todo!("construct ShardKv");
+   |         -------------------------- any code following this expression is unreachable
+20 |         let inner = Server::new(servers, me, max_raft_state).await;
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unreachable statement
+   |
+   = note: `#[warn(unreachable_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+  --> src/kvraft/tester.rs:95:31
+   |
+95 |             NetSim::current().connect2(node_id(&self.handle, self.addrs[i]), node_id(&self.handle, self.addrs[j]));
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+   --> src/kvraft/tester.rs:103:31
+    |
+103 |             NetSim::current().disconnect2(node_id(&self.handle, self.addrs[i]), node_id(&self.handle, self.addrs[j]));
+    |                               ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead
+   --> src/kvraft/tester.rs:148:27
+    |
+148 |         NetSim::current().connect(node_id(&self.handle, addr));
+    |                           ^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+   --> src/kvraft/tester.rs:150:31
+    |
+150 |             NetSim::current().disconnect2(node_id(&self.handle, addr), node_id(&self.handle, self.addrs[i]));
+    |                               ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+   --> src/kvraft/tester.rs:153:31
+    |
+153 |             NetSim::current().connect2(node_id(&self.handle, addr), node_id(&self.handle, self.addrs[i]));
+    |                               ^^^^^^^^
+
+warning: unreachable expression
+   --> src/raft/raft.rs:348:20
+    |
+347 |             data: todo!("apply msg"),
+    |                   ------------------ any code following this expression is unreachable
+348 |             index: todo!("apply msg"),
+    |                    ^^^^^^^^^^^^^^^^^^ unreachable expression
+    |
+    = note: this warning originates in the macro `$crate::panic::panic_2021` which comes from the expansion of the macro `todo` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect`: use `clog_node` instead
+   --> src/raft/tester.rs:271:27
+    |
+271 |         NetSim::current().disconnect(node_id(&self.handle, self.addrs[i]));
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead
+   --> src/raft/tester.rs:278:27
+    |
+278 |         NetSim::current().connect(node_id(&self.handle, self.addrs[i]));
+    |                           ^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+  --> src/test_support.rs:77:23
+   |
+77 |     NetSim::current().disconnect2(server.id(), client.id());
+   |                       ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+  --> src/test_support.rs:79:23
+   |
+79 |     NetSim::current().connect2(server.id(), client.id());
+   |                       ^^^^^^^^
+
+warning: unused variable: `ret`
+  --> src/kvraft/client.rs:52:17
+   |
+52 |             let ret = net
+   |                 ^^^ help: if this is intentional, prefix it with an underscore: `_ret`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `max_raft_state`
+  --> src/kvraft/server.rs:34:9
+   |
+34 |         max_raft_state: Option<usize>,
+   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`
+
+warning: unused variable: `apply_ch`
+  --> src/kvraft/server.rs:37:18
+   |
+37 |         let (rf, apply_ch) = raft::RaftHandle::new(servers, me).await;
+   |                  ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_apply_ch`
+
+warning: unused variable: `cmd`
+  --> src/kvraft/server.rs:68:27
+   |
+68 |     async fn apply(&self, cmd: S::Command) -> Result<S::Output, Error> {
+   |                           ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`
+
+warning: unused variable: `cmd`
+  --> src/kvraft/server.rs:84:25
+   |
+84 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {
+   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`
+
+warning: unused variable: `last_included_term`
+   --> src/raft/raft.rs:153:9
+    |
+153 |         last_included_term: u64,
+    |         ^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_term`
+
+warning: unused variable: `last_included_index`
+   --> src/raft/raft.rs:154:9
+    |
+154 |         last_included_index: u64,
+    |         ^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_index`
+
+warning: unused variable: `snapshot`
+   --> src/raft/raft.rs:155:9
+    |
+155 |         snapshot: &[u8],
+    |         ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`
+
+warning: unused variable: `index`
+   --> src/raft/raft.rs:164:34
+    |
+164 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {
+    |                                  ^^^^^ help: if this is intentional, prefix it with an underscore: `_index`
+
+warning: unused variable: `snapshot`
+   --> src/raft/raft.rs:164:46
+    |
+164 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {
+    |                                              ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`
+
+warning: unused variable: `data`
+   --> src/raft/raft.rs:336:25
+    |
+336 |     fn start(&mut self, data: &[u8]) -> Result<Start> {
+    |                         ^^^^ help: if this is intentional, prefix it with an underscore: `_data`
+
+warning: unused variable: `msg`
+   --> src/raft/raft.rs:346:13
+    |
+346 |         let msg = ApplyMsg::Command {
+    |             ^^^ help: if this is intentional, prefix it with an underscore: `_msg`
+
+warning: unused variable: `cmd`
+  --> src/shard_ctrler/server.rs:16:25
+   |
+16 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {
+   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`
+
+warning: unused variable: `key`
+  --> src/shardkv/client.rs:15:29
+   |
+15 |     pub async fn get(&self, key: String) -> String {
+   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`
+
+warning: unused variable: `key`
+  --> src/shardkv/client.rs:19:29
+   |
+19 |     pub async fn put(&self, key: String, value: String) {
+   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`
+
+warning: unused variable: `value`
+  --> src/shardkv/client.rs:19:42
+   |
+19 |     pub async fn put(&self, key: String, value: String) {
+   |                                          ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`
+
+warning: unused variable: `key`
+  --> src/shardkv/client.rs:23:32
+   |
+23 |     pub async fn append(&self, key: String, value: String) {
+   |                                ^^^ help: if this is intentional, prefix it with an underscore: `_key`
+
+warning: unused variable: `value`
+  --> src/shardkv/client.rs:23:45
+   |
+23 |     pub async fn append(&self, key: String, value: String) {
+   |                                             ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`
+
+warning: unused variable: `ctrl_ck`
+  --> src/shardkv/server.rs:13:9
+   |
+13 |         ctrl_ck: CtrlerClerk,
+   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_ctrl_ck`
+
+warning: unused variable: `servers`
+  --> src/shardkv/server.rs:14:9
+   |
+14 |         servers: Vec<SocketAddr>,
+   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_servers`
+
+warning: unused variable: `gid`
+  --> src/shardkv/server.rs:15:9
+   |
+15 |         gid: u64,
+   |         ^^^ help: if this is intentional, prefix it with an underscore: `_gid`
+
+warning: unused variable: `me`
+  --> src/shardkv/server.rs:16:9
+   |
+16 |         me: usize,
+   |         ^^ help: if this is intentional, prefix it with an underscore: `_me`
+
+warning: unused variable: `max_raft_state`
+  --> src/shardkv/server.rs:17:9
+   |
+17 |         max_raft_state: Option<usize>,
+   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`
+
+warning: unused variable: `cmd`
+  --> src/shardkv/server.rs:34:25
+   |
+34 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {
+   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`
+
+warning: fields `endpoint` and `apply_ch` are never read
+  --> src/raft/raft.rs:60:5
+   |
+59 | struct Raft {
+   |        ---- fields in this struct
+60 |     endpoint: net::Endpoint,
+   |     ^^^^^^^^
+...
+63 |     apply_ch: MsgSender,
+   |     ^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `apply` is never used
+   --> src/raft/raft.rs:345:8
+    |
+335 | impl Raft {
+    | --------- method in this implementation
+...
+345 |     fn apply(&self) {
+    |        ^^^^^
+
+warning: field `ctrl_ck` is never read
+ --> src/shardkv/client.rs:5:5
+  |
+4 | pub struct Clerk {
+  |            ----- field in this struct
+5 |     ctrl_ck: CtrlerClerk,
+  |     ^^^^^^^
+
+warning: field `inner` is never read
+ --> src/shardkv/server.rs:8:5
+  |
+7 | pub struct ShardKvServer {
+  |            ------------- field in this struct
+8 |     inner: Arc<Server<ShardKv>>,
+  |     ^^^^^
+
+warning: `madraft` (lib test) generated 39 warnings (run `cargo fix --lib -p madraft --tests` to apply 24 suggestions)
+    Finished `release` profile [optimized] target(s) in 0.09s
+     Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/runs/.controller/calls-B-01/cargo-target/release/deps/madraft-9d1fbd9857b1c1bd)
+error: test failed, to rerun pass `--lib`
+error: 1 target failed:
+    `--lib`
+
+process=COMPLETED exit=101

@@ -1,0 +1,505 @@
+--- before/madraft/proof/progress.rs
++++ after/madraft/proof/progress.rs
+@@ -1,6 +1,8 @@
+ //! Partial same-source contracts. No global Raft safety theorem is claimed.
+ #[path = "../src/raft/state.rs"]
+ mod state;
++#[path = "../src/kvraft/sequence.rs"]
++mod sequence;
+ use state::{Ballots, State};
+ use vstd::prelude::*;
+ verus! {
+--- before/madraft/src/kvraft/client.rs
++++ after/madraft/src/kvraft/client.rs
+@@ -1,6 +1,7 @@
+ use super::msg::*;
+ use madsim::{net, time::*};
+-use std::net::SocketAddr;
++use std::{net::SocketAddr, sync::atomic::{AtomicUsize, Ordering}};
++use madsim::rand::Rng;
+ 
+ pub struct Clerk {
+     core: ClerkCore<Op, String>,
+@@ -32,6 +33,9 @@
+ pub struct ClerkCore<Req, Rsp> {
+     servers: Vec<SocketAddr>,
+     _mark: std::marker::PhantomData<(Req, Rsp)>,
++    client: u64,
++    sequence: futures::lock::Mutex<u64>,
++    leader: AtomicUsize,
+ }
+ 
+ impl<Req, Rsp> ClerkCore<Req, Rsp>
+@@ -40,24 +44,36 @@
+     Rsp: serde::Serialize + serde::de::DeserializeOwned + Send + Sync + 'static,
+ {
+     pub fn new(servers: Vec<SocketAddr>) -> Self {
++        // Retained controller clients execute on MadSim's main node. The
++        // pinned simulator leaves it without an IP and silently drops sends.
++        // Give that host a stable source address; do not alter peer topology.
++        #[cfg(madsim)]
++        if madsim::plugin::node().to_string() == "0" {
++            net::NetSim::current().set_ip(madsim::plugin::node(), std::net::Ipv4Addr::new(192, 0, 2, 254).into());
++        }
+         ClerkCore {
+             servers,
++            client: madsim::rand::thread_rng().gen(),
++            sequence: futures::lock::Mutex::new(0),
++            leader: AtomicUsize::new(0),
+             _mark: std::marker::PhantomData,
+         }
+     }
+ 
+     pub async fn call(&self, args: Req) -> Rsp {
++        assert!(!self.servers.is_empty(), "empty service membership");
++        let mut sequence = self.sequence.lock().await;
++        *sequence = super::sequence::next_sequence(*sequence).expect("client sequence exhausted");
++        let args = ClientRequest { client: self.client, sequence: *sequence, command: args };
+         let net = net::Endpoint::bind("0.0.0.0:0").await.expect("bind client RPC");
+-        for i in 0..self.servers.len() {
+-            let ret = net
+-                .call_timeout::<Req>(
+-                    self.servers[i],
+-                    args.clone(),
+-                    Duration::from_millis(500),
+-                )
+-                .await;
+-            todo!("handle RPC results");
++        let mut peer = self.leader.load(Ordering::Relaxed) % self.servers.len();
++        loop {
++            match net.call_timeout(self.servers[peer], args.clone(), Duration::from_millis(700)).await {
++                Ok(Ok(value)) => { self.leader.store(peer, Ordering::Relaxed); return value; }
++                Ok(Err(Error::NotLeader { hint })) if hint < self.servers.len() && hint != peer => peer = hint,
++                _ => peer = (peer + 1) % self.servers.len(),
++            }
++            sleep(Duration::from_millis(15)).await;
+         }
+-        todo!("handle RPC results");
+     }
+ }
+--- before/madraft/src/kvraft/mod.rs
++++ after/madraft/src/kvraft/mod.rs
+@@ -5,3 +5,5 @@
+ mod tester;
+ #[cfg(test)]
+ mod tests;
++
++pub(crate) mod sequence;
+--- before/madraft/src/kvraft/msg.rs
++++ after/madraft/src/kvraft/msg.rs
+@@ -21,3 +21,13 @@
+     type Response = Result<String, crate::kvraft::msg::Error>;
+     const ID: u64 = 2;
+ }
++
++/// Stable identity across RPC retries. A client serializes its sequence.
++#[derive(Debug, Clone, Serialize, Deserialize)]
++pub struct ClientRequest<T> { pub client: u64, pub sequence: u64, pub command: T }
++impl<T: madsim::net::rpc::Request> madsim::net::rpc::Request for ClientRequest<T> {
++    type Response = T::Response;
++    const ID: u64 = T::ID + 10000;
++}
++#[derive(Debug, Clone, Serialize, Deserialize)]
++pub(crate) struct Replicated { pub client: u64, pub sequence: u64, pub command: Vec<u8> }
+--- before/madraft/src/kvraft/sequence.rs
++++ after/madraft/src/kvraft/sequence.rs
+@@ -0,0 +1,18 @@
++//! Executable retry/dedup guards; full replicated-state refinement is OPEN.
++use vstd::prelude::*;
++verus! {
++pub fn next_sequence(previous: u64) -> (next: Option<u64>)
++    ensures next.is_some() == (previous < u64::MAX),
++        next.is_some() ==> next.unwrap() == previous + 1,
++{ if previous == u64::MAX { None } else { Some(previous + 1) } }
++
++pub fn new_request(previous: Option<u64>, received: u64) -> (yes: bool)
++    ensures yes == (previous.is_none() || received > previous.unwrap()),
++{
++    match previous { None => true, Some(sequence) => received > sequence }
++}
++
++pub fn snapshot_boundary(decoded: u64, boundary: u64, applied: u64) -> (install: bool)
++    ensures install == (decoded == boundary && boundary > applied),
++{ decoded == boundary && boundary > applied }
++}
+--- before/madraft/src/kvraft/server.rs
++++ after/madraft/src/kvraft/server.rs
+@@ -1,13 +1,9 @@
+ use super::msg::*;
+ use crate::raft;
+-use madsim::net;
++use futures::StreamExt;
++use madsim::{net, task, time::{sleep, Duration, Instant}};
+ use serde::{Deserialize, Serialize};
+-use std::{
+-    fmt::{self, Debug},
+-    marker::PhantomData,
+-    net::SocketAddr,
+-    sync::Arc,
+-};
++use std::{fmt, net::SocketAddr, sync::{Arc, Mutex}, collections::HashMap};
+ 
+ pub trait State: Serialize + serde::de::DeserializeOwned + Send + Sync + Default + 'static {
+     type Command: net::rpc::Request<Response = Result<Self::Output, Error>> + Clone;
+@@ -15,73 +11,104 @@
+     fn apply(&mut self, cmd: Self::Command) -> Self::Output;
+ }
+ 
+-pub struct Server<S: State> {
+-    rf: raft::RaftHandle,
+-    me: usize,
+-    _marker: PhantomData<S>,
++#[derive(Serialize, Deserialize)]
++struct Machine<S> {
++    state: S,
++    through: u64,
++    sessions: HashMap<u64, (u64, Vec<u8>)>,
+ }
+ 
++pub struct Server<S: State> {
++    pub(crate) rf: raft::RaftHandle,
++    me: usize,
++    machine: Mutex<Machine<S>>,
++}
+ impl<S: State> fmt::Debug for Server<S> {
+-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+-        write!(f, "Server({})", self.me)
+-    }
++    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result { write!(f, "Server({})", self.me) }
+ }
+-
+ impl<S: State> Server<S> {
+-    pub async fn new(
+-        servers: Vec<SocketAddr>,
+-        me: usize,
+-        max_raft_state: Option<usize>,
+-    ) -> Arc<Self> {
+-        // You may need initialization code here.
+-        let (rf, apply_ch) = raft::RaftHandle::new(servers, me).await;
+-
+-        let this = Arc::new(Server {
+-            rf,
+-            me,
+-            _marker: PhantomData,
++    pub async fn new(servers: Vec<SocketAddr>, me: usize, max_raft_state: Option<usize>) -> Arc<Self> {
++        let (rf, mut apply_ch) = raft::RaftHandle::new(servers, me).await;
++        let this = Arc::new(Self { rf, me, machine: Mutex::new(Machine { state: S::default(), through: 0, sessions: HashMap::new() }) });
++        this.start_rpc_server();
++        let worker = this.clone();
++        task::spawn(async move {
++            while let Some(msg) = apply_ch.next().await {
++                match msg {
++                    raft::ApplyMsg::Command { data, index } => {
++                        let snapshot = {
++                            let mut m = worker.machine.lock().unwrap();
++                            if index <= m.through { continue; }
++                            assert_eq!(index, m.through.checked_add(1).expect("application index exhausted"));
++                            let request: Replicated = bincode::deserialize(&data).expect("replicated service command");
++                            if super::sequence::new_request(m.sessions.get(&request.client).map(|(seq, _)| *seq), request.sequence) {
++                                let cmd = bincode::deserialize(&request.command).expect("service command decode");
++                                let result = m.state.apply(cmd);
++                                m.sessions.insert(request.client, (request.sequence, bincode::serialize(&result).unwrap()));
++                            }
++                            m.through = index;
++                            if max_raft_state.map_or(false, |limit| worker.rf.state_size() >= limit) {
++                                Some(bincode::serialize(&*m).expect("service snapshot encode"))
++                            } else { None }
++                        };
++                        if let Some(bytes) = snapshot { worker.rf.snapshot(index, &bytes).await.expect("service snapshot persist"); }
++                    }
++                    raft::ApplyMsg::Snapshot { data, term, index } => {
++                        if worker.rf.cond_install_snapshot(term, index, &data).await {
++                            let saved: Machine<S> = bincode::deserialize(&data).expect("service snapshot decode");
++                            assert_eq!(saved.through, index);
++                            let mut m = worker.machine.lock().unwrap();
++                            if super::sequence::snapshot_boundary(saved.through, index, m.through) { *m = saved; }
++                        }
++                    }
++                }
++            }
+         });
+-        this.start_rpc_server();
+         this
+     }
+-
+     fn start_rpc_server(self: &Arc<Self>) {
+         let net = self.rf.endpoint.clone();
+-
+         let this = self.clone();
+-        net.add_rpc_handler(move |cmd: S::Command| {
++        net.add_rpc_handler(move |request: ClientRequest<S::Command>| {
+             let this = this.clone();
+-            async move { this.apply(cmd).await }
++            async move { this.apply(request).await }
+         });
+     }
+-
+-    /// The current term of this peer.
+-    pub fn term(&self) -> u64 {
+-        self.rf.term()
+-    }
+-
+-    /// Whether this peer believes it is the leader.
+-    pub fn is_leader(&self) -> bool {
+-        self.rf.is_leader()
+-    }
+-
+-    async fn apply(&self, cmd: S::Command) -> Result<S::Output, Error> {
+-        todo!("apply command");
++    pub fn term(&self) -> u64 { self.rf.term() }
++    pub fn is_leader(&self) -> bool { self.rf.is_leader() }
++    async fn apply(&self, request: ClientRequest<S::Command>) -> Result<S::Output, Error> {
++        if !self.rf.is_leader() { return Err(Error::NotLeader { hint: self.me }); }
++        let encoded = Replicated { client: request.client, sequence: request.sequence,
++            command: bincode::serialize(&request.command).map_err(|_| Error::Failed)? };
++        let bytes = bincode::serialize(&encoded).map_err(|_| Error::Failed)?;
++        let start = self.rf.start(&bytes).await.map_err(|_| Error::NotLeader { hint: self.me })?;
++        let deadline = Instant::now() + Duration::from_millis(600);
++        loop {
++            {
++                let m = self.machine.lock().unwrap();
++                if let Some((seq, value)) = m.sessions.get(&request.client) {
++                    if *seq == request.sequence { return bincode::deserialize(value).map_err(|_| Error::Failed); }
++                    if *seq > request.sequence { return Err(Error::Failed); }
++                }
++            }
++            if self.rf.term() != start.term || !self.rf.is_leader() { return Err(Error::NotLeader { hint: self.me }); }
++            if Instant::now() >= deadline { return Err(Error::Timeout); }
++            sleep(Duration::from_millis(5)).await;
++        }
+     }
+ }
+ 
+ pub type KvServer = Server<Kv>;
+-
+ #[derive(Debug, Default, Serialize, Deserialize)]
+-pub struct Kv {
+-    // Your data here.
+-}
+-
++pub struct Kv { values: HashMap<String, String> }
+ impl State for Kv {
+     type Command = Op;
+     type Output = String;
+-
+-    fn apply(&mut self, cmd: Self::Command) -> Self::Output {
+-        todo!("apply command");
++    fn apply(&mut self, cmd: Op) -> String {
++        match cmd {
++            Op::Get { key } => self.values.get(&key).cloned().unwrap_or_default(),
++            Op::Put { key, value } => { self.values.insert(key, value); String::new() }
++            Op::Append { key, value } => { self.values.entry(key).or_default().push_str(&value); String::new() }
++        }
+     }
+ }
+--- before/madraft/src/raft/election_checks.rs
++++ after/madraft/src/raft/election_checks.rs
+@@ -40,7 +40,7 @@
+         let (r, _) = RaftHandle::new(first_peers, 0).await;
+         assert!(r.request_vote(RequestVoteArgs { term: 7, candidate: 1, last_term: 0, last_index: 0 }).await.unwrap().granted);
+         // Crash after creating the next record, before writing its value.
+-        fs::File::create("state.1").await.unwrap();
++        fs::File::create(RaftHandle::record_name(1)).await.unwrap();
+     }).await.unwrap();
+     kill(&runtime, addr);
+     let host = start_node(&runtime, addr);
+@@ -62,3 +62,36 @@
+         assert!(!r.is_leader());
+     }).await.unwrap();
+ }
++
++#[madsim::test]
++async fn snapshot_image_survives_interrupted_mirrors() {
++    let runtime = Handle::current();
++    let addr: SocketAddr = "10.6.0.1:1".parse().unwrap();
++    let host = create_node(&runtime, addr);
++    host.spawn(async move {
++        let (r, mut applied) = RaftHandle::new(vec![addr], 0).await;
++        sleep(Duration::from_secs(1)).await;
++        let proposed = r.start(b"command").await.unwrap();
++        match applied.next().await.unwrap() {
++            ApplyMsg::Command { index, data } => { assert_eq!(index, proposed.index); assert_eq!(data, b"command"); }
++            _ => panic!("expected committed command"),
++        }
++        r.snapshot(proposed.index, b"application-state").await.unwrap();
++        let next = r.inner.lock().unwrap().journal_next;
++        for generation in 0..next-1 {
++            assert!(fs::read(RaftHandle::record_name(generation)).await.unwrap().is_empty());
++        }
++        // Completed authoritative image, interrupted replacement of mirrors.
++        fs::File::create("state").await.unwrap();
++        fs::File::create("snapshot").await.unwrap();
++    }).await.unwrap();
++    kill(&runtime, addr);
++    let host = start_node(&runtime, addr);
++    host.spawn(async move {
++        let (_, mut applied) = RaftHandle::new(vec![addr], 0).await;
++        match applied.next().await.unwrap() {
++            ApplyMsg::Snapshot { index, data, .. } => { assert_eq!(index, 1); assert_eq!(data, b"application-state"); }
++            _ => panic!("expected restored snapshot"),
++        }
++    }).await.unwrap();
++}
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -176,6 +176,13 @@
+         raft.state.is_leader()
+     }
+ 
++    pub fn state_size(&self) -> usize {
++        let r = self.inner.lock().unwrap();
++        let image = Persist { term: r.state.term, voted_for: r.state.voted_for,
++            log: r.log.clone(), base: r.base, snapshot: Vec::new(), commit: r.commit };
++        bincode::serialized_size(&image).unwrap_or(u64::MAX) as usize
++    }
++
+     /// A service wants to switch to snapshot.  
+     ///
+     /// Only do so if Raft hasn't have more recent info since it communicate
+@@ -233,6 +240,21 @@
+         let file = fs::File::create(path).await?;
+         file.write_all_at(&bytes, 0).await?;
+         file.sync_all().await?;
++        // Accounting mirrors are never used for recovery. The immutable image
++        // is already complete if a crash interrupts either mirror replacement.
++        let mut metadata = image.clone();
++        metadata.snapshot.clear();
++        let state_bytes = bincode::serialize(&metadata).map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
++        let mirror = fs::File::create("state").await?;
++        mirror.write_all_at(&state_bytes, 0).await?;
++        mirror.sync_all().await?;
++        let mirror = fs::File::create("snapshot").await?;
++        mirror.write_all_at(&image.snapshot, 0).await?;
++        mirror.sync_all().await?;
++        if sequence > 0 {
++            // In the pinned simulator set_len is supported on an opened inode.
++            fs::File::open(Self::record_name(sequence-1)).await?.set_len(0).await?;
++        }
+         let mut r = self.inner.lock().unwrap();
+         r.saved = Some(image);
+         r.journal_next = next;
+@@ -240,19 +262,26 @@
+     }
+ 
+     fn record_name(sequence: u64) -> String {
+-        if sequence == 0 { "state".into() } else { format!("state.{}", sequence) }
++        format!("image.{}", sequence)
+     }
+ 
+     async fn restore(&self) -> io::Result<()> {
+         let mut sequence = 0u64;
+         let mut previous: Option<Persist> = None;
+         let mut recovered = State::fresh();
++        let mut terminal_empty = false;
+         loop {
+             let bytes = match fs::read(Self::record_name(sequence)).await {
+                 Ok(bytes) => bytes,
+                 Err(e) if e.kind() == io::ErrorKind::NotFound => break,
+                 Err(e) => return Err(e),
+             };
++            if bytes.is_empty() {
++                terminal_empty = true;
++                sequence = sequence.checked_add(1).ok_or_else(|| io::Error::new(io::ErrorKind::Other, "journal exhausted"))?;
++                continue;
++            }
++            terminal_empty = false;
+             // An incomplete created record halts recovery; never reinterpret it
+             // as permission to reuse an unknown vote.
+             let image: Persist = bincode::deserialize(&bytes)
+@@ -281,6 +310,7 @@
+             previous = Some(image);
+             sequence = sequence.checked_add(1).ok_or_else(|| io::Error::new(io::ErrorKind::Other, "journal exhausted"))?;
+         }
++        if terminal_empty { return Err(io::Error::new(io::ErrorKind::InvalidData, "incomplete terminal image")); }
+         let mut r = self.inner.lock().unwrap();
+         r.state = recovered;
+         if let Some(ref image) = previous {
+@@ -591,7 +621,7 @@
+ 
+ impl net::rpc::Request for RequestVoteArgs {
+     type Response = RequestVoteReply;
+-    const ID: u64 = 1;
++    const ID: u64 = 0x5241465401;
+ }
+ 
+ #[derive(Debug, Clone, Serialize, Deserialize)]
+@@ -603,12 +633,12 @@
+ struct AppendReply { term: u64, success: bool, next: u64 }
+ impl net::rpc::Request for AppendEntries {
+     type Response = AppendReply;
+-    const ID: u64 = 2;
++    const ID: u64 = 0x5241465402;
+ }
+ 
+ #[derive(Debug, Clone, Serialize, Deserialize)]
+ struct InstallSnapshot { term: u64, leader: usize, index: u64, last_term: u64, data: Vec<u8> }
+-impl net::rpc::Request for InstallSnapshot { type Response = u64; const ID: u64 = 3; }
++impl net::rpc::Request for InstallSnapshot { type Response = u64; const ID: u64 = 0x5241465403; }
+ 
+ #[cfg(test)]
+ #[path = "election_checks.rs"]
+--- before/madraft/src/shard_ctrler/server.rs
++++ after/madraft/src/shard_ctrler/server.rs
+@@ -1,19 +1,54 @@
+-use super::msg::*;
++use super::{msg::*, N_SHARDS};
+ use crate::kvraft::server::{Server, State};
+ use serde::{Deserialize, Serialize};
+ 
+ pub type ShardCtrler = Server<ShardInfo>;
++#[derive(Debug, Serialize, Deserialize)]
++pub struct ShardInfo { configs: Vec<Config> }
++impl Default for ShardInfo { fn default() -> Self { Self { configs: vec![Config::default()] } } }
+ 
+-#[derive(Debug, Default, Serialize, Deserialize)]
+-pub struct ShardInfo {
+-    // Your data here.
++impl ShardInfo {
++    fn rebalance(c: &mut Config) {
++        let mut gids: Vec<_> = c.groups.keys().copied().collect();
++        gids.sort_unstable();
++        if gids.is_empty() { c.shards.fill(0); return; }
++        let mut targets = std::collections::BTreeMap::new();
++        // Give surplus shards to groups already holding more, minimizing moves.
++        let mut by_count = gids.clone();
++        by_count.sort_by_key(|gid| (std::cmp::Reverse(c.shards.iter().filter(|g| *g == gid).count()), *gid));
++        for (i, gid) in by_count.into_iter().enumerate() {
++            targets.insert(gid, N_SHARDS/gids.len() + usize::from(i < N_SHARDS%gids.len()));
++        }
++        let mut held = std::collections::BTreeMap::<u64, usize>::new();
++        let mut free = Vec::new();
++        for (shard, gid) in c.shards.iter().enumerate() {
++            let n = held.entry(*gid).or_default();
++            if targets.get(gid).map_or(false, |target| *n < *target) { *n += 1; }
++            else { free.push(shard); }
++        }
++        let mut free = free.into_iter();
++        for gid in gids {
++            let have = held.get(&gid).copied().unwrap_or(0);
++            for _ in have..targets[&gid] { c.shards[free.next().unwrap()] = gid; }
++        }
++    }
+ }
+-
+ impl State for ShardInfo {
+     type Command = Op;
+     type Output = Option<Config>;
+-
+-    fn apply(&mut self, cmd: Self::Command) -> Self::Output {
+-        todo!("apply command");
++    fn apply(&mut self, cmd: Op) -> Self::Output {
++        if let Op::Query { num } = cmd {
++            return Some(self.configs.get(num as usize).unwrap_or_else(|| self.configs.last().unwrap()).clone());
++        }
++        let mut c = self.configs.last().unwrap().clone();
++        c.num = c.num.checked_add(1).expect("configuration exhausted");
++        match cmd {
++            Op::Join { groups } => { for (gid, servers) in groups { if gid != 0 { c.groups.insert(gid, servers); } } Self::rebalance(&mut c); }
++            Op::Leave { gids } => { for gid in gids { c.groups.remove(&gid); } Self::rebalance(&mut c); }
++            Op::Move { shard, gid } => { if shard < N_SHARDS && c.groups.contains_key(&gid) { c.shards[shard] = gid; } }
++            Op::Query { .. } => unreachable!(),
++        }
++        self.configs.push(c);
++        None
+     }
+ }

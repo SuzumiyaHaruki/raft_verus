@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import check
 from process import run_process
 from tools import ROOT, environment
+from inputs import save_json
 
 
 class RealVerusTests(unittest.TestCase):
@@ -16,14 +17,19 @@ class RealVerusTests(unittest.TestCase):
     def setUpClass(cls):
         cls.cfg, cls.env = environment()
         if not Path(cls.cfg['verus']).is_file() or not (Path(cls.cfg['rust_bin'])/'rustc').is_file():
-            raise unittest.SkipTest('Actual Rust/Verus unavailable; real checks NOT RUN')
-        cls.logs = ROOT / 'runs/maintenance-v3' / ('real-tools-' + str(time.time_ns()))
+            path = ROOT / 'runs/maintenance-v4/real-tools-BLOCKED.json'
+            save_json(path, dict(status='BLOCKED', reason='Actual Rust/Verus unavailable; real checks NOT RUN'))
+            raise unittest.SkipTest('BLOCKED: actual Rust/Verus unavailable; real checks NOT RUN')
+        cls.logs = ROOT / 'runs/maintenance-v4' / ('real-tools-' + str(time.time_ns()))
         cls.logs.mkdir(parents=True)
 
     def execute(self, name, argv, directory):
         result=run_process(argv,directory,env=self.env,timeout=60)
         (self.logs/(name+'.log')).write_text('$ '+shlex.join(argv)+'\n'+result.stdout+result.stderr+
                                             f'\nprocess={result.status} exit={result.exit_code}\n')
+        save_json(self.logs/(name+'.json'), dict(command=argv, process=result.status,
+            exit_code=result.exit_code, elapsed_seconds=result.elapsed_seconds,
+            result_kind='REAL_TOOL_EXECUTION', log=str(self.logs/(name+'.log'))))
         self.assertEqual(result.status,'COMPLETED',result.stderr)
         return result
 
@@ -133,7 +139,7 @@ pub proof fn prove_observation_and_snapshots(h: Execution)
             '--crate-type', 'lib', '--no-cheating', '--triggers-mode', 'silent'], self.logs)
         self.assertEqual(check.classify(result, True), ('PASS', 'checked'), result.stderr)
 
-    def test_fixed_execution_caller_consumes_real_correspondence(self):
+    def test_fixed_execution_caller_checks_relation_projection(self):
         for name, wrong in [('toy-link-correct', False), ('toy-link-incorrect', True)]:
             module = self.toy_adapter(name, wrong)
             result = self.verus(name, check.caller_text(ROOT, module, 'execution_link'))
@@ -141,6 +147,40 @@ pub proof fn prove_observation_and_snapshots(h: Execution)
             if wrong:
                 self.assertEqual(check.classify(result, True)[1], 'verification_failure')
                 self.assertIn('postcondition not satisfied', result.stderr)
+
+    def example_source(self):
+        return (ROOT/'requirements/support_example.rs').read_text().replace(
+            '"support.rs"', '"' + str(ROOT/'requirements/support.rs') + '"')
+
+    def test_actual_function_mismatch_does_not_invalidate_the_model_theorem(self):
+        source = self.example_source()
+        # Remove only executable handler and its call examples for the separate
+        # unchanged-model check. Never change the model to match the defect.
+        model = source[:source.index('pub fn handle(')] + source[source.index('pub proof fn network_examples'):]
+        model = model[:model.index('pub fn actual_bug_is_admitted')] + model[model.index('// A memory-sized'):]
+        model_result = self.verus('model-still-passes', model)
+        self.assertEqual(check.classify(model_result, True), ('PASS', 'checked'), model_result.stderr)
+        wrong = source.replace('let t = if s < 100 { s + 1 } else { s };', 'let t = if s < 100 { s + 2 } else { s };')
+        self.assertNotEqual(source, wrong)
+        actual = self.verus('actual-handler-plus-two-rejected', wrong)
+        self.assertEqual(check.classify(actual, True)[1], 'verification_failure')
+        self.assertIn('postcondition not satisfied', actual.stderr)
+        self.assertNotIn('error[E', actual.stderr)
+        repaired = self.verus('actual-handler-plus-one-accepted', source)
+        self.assertEqual(check.classify(repaired, True), ('PASS', 'checked'), repaired.stderr)
+
+    def test_recovery_must_establish_actual_callers_precondition(self):
+        source = self.example_source()
+        wrong = source.replace('        consistent(*c), // recovery establishes the callee\'s precondition\n', '').replace(
+            '    c.recorded = d.recorded; // derive ghost relation from the checkpoint\n', '')
+        self.assertNotEqual(source, wrong)
+        result = self.verus('recovery-caller-rejected', wrong)
+        self.assertEqual(check.classify(result, True)[1], 'verification_failure')
+        self.assertIn('precondition not satisfied', result.stderr)
+        self.assertIn('update(&mut restarted)', result.stderr)
+        self.assertNotIn('error[E', result.stderr)
+        repaired = self.verus('recovery-caller-accepted', source)
+        self.assertEqual(check.classify(repaired, True), ('PASS', 'checked'), repaired.stderr)
 
     def test_single_top_caller_does_not_skip_other_imported_bodies(self):
         module = self.toy_adapter('imported-dependency')

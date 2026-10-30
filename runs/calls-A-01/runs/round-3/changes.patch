@@ -1,0 +1,492 @@
+--- before/madraft/PROGRESS.md
++++ after/madraft/PROGRESS.md
+@@ -1,21 +1,23 @@
+-# Progress — round 2
++# Progress — round 3
+ 
+-Implemented shard clients, replicated configuration changes, per-shard incoming readiness, pull/install, retained outgoing data, receiver-committed installation before garbage collection, replicated deletion, snapshots and migrated per-shard retry records. Group gid is durable application state; each Raft group retains its fixed peer endpoints across restart. Repaired controller clients on the simulator main host by assigning its missing client IP, and repaired server-local client replies by binding the Raft server on the wildcard address so ephemeral clients cannot reuse its effective port. Empty Raft snapshots now occupy zero bytes. Shared service re-evaluates WrongGroup retries and omits redundant durable transport replies for shard services, whose own retry records migrate and persist with each shard.
++The independent stopped candidate passed all five functional families on seed 1. This round preserved the completed lab functionality and changed proof decomposition: membership, vote bitmap, campaign reset, reply gating, vote tally and leader-role transition now live in the same verified State used by the executable async Raft. State::new rejects invalid membership, campaign checks exhaustion and initializes exactly one self vote, accept_vote safely rejects invalid peers and stale replies and records each peer once, follow preserves votes, and recover checks ballot bounds and same-term compatibility. Added executable commit::authorize, now called by advance_commit, proving that any chosen advancement has a strict majority of match indices and the current entry term. IO failure now sets a persistent in-memory halt flag across consensus tasks, suppressing subsequent proposals, RPC handling, timers and replies; normal restart must still recover durable state.
+ 
+-Generated and checked same-source log.rs contracts for exact append-prefix preservation including command bytes, exact suffix truncation and lexicographic freshness. Runtime start, request_vote and append call these helpers. Progress Verus PASS (11 verified, 0 errors), including actual state.rs term/vote methods and two distinct same-term vote calls. Caller preconditions, async wrappers and global invariants remain unproved; these local results close no fixed global target.
++Actual proof result: progress PASS, 25 verified and 0 errors (runs/checks/1793333059967348430/proof.log). This includes the same-source constructor, all local vote methods and loops, commit authorization, previous log helpers, an actual one-member construction/campaign/accept_vote call composition, arbitrary finite bitmap majority overlap and conditional agreement of leaders certified by one historical vote ledger. The ledger-to-network/durable-runtime relation is an explicit unclosed premise. No fixed global target is claimed. The constructor witness is local execution evidence, not the fixed nonempty_execution interface or exhaustive coverage.
+ 
+-Actual checks this round: build PASS; controller family PASS on seeds 1 and 2; KV family PASS on seeds 2 and 3; Raft family PASS on seeds 4 and 5. These are successive revisions of one candidate, not complete final acceptance. Shard family initially timed out; fixing wildcard server binding yielded 11/12 retained tests passing on seed 1, with challenge1_delete_4b failing total persisted size 120265 > 117000 (runs/checks/1793332470474066381/tests_seed_1_shardkv_tests.log). Removed redundant durable transport response cache; final shard family PASS on seeds 1 and 2 (all 12 retained tests; logs runs/checks/1793332545087874683/tests_seed_1_shardkv_tests.log and runs/checks/1793332546224546247/tests_seed_2_shardkv_tests.log). Original tests and fixed requirements remain intact. Final safety run (runs/checks/1793332598279805766/results.json) passed foundation, definitions and progress; all implementation-dependent and connection goals remain OPEN. Full safety interfaces and implementation.rs remain absent; all five fixed goals, execution link, snapshot fidelity and witness remain OPEN.
++Actual tests: Raft family seed 1 PASS after the vote refactor; Raft seed 2 and shard family seed 3 PASS after the IO-halt change. Current candidate reruns after commit authorization and recovery validation PASS: Raft seed 3 (runs/checks/1793333074668654104), KV seed 4 (runs/checks/1793333075819743192) and shard family seed 4 (runs/checks/1793333076960665898). Build passed during the refactor. The checker noted concurrent source changes in that early build, so it is not evidence for the final saved revision. Final safety run (runs/checks/1793333127542739729) passed foundation, definitions and all 25 progress obligations; implementation/connection goals remain OPEN. Original tests and fixed requirements are preserved.
+ 
+-Failed approaches: interpreting the controller timeout as a consensus fault missed the main-host address contract; server-local wildcard ephemeral sockets also collided with a concrete Raft listener. A second persistent reply cache duplicated the migrated shard records and exceeded deletion bounds. Snapshots now use a matching borrowed serialization view with transport replies omitted only for the shard service. Crash-safe image pairing, serialization/decoder equivalence, per-client monotonic retry assumptions and migration authorization still need machine proofs.
++Why the old approach was insufficient: the previous role/vote helpers left majority counting and the role transition in unverified caller code, and their weak one-way contracts could not establish even a concrete one-member election. The new method gives the exact bitmap update and election condition. A missing loop frame invariant caused a real Verus postcondition failure; retaining term/vote/role across the reset loop repaired it. This was local proof decomposition, not an executable counterexample or a model trace excluded by an asserted invariant. Inspection also found an executable IO-failure gap: a failed persistence task could leave other tasks operating on volatile consensus state. The halt guard repairs that path, but a complete host error/completion proof remains open.
+ 
+ <!-- connections -->
+ | Behavior | Actual functions | Proof entry | Open premises / next step |
+ | --- | --- | --- | --- |
+-| initialization | madraft/src/raft/raft.rs::new,madraft/src/raft/state.rs::default | madraft/proof/progress.rs | Local state methods imported; constructor, membership/group identity and host caller composition unproved. |
+-| transitions | madraft/src/raft/state.rs::adopt_term,madraft/src/raft/state.rs::campaign,madraft/src/raft/state.rs::grant_vote,madraft/src/raft/log.rs::fresh,madraft/src/raft/log.rs::append_command,madraft/src/raft/log.rs::truncate_suffix,madraft/src/raft/raft.rs::tick,madraft/src/raft/raft.rs::append,madraft/src/raft/raft.rs::vote_reply,madraft/src/raft/raft.rs::append_reply | madraft/proof/progress.rs | Local term/vote and log helper bodies verified; log invariant, RPC provenance, finite bounds and all async callers remain open. |
+-| outputs | madraft/src/raft/raft.rs::start,madraft/src/raft/raft.rs::request_vote,madraft/src/raft/raft.rs::apply,madraft/src/raft/raft.rs::advance_commit,madraft/src/raft/raft.rs::persist | madraft/proof/progress.rs | Persistence-before-send and exact emission/application observation relation unproved. |
+-| recovery | madraft/src/raft/raft.rs::restore,madraft/src/raft/raft.rs::persist | madraft/proof/progress.rs | Decode refinement, interrupted pair writes, error fail-stop behavior, history retention and post-recovery preconditions unproved. |
++| initialization | madraft/src/raft/raft.rs::new,madraft/src/raft/state.rs::new | madraft/proof/progress.rs | Verified State::new and an actual constructor/campaign/accept_vote call composition; async host constructor and group identity relation remain open. |
++| transitions | madraft/src/raft/state.rs::adopt_term,madraft/src/raft/state.rs::campaign,madraft/src/raft/state.rs::grant_vote,madraft/src/raft/state.rs::accept_vote,madraft/src/raft/state.rs::follow,madraft/src/raft/log.rs::fresh,madraft/src/raft/log.rs::append_command,madraft/src/raft/log.rs::truncate_suffix,madraft/src/raft/raft.rs::tick,madraft/src/raft/raft.rs::append,madraft/src/raft/raft.rs::vote_reply,madraft/src/raft/raft.rs::append_reply | madraft/proof/progress.rs | Local term/vote and log helper bodies verified; log invariant, RPC provenance, finite bounds and all async callers remain open. |
++| outputs | madraft/src/raft/raft.rs::start,madraft/src/raft/raft.rs::request_vote,madraft/src/raft/raft.rs::apply,madraft/src/raft/raft.rs::advance_commit,madraft/src/raft/commit.rs::authorize,madraft/src/raft/raft.rs::persist | madraft/proof/progress.rs | Persistence-before-send and exact emission/application observation relation unproved. |
++| recovery | madraft/src/raft/state.rs::recover,madraft/src/raft/raft.rs::restore,madraft/src/raft/raft.rs::persist | madraft/proof/progress.rs | Decode refinement, interrupted pair writes, error fail-stop behavior, history retention and post-recovery preconditions unproved. |
+ | snapshots | madraft/src/raft/raft.rs::snapshot,madraft/src/raft/raft.rs::cond_install_snapshot,madraft/src/raft/raft.rs::append,madraft/src/kvraft/server.rs::new,madraft/src/shardkv/server.rs::apply | madraft/proof/progress.rs | Compacted prefix origin, decoder equivalence, application ordering and service caller contracts unproved. |
+ <!-- /connections -->
+ 
+-Next action: construct a same-source verified consensus state/transition representation with explicit network sends, durable completions and persistent history. Build implementation.rs only from proved transitions and actual caller contracts; do not promote a disconnected relation or local counts into global safety. Review finite arithmetic, IO fail-stop composition, external internal-command rejection and snapshot boundaries. Conditional liveness and application correctness proofs remain OPEN.
++Next action: prove a global durable ballot ledger and emission certificates across actual initialization, persisted vote replies, obsolete replies and recovery; then derive election safety using the checked overlap lemma. Complete the candidate history/observation adapter only when actual paths are represented, retaining exact identities, bytes, original indices, outputs and crash history. Remaining missing caller proofs include all async host linearization, match-index provenance, log matching and committed-prefix invariants, compaction/snapshot decoder fidelity and finite bounds. All five fixed global goals, execution_link, snapshot_observation, fixed witness and full implementation acceptance remain OPEN; conditional liveness remains OPEN.
++
++Report discovery repair: the checker reads workspace-root PROGRESS.md, while prior reports were saved only under madraft/. Added root report symlinks to the single canonical reports under madraft/ so the controller can read the connection table and progress without duplicated prose.
+--- before/madraft/RESULT.md
++++ after/madraft/RESULT.md
+@@ -1,11 +1,11 @@
+-# Result — incomplete round 2 candidate
++# Result — incomplete round 3 candidate
+ 
+-Raft 2A/2B/2C/2D implemented; retained Raft family passed seeds 1–5 at successive revisions. KV 3A/3B implemented; family passed seeds 1–3. Controller 4A now passes seeds 1 and 2 after fixing the simulator main-host address. Sharded KV 4B now implements configuration, migration, retries, replicated deletion and recovery; all 12 retained tests passed seeds 1 and 2 after the final storage-size repair. Single-revision full-family/all-seed acceptance remains OPEN. Original tests, requirements, licenses and checker were preserved.
++Raft 2A/2B/2C/2D implemented; retained Raft family passed seeds 1–5 at successive revisions. KV 3A/3B implemented; family passed seeds 1–4 at successive revisions. Controller 4A now passes seeds 1 and 2 after fixing the simulator main-host address. Sharded KV 4B now implements configuration, migration, retries, replicated deletion and recovery; all 12 retained tests passed seeds 1–4 at successive revisions after the final storage-size repair. Single-revision full-family/all-seed acceptance remains OPEN. Original tests, requirements, licenses and checker were preserved.
+ 
+-Election Safety, Leader Append-Only, Log Matching, Leader Completeness and State Machine Safety are all OPEN. There is no implementation.rs execution/observation adapter yet. The local progress proof checks executable term monotonicity, checked campaign increment, vote immutability, rejection of two distinct candidates at one node in a term, exact command append-prefix preservation, suffix truncation and freshness comparison; it does not establish any global target. The safety command passed foundation, definitions and progress; all implementation-dependent goals remained OPEN because implementation.rs is absent. Progress Verus reported 11 verified and 0 errors.
++Election Safety, Leader Append-Only, Log Matching, Leader Completeness and State Machine Safety are all OPEN. There is no implementation.rs execution/observation adapter yet. The local progress proof checks executable term monotonicity, checked campaign increment, vote immutability, rejection of two distinct candidates at one node in a term, exact command append-prefix preservation, suffix truncation, freshness, membership construction, vote bitmap reset, stale-reply gating, majority role transition, recovery ballot checks and majority/current-term commit authorization; it does not establish any global target. The new quorum dependency proves overlap for arbitrary finite bitmaps and leader agreement conditional on both certificates referring to one vote ledger; relating that ledger to durable runtime history is unproved. A concrete one-member constructor/election call composition passes. The safety command passed foundation, definitions and progress; all implementation-dependent goals remained OPEN because implementation.rs is absent. Progress Verus reported 25 verified and 0 errors.
+ 
+ Execution coverage includes actual simulated elections, partitions, conflicting suffixes, concurrent proposals, unreliable RPC, crashes, snapshot compaction/transfer and restored application delivery in retained Raft tests. Formal coverage of actual constructors, host operations, sends, applications, crashes, recovery and snapshot decoding remains OPEN. Raft group identity is currently implicit in fixed peer endpoints; shard service gid is explicit durable state and is not yet represented in a proven observation history. Conditional liveness and application correctness proofs remain OPEN.
+ 
+-Host functions currently used include plugin::node and NetSim::set_ip for simulator client-host address setup, and Endpoint::bind/add_rpc_handler/call_timeout, task::spawn, time::sleep/Instant::now, rand::thread_rng/gen_range/random, std and futures mutex operations, mpsc::unbounded/unbounded_send, fs::read/metadata/File::create/write_all_at/sync_all and serde/bincode serialization. These are unverified host boundaries under the supplied environment; no new trusted consensus body was introduced. FsSim completed writes survive node restart, power_fail is unfinished and sync_all is a no-op. The new two-generation-pair protocol has not been machine proved against all interruptions; no real-disk durability is claimed. Invalid membership fails at construction; durable decode failures refuse restart. Finite resource exhaustion and IO failure behavior still require complete fail-stop composition and proofs.
++Host functions currently used include plugin::node and NetSim::set_ip for simulator client-host address setup, and Endpoint::bind/add_rpc_handler/call_timeout, task::spawn, time::sleep/Instant::now, rand::thread_rng/gen_range/random, std and futures mutex operations, mpsc::unbounded/unbounded_send, fs::read/metadata/File::create/write_all_at/sync_all and serde/bincode serialization. These are unverified host boundaries under the supplied environment; no new trusted consensus body was introduced. FsSim completed writes survive node restart, power_fail is unfinished and sync_all is a no-op. The new two-generation-pair protocol has not been machine proved against all interruptions; no real-disk durability is claimed. Invalid membership fails at construction; durable decode failures refuse restart. Storage errors now halt subsequent consensus tasks using a shared guard; its complete host-call and recovery composition remains unproved. Finite resource exhaustion still requires complete bounds and failure proofs.
+ 
+ Reproduce with python3 scripts/check.py build; python3 scripts/check.py test raft::tests:: --seed 3; python3 scripts/check.py test kvraft::tests:: --seed 1; python3 scripts/check.py test shard_ctrler::tests:: --seed 1; python3 scripts/check.py test shardkv::tests:: --seed 1; python3 scripts/check.py foundation; python3 scripts/check.py proof madraft/proof/progress.rs. Full acceptance still requires python3 scripts/check.py safety and python3 scripts/check.py final --timeout 3600 on one stopped candidate after unfinished dependencies are completed. See PROGRESS.md for the single connection table and next action.
+--- before/madraft/proof/progress.rs
++++ after/madraft/proof/progress.rs
+@@ -3,8 +3,21 @@
+ mod state;
+ #[path = "../src/raft/log.rs"]
+ mod log_core;
++mod quorum;
++#[path = "../src/raft/commit.rs"]
++mod commit_core;
+ use vstd::prelude::*;
+ verus! {
++fn actual_single_member_election() -> (s: state::State)
++    ensures s.valid(), s.term == 1, s.vote == Some(0u64), s.role is Leader,
++{
++    let mut s = state::State::new(1, 0).unwrap();
++    let started = s.campaign(0);
++    let elected = s.accept_vote(0, 1, 1, true);
++    assert(started && elected);
++    s
++}
++
+ // A real call composition: a second distinct candidate cannot obtain this
+ // node's vote at the same term. Durability and quorum intersection are separate.
+ fn two_vote_requests(s: &mut state::State, term: u64, a: u64, b: u64) -> (r: (bool, bool))
+--- before/madraft/proof/quorum.rs
++++ after/madraft/proof/quorum.rs
+@@ -0,0 +1,44 @@
++//! Conditional quorum dependency. Certificates/provenance are still obligations.
++use vstd::prelude::*;
++use super::state::tally;
++verus! {
++pub proof fn disjoint_bound(a: Seq<bool>, b: Seq<bool>, n: nat)
++    requires n <= a.len(), n <= b.len(),
++        forall|i: int| 0 <= i < n ==> !(a[i] && b[i]),
++    ensures tally(a, n) + tally(b, n) <= n,
++    decreases n,
++{
++    if n > 0 {
++        disjoint_bound(a, b, (n - 1) as nat);
++        assert(!(a[n as int - 1] && b[n as int - 1]));
++    }
++}
++pub proof fn majority_overlap(a: Seq<bool>, b: Seq<bool>) -> (peer: int)
++    requires a.len() == b.len(), tally(a, a.len()) > a.len() / 2,
++        tally(b, b.len()) > b.len() / 2,
++    ensures 0 <= peer < a.len(), a[peer], b[peer],
++{
++    if !(exists|i: int| 0 <= i < a.len() && a[i] && b[i]) {
++        assert forall|i: int| 0 <= i < a.len() implies !(a[i] && b[i]) by {}
++        disjoint_bound(a, b, a.len());
++        assert(a.len() % 2 < 2);
++        assert(a.len() == 2 * (a.len() / 2) + a.len() % 2);
++        assert(false);
++    }
++    choose|i: int| 0 <= i < a.len() && a[i] && b[i]
++}
++// A vote ledger is historical, not a trusted network premise. A future global
++// preservation proof must derive the certificates from durable runtime votes.
++pub proof fn certified_leaders_agree(a: Seq<bool>, b: Seq<bool>, ledger: Map<(nat, nat), nat>,
++    term: nat, first: nat, second: nat)
++    requires a.len() == b.len(), tally(a, a.len()) > a.len() / 2,
++        tally(b, b.len()) > b.len() / 2,
++        forall|i: int| 0 <= i < a.len() && a[i] ==> ledger.contains_key((i as nat, term)) && ledger[(i as nat, term)] == first,
++        forall|i: int| 0 <= i < b.len() && b[i] ==> ledger.contains_key((i as nat, term)) && ledger[(i as nat, term)] == second,
++    ensures first == second,
++{
++    let peer = majority_overlap(a, b);
++    assert(ledger[(peer as nat, term)] == first);
++    assert(ledger[(peer as nat, term)] == second);
++}
++}
+--- before/madraft/src/raft/commit.rs
++++ after/madraft/src/raft/commit.rs
+@@ -0,0 +1,29 @@
++use vstd::prelude::*;
++verus! {
++pub open spec fn agreeing(values: Seq<u64>, through: u64, n: nat) -> nat
++    recommends n <= values.len(),
++    decreases n,
++{
++    if n == 0 { 0 } else {
++        agreeing(values, through, (n - 1) as nat) + if values[n as int - 1] >= through { 1nat } else { 0nat }
++    }
++}
++pub(super) fn authorize(current: u64, proposed: u64, entry_term: Option<u64>, term: u64, matches: &Vec<u64>) -> (next: u64)
++    ensures next == current || next == proposed, next >= current,
++        next > current ==> entry_term == Some(term) && matches.len() > 0
++            && agreeing(matches@, proposed, matches.len() as nat) > matches.len() / 2,
++{
++    if proposed <= current || entry_term != Some(term) || matches.len() == 0 { return current; }
++    let mut count = 0usize;
++    let mut i = 0usize;
++    while i < matches.len()
++        invariant i <= matches.len(), count <= i,
++            count == agreeing(matches@, proposed, i as nat),
++        decreases matches.len() - i,
++    {
++        if matches[i] >= proposed { count += 1; }
++        i += 1;
++    }
++    if count > matches.len() / 2 { proposed } else { current }
++}
++}
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -5,10 +5,12 @@
+ 
+ #[path = "state.rs"]
+ mod state;
+-use state::{State, Role};
++use state::State;
+ #[path = "log.rs"]
+ mod log_core;
+ use log_core::Entry;
++#[path = "commit.rs"]
++mod commit_core;
+ 
+ #[derive(Clone)]
+ pub struct RaftHandle {
+@@ -41,8 +43,9 @@
+ }
+ struct Raft {
+     peers: Vec<SocketAddr>, me: usize, apply_ch: MsgSender, state: State,
++    halted: bool,
+     disk: Persist, slots: [u64; 2], commit: u64, applied: u64,
+-    deadline: Instant, heartbeat: Instant, votes: Vec<bool>, next: Vec<u64>, matched: Vec<u64>,
++    deadline: Instant, heartbeat: Instant, next: Vec<u64>, matched: Vec<u64>,
+ }
+ fn invalid(message: &str) -> io::Error { io::Error::new(io::ErrorKind::InvalidData, message) }
+ impl fmt::Debug for Raft {
+@@ -69,11 +72,10 @@
+         m[self.me] = self.last();
+         m.sort_unstable();
+         let index = m[(m.len() - 1) / 2];
+-        if index > self.commit && self.term_at(index) == Some(self.state.term) { self.commit = index; }
++        self.commit = commit_core::authorize(self.commit, index, self.term_at(index), self.state.term, &m);
+         self.apply();
+     }
+     fn become_leader(&mut self) {
+-        self.state.role = Role::Leader;
+         let next = self.last().saturating_add(1);
+         self.next.fill(next);
+         self.matched.fill(0);
+@@ -87,11 +89,12 @@
+         let (apply_ch, recver) = mpsc::unbounded();
+         let n = peers.len();
+         let this = Self { endpoint, gate: Arc::new(AsyncMutex::new(())), inner: Arc::new(Mutex::new(Raft {
+-            peers, me, apply_ch, state: State::default(),
++            peers, me, apply_ch, state: State::new(n, me).expect("fixed membership"),
++            halted: false,
+             disk: Persist { generation: 0, term: 0, vote: None, base: 0, base_term: 0, log: vec![], snapshot: vec![] },
+             slots: [0, 0], commit: 0, applied: 0,
+             deadline: Instant::now() + Raft::timeout(), heartbeat: Instant::now(),
+-            votes: vec![false; n], next: vec![1; n], matched: vec![0; n],
++            next: vec![1; n], matched: vec![0; n],
+         })) };
+         this.restore().await.expect("failed to restore");
+         this.start_rpc_server();
+@@ -100,11 +103,12 @@
+         (this, recver)
+     }
+     pub fn term(&self) -> u64 { self.inner.lock().unwrap().state.term }
+-    pub fn is_leader(&self) -> bool { self.inner.lock().unwrap().state.is_leader() }
++    pub fn is_leader(&self) -> bool { let r = self.inner.lock().unwrap(); !r.halted && r.state.is_leader() }
+     pub async fn start(&self, cmd: &[u8]) -> Result<Start> {
+         let _gate = self.gate.lock().await;
+         let result = {
+             let mut r = self.inner.lock().unwrap();
++            if r.halted { return Err(invalid("node halted after storage failure").into()); }
+             if !r.state.is_leader() { return Err(Error::NotLeader((r.me + 1) % r.peers.len())); }
+             if r.last() == u64::MAX || r.disk.log.len() == usize::MAX { return Err(invalid("log exhausted").into()); }
+             let term = r.state.term;
+@@ -138,6 +142,16 @@
+     // Two generation-matched state/snapshot pairs; replace the older pair first.
+     // Recovery accepts only complete pairs. No cross-file atomicity is required.
+     async fn persist(&self) -> io::Result<()> {
++        {
++            let mut r = self.inner.lock().unwrap();
++            if r.halted { return Err(invalid("node halted after storage failure")); }
++            r.halted = true;
++        }
++        let result = self.persist_image().await;
++        if result.is_ok() { self.inner.lock().unwrap().halted = false; }
++        result
++    }
++    async fn persist_image(&self) -> io::Result<()> {
+         let (bytes, snapshot, first, generation) = {
+             let mut r = self.inner.lock().unwrap();
+             r.disk.term = r.state.term; r.disk.vote = r.state.vote;
+@@ -184,7 +198,7 @@
+         if exists && best.is_none() { return Err(invalid("no complete durable image; refusing fresh vote")); }
+         if let Some(p) = best {
+             let mut r = self.inner.lock().unwrap();
+-            r.state.term = p.term; r.state.vote = p.vote;
++            if !r.state.recover(p.term, p.vote) { return Err(invalid("durable ballot bounds")); }
+             r.commit = p.base; r.applied = p.base;
+             if p.base > 0 { let _ = r.apply_ch.unbounded_send(ApplyMsg::Snapshot { data: p.snapshot.clone(), term: p.base_term, index: p.base }); }
+             r.disk = p;
+@@ -199,6 +213,7 @@
+     }
+     async fn request_vote(&self, a: RequestVoteArgs) -> io::Result<RequestVoteReply> {
+         let _gate = self.gate.lock().await;
++        if self.inner.lock().unwrap().halted { return Err(invalid("node halted")); }
+         let reply = {
+             let mut r = self.inner.lock().unwrap();
+             let fresh = log_core::fresh(a.last_term, a.last, r.term_at(r.last()).unwrap(), r.last());
+@@ -213,12 +228,13 @@
+     async fn append(&self, a: AppendArgs) -> io::Result<AppendReply> {
+         let mut installed = false;
+         let _gate = self.gate.lock().await;
++        if self.inner.lock().unwrap().halted { return Err(invalid("node halted")); }
+         let reply = {
+             let mut r = self.inner.lock().unwrap();
+             let mut success = false;
+             let mut hint = r.last().saturating_add(1);
+             if a.leader < r.peers.len() && a.term >= r.state.term {
+-                r.state.adopt_term(a.term); r.state.role = Role::Follower; r.reset();
++                r.state.follow(a.term); r.reset();
+                 if let Some((base, term, bytes)) = a.snapshot {
+                     if base > r.commit {
+                         if r.term_at(base) == Some(term) {
+@@ -261,14 +277,18 @@
+     }
+     async fn tick(&self) {
+         let _gate = self.gate.lock().await;
++        if self.inner.lock().unwrap().halted { return; }
+         let election = {
+             let mut r = self.inner.lock().unwrap();
+             if !r.state.is_leader() && Instant::now() >= r.deadline {
+                 let me = r.me;
+                 if !r.state.campaign(me as u64) { r.reset(); return; }
+-                r.votes.fill(false); r.votes[me] = true; r.reset();
++                r.reset();
+                 let a = RequestVoteArgs { term: r.state.term, candidate: me as u64, last: r.last(), last_term: r.term_at(r.last()).unwrap() };
+-                if r.peers.len() == 1 { r.become_leader(); }
++                if r.peers.len() == 1 {
++                    let term = r.state.term;
++                    if r.state.accept_vote(me, term, term, true) { r.become_leader(); }
++                }
+                 Some((a, r.peers.clone(), me))
+             } else { None }
+         };
+@@ -308,18 +328,16 @@
+     }
+     async fn vote_reply(&self, peer: usize, term: u64, reply: RequestVoteReply) {
+         let _gate = self.gate.lock().await;
++        if self.inner.lock().unwrap().halted { return; }
+         {
+             let mut r = self.inner.lock().unwrap();
+-            r.state.adopt_term(reply.term);
+-            if r.state.term == term && r.state.role == Role::Candidate && reply.granted {
+-                r.votes[peer] = true;
+-                if r.votes.iter().filter(|v| **v).count() > r.peers.len() / 2 { r.become_leader(); }
+-            }
++            if r.state.accept_vote(peer, term, reply.term, reply.granted) { r.become_leader(); }
+         }
+         self.persist().await.expect("reply persistence");
+     }
+     async fn append_reply(&self, peer: usize, a: AppendArgs, reply: AppendReply) {
+         let _gate = self.gate.lock().await;
++        if self.inner.lock().unwrap().halted { return; }
+         {
+             let mut r = self.inner.lock().unwrap();
+             r.state.adopt_term(reply.term);
+--- before/madraft/src/raft/state.rs
++++ after/madraft/src/raft/state.rs
+@@ -1,56 +1,152 @@
+ use vstd::prelude::*;
+ 
+ verus! {
+-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++#[derive(Debug)]
+ pub(super) struct State {
+     pub(super) term: u64,
+     pub(super) role: Role,
+     pub(super) vote: Option<u64>,
++    pub(super) votes: Vec<bool>,
++    pub(super) me: usize,
+ }
+ #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+ pub(super) enum Role { Follower, Candidate, Leader }
++
++pub open spec fn tally(votes: Seq<bool>, n: nat) -> nat
++    recommends n <= votes.len(),
++    decreases n,
++{
++    if n == 0 { 0 } else { tally(votes, (n - 1) as nat) + if votes[n as int - 1] { 1nat } else { 0nat } }
++}
+ impl State {
++    pub(super) open spec fn valid(&self) -> bool { self.votes.len() > 0 && self.me < self.votes.len() }
++    pub(super) fn new(n: usize, me: usize) -> (result: Option<Self>)
++        ensures match result {
++            Some(s) => s.valid() && s.term == 0 && s.role is Follower && s.vote == None::<u64>
++                && s.me == me && s.votes.len() == n && forall|i: int| 0 <= i < n ==> !s.votes@[i],
++            None => n == 0 || me >= n,
++        },
++    {
++        if n == 0 || me >= n { return None; }
++        Some(Self { term: 0, role: Role::Follower, vote: None, votes: vec![false; n], me })
++    }
+     pub(super) fn is_leader(&self) -> (result: bool)
+         ensures result == (self.role is Leader),
+     { matches!(self.role, Role::Leader) }
+ 
+     pub(super) fn adopt_term(&mut self, term: u64)
+         ensures self.term == if term > old(self).term { term } else { old(self).term },
+-            term <= old(self).term ==> *self == *old(self),
++            self.votes == old(self).votes, self.me == old(self).me,
++            term <= old(self).term ==> self.role == old(self).role && self.vote == old(self).vote,
+             term > old(self).term ==> self.vote == None::<u64> && self.role is Follower,
+     {
+-        if term > self.term {
+-            self.term = term;
+-            self.vote = None;
+-            self.role = Role::Follower;
+-        }
++        if term > self.term { self.term = term; self.vote = None; self.role = Role::Follower; }
+     }
+ 
+     pub(super) fn campaign(&mut self, me: u64) -> (ok: bool)
+-        ensures ok ==> self.term == old(self).term + 1 && self.vote == Some(me) && self.role is Candidate,
+-            !ok ==> *self == *old(self) && self.term == u64::MAX,
++        requires old(self).valid(), me == old(self).me,
++        ensures self.valid(), self.me == old(self).me, self.votes.len() == old(self).votes.len(),
++            ok ==> self.term == old(self).term + 1 && self.vote == Some(me) && self.role is Candidate,
++            ok ==> forall|i: int| 0 <= i < self.votes.len() ==> self.votes@[i] == (i == self.me),
++            !ok ==> self.term == u64::MAX && self.term == old(self).term
++                && self.vote == old(self).vote && self.role == old(self).role && self.votes == old(self).votes,
+     {
+         if self.term == u64::MAX { return false; }
+-        self.term = self.term + 1;
+-        self.vote = Some(me);
+-        self.role = Role::Candidate;
++        self.term = self.term + 1; self.vote = Some(me); self.role = Role::Candidate;
++        let mut i = 0;
++        while i < self.votes.len()
++            invariant self.valid(), self.me == old(self).me, self.votes.len() == old(self).votes.len(),
++                self.term == old(self).term + 1, self.vote == Some(me), self.role is Candidate,
++                0 <= i <= self.votes.len(),
++                forall|j: int| 0 <= j < i ==> self.votes@[j] == (j == self.me),
++            decreases self.votes.len() - i,
++        {
++            self.votes.set(i, i == self.me);
++            i += 1;
++        }
+         true
+     }
+ 
+     pub(super) fn grant_vote(&mut self, term: u64, candidate: u64, fresh: bool) -> (granted: bool)
+-        ensures self.term >= old(self).term,
++        ensures self.term >= old(self).term, self.votes == old(self).votes, self.me == old(self).me,
+             self.term == old(self).term && old(self).vote.is_some() ==> self.vote == old(self).vote,
+-            granted ==> self.term == term && self.vote == Some(candidate) && fresh,
++            granted ==> self.term == term && self.vote == Some(candidate) && fresh && candidate < self.votes.len(),
+             self.term == old(self).term || self.term == term,
+     {
++        if candidate >= self.votes.len() as u64 { return false; }
+         self.adopt_term(term);
+         if term == self.term && fresh && (self.vote.is_none() || self.vote == Some(candidate)) {
+-            self.vote = Some(candidate);
+-            true
++            self.vote = Some(candidate); true
+         } else { false }
++    }
++
++    pub(super) fn vote_count(&self) -> (count: usize)
++        ensures count == tally(self.votes@, self.votes.len() as nat), count <= self.votes.len(),
++    {
++        let mut count = 0usize;
++        let mut i = 0usize;
++        while i < self.votes.len()
++            invariant i <= self.votes.len(), count <= i,
++                count == tally(self.votes@, i as nat),
++            decreases self.votes.len() - i,
++        {
++            if self.votes[i] { count += 1; }
++            i += 1;
++        }
++        count
++    }
++
++    pub(super) fn accept_vote(&mut self, peer: usize, request_term: u64, reply_term: u64, granted: bool) -> (elected: bool)
++        requires old(self).valid(),
++        ensures self.valid(), self.me == old(self).me, self.votes.len() == old(self).votes.len(),
++            self.term >= old(self).term,
++            self.votes@ == if peer < old(self).votes.len() && old(self).role is Candidate
++                && old(self).term == request_term && reply_term <= old(self).term && granted {
++                old(self).votes@.update(peer as int, true)
++            } else { old(self).votes@ },
++            self.term == old(self).term && old(self).vote.is_some() ==> self.vote == old(self).vote,
++            elected ==> self.role is Leader && self.term == request_term
++                && tally(self.votes@, self.votes.len() as nat) > self.votes.len() / 2,
++            elected ==> old(self).role is Candidate && granted && reply_term <= request_term,
++            elected == (peer < old(self).votes.len() && old(self).role is Candidate
++                && old(self).term == request_term && reply_term <= old(self).term && granted
++                && tally(self.votes@, self.votes.len() as nat) > self.votes.len() / 2),
++            !elected && reply_term <= old(self).term ==> self.role == old(self).role,
++    {
++        self.adopt_term(reply_term);
++        if peer < self.votes.len() && self.term == request_term && matches!(self.role, Role::Candidate) && granted {
++            self.votes.set(peer, true);
++            if self.vote_count() > self.votes.len() / 2 {
++                self.role = Role::Leader;
++                return true;
++            }
++        }
++        false
++    }
++
++    // Recovery checks structural bounds; the host must separately establish
++    // that these bytes are the newest completed durable decision.
++    pub(super) fn recover(&mut self, term: u64, vote: Option<u64>) -> (accepted: bool)
++        requires old(self).valid(),
++        ensures self.valid(), self.me == old(self).me, self.votes == old(self).votes,
++            accepted ==> self.term == term && self.vote == vote && self.role is Follower,
++            accepted ==> self.term >= old(self).term,
++            accepted && self.term == old(self).term && old(self).vote.is_some() ==> self.vote == old(self).vote,
++            !accepted ==> self.term == old(self).term && self.vote == old(self).vote && self.role == old(self).role,
++    {
++        let vote_valid = match vote { Some(candidate) => candidate < self.votes.len() as u64, None => true };
++        if !vote_valid || term < self.term || (term == self.term && self.vote.is_some() && self.vote != vote) { return false; }
++        self.term = term; self.vote = vote; self.role = Role::Follower; true
++    }
++
++    pub(super) fn follow(&mut self, term: u64) -> (accepted: bool)
++        ensures self.term >= old(self).term, self.votes == old(self).votes, self.me == old(self).me,
++            self.term == old(self).term && old(self).vote.is_some() ==> self.vote == old(self).vote,
++            accepted ==> self.term == term && self.role is Follower,
++            !accepted ==> term < old(self).term && self.term == old(self).term && self.role == old(self).role,
++    {
++        if term < self.term { return false; }
++        self.adopt_term(term); self.role = Role::Follower; true
+     }
+ }
+ }
+-impl Default for State {
+-    fn default() -> Self { Self { term: 0, role: Role::Follower, vote: None } }
+-}

@@ -1,30 +1,22 @@
-# Generate MadRaft implementation and Verus proofs together — DRAFT
+# Joint MadRaft generation — DRAFT
 
-Complete the supplied MadRaft student project and jointly prove its actual executable Raft behavior against all five safety targets. Read `requirements/scope.md`, `requirements/safety.md`, `requirements/environment.md` and `requirements/coverage.md`. Conditional liveness and application correctness beyond those Raft properties remain separate OPEN goals.
+For a system-maintenance request, modify the experiment tools and inputs as requested; preserve the unfinished root scaffold and old experiment candidates. The instructions below govern the experiment agent in its fresh workspace, not a request to maintain the launcher.
 
-Work on this workspace's `madraft/` copy. Start from its placeholders; do not read other experiments, operator sessions, previous answers or patches, or import a ready-made Raft solution. Shared dependencies and tools are available through `tools.ini`. Choose and revise your own representations, synchronous-core extraction, execution relation, auxiliary specifications, ghost/history state, invariants and proof decomposition. Keep the async host and lab interfaces recognizable; tests and proofs must use the same executable decision logic.
+Complete this workspace's supplied MadRaft student labs and jointly prove the actual executable Raft behavior against the five fixed safety targets. Read `requirements/{scope,safety,environment,coverage}.md`. Conditional liveness and application correctness beyond those Raft properties remain OPEN goals. Work only in this experiment's `madraft/`; never import an earlier candidate, solution, patch or session.
 
-Work backward from the independent top-level callers while building small implementation/proof increments. Connect a real send–delivery–handler path through `requirements/support.rs` early, including executable initialization, transitions and observation, then extend it with elections, replication, commitment/application, snapshots and restart. Do not complete all application code before first addressing global execution. For each increment, identify its top-level goal, the premises discharged by actual callers or established invariants, actual message/storage/application effects, and remaining dependencies. Run real tests and Verus, repair regressions, and revise the representation or proof decomposition when evidence shows an approach is stuck. A failed proof does not by itself establish a reachable executable bug.
+Choose and revise your own representations, contracts, auxiliary invariants and proof decomposition. Keep the async host and lab interfaces recognizable. Generate implementation and proofs together, run relevant real tests and Verus, and repair based on actual diagnostics. Preserve the fixed targets, environment, original tests, licenses and independent checker. Do not use `assume`, `admit`, external/skipped consensus bodies or fabricated results. Partial conditional results are allowed but do not close their premises.
 
-Generate `madraft/proof/implementation.rs` and its consumed interfaces, including proof bodies; this file is not a supplied solution. Use the fixed history/provenance adapter described in `requirements/coverage.md`. Your runtime and model relations must describe actual initialization and all permitted transitions without assuming unproved protocol invariants. Supply concrete initialization and step correspondence proofs; an arbitrary `refines_executable` predicate is not evidence. Prove full observation and executable correspondence, including asynchronous coordination and snapshot decoding. Keep conditional lemmas conditional until actual callers or initialized/preserved invariants discharge their premises. Partial proof units may be separated from unfinished work; the final aggregate must verify the complete composition.
+Keep one short `PROGRESS.md` with actual changes, checks, failed approach and next obstacle, including the connection table specified in `requirements/coverage.md`. Keep `RESULT.md` with all lab outcomes, five theorem outcomes, actual execution and snapshot/recovery coverage, trust assumptions and reproduction commands. A model theorem, table or local verified count does not establish full implementation correctness. Return normally by the prompt's soft handoff deadline; the controller independently checks the stopped candidate.
 
-Keep one short `PROGRESS.md` containing changes, real checks, open premises, attempted approach and why it failed, covered executable paths and the next obstacle. Return normally by the prompt’s soft handoff deadline after saving the current files and evidence; the controller will independently check them and return feedback in this same session. Its feedback, not a completion claim or a local verified count, determines what remains. Maintain `RESULT.md` with lab and theorem outcomes, snapshot/recovery coverage, host/TCB assumptions, limitations and reproduction commands. Candidate notes are not independently verified conclusions.
-
-Preserve fixed requirements, original tests, licenses and independent check scripts. Do not weaken targets, observations or assumptions; report a semantic conflict. Do not use `assume`, `admit`, external/skipped consensus bodies or fabricated results. Do not turn typechecking, finite simulations, local handler proofs or a dependency checklist into a cluster-level correctness claim. Preserve metadata, credentials, unrelated files and global tools. Do not merge, push or publish. Keep each Markdown prose paragraph on one physical line.
-
-Use these local commands for feedback; the preparation-side checker independently rechecks stopped candidates. `top` verifies its entire imported unit, never a selected function with dependencies skipped. `safety` runs formal checks without Cargo tests. `final` uses every configured seed and every required formal obligation on one source snapshot.
+Use the existing `tools.ini` toolchain and offline dependencies. Preserve credentials, unrelated files and global tools. Do not merge, push or publish. Keep every Markdown prose paragraph on one physical line.
 
 ```bash
 python3 scripts/check.py foundation
-python3 scripts/check.py feedback --timeout 300
 python3 scripts/check.py build
 python3 scripts/check.py test raft::tests::initial_election_2a --seed 1
-python3 scripts/check.py test
-python3 scripts/check.py proof madraft/proof/progress.rs
+python3 scripts/check.py feedback --timeout 300
 python3 scripts/check.py top election_safety
-python3 scripts/check.py top execution_link
-python3 scripts/check.py top snapshot_observation
-python3 scripts/check.py top nonempty_execution
+python3 scripts/check.py proof madraft/proof/progress.rs
 python3 scripts/check.py safety
 python3 scripts/check.py final --timeout 3600
 ```

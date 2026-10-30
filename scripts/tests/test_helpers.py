@@ -23,7 +23,8 @@ def simulated_report(output, revision, *, passed=(), missing_reason='missing_ent
     output.mkdir(parents=True)
     log = output / 'SIMULATED.log'
     log.write_text('SIMULATED checker transport; no Rust or Verus was executed.\n')
-    names = ('build', 'inventory', 'tests_seed_1', 'proof', *checker.OBLIGATIONS, 'linkage_review', 'safety')
+    names = ('build', 'inventory', 'tests_seed_1', 'proof', *checker.OBLIGATIONS, 'linkage_review', 'safety',
+             *('connection_' + a for a in checker.CONNECTIONS))
     result = dict(status='MACHINE_CHECKS_PASSED' if final and mode == 'final' else 'INCOMPLETE', mode=mode, candidate_revision=revision,
         checks={n: dict(status='PASS' if final or n in passed or n in ('build','inventory','tests_seed_1','proof') else 'OPEN',
                         reason='checked' if final or n in passed or n in ('build','inventory','tests_seed_1','proof') else missing_reason,
@@ -197,8 +198,8 @@ pathlib.Path(sys.argv[sys.argv.index('--output-last-message')+1]).write_text('SI
         self.invoke('new','--execute','--max-rounds','8')
         state=self.state()
         self.assertEqual(state['redesigns'],1)
-        self.assertLess(state['attempts'],8)
-        self.assertIn('finite redesign',state['reason'])
+        self.assertEqual(state['attempts'],8)
+        self.assertIn('Maximum generation rounds',state['reason'])
         self.assertTrue(any(h['mode']=='redesign' for h in state['history']))
         self.assertIn('SIMULATED approach',(self.workspace/'runs/round-3/prompt.md').read_text())
 
@@ -323,6 +324,111 @@ pathlib.Path(sys.argv[sys.argv.index('--output-last-message')+1]).write_text('SI
             controller.fcntl.flock(lock,controller.fcntl.LOCK_EX | controller.fcntl.LOCK_NB)
             with self.assertRaises(BlockingIOError): self.invoke('resume','--execute')
         self.assertEqual(self.state()['attempts'],1)
+
+    def test_connection_gap_reaches_next_round_despite_model_pass(self):
+        self.plan=[{}, {'passed':list(checker.OBLIGATIONS)}]
+        self.invoke('new','--execute','--max-rounds','2')
+        prompt=(self.workspace/'runs/round-2/prompt.md').read_text()
+        self.assertIn('connection_recovery: OPEN',prompt)
+        self.assertIn('actual-execution connection',prompt)
+        self.assertEqual(self.state()['status'],'INCOMPLETE')
+
+    def test_auxiliary_unit_closure_is_progress_without_clearing_other_gap(self):
+        state={'proof_gaps':{}}
+        report={'checks':{'connection_recovery':dict(status='OPEN',reason='verification_failure',diagnostic='caller precondition'),
+                          'connection_outputs':dict(status='OPEN',reason='verification_failure',diagnostic='actual send')}}
+        controller.track_proofs(state,report)
+        report['checks']['connection_outputs'].update(status='PASS',reason='checked')
+        controller.track_proofs(state,report)
+        self.assertEqual(state['newly_checked_dependencies'],['connection_outputs'])
+        self.assertEqual(state['proof_gaps']['connection_recovery']['repeats'],1)
+
+    def test_timeouts_do_not_count_as_mathematical_stagnation(self):
+        state={'proof_gaps':{}}
+        report={'checks':{'connection_recovery':dict(status='OPEN',reason='verification_timeout')}}
+        for _ in range(3):controller.track_proofs(state,report)
+        self.assertEqual(state['stale_rounds'],0)
+        self.assertEqual(state['proof_gaps']['connection_recovery']['missed'],3)
+
+    def test_closing_budget_uses_work_then_final_without_feedback_reserve(self):
+        state=dict(total_seconds=3600,seconds_spent=2650,slice_seconds=600,check_seconds=300,
+                   final_seconds=600,min_work_seconds=120,handoff_seconds=60,attempts=2,max_rounds=8)
+        self.assertEqual(controller.round_plan(state),(350,'final'))
+        state['seconds_spent']=2821
+        self.assertEqual(controller.round_plan(state),(0,'final'))
+
+    def test_fake_clock_records_actual_cost_not_reserved_cost(self):
+        self.invoke('new','--execute','--max-rounds','1')
+        state=self.state();state.update(total_seconds=3600,seconds_spent=2650,costs=[],
+            slice_seconds=600,check_seconds=300,final_seconds=600,min_work_seconds=120,handoff_seconds=60)
+        clock=[0.0]
+        with patch.object(controller.time,'monotonic',side_effect=lambda:clock[0]):
+            loop=controller.Loop(self.root,self.workspace,controller.control_path(self.root,self.workspace),state)
+            hard,kind=controller.round_plan(dict(state,attempts=2,max_rounds=8))
+            self.assertEqual(kind,'final')
+            def action(limit,started):clock[0]+=290;return 'SIMULATED'
+            loop.charge('agent',hard,action)
+            def final(limit,started):clock[0]+=40;return 'SIMULATED'
+            loop.charge('final',600,final)
+            clock[0]+=3;loop.elapsed()
+        self.assertEqual(state['seconds_spent'],2983)
+        self.assertEqual([c['actual_seconds'] for c in state['costs']],[290,40])
+        self.assertEqual([c['reserved_seconds'] for c in state['costs']],[350,600])
+
+    def test_last_round_goes_directly_to_final(self):
+        self.invoke('new','--execute','--max-rounds','1')
+        state=self.state()
+        self.assertEqual(state['history'][0]['next_check'],'final')
+        self.assertEqual(len(self.calls),2)  # Initial feedback, then final; no duplicate feedback.
+        self.assertEqual(json.loads(Path(state['last_check']).read_text())['mode'],'final')
+
+    def test_final_can_be_followed_by_useful_work_when_actual_cost_leaves_budget(self):
+        cfg=controller.settings(self.root)
+        cfg['agent'].update(check_seconds='10',final_seconds='1',total_seconds='3')
+        with (self.root/'tools.ini').open('w') as f:cfg.write(f)
+        text=self.fake.read_text().replace("write_text('SIMULATED generation; no protocol implementation')",
+                                          "write_text('SIMULATED generation '+str(time.time_ns()))")
+        self.fake.write_text(text)
+        self.invoke('new','--execute','--max-rounds','3')
+        state=self.state()
+        self.assertEqual(state['attempts'],3)
+        self.assertEqual([r['next_check'] for r in state['history']],['final']*3)
+        self.assertEqual(len(self.calls),4)
+        self.assertLess(state['seconds_spent'],state['total_seconds'])
+
+    def test_unchanged_candidate_after_final_does_not_repeat_identical_checks(self):
+        cfg=controller.settings(self.root)
+        cfg['agent'].update(check_seconds='10',final_seconds='1',total_seconds='3')
+        with (self.root/'tools.ini').open('w') as f:cfg.write(f)
+        self.invoke('new','--execute','--max-rounds','3')
+        state=self.state()
+        self.assertEqual(state['attempts'],2)
+        self.assertEqual(len(self.calls),2)
+        self.assertIn('unchanged candidate',state['reason'])
+        self.assertIn('unchanged_final_evidence',state['history'][-1])
+
+    def test_ab_inputs_and_acceptance_are_identical_only_guidance_differs(self):
+        self.invoke('new','--guidance','A','--execute','--max-rounds','1')
+        a=self.state();first=self.workspace
+        self.workspace=first.with_name('fresh-b')
+        self.invoke('new','--guidance','B','--execute','--max-rounds','1')
+        b=self.state()
+        self.assertEqual(a['input_fingerprint'],b['input_fingerprint'])
+        self.assertEqual(a['seeds'],b['seeds'])
+        pa=(first/'runs/round-1/prompt.md').read_text()
+        pb=(self.workspace/'runs/round-1/prompt.md').read_text()
+        self.assertNotIn('Choose a concrete required behavior',pa)
+        self.assertIn('Choose a concrete required behavior',pb)
+        self.assertEqual(self.invoke('resume','--guidance','A'),2)
+
+    def test_token_usage_preserves_counters_without_double_summing(self):
+        p=Path(self.tmp.name)/'agent.jsonl'
+        p.write_text('\n'.join(json.dumps({'type':'turn.completed','usage':{'input_tokens':n,'output_tokens':10}}) for n in [100,200]))
+        record=controller.token_usage(p)
+        self.assertEqual(len(record['raw_events']),2)
+        self.assertEqual(record['counter_scope'],'UNKNOWN')
+        self.assertIsNone(record['summed_tokens'])
+        self.assertIsNone(record['dollar_cost'])
 
 
 class ProcessTests(unittest.TestCase):

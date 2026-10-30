@@ -1,5 +1,8 @@
 /runs/*
-!/runs/fresh-system-02/
+!/runs/calls-A-01/
+!/runs/calls-B-01/
+codex-home/
+cargo-target/
 /target/
 /madraft/target/
 __pycache__/

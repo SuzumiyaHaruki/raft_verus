@@ -1,0 +1,477 @@
+{
+  "status": "INCOMPLETE",
+  "mode": "build",
+  "input_version": "madraft-joint-proof-4",
+  "candidate_revision": "standalone-1793333370386829194",
+  "workspace": "/home/nitro/Desktop/raft_verus/runs/calls-A-01",
+  "checker_authority": "/home/nitro/Desktop/raft_verus/runs/calls-A-01",
+  "snapshot": "/home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333370386829194/candidate",
+  "source_files": [
+    "Cargo.lock",
+    "Cargo.toml",
+    "LICENSE",
+    "PROGRESS.md",
+    "README.md",
+    "RESULT.md",
+    "proof/README.md",
+    "proof/progress.rs",
+    "proof/quorum.rs",
+    "src/kvraft/client.rs",
+    "src/kvraft/mod.rs",
+    "src/kvraft/msg.rs",
+    "src/kvraft/server.rs",
+    "src/kvraft/tester.rs",
+    "src/kvraft/tests.rs",
+    "src/lib.rs",
+    "src/raft/commit.rs",
+    "src/raft/log.rs",
+    "src/raft/mod.rs",
+    "src/raft/raft.rs",
+    "src/raft/state.rs",
+    "src/raft/storage.rs",
+    "src/raft/tester.rs",
+    "src/raft/tests.rs",
+    "src/shard_ctrler/client.rs",
+    "src/shard_ctrler/mod.rs",
+    "src/shard_ctrler/msg.rs",
+    "src/shard_ctrler/server.rs",
+    "src/shard_ctrler/tester.rs",
+    "src/shard_ctrler/tests.rs",
+    "src/shardkv/client.rs",
+    "src/shardkv/mod.rs",
+    "src/shardkv/msg.rs",
+    "src/shardkv/server.rs",
+    "src/shardkv/tester.rs",
+    "src/shardkv/tests.rs",
+    "src/test_support.rs"
+  ],
+  "checks": {
+    "build": {
+      "status": "OPEN",
+      "reason": "compilation_error",
+      "input_version": "madraft-joint-proof-4",
+      "candidate_revision": "standalone-1793333370386829194",
+      "input_fingerprint": "5e42e7b627b210621e031e949d521d25dcb08b4f60177c33bc7d36aa8091e8f3",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--manifest-path",
+        "madraft/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--lib",
+        "--no-run"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333370386829194/build.log",
+      "scope": "build",
+      "process": "COMPLETED",
+      "exit_code": 101,
+      "elapsed_seconds": 4.393291121999937,
+      "seed": 1,
+      "diagnostic": "   Compiling madraft v0.1.0 (/home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333370386829194/candidate/madraft)\nerror: This block would be parsed as the function/loop body, but it is followed immediately by a comma (if you meant this block to be part of the specification, try parenthesizing it)\n  --> src/raft/storage.rs:79:13\n   |\n79 |       ensures {\n   |  _____________^\n80 | |         let pairs = after(first, second, new_image, stage);\n81 | |         carries(pairs.0, old_image) || carries(pairs.1, old_image)\n82 | |             || carries(pairs.0, new_image) || carries(pairs.1, new_image)\n83 | |     },\n   | |_____^\n\nerror[E0433]: failed to resolve: could not find `Operation` in `storage`\n   --> src/raft/raft.rs:172:26\n    |\n172 |                 storage::Operation::CreateSnapshot => {\n    |                          ^^^^^^^^^ could not find `Operation` in `storage`\n\nerror[E0433]: failed to resolve: could not find `Operation` in `storage`\n   --> src/raft/raft.rs:175:26\n    |\n175 |                 storage::Operation::WriteSnapshot => {\n    |                          ^^^^^^^^^ could not find `Operation` in `storage`\n\nerror[E0433]: failed to resolve: could not find `Operation` in `storage`\n   --> src/raft/raft.rs:180:26\n    |\n180 |                 storage::Operation::CreateState => {\n    |                          ^^^^^^^^^ could not find `Operation` in `storage`\n\nerror[E0433]: failed to resolve: could not find `Operation` in `storage`\n   --> src/raft/raft.rs:183:26\n    |\n183 |                 storage::Operation::WriteState => {\n    |                          ^^^^^^^^^ could not find `Operation` in `storage`\n\nerror[E0425]: cannot find function `plan` in module `storage`\n   --> src/raft/raft.rs:160:33\n    |\n160 |             let plan = storage::plan(r.slots[0], r.slots[1], r.disk.generation,\n    |                                 ^^^^ not found in `storage`\n\nerror[E0425]: cannot find function `operation` in module `storage`\n   --> src/raft/raft.rs:170:46\n    |\n170 |             let (slot, operation) = storage::operation(plan, stage);\n    |                                              ^^^^^^^^^ not found in `storage`\n\nerror[E0425]: cannot find function `pair_matches` in module `storage`\n   --> src/raft/raft.rs:205:66\n    |\n205 | ...                   Some((generation, data)) if storage::pair_matches(p.generation, p.base != 0, Some(generation)) => p.snapshot = data,\n    |                                                            ^^^^^^^^^^^^ not found in `storage`\n\nerror[E0425]: cannot find function `prefer` in module `storage`\n   --> src/raft/raft.rs:209:37\n    |\n209 |                         if storage::prefer(p.generation, best.as_ref().map(|b| b.generation)) { best = Some(p); }\n    |                                     ^^^^^^ not found in `storage`\n\nerror[E0422]: cannot find struct, variant or union type `Stamp` in module `storage`\n   --> src/raft/raft.rs:246:22\n    |\n246 |             storage::Stamp { generation: r.disk.generation, term: r.disk.term, vote: r.disk.vote, needs_snapshot: r.disk.base != 0 }\n    |                      ^^^^^ not found in `storage`\n\nerror[E0425]: cannot find function `release_vote` in module `storage`\n   --> src/raft/raft.rs:248:22\n    |\n248 |         if !storage::release_vote(stamp, reply.term, a.candidate, reply.granted) { return Err(invalid(\"vote release mismatch\")); }\n    |                      ^^^^^^^^^^^^ not found in `storage`\n\nwarning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead\n  --> src/kvraft/tester.rs:95:31\n   |\n95 |             NetSim::current().connect2(node_id(&self.handle, self.addrs[i]), node_id(&self.handle, self.addrs[j]));\n   |                               ^^^^^^^^\n   |\n   = note: `#[warn(deprecated)]` on by default\n\nwarning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead\n   --> src/kvraft/tester.rs:103:31\n    |\n103 |             NetSim::current().disconnect2(node_id(&self.handle, self.addrs[i]), node_id(&self.handle, self.addrs[j]));\n    |                               ^^^^^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead\n   --> src/kvraft/tester.rs:148:27\n    |\n148 |         NetSim::current().connect(node_id(&self.handle, addr));\n    |                           ^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead\n   --> src/kvraft/tester.rs:150:31\n    |\n150 |             NetSim::current().disconnect2(node_id(&self.handle, addr), node_id(&self.handle, self.addrs[i]));\n    |                               ^^^^^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead\n   --> src/kvraft/tester.rs:153:31\n    |\n153 |             NetSim::current().connect2(node_id(&self.handle, addr), node_id(&self.handle, self.addrs[i]));\n    |                               ^^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::disconnect`: use `clog_node` instead\n   --> src/raft/tester.rs:271:27\n    |\n271 |         NetSim::current().disconnect(node_id(&self.handle, self.addrs[i]));\n    |                           ^^^^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead\n   --> src/raft/tester.rs:278:27\n    |\n278 |         NetSim::current().connect(node_id(&self.handle, self.addrs[i]));\n    |                           ^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead\n  --> src/test_support.rs:77:23\n   |\n77 |     NetSim::current().disconnect2(server.id(), client.id());\n   |                       ^^^^^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead\n  --> src/test_support.rs:79:23\n   |\n79 |     NetSim::current().connect2(server.id(), client.id());\n   |                       ^^^^^^^^\n\nSome errors have detailed explanations: E0422, E0425, E0433.\nFor more information about an error, try `rustc --explain E0422`.\nwarning: `madraft` (lib test) generated 9 warnings\nerror: could not compile `madraft` (lib test) due to 11 previous errors; 9 warnings emitted\n",
+      "errors": [
+        {
+          "file": "src/raft/storage.rs",
+          "function": "",
+          "line": 79,
+          "column": 13,
+          "message": "This block would be parsed as the function/loop body, but it is followed immediately by a comma (if you meant this block to be part of the specification, try parenthesizing it)",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "src/raft/raft.rs",
+          "function": "",
+          "line": 172,
+          "column": 26,
+          "message": "failed to resolve: could not find `Operation` in `storage`",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "src/raft/raft.rs",
+          "function": "",
+          "line": 175,
+          "column": 26,
+          "message": "failed to resolve: could not find `Operation` in `storage`",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "src/raft/raft.rs",
+          "function": "",
+          "line": 180,
+          "column": 26,
+          "message": "failed to resolve: could not find `Operation` in `storage`",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "src/raft/raft.rs",
+          "function": "",
+          "line": 183,
+          "column": 26,
+          "message": "failed to resolve: could not find `Operation` in `storage`",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "src/raft/raft.rs",
+          "function": "",
+          "line": 160,
+          "column": 33,
+          "message": "cannot find function `plan` in module `storage`",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "src/raft/raft.rs",
+          "function": "",
+          "line": 170,
+          "column": 46,
+          "message": "cannot find function `operation` in module `storage`",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "src/raft/raft.rs",
+          "function": "",
+          "line": 205,
+          "column": 66,
+          "message": "cannot find function `pair_matches` in module `storage`",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "src/raft/raft.rs",
+          "function": "",
+          "line": 209,
+          "column": 37,
+          "message": "cannot find function `prefer` in module `storage`",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "src/raft/raft.rs",
+          "function": "",
+          "line": 246,
+          "column": 22,
+          "message": "cannot find struct, variant or union type `Stamp` in module `storage`",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "src/raft/raft.rs",
+          "function": "",
+          "line": 248,
+          "column": 22,
+          "message": "cannot find function `release_vote` in module `storage`",
+          "category": "dependency_failure"
+        }
+      ],
+      "category": "dependency_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_SEED": "1",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "family": ""
+    }
+  },
+  "required": [
+    "build"
+  ],
+  "input_fingerprint": "5e42e7b627b210621e031e949d521d25dcb08b4f60177c33bc7d36aa8091e8f3",
+  "evidence_mismatches": [],
+  "result_reuse": "No historical PASS reuse; only same-invocation shared compile failures may refer to an earlier log.",
+  "assessments": {
+    "election_safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "leader_append_only": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "log_matching": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "leader_completeness": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "state_machine_safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "execution_link": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "snapshot_observation": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "nonempty_execution": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    }
+  },
+  "functional_plan": [],
+  "placeholders": [],
+  "semantic_review": "NOT_PERFORMED",
+  "implementation_acceptance": "NOT_ESTABLISHED",
+  "elapsed_seconds": 4.474495323998781,
+  "diagnostics": [
+    {
+      "file": "src/raft/storage.rs",
+      "function": "",
+      "line": 79,
+      "column": 13,
+      "message": "This block would be parsed as the function/loop body, but it is followed immediately by a comma (if you meant this block to be part of the specification, try parenthesizing it)",
+      "category": "dependency_failure",
+      "affected": [
+        "build"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333370386829194/build.log"
+      ]
+    },
+    {
+      "file": "src/raft/raft.rs",
+      "function": "",
+      "line": 172,
+      "column": 26,
+      "message": "failed to resolve: could not find `Operation` in `storage`",
+      "category": "dependency_failure",
+      "affected": [
+        "build"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333370386829194/build.log"
+      ]
+    },
+    {
+      "file": "src/raft/raft.rs",
+      "function": "",
+      "line": 175,
+      "column": 26,
+      "message": "failed to resolve: could not find `Operation` in `storage`",
+      "category": "dependency_failure",
+      "affected": [
+        "build"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333370386829194/build.log"
+      ]
+    },
+    {
+      "file": "src/raft/raft.rs",
+      "function": "",
+      "line": 180,
+      "column": 26,
+      "message": "failed to resolve: could not find `Operation` in `storage`",
+      "category": "dependency_failure",
+      "affected": [
+        "build"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333370386829194/build.log"
+      ]
+    },
+    {
+      "file": "src/raft/raft.rs",
+      "function": "",
+      "line": 183,
+      "column": 26,
+      "message": "failed to resolve: could not find `Operation` in `storage`",
+      "category": "dependency_failure",
+      "affected": [
+        "build"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333370386829194/build.log"
+      ]
+    },
+    {
+      "file": "src/raft/raft.rs",
+      "function": "",
+      "line": 160,
+      "column": 33,
+      "message": "cannot find function `plan` in module `storage`",
+      "category": "dependency_failure",
+      "affected": [
+        "build"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333370386829194/build.log"
+      ]
+    },
+    {
+      "file": "src/raft/raft.rs",
+      "function": "",
+      "line": 170,
+      "column": 46,
+      "message": "cannot find function `operation` in module `storage`",
+      "category": "dependency_failure",
+      "affected": [
+        "build"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333370386829194/build.log"
+      ]
+    },
+    {
+      "file": "src/raft/raft.rs",
+      "function": "",
+      "line": 205,
+      "column": 66,
+      "message": "cannot find function `pair_matches` in module `storage`",
+      "category": "dependency_failure",
+      "affected": [
+        "build"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333370386829194/build.log"
+      ]
+    },
+    {
+      "file": "src/raft/raft.rs",
+      "function": "",
+      "line": 209,
+      "column": 37,
+      "message": "cannot find function `prefer` in module `storage`",
+      "category": "dependency_failure",
+      "affected": [
+        "build"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333370386829194/build.log"
+      ]
+    },
+    {
+      "file": "src/raft/raft.rs",
+      "function": "",
+      "line": 246,
+      "column": 22,
+      "message": "cannot find struct, variant or union type `Stamp` in module `storage`",
+      "category": "dependency_failure",
+      "affected": [
+        "build"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333370386829194/build.log"
+      ]
+    },
+    {
+      "file": "src/raft/raft.rs",
+      "function": "",
+      "line": 248,
+      "column": 22,
+      "message": "cannot find function `release_vote` in module `storage`",
+      "category": "dependency_failure",
+      "affected": [
+        "build"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333370386829194/build.log"
+      ]
+    }
+  ],
+  "changed_standards": [],
+  "concurrent_changes": [],
+  "liveness": "OPEN \u2014 not accepted by safety checks",
+  "semantic_boundary": "Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.",
+  "task_completion": "OPEN"
+}

@@ -79,6 +79,58 @@ pub fn actual_bug_is_admitted() {
     }
 }
 
+// The actual caller consumes the executable handler's contract; simulation
+// between two relations alone does not establish this call composition.
+pub fn actual_call_chain() -> (value: u64)
+    ensures value == 2,
+{
+    let start = new_counter();
+    let (one, _) = handle(start, None);
+    let (two, _) = handle(one, None);
+    proof { assert(payload(None) == None::<u64>); }
+    two
+}
+
+// A memory-sized persistence example. Saved represents a completed checkpoint;
+// its ghost witness records the established relation, not bytes on disk.
+pub struct Counter { pub value: u64, pub recorded: Ghost<nat> }
+pub struct Saved { pub value: u64, pub recorded: Ghost<nat> }
+pub open spec fn consistent(c: Counter) -> bool { c.value <= 100 && c.recorded@ == c.value }
+pub open spec fn durable(d: Saved) -> bool { d.value <= 100 && d.recorded@ == d.value }
+pub fn fresh_counter() -> (c: Counter)
+    ensures consistent(c), c.value == 0,
+{ Counter { value: 0, recorded: Ghost(0nat) } }
+pub fn update(c: &mut Counter)
+    requires consistent(*old(c)), old(c).value < 100,
+    ensures consistent(*c), c.value == old(c).value + 1,
+{
+    c.value = c.value + 1;
+    c.recorded = Ghost(c.recorded@ + 1);
+}
+pub fn checkpoint(c: &Counter) -> (d: Saved)
+    requires consistent(*c),
+    ensures durable(d), d.value == c.value, d.recorded@ == c.recorded@,
+{ Saved { value: c.value, recorded: c.recorded } }
+pub fn restore(c: &mut Counter, d: Saved)
+    requires durable(d),
+    ensures c.value == d.value,
+        consistent(*c), // recovery establishes the callee's precondition
+{
+    c.value = d.value;
+    c.recorded = d.recorded; // derive ghost relation from the checkpoint
+}
+pub fn restore_then_update() -> (value: u64)
+    ensures value == 2,
+{
+    let mut old = fresh_counter();
+    update(&mut old);
+    let d = checkpoint(&old);
+    let mut restarted = fresh_counter();
+    restore(&mut restarted, d);
+    update(&mut restarted); // actual post-recovery caller
+    restarted.value
+}
+
 pub proof fn complete_toy_history(h: History<u64, Option<Delivery<u64>>, (u64, u64), u64>, k: int)
     requires valid(h, |s| initial(s), |s, i, t, o| step(s, i, t, o), |i| receive(i), |o| emitted(o)), 0 <= k < h.states.len(),
     ensures bounded(h.states[k], h.sent[k]),

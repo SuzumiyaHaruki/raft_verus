@@ -1,0 +1,530 @@
+--- before/madraft/PROGRESS.md
++++ after/madraft/PROGRESS.md
+@@ -1,19 +1,21 @@
+-# Progress — round 1
++# Progress — round 2
+ 
+-Implemented randomized Raft election, candidate-specific votes, heartbeat RPCs, log freshness checks, suffix conflict repair, current-term majority commitment, ordered command delivery, compaction, snapshot transfer and restart. Async mutation/persistence is serialized by RaftHandle::gate. Durable state uses two generation-matched pairs (state/snapshot and state.backup/snapshot.backup), replacing the older pair first and accepting only complete pairs on recovery; unknown durable state fails closed. Added shared replicated service, serialized clerk retries with stable request identity, bounded per-client response deduplication, KV operations, service snapshots and deterministic controller rebalancing. Sharded KV remains the original unfinished scaffold.
++Implemented shard clients, replicated configuration changes, per-shard incoming readiness, pull/install, retained outgoing data, receiver-committed installation before garbage collection, replicated deletion, snapshots and migrated per-shard retry records. Group gid is durable application state; each Raft group retains its fixed peer endpoints across restart. Repaired controller clients on the simulator main host by assigning its missing client IP, and repaired server-local client replies by binding the Raft server on the wildcard address so ephemeral clients cannot reuse its effective port. Empty Raft snapshots now occupy zero bytes. Shared service re-evaluates WrongGroup retries and omits redundant durable transport replies for shard services, whose own retry records migrate and persist with each shard.
+ 
+-Actual checks: build PASS before final cache adjustment; all 24 Raft tests PASS on seed 1 and seed 2 before split-pair storage and on seed 3 after split-pair storage. Foundation PASS. Verus progress PASS (7 verified, 0 errors), importing actual state.rs and checking local term/vote contracts plus two distinct same-term vote calls. KV seed 1 first had 12/19 pass with seven log-size failures; after separating snapshot bytes, 18/19 passed with snapshot_size_3b still failing due unbounded dedup history. Replaced that cache with latest response per serialized clerk; final KV seed 1 rerun PASS (19/19), log runs/checks/1793331906721164104/tests_seed_1_kvraft_tests.log. Controller seed 1 timed out twice in basic_4a (latest runs/checks/1793331907905846988/tests_seed_1_shard_ctrler_tests.log); inspect main-node client routing and query/application progress next. Safety check: foundation, definitions and progress PASS; all implementation-dependent goals OPEN because implementation.rs is absent. No five-target, execution correspondence or snapshot fidelity theorem is claimed.
++Generated and checked same-source log.rs contracts for exact append-prefix preservation including command bytes, exact suffix truncation and lexicographic freshness. Runtime start, request_vote and append call these helpers. Progress Verus PASS (11 verified, 0 errors), including actual state.rs term/vote methods and two distinct same-term vote calls. Caller preconditions, async wrappers and global invariants remain unproved; these local results close no fixed global target.
+ 
+-Failed approaches: embedding snapshot bytes in state violated retained log-size bounds; retaining every request response violated the 500-byte snapshot test. Storage now separates the compacted suffix and snapshot, and retry records retain one sequence/result per client. The two-pair crash argument is currently design reasoning, not a machine proof. Local verified voting does not prove durable votes, quorum provenance, or global election safety.
++Actual checks this round: build PASS; controller family PASS on seeds 1 and 2; KV family PASS on seeds 2 and 3; Raft family PASS on seeds 4 and 5. These are successive revisions of one candidate, not complete final acceptance. Shard family initially timed out; fixing wildcard server binding yielded 11/12 retained tests passing on seed 1, with challenge1_delete_4b failing total persisted size 120265 > 117000 (runs/checks/1793332470474066381/tests_seed_1_shardkv_tests.log). Removed redundant durable transport response cache; final shard family PASS on seeds 1 and 2 (all 12 retained tests; logs runs/checks/1793332545087874683/tests_seed_1_shardkv_tests.log and runs/checks/1793332546224546247/tests_seed_2_shardkv_tests.log). Original tests and fixed requirements remain intact. Final safety run (runs/checks/1793332598279805766/results.json) passed foundation, definitions and progress; all implementation-dependent and connection goals remain OPEN. Full safety interfaces and implementation.rs remain absent; all five fixed goals, execution link, snapshot fidelity and witness remain OPEN.
++
++Failed approaches: interpreting the controller timeout as a consensus fault missed the main-host address contract; server-local wildcard ephemeral sockets also collided with a concrete Raft listener. A second persistent reply cache duplicated the migrated shard records and exceeded deletion bounds. Snapshots now use a matching borrowed serialization view with transport replies omitted only for the shard service. Crash-safe image pairing, serialization/decoder equivalence, per-client monotonic retry assumptions and migration authorization still need machine proofs.
+ 
+ <!-- connections -->
+ | Behavior | Actual functions | Proof entry | Open premises / next step |
+ | --- | --- | --- | --- |
+ | initialization | madraft/src/raft/raft.rs::new,madraft/src/raft/state.rs::default | madraft/proof/progress.rs | Local state methods imported; constructor, membership/group identity and host caller composition unproved. |
+-| transitions | madraft/src/raft/state.rs::adopt_term,madraft/src/raft/state.rs::campaign,madraft/src/raft/state.rs::grant_vote,madraft/src/raft/raft.rs::tick,madraft/src/raft/raft.rs::append,madraft/src/raft/raft.rs::vote_reply,madraft/src/raft/raft.rs::append_reply | madraft/proof/progress.rs | Only local term/vote bodies verified; log invariant, RPC provenance, finite bounds and all async callers remain open. |
++| transitions | madraft/src/raft/state.rs::adopt_term,madraft/src/raft/state.rs::campaign,madraft/src/raft/state.rs::grant_vote,madraft/src/raft/log.rs::fresh,madraft/src/raft/log.rs::append_command,madraft/src/raft/log.rs::truncate_suffix,madraft/src/raft/raft.rs::tick,madraft/src/raft/raft.rs::append,madraft/src/raft/raft.rs::vote_reply,madraft/src/raft/raft.rs::append_reply | madraft/proof/progress.rs | Local term/vote and log helper bodies verified; log invariant, RPC provenance, finite bounds and all async callers remain open. |
+ | outputs | madraft/src/raft/raft.rs::start,madraft/src/raft/raft.rs::request_vote,madraft/src/raft/raft.rs::apply,madraft/src/raft/raft.rs::advance_commit,madraft/src/raft/raft.rs::persist | madraft/proof/progress.rs | Persistence-before-send and exact emission/application observation relation unproved. |
+ | recovery | madraft/src/raft/raft.rs::restore,madraft/src/raft/raft.rs::persist | madraft/proof/progress.rs | Decode refinement, interrupted pair writes, error fail-stop behavior, history retention and post-recovery preconditions unproved. |
+-| snapshots | madraft/src/raft/raft.rs::snapshot,madraft/src/raft/raft.rs::cond_install_snapshot,madraft/src/raft/raft.rs::append,madraft/src/kvraft/server.rs::new | madraft/proof/progress.rs | Compacted prefix origin, decoder equivalence, application ordering and service caller contracts unproved. |
++| snapshots | madraft/src/raft/raft.rs::snapshot,madraft/src/raft/raft.rs::cond_install_snapshot,madraft/src/raft/raft.rs::append,madraft/src/kvraft/server.rs::new,madraft/src/shardkv/server.rs::apply | madraft/proof/progress.rs | Compacted prefix origin, decoder equivalence, application ordering and service caller contracts unproved. |
+ <!-- /connections -->
+ 
+-Next action: diagnose controller basic_4a timeout (including main-node networking), complete shard migration with stable group identity, then extend same-source verified consensus representation and construct implementation.rs with actual history/provenance/observations. All five fixed safety targets, execution link, nonempty witness, snapshot fidelity, full finite-counter proofs and conditional liveness remain OPEN. Existing runtime arithmetic and IO-error paths require review; no resource or disk consistency theorem has been established.
++Next action: construct a same-source verified consensus state/transition representation with explicit network sends, durable completions and persistent history. Build implementation.rs only from proved transitions and actual caller contracts; do not promote a disconnected relation or local counts into global safety. Review finite arithmetic, IO fail-stop composition, external internal-command rejection and snapshot boundaries. Conditional liveness and application correctness proofs remain OPEN.
+--- before/madraft/RESULT.md
++++ after/madraft/RESULT.md
+@@ -1,11 +1,11 @@
+-# Result — incomplete round 1 candidate
++# Result — incomplete round 2 candidate
+ 
+-Raft 2A/2B/2C/2D implemented and all retained Raft tests passed on seeds 1, 2 and 3 at successive revisions; seeds 4 and 5 and a single-revision final sweep remain OPEN. KV 3A implemented and seed-1 tests passed; KV 3B implemented and final seed-1 family rerun passed all 19 KV tests after repairing actual size failures. Controller 4A implemented but two seed-1 family runs timed out in basic_4a; diagnosis remains OPEN. Sharded KV 4B remains unfinished. Original tests, requirements, licenses and checker were preserved.
++Raft 2A/2B/2C/2D implemented; retained Raft family passed seeds 1–5 at successive revisions. KV 3A/3B implemented; family passed seeds 1–3. Controller 4A now passes seeds 1 and 2 after fixing the simulator main-host address. Sharded KV 4B now implements configuration, migration, retries, replicated deletion and recovery; all 12 retained tests passed seeds 1 and 2 after the final storage-size repair. Single-revision full-family/all-seed acceptance remains OPEN. Original tests, requirements, licenses and checker were preserved.
+ 
+-Election Safety, Leader Append-Only, Log Matching, Leader Completeness and State Machine Safety are all OPEN. There is no implementation.rs execution/observation adapter yet. The local progress proof checks executable term monotonicity, checked campaign increment, vote immutability within a term and rejection of two distinct candidates at one node in a term; it does not establish any global target. The safety command passed foundation, definitions and progress; all implementation-dependent goals remained OPEN because implementation.rs is absent. Progress Verus reported 7 verified and 0 errors.
++Election Safety, Leader Append-Only, Log Matching, Leader Completeness and State Machine Safety are all OPEN. There is no implementation.rs execution/observation adapter yet. The local progress proof checks executable term monotonicity, checked campaign increment, vote immutability, rejection of two distinct candidates at one node in a term, exact command append-prefix preservation, suffix truncation and freshness comparison; it does not establish any global target. The safety command passed foundation, definitions and progress; all implementation-dependent goals remained OPEN because implementation.rs is absent. Progress Verus reported 11 verified and 0 errors.
+ 
+-Execution coverage includes actual simulated elections, partitions, conflicting suffixes, concurrent proposals, unreliable RPC, crashes, snapshot compaction/transfer and restored application delivery in retained Raft tests. Formal coverage of actual constructors, host operations, sends, applications, crashes, recovery and snapshot decoding remains OPEN. Group identity is currently implicit in fixed peer endpoints and is not yet represented in a proven observation history. Conditional liveness and application correctness proofs remain OPEN.
++Execution coverage includes actual simulated elections, partitions, conflicting suffixes, concurrent proposals, unreliable RPC, crashes, snapshot compaction/transfer and restored application delivery in retained Raft tests. Formal coverage of actual constructors, host operations, sends, applications, crashes, recovery and snapshot decoding remains OPEN. Raft group identity is currently implicit in fixed peer endpoints; shard service gid is explicit durable state and is not yet represented in a proven observation history. Conditional liveness and application correctness proofs remain OPEN.
+ 
+-Host functions currently used include Endpoint::bind/add_rpc_handler/call_timeout, task::spawn, time::sleep/Instant::now, rand::thread_rng/gen_range/random, std and futures mutex operations, mpsc::unbounded/unbounded_send, fs::read/metadata/File::create/write_all_at/sync_all and serde/bincode serialization. These are unverified host boundaries under the supplied environment; no new trusted consensus body was introduced. FsSim completed writes survive node restart, power_fail is unfinished and sync_all is a no-op. The new two-generation-pair protocol has not been machine proved against all interruptions; no real-disk durability is claimed. Invalid membership fails at construction; durable decode failures refuse restart. Finite resource exhaustion and IO failure behavior still require complete fail-stop composition and proofs.
++Host functions currently used include plugin::node and NetSim::set_ip for simulator client-host address setup, and Endpoint::bind/add_rpc_handler/call_timeout, task::spawn, time::sleep/Instant::now, rand::thread_rng/gen_range/random, std and futures mutex operations, mpsc::unbounded/unbounded_send, fs::read/metadata/File::create/write_all_at/sync_all and serde/bincode serialization. These are unverified host boundaries under the supplied environment; no new trusted consensus body was introduced. FsSim completed writes survive node restart, power_fail is unfinished and sync_all is a no-op. The new two-generation-pair protocol has not been machine proved against all interruptions; no real-disk durability is claimed. Invalid membership fails at construction; durable decode failures refuse restart. Finite resource exhaustion and IO failure behavior still require complete fail-stop composition and proofs.
+ 
+-Reproduce with python3 scripts/check.py build; python3 scripts/check.py test raft::tests:: --seed 3; python3 scripts/check.py test kvraft::tests:: --seed 1; python3 scripts/check.py test shard_ctrler::tests:: --seed 1; python3 scripts/check.py foundation; python3 scripts/check.py proof madraft/proof/progress.rs. Full acceptance still requires python3 scripts/check.py safety and python3 scripts/check.py final --timeout 3600 on one stopped candidate after unfinished dependencies are completed. See PROGRESS.md for the single connection table and next action.
++Reproduce with python3 scripts/check.py build; python3 scripts/check.py test raft::tests:: --seed 3; python3 scripts/check.py test kvraft::tests:: --seed 1; python3 scripts/check.py test shard_ctrler::tests:: --seed 1; python3 scripts/check.py test shardkv::tests:: --seed 1; python3 scripts/check.py foundation; python3 scripts/check.py proof madraft/proof/progress.rs. Full acceptance still requires python3 scripts/check.py safety and python3 scripts/check.py final --timeout 3600 on one stopped candidate after unfinished dependencies are completed. See PROGRESS.md for the single connection table and next action.
+--- before/madraft/proof/progress.rs
++++ after/madraft/proof/progress.rs
+@@ -1,6 +1,8 @@
+ //! Local executable term/vote contracts only; global election safety remains open.
+ #[path = "../src/raft/state.rs"]
+ mod state;
++#[path = "../src/raft/log.rs"]
++mod log_core;
+ use vstd::prelude::*;
+ verus! {
+ // A real call composition: a second distinct candidate cannot obtain this
+--- before/madraft/src/kvraft/client.rs
++++ after/madraft/src/kvraft/client.rs
+@@ -54,6 +54,7 @@
+ 
+     pub async fn call(&self, args: Req) -> Rsp {
+         let _call = self.call_gate.lock().await;
++        prepare_client_host();
+         let net = net::Endpoint::bind("0.0.0.0:0").await.expect("bind client RPC");
+         let sequence = self.sequence.fetch_update(std::sync::atomic::Ordering::SeqCst,
+             std::sync::atomic::Ordering::SeqCst, |s| s.checked_add(1)).expect("request sequence exhausted");
+@@ -69,3 +70,12 @@
+         }
+     }
+ }
++
++// The simulator's main host has no default network address. The retained
++// controller/shard clients run there; give that host a routable client address.
++pub(crate) fn prepare_client_host() {
++    let node = madsim::plugin::node();
++    if node.to_string() == "0" {
++        madsim::net::NetSim::current().set_ip(node, "10.255.255.254".parse().unwrap());
++    }
++}
+--- before/madraft/src/kvraft/server.rs
++++ after/madraft/src/kvraft/server.rs
+@@ -13,6 +13,10 @@
+     type Command: net::rpc::Request<Response = Result<Self::Output, Error>> + Clone;
+     type Output: Serialize + serde::de::DeserializeOwned + Send + Sync + 'static;
+     fn apply(&mut self, cmd: Self::Command) -> Self::Output;
++    fn retry_output(_output: &Self::Output) -> bool { false }
++    // Services with their own migrated deduplication records need no second
++    // durable copy of responses in this transport cache.
++    const DURABLE_REPLIES: bool = true;
+ }
+ 
+ pub struct Server<S: State> {
+@@ -53,7 +57,8 @@
+                             if index <= image.applied { continue; }
+                             assert_eq!(index, image.applied + 1, "application gap");
+                             let key = request.client;
+-                            if image.replies.get(&key).map_or(true, |(sequence, _)| *sequence < request.sequence) {
++                            if image.replies.get(&key).map_or(true, |(sequence, bytes)| *sequence < request.sequence ||
++                                (*sequence == request.sequence && bincode::deserialize::<S::Output>(bytes).map_or(false, |o| S::retry_output(&o)))) {
+                                 let response = image.state.apply(request.command);
+                                 image.replies.insert(key, (request.sequence, bincode::serialize(&response).expect("response encode")));
+                             }
+@@ -61,7 +66,13 @@
+                         }
+                         if let Some(limit) = max_raft_state {
+                             if madsim::fs::metadata("state").await.map_or(false, |m| m.len() as usize >= limit) {
+-                                let bytes = bincode::serialize(&*server.image.lock().unwrap()).expect("snapshot encode");
++                                let bytes = {
++                                    let image = server.image.lock().unwrap();
++                                    let empty = BTreeMap::new();
++                                    bincode::serialize(&ImageRef { state: &image.state,
++                                        replies: if S::DURABLE_REPLIES { &image.replies } else { &empty },
++                                        applied: image.applied }).expect("snapshot encode")
++                                };
+                                 server.rf.snapshot(index, &bytes).await.expect("snapshot persistence");
+                             }
+                         }
+@@ -80,6 +91,9 @@
+         this.start_rpc_server();
+         this
+     }
++
++    pub(crate) fn inspect<T>(&self, f: impl FnOnce(&S) -> T) -> T { f(&self.image.lock().unwrap().state) }
++    pub(crate) fn endpoint(&self) -> net::Endpoint { self.rf.endpoint.clone() }
+ 
+     fn start_rpc_server(self: &Arc<Self>) {
+         let net = self.rf.endpoint.clone();
+@@ -101,7 +115,7 @@
+         self.rf.is_leader()
+     }
+ 
+-    async fn apply(&self, cmd: ClientRequest<S::Command>) -> Result<S::Output, Error> {
++    pub(crate) async fn apply(&self, cmd: ClientRequest<S::Command>) -> Result<S::Output, Error> {
+         let key = cmd.client;
+         let sequence = cmd.sequence;
+         if !self.rf.is_leader() { return Err(Error::NotLeader { hint: self.me }); }
+@@ -122,6 +136,12 @@
+     }
+ }
+ 
++#[derive(Serialize)]
++struct ImageRef<'a, S> {
++    state: &'a S,
++    replies: &'a BTreeMap<u128, (u64, Vec<u8>)>,
++    applied: u64,
++}
+ #[derive(Serialize, Deserialize)]
+ struct Image<S> {
+     state: S,
+--- before/madraft/src/raft/log.rs
++++ after/madraft/src/raft/log.rs
+@@ -0,0 +1,29 @@
++use vstd::prelude::*;
++verus! {
++#[cfg_attr(not(verus_keep_ghost), derive(serde::Serialize, serde::Deserialize))]
++#[derive(Debug, Clone)]
++pub(super) struct Entry { pub(super) term: u64, pub(super) data: Vec<u8> }
++
++pub(super) fn fresh(candidate_term: u64, candidate_index: u64, local_term: u64, local_index: u64) -> (ok: bool)
++    ensures ok == (candidate_term > local_term || (candidate_term == local_term && candidate_index >= local_index)),
++{
++    candidate_term > local_term || (candidate_term == local_term && candidate_index >= local_index)
++}
++
++pub(super) fn append_command(log: &mut Vec<Entry>, term: u64, data: Vec<u8>)
++    requires old(log).len() < usize::MAX,
++    ensures log@.len() == old(log)@.len() + 1,
++        log@.take(old(log)@.len() as int) == old(log)@,
++        log@[old(log)@.len() as int].term == term,
++        log@[old(log)@.len() as int].data@ == data@,
++{
++    log.push(Entry { term, data });
++}
++
++pub(super) fn truncate_suffix(log: &mut Vec<Entry>, keep: usize)
++    requires keep <= old(log).len(),
++    ensures log@ == old(log)@.take(keep as int),
++{
++    log.truncate(keep);
++}
++}
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -6,6 +6,9 @@
+ #[path = "state.rs"]
+ mod state;
+ use state::{State, Role};
++#[path = "log.rs"]
++mod log_core;
++use log_core::Entry;
+ 
+ #[derive(Clone)]
+ pub struct RaftHandle {
+@@ -30,8 +33,6 @@
+ }
+ pub type Result<T> = std::result::Result<T, Error>;
+ #[derive(Debug, Clone, Serialize, Deserialize)]
+-struct Entry { term: u64, data: Vec<u8> }
+-#[derive(Debug, Clone, Serialize, Deserialize)]
+ struct Persist {
+     generation: u64, term: u64, vote: Option<u64>,
+     base: u64, base_term: u64, log: Vec<Entry>,
+@@ -82,7 +83,7 @@
+ impl RaftHandle {
+     pub async fn new(peers: Vec<SocketAddr>, me: usize) -> (Self, MsgRecver) {
+         assert!(!peers.is_empty() && me < peers.len(), "invalid fixed membership");
+-        let endpoint = net::Endpoint::bind(peers[me]).await.expect("bind Raft RPC");
++        let endpoint = net::Endpoint::bind(SocketAddr::from(([0, 0, 0, 0], peers[me].port()))).await.expect("bind Raft RPC");
+         let (apply_ch, recver) = mpsc::unbounded();
+         let n = peers.len();
+         let this = Self { endpoint, gate: Arc::new(AsyncMutex::new(())), inner: Arc::new(Mutex::new(Raft {
+@@ -105,9 +106,9 @@
+         let result = {
+             let mut r = self.inner.lock().unwrap();
+             if !r.state.is_leader() { return Err(Error::NotLeader((r.me + 1) % r.peers.len())); }
+-            if r.last() == u64::MAX { return Err(invalid("log exhausted").into()); }
++            if r.last() == u64::MAX || r.disk.log.len() == usize::MAX { return Err(invalid("log exhausted").into()); }
+             let term = r.state.term;
+-            r.disk.log.push(Entry { term, data: cmd.to_vec() });
++            log_core::append_command(&mut r.disk.log, term, cmd.to_vec());
+             r.heartbeat = Instant::now();
+             Start { index: r.last(), term }
+         };
+@@ -142,7 +143,7 @@
+             r.disk.term = r.state.term; r.disk.vote = r.state.vote;
+             r.disk.generation = r.disk.generation.checked_add(1).ok_or_else(|| invalid("generation exhausted"))?;
+             (bincode::serialize(&r.disk).map_err(|_| invalid("encode state"))?,
+-                bincode::serialize(&(r.disk.generation, &r.disk.snapshot)).map_err(|_| invalid("encode snapshot"))?,
++                if r.disk.base == 0 { vec![] } else { bincode::serialize(&(r.disk.generation, &r.disk.snapshot)).map_err(|_| invalid("encode snapshot"))? },
+                 if r.slots[0] <= r.slots[1] { 0 } else { 1 }, r.disk.generation)
+         };
+         for slot in [first, 1 - first] {
+@@ -166,7 +167,8 @@
+                     exists = true;
+                     if let Ok(mut p) = bincode::deserialize::<Persist>(&bytes) {
+                         let snapshot = fs::read(if slot == 0 { "snapshot" } else { "snapshot.backup" }).await;
+-                        let decoded = snapshot.ok().and_then(|b| bincode::deserialize::<(u64, Vec<u8>)>(&b).ok());
++                        let decoded = if p.base == 0 { Some((p.generation, vec![])) }
++                            else { snapshot.ok().and_then(|b| bincode::deserialize::<(u64, Vec<u8>)>(&b).ok()) };
+                         match decoded {
+                             Some((generation, data)) if generation == p.generation => p.snapshot = data,
+                             _ => continue,
+@@ -199,7 +201,7 @@
+         let _gate = self.gate.lock().await;
+         let reply = {
+             let mut r = self.inner.lock().unwrap();
+-            let fresh = (a.last_term, a.last) >= (r.term_at(r.last()).unwrap(), r.last());
++            let fresh = log_core::fresh(a.last_term, a.last, r.term_at(r.last()).unwrap(), r.last());
+             let valid = a.candidate < r.peers.len() as u64;
+             let granted = if valid { r.state.grant_vote(a.term, a.candidate, fresh) } else { false };
+             if granted { r.reset(); }
+@@ -237,7 +239,8 @@
+                         if r.term_at(index) != Some(entry.term) {
+                             if index <= r.commit { success = false; break; }
+                             let keep = (index - r.disk.base - 1) as usize;
+-                            r.disk.log.truncate(keep); r.disk.log.push(entry);
++                            log_core::truncate_suffix(&mut r.disk.log, keep);
++                            r.disk.log.push(entry);
+                         }
+                     }
+                     if success { r.commit = r.commit.max(a.commit.min(index)); }
+--- before/madraft/src/shardkv/client.rs
++++ after/madraft/src/shardkv/client.rs
+@@ -1,26 +1,41 @@
+-use crate::shard_ctrler::client::Clerk as CtrlerClerk;
+-use std::net::SocketAddr;
+-
++use crate::{shard_ctrler::client::Clerk as CtrlerClerk, kvraft::msg::ClientRequest};
++use super::msg::*;
++use madsim::{net, time::*};
++use std::{net::SocketAddr, sync::atomic::{AtomicU64, Ordering}};
+ pub struct Clerk {
+-    ctrl_ck: CtrlerClerk,
++    ctrl_ck: CtrlerClerk, client: u128, sequence: AtomicU64,
++    gate: futures::lock::Mutex<()>,
+ }
+-
+ impl Clerk {
+-    pub fn new(servers: Vec<SocketAddr>) -> Clerk {
+-        Clerk {
+-            ctrl_ck: CtrlerClerk::new(servers),
++    pub fn new(servers: Vec<SocketAddr>) -> Self {
++        Self { ctrl_ck: CtrlerClerk::new(servers), client: madsim::rand::random(), sequence: AtomicU64::new(0), gate: futures::lock::Mutex::new(()) }
++    }
++    async fn call(&self, key: &str, operation: Op) -> Reply {
++        let _gate = self.gate.lock().await;
++        crate::kvraft::client::prepare_client_host();
++        let net = net::Endpoint::bind("0.0.0.0:0").await.expect("shard client bind");
++        let sequence = self.sequence.fetch_update(Ordering::SeqCst, Ordering::SeqCst, |s| s.checked_add(1)).expect("sequence exhausted");
++        loop {
++            let config = self.ctrl_ck.query().await;
++            let gid = config.shards[super::key2shard(key)];
++            if let Some(peers) = config.groups.get(&gid) {
++                let request = ClientRequest { client: self.client, sequence, command: Op::Client {
++                    client: self.client, sequence, config: config.num, operation: Box::new(operation.clone()),
++                }};
++                for peer in peers {
++                    if let Ok(Ok(reply)) = net.call_timeout(*peer, request.clone(), Duration::from_millis(700)).await {
++                        if !matches!(reply, Reply::WrongGroup) { return reply; }
++                    }
++                }
++            }
++            sleep(Duration::from_millis(60)).await;
+         }
+     }
+-
+     pub async fn get(&self, key: String) -> String {
+-        todo!("get");
++        match self.call(&key, Op::Get { key: key.clone() }).await {
++            Reply::Get { value } => value.unwrap_or_default(), _ => unreachable!(),
++        }
+     }
+-
+-    pub async fn put(&self, key: String, value: String) {
+-        todo!("put");
+-    }
+-
+-    pub async fn append(&self, key: String, value: String) {
+-        todo!("append");
+-    }
++    pub async fn put(&self, key: String, value: String) { self.call(&key, Op::Put { key: key.clone(), value }).await; }
++    pub async fn append(&self, key: String, value: String) { self.call(&key, Op::Append { key: key.clone(), value }).await; }
+ }
+--- before/madraft/src/shardkv/msg.rs
++++ after/madraft/src/shardkv/msg.rs
+@@ -5,6 +5,12 @@
+     Get { key: String },
+     Put { key: String, value: String },
+     Append { key: String, value: String },
++    Client { client: u128, sequence: u64, config: u64, operation: Box<Op> },
++    Init { gid: u64 },
++    Configure { config: crate::shard_ctrler::msg::Config },
++    Install { config: u64, shard: usize, data: ShardData },
++    Delete { config: u64, shard: usize },
++    GcDone { config: u64, shard: usize },
+ }
+ 
+ #[derive(Debug, Clone, Serialize, Deserialize)]
+@@ -18,3 +24,21 @@
+     type Response = Result<Reply, crate::kvraft::msg::Error>;
+     const ID: u64 = 4;
+ }
++
++#[derive(Debug, Default, Clone, Serialize, Deserialize)]
++pub struct ShardData {
++    pub values: std::collections::BTreeMap<String, String>,
++    pub replies: std::collections::BTreeMap<u128, (u64, Reply)>,
++}
++#[derive(Clone, Serialize, Deserialize)]
++pub struct Pull { pub config: u64, pub shard: usize }
++impl madsim::net::rpc::Request for Pull {
++    type Response = Option<ShardData>;
++    const ID: u64 = 20;
++}
++#[derive(Clone, Serialize, Deserialize)]
++pub struct Collect { pub config: u64, pub shard: usize }
++impl madsim::net::rpc::Request for Collect {
++    type Response = bool;
++    const ID: u64 = 21;
++}
+--- before/madraft/src/shardkv/server.rs
++++ after/madraft/src/shardkv/server.rs
+@@ -1,37 +1,139 @@
+ use super::msg::*;
+-use crate::kvraft::server::{Server, State};
+-use crate::shard_ctrler::client::Clerk as CtrlerClerk;
++use crate::kvraft::{server::{Server, State}, msg::ClientRequest};
++use crate::shard_ctrler::{client::Clerk as CtrlerClerk, msg::Config, N_SHARDS};
++use madsim::time::*;
+ use serde::{Deserialize, Serialize};
+-use std::{net::SocketAddr, sync::Arc};
++use std::{collections::{BTreeMap, BTreeSet}, net::SocketAddr, sync::Arc};
+ 
+-pub struct ShardKvServer {
+-    inner: Arc<Server<ShardKv>>,
+-}
+-
++pub struct ShardKvServer { inner: Arc<Server<ShardKv>> }
+ impl ShardKvServer {
+-    pub async fn new(
+-        ctrl_ck: CtrlerClerk,
+-        servers: Vec<SocketAddr>,
+-        gid: u64,
+-        me: usize,
+-        max_raft_state: Option<usize>,
+-    ) -> Arc<Self> {
+-        todo!("construct ShardKv");
++    pub async fn new(ctrl_ck: CtrlerClerk, servers: Vec<SocketAddr>, gid: u64, me: usize, max_raft_state: Option<usize>) -> Arc<Self> {
+         let inner = Server::new(servers, me, max_raft_state).await;
+-        Arc::new(ShardKvServer { inner })
++        let this = Arc::new(Self { inner });
++        let h = this.clone();
++        this.inner.endpoint().add_rpc_handler(move |p: Pull| {
++            let h = h.clone();
++            async move { h.inner.inspect(|s| s.outgoing.get(&(p.config, p.shard)).cloned()) }
++        });
++        let h = this.clone();
++        this.inner.endpoint().add_rpc_handler(move |p: Collect| {
++            let h = h.clone();
++            async move {
++                if !h.inner.inspect(|s| s.config.num >= p.config) { return false; }
++                if h.inner.inspect(|s| !s.outgoing.contains_key(&(p.config, p.shard))) { return true; }
++                h.inner.apply(ClientRequest { client: u128::MAX - p.shard as u128, sequence: p.config,
++                    command: Op::Delete { config: p.config, shard: p.shard } }).await.is_ok()
++            }
++        });
++        let h = this.clone();
++        madsim::task::spawn(async move {
++            let client: u128 = madsim::rand::random();
++            let mut sequence = 0u64;
++            loop {
++                sleep(Duration::from_millis(60)).await;
++                if !h.inner.is_leader() { continue; }
++                let (current, incoming, previous, gc, initialized) = h.inner.inspect(|s|
++                    (s.config.clone(), s.incoming.clone(), s.previous.clone(), s.gc.clone(), s.gid != 0));
++                let mut commands = vec![];
++                if !initialized { commands.push(Op::Init { gid }); }
++                else {
++                    for shard in incoming.iter().copied() {
++                        let old = previous.shards[shard];
++                        if let Some(peers) = previous.groups.get(&old) {
++                            for addr in peers {
++                                if let Ok(Some(data)) = h.inner.endpoint().call_timeout(*addr, Pull { config: current.num, shard }, Duration::from_millis(200)).await {
++                                    commands.push(Op::Install { config: current.num, shard, data }); break;
++                                }
++                            }
++                        }
++                    }
++                    for ((config, shard), peers) in gc {
++                        for addr in peers {
++                            if let Ok(true) = h.inner.endpoint().call_timeout(addr, Collect { config, shard }, Duration::from_millis(250)).await {
++                                commands.push(Op::GcDone { config, shard }); break;
++                            }
++                        }
++                    }
++                    if incoming.is_empty() {
++                        if let Some(next) = current.num.checked_add(1) {
++                            let config = ctrl_ck.query_at(next).await;
++                            if config.num == next { commands.push(Op::Configure { config }); }
++                        }
++                    }
++                }
++                for command in commands {
++                    let Some(next) = sequence.checked_add(1) else { return; };
++                    sequence = next;
++                    let _ = h.inner.apply(ClientRequest { client, sequence, command }).await;
++                }
++            }
++        });
++        this
+     }
+ }
+-
+ #[derive(Debug, Default, Serialize, Deserialize)]
+ pub struct ShardKv {
+-    // Your data here.
++    gid: u64, config: Config, previous: Config,
++    shards: BTreeMap<usize, ShardData>, incoming: BTreeSet<usize>,
++    outgoing: BTreeMap<(u64, usize), ShardData>,
++    gc: BTreeMap<(u64, usize), Vec<SocketAddr>>,
+ }
+-
+ impl State for ShardKv {
+     type Command = Op;
+     type Output = Reply;
+-
+-    fn apply(&mut self, cmd: Self::Command) -> Self::Output {
+-        todo!("apply command");
++    const DURABLE_REPLIES: bool = false;
++    fn retry_output(output: &Reply) -> bool { matches!(output, Reply::WrongGroup) }
++    fn apply(&mut self, cmd: Op) -> Reply {
++        match cmd {
++            Op::Init { gid } => { if self.gid == 0 { self.gid = gid; } }
++            Op::Configure { config } => {
++                if self.config.num.checked_add(1) == Some(config.num) && self.incoming.is_empty() {
++                    for shard in 0..N_SHARDS {
++                        if self.config.shards[shard] == self.gid && config.shards[shard] != self.gid {
++                            if let Some(data) = self.shards.remove(&shard) {
++                                if config.shards[shard] != 0 { self.outgoing.insert((config.num, shard), data); }
++                            }
++                        }
++                        if config.shards[shard] == self.gid && self.config.shards[shard] != self.gid {
++                            if self.config.shards[shard] == 0 { self.shards.insert(shard, ShardData::default()); }
++                            else { self.incoming.insert(shard); }
++                        }
++                    }
++                    self.previous = self.config.clone(); self.config = config;
++                }
++            }
++            Op::Install { config, shard, data } => {
++                if self.config.num == config && self.incoming.remove(&shard) {
++                    self.shards.insert(shard, data);
++                    if let Some(peers) = self.previous.groups.get(&self.previous.shards[shard]) {
++                        self.gc.insert((config, shard), peers.clone());
++                    }
++                }
++            }
++            Op::Delete { config, shard } => { self.outgoing.remove(&(config, shard)); }
++            Op::GcDone { config, shard } => { self.gc.remove(&(config, shard)); }
++            Op::Client { client, sequence, config, operation } => {
++                let key = match operation.as_ref() {
++                    Op::Get { key } | Op::Put { key, .. } | Op::Append { key, .. } => key,
++                    _ => return Reply::WrongGroup,
++                };
++                let shard = super::key2shard(key);
++                if self.config.num != config || self.config.shards[shard] != self.gid || self.incoming.contains(&shard) { return Reply::WrongGroup; }
++                let Some(data) = self.shards.get_mut(&shard) else { return Reply::WrongGroup; };
++                if let Some((last, response)) = data.replies.get(&client) {
++                    if *last >= sequence { return response.clone(); }
++                }
++                let response = match *operation {
++                    Op::Get { key } => Reply::Get { value: data.values.get(&key).cloned() },
++                    Op::Put { key, value } => { data.values.insert(key, value); Reply::Ok },
++                    Op::Append { key, value } => { data.values.entry(key).or_default().push_str(&value); Reply::Ok },
++                    _ => unreachable!(),
++                };
++                data.replies.insert(client, (sequence, response.clone()));
++                return response;
++            }
++            _ => return Reply::WrongGroup,
++        }
++        Reply::Ok
+     }
+ }

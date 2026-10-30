@@ -1,4 +1,5 @@
-//! Independent callers, DRAFT. Candidate types are proof adapters, not a runtime architecture.
+//! Independent callers, DRAFT. Candidate types/relations are proof adapters.
+//! Formula verification does not prove that actual host paths obey those relations.
 #[path = "targets.rs"]
 mod targets;
 #[path = "support.rs"]
@@ -52,6 +53,8 @@ pub proof fn state_machine_safety(run: Execution)
     ensures targets::state_machine_safety(c::observe(run)),
 { c::prove_state_machine_safety(run); }
 
+// This theorem proves relation-to-relation simulation. Real function/caller coverage
+// is separate evidence; identical relations or imports alone cannot establish it.
 // obligation: execution_link
 pub proof fn execution_link(run: RuntimeExecution)
     requires runtime_execution(run),
@@ -76,6 +79,8 @@ pub proof fn execution_link(run: RuntimeExecution)
         |s| c::view(s), |s,sent| c::runtime_invariant(s,sent));
 }
 
+// Formula coverage only: a model with no snapshots can satisfy this property.
+// Actual creation/installation/recovery/decoding remain separate obligations.
 // obligation: snapshot_observation
 pub proof fn snapshot_and_observation_shape(run: Execution)
     requires execution(run),
@@ -98,6 +103,7 @@ pub proof fn nonempty_execution()
         && !(c::observe(abstract_execution(run)).events[i] is Silent));
 }
 
+// Conditional on the supplied runtime relation describing every actual execution.
 // obligation: composed_safety
 pub proof fn actual_execution_safety(run: RuntimeExecution)
     requires runtime_execution(run),

@@ -1,0 +1,249 @@
+{
+  "status": "PASS",
+  "mode": "test",
+  "input_version": "madraft-joint-proof-4",
+  "candidate_revision": "standalone-1793334896810742115",
+  "workspace": "/home/nitro/Desktop/raft_verus/runs/calls-B-01",
+  "checker_authority": "/home/nitro/Desktop/raft_verus/runs/calls-B-01",
+  "snapshot": "/home/nitro/Desktop/raft_verus/runs/calls-B-01/runs/checks/1793334896810742115/candidate",
+  "source_files": [
+    "Cargo.lock",
+    "Cargo.toml",
+    "LICENSE",
+    "README.md",
+    "proof/README.md",
+    "proof/progress.rs",
+    "src/kvraft/client.rs",
+    "src/kvraft/mod.rs",
+    "src/kvraft/msg.rs",
+    "src/kvraft/server.rs",
+    "src/kvraft/tester.rs",
+    "src/kvraft/tests.rs",
+    "src/lib.rs",
+    "src/raft/election_checks.rs",
+    "src/raft/mod.rs",
+    "src/raft/raft.rs",
+    "src/raft/state.rs",
+    "src/raft/tester.rs",
+    "src/raft/tests.rs",
+    "src/shard_ctrler/client.rs",
+    "src/shard_ctrler/mod.rs",
+    "src/shard_ctrler/msg.rs",
+    "src/shard_ctrler/server.rs",
+    "src/shard_ctrler/tester.rs",
+    "src/shard_ctrler/tests.rs",
+    "src/shardkv/client.rs",
+    "src/shardkv/mod.rs",
+    "src/shardkv/msg.rs",
+    "src/shardkv/server.rs",
+    "src/shardkv/tester.rs",
+    "src/shardkv/tests.rs",
+    "src/test_support.rs"
+  ],
+  "checks": {
+    "tests_seed_4_raft_tests_reelection_2a": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-4",
+      "candidate_revision": "standalone-1793334896810742115",
+      "input_fingerprint": "89a46bfbafd3f71925152a7b5dba10b7aaecfaf5d91c8c234d66d091ed716a79",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--manifest-path",
+        "madraft/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--lib",
+        "--no-fail-fast",
+        "raft::tests::reelection_2a",
+        "--",
+        "--test-threads=1"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/calls-B-01/runs/checks/1793334896810742115/tests_seed_4_raft_tests_reelection_2a.log",
+      "scope": "tests_seed_4_raft_tests_reelection_2a",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.1525690679991385,
+      "seed": 4,
+      "diagnostic": "unclog_link` twice instead\n  --> src/kvraft/tester.rs:95:31\n   |\n95 |             NetSim::current().connect2(node_id(&self.handle, self.addrs[i]), node_id(&self.handle, self.addrs[j]));\n   |                               ^^^^^^^^\n   |\n   = note: `#[warn(deprecated)]` on by default\n\nwarning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead\n   --> src/kvraft/tester.rs:103:31\n    |\n103 |             NetSim::current().disconnect2(node_id(&self.handle, self.addrs[i]), node_id(&self.handle, self.addrs[j]));\n    |                               ^^^^^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead\n   --> src/kvraft/tester.rs:148:27\n    |\n148 |         NetSim::current().connect(node_id(&self.handle, addr));\n    |                           ^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead\n   --> src/kvraft/tester.rs:150:31\n    |\n150 |             NetSim::current().disconnect2(node_id(&self.handle, addr), node_id(&self.handle, self.addrs[i]));\n    |                               ^^^^^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead\n   --> src/kvraft/tester.rs:153:31\n    |\n153 |             NetSim::current().connect2(node_id(&self.handle, addr), node_id(&self.handle, self.addrs[i]));\n    |                               ^^^^^^^^\n\nwarning: unreachable expression\n   --> src/raft/raft.rs:348:20\n    |\n347 |             data: todo!(\"apply msg\"),\n    |                   ------------------ any code following this expression is unreachable\n348 |             index: todo!(\"apply msg\"),\n    |                    ^^^^^^^^^^^^^^^^^^ unreachable expression\n    |\n    = note: this warning originates in the macro `$crate::panic::panic_2021` which comes from the expansion of the macro `todo` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nwarning: use of deprecated method `madsim::net::NetSim::disconnect`: use `clog_node` instead\n   --> src/raft/tester.rs:271:27\n    |\n271 |         NetSim::current().disconnect(node_id(&self.handle, self.addrs[i]));\n    |                           ^^^^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead\n   --> src/raft/tester.rs:278:27\n    |\n278 |         NetSim::current().connect(node_id(&self.handle, self.addrs[i]));\n    |                           ^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead\n  --> src/test_support.rs:77:23\n   |\n77 |     NetSim::current().disconnect2(server.id(), client.id());\n   |                       ^^^^^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead\n  --> src/test_support.rs:79:23\n   |\n79 |     NetSim::current().connect2(server.id(), client.id());\n   |                       ^^^^^^^^\n\nwarning: unused variable: `ret`\n  --> src/kvraft/client.rs:52:17\n   |\n52 |             let ret = net\n   |                 ^^^ help: if this is intentional, prefix it with an underscore: `_ret`\n   |\n   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default\n\nwarning: unused variable: `max_raft_state`\n  --> src/kvraft/server.rs:34:9\n   |\n34 |         max_raft_state: Option<usize>,\n   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`\n\nwarning: unused variable: `apply_ch`\n  --> src/kvraft/server.rs:37:18\n   |\n37 |         let (rf, apply_ch) = raft::RaftHandle::new(servers, me).await;\n   |                  ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_apply_ch`\n\nwarning: unused variable: `cmd`\n  --> src/kvraft/server.rs:68:27\n   |\n68 |     async fn apply(&self, cmd: S::Command) -> Result<S::Output, Error> {\n   |                           ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: unused variable: `cmd`\n  --> src/kvraft/server.rs:84:25\n   |\n84 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: unused variable: `last_included_term`\n   --> src/raft/raft.rs:153:9\n    |\n153 |         last_included_term: u64,\n    |         ^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_term`\n\nwarning: unused variable: `last_included_index`\n   --> src/raft/raft.rs:154:9\n    |\n154 |         last_included_index: u64,\n    |         ^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_index`\n\nwarning: unused variable: `snapshot`\n   --> src/raft/raft.rs:155:9\n    |\n155 |         snapshot: &[u8],\n    |         ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`\n\nwarning: unused variable: `index`\n   --> src/raft/raft.rs:164:34\n    |\n164 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {\n    |                                  ^^^^^ help: if this is intentional, prefix it with an underscore: `_index`\n\nwarning: unused variable: `snapshot`\n   --> src/raft/raft.rs:164:46\n    |\n164 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {\n    |                                              ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`\n\nwarning: unused variable: `data`\n   --> src/raft/raft.rs:336:25\n    |\n336 |     fn start(&mut self, data: &[u8]) -> Result<Start> {\n    |                         ^^^^ help: if this is intentional, prefix it with an underscore: `_data`\n\nwarning: unused variable: `msg`\n   --> src/raft/raft.rs:346:13\n    |\n346 |         let msg = ApplyMsg::Command {\n    |             ^^^ help: if this is intentional, prefix it with an underscore: `_msg`\n\nwarning: unused variable: `cmd`\n  --> src/shard_ctrler/server.rs:16:25\n   |\n16 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:15:29\n   |\n15 |     pub async fn get(&self, key: String) -> String {\n   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:19:29\n   |\n19 |     pub async fn put(&self, key: String, value: String) {\n   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `value`\n  --> src/shardkv/client.rs:19:42\n   |\n19 |     pub async fn put(&self, key: String, value: String) {\n   |                                          ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:23:32\n   |\n23 |     pub async fn append(&self, key: String, value: String) {\n   |                                ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `value`\n  --> src/shardkv/client.rs:23:45\n   |\n23 |     pub async fn append(&self, key: String, value: String) {\n   |                                             ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`\n\nwarning: unused variable: `ctrl_ck`\n  --> src/shardkv/server.rs:13:9\n   |\n13 |         ctrl_ck: CtrlerClerk,\n   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_ctrl_ck`\n\nwarning: unused variable: `servers`\n  --> src/shardkv/server.rs:14:9\n   |\n14 |         servers: Vec<SocketAddr>,\n   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_servers`\n\nwarning: unused variable: `gid`\n  --> src/shardkv/server.rs:15:9\n   |\n15 |         gid: u64,\n   |         ^^^ help: if this is intentional, prefix it with an underscore: `_gid`\n\nwarning: unused variable: `me`\n  --> src/shardkv/server.rs:16:9\n   |\n16 |         me: usize,\n   |         ^^ help: if this is intentional, prefix it with an underscore: `_me`\n\nwarning: unused variable: `max_raft_state`\n  --> src/shardkv/server.rs:17:9\n   |\n17 |         max_raft_state: Option<usize>,\n   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`\n\nwarning: unused variable: `cmd`\n  --> src/shardkv/server.rs:34:25\n   |\n34 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: fields `endpoint` and `apply_ch` are never read\n  --> src/raft/raft.rs:60:5\n   |\n59 | struct Raft {\n   |        ---- fields in this struct\n60 |     endpoint: net::Endpoint,\n   |     ^^^^^^^^\n...\n63 |     apply_ch: MsgSender,\n   |     ^^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: method `apply` is never used\n   --> src/raft/raft.rs:345:8\n    |\n335 | impl Raft {\n    | --------- method in this implementation\n...\n345 |     fn apply(&self) {\n    |        ^^^^^\n\nwarning: field `ctrl_ck` is never read\n --> src/shardkv/client.rs:5:5\n  |\n4 | pub struct Clerk {\n  |            ----- field in this struct\n5 |     ctrl_ck: CtrlerClerk,\n  |     ^^^^^^^\n\nwarning: field `inner` is never read\n --> src/shardkv/server.rs:8:5\n  |\n7 | pub struct ShardKvServer {\n  |            ------------- field in this struct\n8 |     inner: Arc<Server<ShardKv>>,\n  |     ^^^^^\n\nwarning: `madraft` (lib test) generated 39 warnings (run `cargo fix --lib -p madraft --tests` to apply 24 suggestions)\n    Finished `release` profile [optimized] target(s) in 0.11s\n     Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/runs/calls-B-01/runs/checks/cargo-target/release/deps/madraft-9d1fbd9857b1c1bd)\n\nrunning 1 test\ntest raft::tests::reelection_2a ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 62 filtered out; finished in 0.01s\n\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/calls-B-01/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_SEED": "4",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "family": "raft::tests::reelection_2a",
+      "passed_tests": [
+        "raft::tests::reelection_2a"
+      ],
+      "ignored_tests": [],
+      "uncovered_tests": []
+    }
+  },
+  "required": [
+    "tests_seed_4_raft_tests_reelection_2a"
+  ],
+  "input_fingerprint": "89a46bfbafd3f71925152a7b5dba10b7aaecfaf5d91c8c234d66d091ed716a79",
+  "evidence_mismatches": [],
+  "result_reuse": "No historical PASS reuse; only same-invocation shared compile failures may refer to an earlier log.",
+  "assessments": {
+    "election_safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "leader_append_only": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "log_matching": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "leader_completeness": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "state_machine_safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "execution_link": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "snapshot_observation": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "nonempty_execution": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    }
+  },
+  "functional_plan": [],
+  "placeholders": [
+    "madraft/src/kvraft/client.rs::call",
+    "madraft/src/kvraft/server.rs::apply",
+    "madraft/src/raft/raft.rs::apply",
+    "madraft/src/raft/raft.rs::cond_install_snapshot",
+    "madraft/src/raft/raft.rs::snapshot",
+    "madraft/src/raft/raft.rs::start",
+    "madraft/src/shard_ctrler/server.rs::apply",
+    "madraft/src/shardkv/client.rs::append",
+    "madraft/src/shardkv/client.rs::get",
+    "madraft/src/shardkv/client.rs::put",
+    "madraft/src/shardkv/server.rs::apply",
+    "madraft/src/shardkv/server.rs::new"
+  ],
+  "semantic_review": "NOT_PERFORMED",
+  "implementation_acceptance": "NOT_ESTABLISHED",
+  "elapsed_seconds": 0.2144208219997381,
+  "diagnostics": [],
+  "changed_standards": [],
+  "concurrent_changes": [],
+  "liveness": "OPEN \u2014 not accepted by safety checks",
+  "semantic_boundary": "Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.",
+  "task_completion": "OPEN"
+}

@@ -1,0 +1,12 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/.controller/calls-A-01/check-3-1793333199813391292/candidate/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 25 verified, 0 errors
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> /home/nitro/Desktop/raft_verus/runs/.controller/calls-A-01/check-3-1793333199813391292/candidate/madraft/proof/../src/raft/log.rs:4:17
+  |
+4 | #[derive(Debug, Clone)]
+  |                 ^^^^^
+
+warning: 1 warning emitted
+
+
+process=COMPLETED exit=0

@@ -9,7 +9,7 @@ import shlex
 import sys
 import time
 
-from inputs import INPUT_VERSION, copy_files, differences, files_under, protected_files, save_json
+from inputs import INPUT_VERSION, copy_files, differences, files_under, fingerprint, protected_files, save_json
 from process import run_process
 from tools import ROOT, environment, settings
 
@@ -19,10 +19,76 @@ OBLIGATIONS = (*SAFETY, 'execution_link', 'snapshot_observation', 'nonempty_exec
 PROOF_ORDER = ('execution_link', *SAFETY, 'snapshot_observation', 'nonempty_execution')
 FAMILIES = ('raft::tests::', 'kvraft::tests::', 'shard_ctrler::tests::', 'shardkv::tests::', 'test_support::')
 IGNORED = {'shardkv::tests::unreliable3_4b'}
+CONNECTIONS = {
+    'initialization': 'Actual constructors establish the execution initial state and callee preconditions.',
+    'transitions': 'Actual handlers and their callers authorize every safety-relevant state change.',
+    'outputs': 'Actual messages, storage completions and application outputs match the history, including release order.',
+    'recovery': 'Actual durable decoding and recovery re-establish subsequent callers\' preconditions and history relation.',
+    'snapshots': 'Actual snapshot creation, installation, decoding and recovery match observations.',
+}
 SEMANTIC_BOUNDARY = ('Verus checks the supplied definitions and imported bodies. Source linkage and '
     'nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary '
     'execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, '
     'caller preconditions and the declared host TCB. Conditional liveness remains OPEN.')
+
+
+def feedback_families(changed, history, rotation=1):
+    """Oldest attempted family first; a hung family cannot starve every other one."""
+    if not 1 <= rotation <= len(FAMILIES):
+        raise ValueError('feedback_rotation must be between 1 and the number of families')
+    oldest = sorted(FAMILIES, key=lambda f: (history.get(f, {}).get('last_attempt', -1), FAMILIES.index(f)))[:rotation]
+    related = set()
+    for name in changed:
+        parts = Path(name).parts
+        if parts[:2] == ('src', 'raft'):
+            related.update((FAMILIES[0], FAMILIES[-1]))
+        elif len(parts) > 1 and parts[0] == 'src' and parts[1] in ('kvraft', 'shard_ctrler', 'shardkv'):
+            related.update((FAMILIES[0], parts[1] + '::tests::'))
+        elif parts and parts[0] == 'proof':
+            related.add(FAMILIES[0])
+        else:
+            related.update(FAMILIES)  # Unknown impact: broaden, never silently omit.
+    return list(dict.fromkeys(oldest + [f for f in FAMILIES if f in related]))
+
+
+def connection_claims(workspace):
+    """One candidate-authored table in PROGRESS.md; these are claims, not proofs."""
+    path = Path(workspace) / 'PROGRESS.md'
+    text = path.read_text() if path.is_file() else ''
+    block = re.search(r'<!-- connections -->(.*?)<!-- /connections -->', text, re.S)
+    claims = {}
+    for line in (block[1] if block else '').splitlines():
+        cells = [s.strip().strip('`') for s in line.strip().strip('|').split('|')]
+        if len(cells) == 4 and cells[0] in CONNECTIONS:
+            if cells[0] in claims:
+                claims[cells[0]] = {'invalid': 'duplicate connection row'}
+            else:
+                claims[cells[0]] = dict(functions=cells[1], entry=cells[2], open_premises=cells[3])
+    return claims
+
+
+def placeholder_findings(snapshot):
+    findings = []
+    for name, path in files_under(Path(snapshot) / 'madraft/src').items():
+        if path.name in ('tests.rs', 'tester.rs', 'test_support.rs'):
+            continue
+        text = re.sub(r'//[^\n]*|/\*[\s\S]*?\*/', '', path.read_text())
+        for m in re.finditer(r'\b(?:todo|unimplemented)!\s*\(', text):
+            functions = re.findall(r'\bfn\s+(\w+)', text[:m.start()])
+            findings.append('madraft/src/' + name + '::' + (functions[-1] if functions else '<module>'))
+    return sorted(set(findings))
+
+
+def assessments(checks):
+    connections = {name: checks.get('connection_' + name, {}) for name in CONNECTIONS}
+    gaps = [name for name, item in connections.items() if item.get('status') != 'PASS']
+    return {name: dict(formula_status=checks.get(name, {}).get('status', 'OPEN'),
+        formula_scope='Candidate-defined relations and observations; not automatic runtime coverage.',
+        connection_status='OPEN' if gaps else 'SEMANTIC_REVIEW_REQUIRED',
+        checked_connection_units=[n for n, i in connections.items() if i.get('status') == 'PASS'],
+        open_connections=gaps,
+        implementation_task='OPEN' if gaps or checks.get(name, {}).get('status') != 'PASS' else 'SEMANTIC_REVIEW_REQUIRED')
+        for name in (*OBLIGATIONS, 'safety')}
 
 
 def required_tests(authority):
@@ -168,6 +234,8 @@ class Checks:
         self.env['MADSIM_TEST_NUM'] = '1'
         self.expected = required_tests(self.authority)
         self.results = {}
+        self.started = time.monotonic()
+        self.test_plan = []
         # No executable from an earlier experiment is copied. These source-only
         # snapshots retain the exact inputs to each real independent check.
         source = files_under(self.workspace / 'madraft')
@@ -193,10 +261,18 @@ class Checks:
                                    if n == 'build.rs' or '.cargo' in Path(n).parts or n.startswith('rust-toolchain')]
         self.protected_before = {n: (self.workspace / n).read_bytes() for n in protected if (self.workspace / n).is_file()}
         self.requirements_before = {n: p.read_bytes() for n, p in files_under(self.snapshot / 'requirements').items()}
+        progress = self.workspace / 'PROGRESS.md'
+        self.progress_before = progress.read_bytes() if progress.is_file() else None
+        if self.progress_before is not None:
+            (self.snapshot / 'PROGRESS.md').write_bytes(self.progress_before)
+        binding_files = files_under(self.snapshot)
+        binding_files.update({'checker/' + n: self.authority / n for n in protected if (self.authority / n).is_file()})
+        self.input_fingerprint = fingerprint(binding_files)
 
     def record(self, name, status, reason, **extra):
         item = dict(status=status, reason=reason, input_version=INPUT_VERSION,
-                    candidate_revision=self.revision, command=[], log=None, scope=name, **extra)
+                    candidate_revision=self.revision, input_fingerprint=self.input_fingerprint,
+                    command=[], log=None, scope=name, **extra)
         self.results[name] = item
         return item
 
@@ -237,7 +313,7 @@ class Checks:
         suffix = re.sub(r'[^a-zA-Z0-9]+', '_', selection).strip('_')
         name = kind if kind != 'test' else f'tests_seed_{seed}' + ('_' + suffix if suffix else '')
         if kind != 'build' and self.results.get('build', {}).get('status', 'PASS') != 'PASS':
-            return self.record(name, 'OPEN', 'build_dependency_failed', category='dependency_failure', dependency='build', seed=seed)
+            return self.record(name, 'OPEN', 'build_dependency_failed', category='not_run', dependency='build', seed=seed, family=selection)
         if kind == 'build':
             argv += ['--no-run']
         elif kind == 'inventory':
@@ -247,6 +323,7 @@ class Checks:
             if selection == 'raft::tests::':
                 argv += ['--skip', 'kvraft::', '--skip', 'shardkv::']
         item = self.run(name, argv, seed=seed)
+        item['family'] = selection
         if item.get('log') and kind in ('inventory', 'test'):
             text = Path(item['log']).read_text()
             expected = {n for n in self.expected if (n.startswith(selection) if selection in FAMILIES else selection in n)}
@@ -280,6 +357,7 @@ class Checks:
             if shared:
                 return self.record(name, 'OPEN', 'shared_dependency_failed', category='dependency_failure',
                                    dependency=shared, errors=self.results[shared].get('errors', []),
+                                   reused_from=self.results[shared].get('log'),
                                    diagnostic='See the actual dependency diagnostic; this caller was not run.')
             proof_entry = self.output / (name + '-caller.rs')
             proof_entry.write_text(caller_text(self.snapshot, implementation, obligation))
@@ -312,6 +390,47 @@ class Checks:
         return self.record('linkage_review', status, reason, linked_executable_files=linked,
                            external_paths=outside, findings=findings, semantic_boundary=SEMANTIC_BOUNDARY)
 
+    def connections(self):
+        claims = connection_claims(self.snapshot)
+        for area, obligation in CONNECTIONS.items():
+            name = 'connection_' + area
+            claim = claims.get(area, {})
+            meta = dict(candidate_claim=claim, claim_status='UNVERIFIED_DECLARATION',
+                        semantic_coverage='NOT_AUTOMATICALLY_DECIDED', obligation=obligation)
+            if not claim or claim.get('invalid'):
+                self.record(name, 'OPEN', 'missing_connection_evidence', **meta)
+                continue
+            refs = [s.strip().strip('`') for s in claim['functions'].split(',')]
+            errors = []
+            for ref in refs:
+                path, separator, function = ref.partition('::')
+                target = (self.snapshot / path).resolve()
+                if not separator or not target.is_relative_to(self.snapshot / 'madraft/src') or not target.is_file():
+                    errors.append('Actual function reference must be madraft/src/file.rs::function: ' + ref)
+                elif not re.search(r'\bfn\s+' + re.escape(function) + r'\b', target.read_text()):
+                    errors.append('Function reference not found: ' + ref)
+            entry = (self.snapshot / claim['entry']).resolve()
+            if not entry.is_relative_to(self.snapshot / 'madraft') or not entry.is_file() or entry.suffix != '.rs':
+                errors.append('Missing candidate proof entry: ' + claim['entry'])
+            if errors:
+                self.record(name, 'OPEN', 'invalid_connection_reference', diagnostic='\n'.join(errors), **meta)
+                continue
+            linked, outside = source_links(entry, self.snapshot)
+            if outside:
+                self.record(name, 'NEEDS_REVIEW', 'external_source_import', external_paths=outside, **meta)
+                continue
+            if any(ref.partition('::')[0] not in linked for ref in refs):
+                self.record(name, 'OPEN', 'connection_source_not_imported', **meta)
+                continue
+            item = self.run(name, [self.cfg['verus'], str(entry), '--crate-type', 'lib',
+                            '--no-cheating', '--triggers-mode', 'silent'], proof=True,
+                            scope='Candidate-nominated entire unit; function reference/import is not a caller proof')
+            item.update(meta)
+            item['checked_entry'] = claim['entry']
+            # Even PASS verifies this unit's statements only. Never promote the
+            # author's table into an exhaustive path-coverage conclusion.
+            item['evidence_kind'] = 'VERUS_UNIT_RESULT_WITH_UNREVIEWED_PATH_CLAIM'
+
     def finish(self, mode, required):
         self.changed_standards += [n for n, body in self.protected_before.items()
             if not (self.workspace / n).is_file() or (self.workspace / n).read_bytes() != body]
@@ -324,12 +443,20 @@ class Checks:
         snapshot_changed = differences(self.snapshot / 'madraft', self.workspace / 'madraft')
         # Expected overlays of protected files are reported separately, never accepted.
         snapshot_changed = [n for n in snapshot_changed if 'madraft/' + n not in self.changed_standards]
+        progress = self.workspace / 'PROGRESS.md'
+        if (progress.read_bytes() if progress.is_file() else None) != self.progress_before:
+            changed.append('PROGRESS.md')
+        checked_progress = self.snapshot / 'PROGRESS.md'
+        if (checked_progress.read_bytes() if checked_progress.is_file() else None) != self.progress_before:
+            changed.append('checked PROGRESS.md')
+        mismatched = [n for n in required if self.results[n].get('candidate_revision') != self.revision
+                      or self.results[n].get('input_fingerprint') != self.input_fingerprint]
         statuses = [self.results[n]['status'] for n in required]
         if self.changed_standards or 'NEEDS_REVIEW' in statuses:
             status = 'NEEDS_REVIEW'
         elif 'BLOCKED' in statuses:
             status = 'BLOCKED'
-        elif changed or snapshot_changed or any(s != 'PASS' for s in statuses):
+        elif changed or snapshot_changed or mismatched or any(s != 'PASS' for s in statuses):
             status = 'INCOMPLETE'
         else:
             status = 'MACHINE_CHECKS_PASSED' if mode == 'final' else 'PASS'
@@ -339,16 +466,36 @@ class Checks:
                       candidate_revision=self.revision, workspace=str(self.workspace),
                       checker_authority=str(self.authority), snapshot=str(self.snapshot),
                       source_files=sorted(self.before), checks=self.results, required=required,
+                      input_fingerprint=self.input_fingerprint, evidence_mismatches=mismatched,
+                      result_reuse='No historical PASS reuse; only same-invocation shared compile failures may refer to an earlier log.',
+                      assessments=assessments(self.results), functional_plan=self.test_plan,
+                      placeholders=placeholder_findings(self.snapshot),
+                      semantic_review='NOT_PERFORMED', implementation_acceptance='NOT_ESTABLISHED',
+                      elapsed_seconds=time.monotonic() - self.started,
                       diagnostics=group_diagnostics(self.results),
                       changed_standards=self.changed_standards,
                       concurrent_changes=sorted(set(changed + snapshot_changed)),
                       liveness='OPEN — not accepted by safety checks', semantic_boundary=SEMANTIC_BOUNDARY)
+        report['task_completion'] = 'SEMANTIC_REVIEW_REQUIRED' if status == 'MACHINE_CHECKS_PASSED' else 'OPEN'
+        if status != 'MACHINE_CHECKS_PASSED':
+            for item in report['assessments'].values(): item['implementation_task'] = 'OPEN'
         save_json(self.output / 'results.json', report)
+        lines = ['# Independent check result', '', f'{status}; semantic review NOT_PERFORMED; implementation acceptance NOT_ESTABLISHED.', '',
+                 '| Goal | Formula | Connection evidence | Implementation task |', '| --- | --- | --- | --- |']
+        for name, item in report['assessments'].items():
+            lines.append(f'| {name} | {item["formula_status"]} | {item["connection_status"]} | {item["implementation_task"]} |')
+        lines += ['', 'Formula scope: candidate-defined relations and observations. A projection lemma or an empty snapshot model does not establish actual program coverage.', '']
+        for name, obligation in CONNECTIONS.items():
+            item = self.results.get('connection_' + name, {})
+            lines.append(f'- {name}: {item.get("status", "OPEN")} / {item.get("reason", "not checked")}. {obligation}')
+        lines += ['', 'Placeholder source diagnostics (not a semantic completeness check): ' + ', '.join(report['placeholders']), '', SEMANTIC_BOUNDARY, '']
+        (self.output / 'results.md').write_text('\n'.join(lines))
         return report
 
 
 def evaluate(workspace, *, authority=ROOT, tool_root=ROOT, output=None, timeout=600,
-             seeds=None, revision='standalone', initial=False, mode='final', selection=None):
+             seeds=None, revision='standalone', initial=False, mode='final', selection=None,
+             changed_files=(), test_history=None):
     output = output or ROOT / 'runs/checks' / str(time.time_ns())
     mode = 'initial' if initial else mode
     checks = Checks(workspace, authority, tool_root, output, timeout, revision)
@@ -360,11 +507,12 @@ def evaluate(workspace, *, authority=ROOT, tool_root=ROOT, output=None, timeout=
         checks.phase_deadline = min(checks.deadline, time.monotonic() + timeout * fraction)
         checks.cargo('build')
         checks.cargo('inventory')
-        selected = selection or cfg.get('checks', 'feedback_test', fallback='raft::tests::')
-        if mode == 'initial':
-            selected = 'raft::tests::initial_election_2a'
+        selected = list(FAMILIES) if mode == 'final' else ([selection] if selection else feedback_families(
+            changed_files, test_history or {}, cfg.getint('checks', 'feedback_rotation', fallback=1)))
+        if mode == 'initial': selected = ['raft::tests::initial_election_2a']
+        checks.test_plan = selected
         for seed in seeds or configured_seeds(tool_root):
-            for family in FAMILIES if mode == 'final' else (selected,):
+            for family in selected:
                 checks.cargo('test', seed, family)
             if mode != 'final':
                 break
@@ -378,6 +526,7 @@ def evaluate(workspace, *, authority=ROOT, tool_root=ROOT, output=None, timeout=
     for obligation in PROOF_ORDER:
         checks.verus('top', obligation=obligation)
     checks.linkage()
+    checks.connections()
     # Verify all imported bodies and the actual combined caller, on this snapshot.
     checks.verus('safety')
     checks.verus('proof')

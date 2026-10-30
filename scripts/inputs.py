@@ -1,13 +1,23 @@
 """Explicit experiment inputs and byte comparisons; no previous run is an input."""
 from pathlib import Path
 import json
+import hashlib
 import os
 import shutil
 import subprocess
 
 HELPERS = ('check.py', 'process.py', 'tools.py', 'inputs.py')
 SKIP = {'target', 'runs', '__pycache__', '.git', '.codex', '.agents', 'codex-home', '.verus-log'}
-INPUT_VERSION = 'madraft-joint-proof-3'
+INPUT_VERSION = 'madraft-joint-proof-4'
+
+
+def fingerprint(files):
+    """Research input identity, not semantic approval or a substitute for checks."""
+    digest = hashlib.sha256()
+    for name, path in sorted(files.items()):
+        body = Path(path).read_bytes()
+        digest.update(name.encode() + b'\0' + str(len(body)).encode() + b'\0' + body)
+    return digest.hexdigest()
 
 
 def files_under(directory):

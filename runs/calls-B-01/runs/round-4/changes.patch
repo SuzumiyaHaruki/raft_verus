@@ -1,0 +1,422 @@
+--- before/madraft/proof/progress.rs
++++ after/madraft/proof/progress.rs
+@@ -3,6 +3,8 @@
+ mod state;
+ #[path = "../src/kvraft/sequence.rs"]
+ mod sequence;
++#[path = "../src/shardkv/transfer.rs"]
++mod transfer;
+ use state::{Ballots, State};
+ use vstd::prelude::*;
+ verus! {
+--- before/madraft/src/kvraft/client.rs
++++ after/madraft/src/kvraft/client.rs
+@@ -36,6 +36,7 @@
+     client: u64,
+     sequence: futures::lock::Mutex<u64>,
+     leader: AtomicUsize,
++    source_ip: Option<std::net::IpAddr>,
+ }
+ 
+ impl<Req, Rsp> ClerkCore<Req, Rsp>
+@@ -56,16 +57,19 @@
+             client: madsim::rand::thread_rng().gen(),
+             sequence: futures::lock::Mutex::new(0),
+             leader: AtomicUsize::new(0),
++            source_ip: None,
+             _mark: std::marker::PhantomData,
+         }
+     }
++
++    pub(crate) fn source_ip(&mut self, ip: std::net::IpAddr) { self.source_ip = Some(ip); }
+ 
+     pub async fn call(&self, args: Req) -> Rsp {
+         assert!(!self.servers.is_empty(), "empty service membership");
+         let mut sequence = self.sequence.lock().await;
+         *sequence = super::sequence::next_sequence(*sequence).expect("client sequence exhausted");
+         let args = ClientRequest { client: self.client, sequence: *sequence, command: args };
+-        let net = net::Endpoint::bind("0.0.0.0:0").await.expect("bind client RPC");
++        let net = net::Endpoint::bind(SocketAddr::new(self.source_ip.unwrap_or(std::net::Ipv4Addr::UNSPECIFIED.into()), 0)).await.expect("bind client RPC");
+         let mut peer = self.leader.load(Ordering::Relaxed) % self.servers.len();
+         loop {
+             match net.call_timeout(self.servers[peer], args.clone(), Duration::from_millis(700)).await {
+--- before/madraft/src/kvraft/server.rs
++++ after/madraft/src/kvraft/server.rs
+@@ -22,6 +22,8 @@
+     pub(crate) rf: raft::RaftHandle,
+     me: usize,
+     machine: Mutex<Machine<S>>,
++    internal_client: u64,
++    internal_sequence: futures::lock::Mutex<u64>,
+ }
+ impl<S: State> fmt::Debug for Server<S> {
+     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result { write!(f, "Server({})", self.me) }
+@@ -29,7 +31,7 @@
+ impl<S: State> Server<S> {
+     pub async fn new(servers: Vec<SocketAddr>, me: usize, max_raft_state: Option<usize>) -> Arc<Self> {
+         let (rf, mut apply_ch) = raft::RaftHandle::new(servers, me).await;
+-        let this = Arc::new(Self { rf, me, machine: Mutex::new(Machine { state: S::default(), through: 0, sessions: HashMap::new() }) });
++        let this = Arc::new(Self { rf, me, internal_client: madsim::rand::random(), internal_sequence: futures::lock::Mutex::new(0), machine: Mutex::new(Machine { state: S::default(), through: 0, sessions: HashMap::new() }) });
+         this.start_rpc_server();
+         let worker = this.clone();
+         task::spawn(async move {
+@@ -65,6 +67,12 @@
+             }
+         });
+         this
++    }
++    pub(crate) fn inspect<R>(&self, f: impl FnOnce(&S) -> R) -> R { f(&self.machine.lock().unwrap().state) }
++    pub(crate) async fn execute(&self, command: S::Command) -> Result<S::Output, Error> {
++        let mut sequence = self.internal_sequence.lock().await;
++        *sequence = super::sequence::next_sequence(*sequence).ok_or(Error::Failed)?;
++        self.apply(ClientRequest { client: self.internal_client, sequence: *sequence, command }).await
+     }
+     fn start_rpc_server(self: &Arc<Self>) {
+         let net = self.rf.endpoint.clone();
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -89,6 +89,7 @@
+ struct Persist {
+     term: u64,
+     voted_for: Option<u64>,
++    members: Vec<SocketAddr>,
+     log: Vec<LogEntry>,
+     base: usize,
+     snapshot: Vec<u8>,
+@@ -111,7 +112,7 @@
+     }
+ 
+     async fn try_new(peers: Vec<SocketAddr>, me: usize) -> io::Result<(Self, MsgRecver)> {
+-        if peers.is_empty() || me >= peers.len() {
++        if peers.is_empty() || me >= peers.len() || peers.iter().enumerate().any(|(i, peer)| peers[..i].contains(peer)) {
+             return Err(io::Error::new(io::ErrorKind::InvalidInput, "invalid fixed membership"));
+         }
+         let n = peers.len();
+@@ -178,7 +179,7 @@
+ 
+     pub fn state_size(&self) -> usize {
+         let r = self.inner.lock().unwrap();
+-        let image = Persist { term: r.state.term, voted_for: r.state.voted_for,
++        let image = Persist { term: r.state.term, voted_for: r.state.voted_for, members: r.peers.clone(),
+             log: r.log.clone(), base: r.base, snapshot: Vec::new(), commit: r.commit };
+         bincode::serialized_size(&image).unwrap_or(u64::MAX) as usize
+     }
+@@ -230,7 +231,7 @@
+     async fn persist(&self) -> io::Result<()> {
+         let (image, sequence) = {
+             let r = self.inner.lock().unwrap();
+-            let image = Persist { term: r.state.term, voted_for: r.state.voted_for, log: r.log.clone(), base: r.base, snapshot: r.snapshot.clone(), commit: r.commit };
++            let image = Persist { term: r.state.term, voted_for: r.state.voted_for, members: r.peers.clone(), log: r.log.clone(), base: r.base, snapshot: r.snapshot.clone(), commit: r.commit };
+             if r.saved.as_ref() == Some(&image) { return Ok(()); }
+             (image, r.journal_next)
+         };
+@@ -287,6 +288,9 @@
+             let image: Persist = bincode::deserialize(&bytes)
+                 .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+             let n = self.inner.lock().unwrap().peers.len();
++            if image.members != self.inner.lock().unwrap().peers {
++                return Err(io::Error::new(io::ErrorKind::InvalidData, "durable group identity mismatch"));
++            }
+             recovered = recovered.restore_successor(image.term, image.voted_for, n as u64)
+                 .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "invalid vote journal"))?;
+             let last = image.base.checked_add(image.log.len().saturating_sub(1));
+@@ -311,6 +315,9 @@
+             sequence = sequence.checked_add(1).ok_or_else(|| io::Error::new(io::ErrorKind::Other, "journal exhausted"))?;
+         }
+         if terminal_empty { return Err(io::Error::new(io::ErrorKind::InvalidData, "incomplete terminal image")); }
++        for generation in 0..sequence.saturating_sub(1) {
++            fs::File::open(Self::record_name(generation)).await?.set_len(0).await?;
++        }
+         let mut r = self.inner.lock().unwrap();
+         r.state = recovered;
+         if let Some(ref image) = previous {
+--- before/madraft/src/shard_ctrler/client.rs
++++ after/madraft/src/shard_ctrler/client.rs
+@@ -12,6 +12,8 @@
+             core: ClerkCore::new(servers),
+         }
+     }
++
++    pub(crate) fn source_ip(&mut self, ip: std::net::IpAddr) { self.core.source_ip(ip); }
+ 
+     pub async fn query(&self) -> Config {
+         self.core.call(Op::Query { num: u64::MAX }).await.unwrap()
+--- before/madraft/src/shardkv/client.rs
++++ after/madraft/src/shardkv/client.rs
+@@ -1,26 +1,41 @@
+-use crate::shard_ctrler::client::Clerk as CtrlerClerk;
+-use std::net::SocketAddr;
+-
++use super::msg::*;
++use crate::{kvraft::client::ClerkCore, shard_ctrler::{client::Clerk as CtrlerClerk, msg::Config}};
++use std::{net::SocketAddr, sync::{Arc, Mutex}, collections::HashMap};
++use madsim::{rand::Rng, time::{sleep, Duration}};
+ pub struct Clerk {
+     ctrl_ck: CtrlerClerk,
++    config: Mutex<Config>,
++    groups: Mutex<HashMap<u64, Arc<ClerkCore<Op, Reply>>>>,
++    client: u64,
++    sequence: futures::lock::Mutex<u64>,
+ }
+-
+ impl Clerk {
+-    pub fn new(servers: Vec<SocketAddr>) -> Clerk {
+-        Clerk {
+-            ctrl_ck: CtrlerClerk::new(servers),
++    pub fn new(servers: Vec<SocketAddr>) -> Self {
++        Self { ctrl_ck: CtrlerClerk::new(servers), config: Mutex::new(Config::default()), groups: Mutex::new(HashMap::new()),
++            client: madsim::rand::thread_rng().gen(), sequence: futures::lock::Mutex::new(0) }
++    }
++    async fn call(&self, action: Action) -> Reply {
++        let mut seq = self.sequence.lock().await;
++        *seq = crate::kvraft::sequence::next_sequence(*seq).expect("client exhausted");
++        let shard = super::key2shard(action.key());
++        let op = Op::Request { client: self.client, sequence: *seq, action };
++        loop {
++            let core = {
++                let config = self.config.lock().unwrap();
++                let gid = config.shards[shard];
++                config.groups.get(&gid).filter(|servers| !servers.is_empty()).map(|servers| {
++                    self.groups.lock().unwrap().entry(gid).or_insert_with(|| Arc::new(ClerkCore::new(servers.clone()))).clone()
++                })
++            };
++            if let Some(core) = core {
++                let reply = core.call(op.clone()).await;
++                if !matches!(reply, Reply::WrongGroup) { return reply; }
++            }
++            sleep(Duration::from_millis(40)).await;
++            *self.config.lock().unwrap() = self.ctrl_ck.query().await;
+         }
+     }
+-
+-    pub async fn get(&self, key: String) -> String {
+-        todo!("get");
+-    }
+-
+-    pub async fn put(&self, key: String, value: String) {
+-        todo!("put");
+-    }
+-
+-    pub async fn append(&self, key: String, value: String) {
+-        todo!("append");
+-    }
++    pub async fn get(&self, key: String) -> String { match self.call(Action::Get { key }).await { Reply::Get { value } => value.unwrap_or_default(), _ => unreachable!() } }
++    pub async fn put(&self, key: String, value: String) { self.call(Action::Put { key, value }).await; }
++    pub async fn append(&self, key: String, value: String) { self.call(Action::Append { key, value }).await; }
+ }
+--- before/madraft/src/shardkv/mod.rs
++++ after/madraft/src/shardkv/mod.rs
+@@ -13,3 +13,5 @@
+     use crate::shard_ctrler::N_SHARDS;
+     key.bytes().next().unwrap_or(b'\0') as usize % N_SHARDS
+ }
++
++mod transfer;
+--- before/madraft/src/shardkv/msg.rs
++++ after/madraft/src/shardkv/msg.rs
+@@ -1,20 +1,29 @@
+ use serde::{Deserialize, Serialize};
++use crate::shard_ctrler::msg::Config;
++use std::collections::HashMap;
+ 
+ #[derive(Debug, Clone, Serialize, Deserialize)]
++pub enum Action { Get { key: String }, Put { key: String, value: String }, Append { key: String, value: String } }
++impl Action { pub fn key(&self) -> &str { match self { Self::Get { key } | Self::Put { key, .. } | Self::Append { key, .. } => key } } }
++#[derive(Debug, Default, Clone, Serialize, Deserialize)]
++pub struct ShardData { pub values: HashMap<String, String>, pub sessions: HashMap<u64, (u64, Reply)> }
++#[derive(Debug, Clone, Serialize, Deserialize)]
+ pub enum Op {
+-    Get { key: String },
+-    Put { key: String, value: String },
+-    Append { key: String, value: String },
++    Get { key: String }, Put { key: String, value: String }, Append { key: String, value: String },
++    Request { client: u64, sequence: u64, action: Action },
++    Configure { gid: u64, config: Config },
++    Import { epoch: u64, shard: usize, data: ShardData },
++    Delete { epoch: u64, shard: usize }, Acked { epoch: u64, shard: usize },
+ }
+-
+ #[derive(Debug, Clone, Serialize, Deserialize)]
+-pub enum Reply {
+-    Get { value: Option<String> },
+-    Ok,
+-    WrongGroup,
+-}
+-
++pub enum Reply { Get { value: Option<String> }, Ok, WrongGroup }
+ impl madsim::net::rpc::Request for Op {
+     type Response = Result<Reply, crate::kvraft::msg::Error>;
+     const ID: u64 = 4;
+ }
++#[derive(Clone, Serialize, Deserialize)]
++pub struct Fetch { pub epoch: u64, pub shard: usize }
++impl madsim::net::rpc::Request for Fetch { type Response = Option<ShardData>; const ID: u64 = 20001; }
++#[derive(Clone, Serialize, Deserialize)]
++pub struct Ack { pub epoch: u64, pub shard: usize }
++impl madsim::net::rpc::Request for Ack { type Response = bool; const ID: u64 = 20002; }
+--- before/madraft/src/shardkv/server.rs
++++ after/madraft/src/shardkv/server.rs
+@@ -1,37 +1,120 @@
+ use super::msg::*;
+-use crate::kvraft::server::{Server, State};
+-use crate::shard_ctrler::client::Clerk as CtrlerClerk;
++use crate::{kvraft::server::{Server, State}, shard_ctrler::{client::Clerk as CtrlerClerk, msg::Config, N_SHARDS}};
+ use serde::{Deserialize, Serialize};
+-use std::{net::SocketAddr, sync::Arc};
+-
+-pub struct ShardKvServer {
+-    inner: Arc<Server<ShardKv>>,
+-}
+-
++use std::{net::SocketAddr, sync::Arc, collections::HashMap};
++use madsim::{task, time::{sleep, Duration}};
++pub struct ShardKvServer { inner: Arc<Server<ShardKv>> }
+ impl ShardKvServer {
+-    pub async fn new(
+-        ctrl_ck: CtrlerClerk,
+-        servers: Vec<SocketAddr>,
+-        gid: u64,
+-        me: usize,
+-        max_raft_state: Option<usize>,
+-    ) -> Arc<Self> {
+-        todo!("construct ShardKv");
++    pub async fn new(mut ctrl_ck: CtrlerClerk, servers: Vec<SocketAddr>, gid: u64, me: usize, max_raft_state: Option<usize>) -> Arc<Self> {
++        ctrl_ck.source_ip(servers[me].ip());
+         let inner = Server::new(servers, me, max_raft_state).await;
+-        Arc::new(ShardKvServer { inner })
++        let this = Arc::new(Self { inner });
++        let rf = this.inner.rf.clone();
++        let donor = this.inner.clone();
++        rf.endpoint.add_rpc_handler(move |request: Fetch| {
++            let donor = donor.clone();
++            async move { donor.inspect(|s| s.outgoing.get(&(request.epoch, request.shard)).cloned()) }
++        });
++        let donor = this.inner.clone();
++        rf.endpoint.add_rpc_handler(move |request: Ack| {
++            let donor = donor.clone();
++            async move { matches!(donor.execute(Op::Delete { epoch: request.epoch, shard: request.shard }).await, Ok(Reply::Ok)) }
++        });
++        let worker = this.clone();
++        task::spawn(async move {
++            loop {
++                sleep(Duration::from_millis(80)).await;
++                if !worker.inner.is_leader() { continue; }
++                let pending = worker.inner.inspect(|s| {
++                    (0..N_SHARDS).filter(|&i| s.config.shards[i] == gid && !s.ready[i])
++                        .map(|i| (s.config.num, i, s.previous.groups.get(&s.previous.shards[i]).cloned().unwrap_or_default())).collect::<Vec<_>>()
++                });
++                for (epoch, shard, peers) in pending {
++                    for peer in peers {
++                        if let Ok(Some(data)) = worker.inner.rf.endpoint.call_timeout(peer, Fetch { epoch, shard }, Duration::from_millis(100)).await {
++                            let _ = worker.inner.execute(Op::Import { epoch, shard, data }).await;
++                            break;
++                        }
++                    }
++                }
++                let acks = worker.inner.inspect(|s| s.acks.iter().map(|(&key, peers)| (key, peers.clone())).collect::<Vec<_>>());
++                for ((epoch, shard), peers) in acks {
++                    for peer in peers {
++                        if let Ok(true) = worker.inner.rf.endpoint.call_timeout(peer, Ack { epoch, shard }, Duration::from_millis(100)).await {
++                            let _ = worker.inner.execute(Op::Acked { epoch, shard }).await;
++                            break;
++                        }
++                    }
++                }
++                let (num, ready) = worker.inner.inspect(|s| (s.config.num, s.complete()));
++                if ready {
++                    if let Some(next) = num.checked_add(1) {
++                        let config = ctrl_ck.query_at(next).await;
++                        if config.num == next { let _ = worker.inner.execute(Op::Configure { gid, config }).await; }
++                    }
++                }
++            }
++        });
++        this
+     }
+ }
+-
+-#[derive(Debug, Default, Serialize, Deserialize)]
++#[derive(Debug, Serialize, Deserialize)]
+ pub struct ShardKv {
+-    // Your data here.
++    gid: u64, config: Config, previous: Config,
++    shards: Vec<ShardData>, ready: [bool; N_SHARDS],
++    outgoing: HashMap<(u64, usize), ShardData>,
++    acks: HashMap<(u64, usize), Vec<SocketAddr>>,
+ }
+-
+-impl State for ShardKv {
+-    type Command = Op;
+-    type Output = Reply;
+-
+-    fn apply(&mut self, cmd: Self::Command) -> Self::Output {
+-        todo!("apply command");
++impl Default for ShardKv {
++    fn default() -> Self { Self { gid: 0, config: Config::default(), previous: Config::default(), shards: vec![ShardData::default(); N_SHARDS],
++        ready: [false; N_SHARDS], outgoing: HashMap::new(), acks: HashMap::new() } }
++}
++impl ShardKv {
++    fn complete(&self) -> bool { self.gid == 0 || (0..N_SHARDS).all(|i| self.config.shards[i] != self.gid || self.ready[i]) }
++    fn request(&mut self, client: u64, sequence: u64, action: Action) -> Reply {
++        let shard = super::key2shard(action.key());
++        if self.gid == 0 || self.config.shards[shard] != self.gid || !self.ready[shard] { return Reply::WrongGroup; }
++        let data = &mut self.shards[shard];
++        if let Some((seq, output)) = data.sessions.get(&client) { if sequence <= *seq { return output.clone(); } }
++        let reply = match action {
++            Action::Get { key } => Reply::Get { value: data.values.get(&key).cloned() },
++            Action::Put { key, value } => { data.values.insert(key, value); Reply::Ok }
++            Action::Append { key, value } => { data.values.entry(key).or_default().push_str(&value); Reply::Ok }
++        };
++        data.sessions.insert(client, (sequence, reply.clone())); reply
+     }
+ }
++impl State for ShardKv {
++    type Command = Op; type Output = Reply;
++    fn apply(&mut self, cmd: Op) -> Reply {
++        match cmd {
++            Op::Request { client, sequence, action } => self.request(client, sequence, action),
++            Op::Get { key } => self.request(0, 0, Action::Get { key }),
++            Op::Put { key, value } => self.request(0, 0, Action::Put { key, value }),
++            Op::Append { key, value } => self.request(0, 0, Action::Append { key, value }),
++            Op::Configure { gid, config } => {
++                if !super::transfer::next_configuration(self.config.num, config.num, self.complete(), self.gid, gid) { return Reply::WrongGroup; }
++                self.gid = gid;
++                for shard in 0..N_SHARDS {
++                    let old = self.config.shards[shard]; let new = config.shards[shard];
++                    if old == gid && new != gid {
++                        self.outgoing.insert((config.num, shard), std::mem::take(&mut self.shards[shard]));
++                    }
++                    self.ready[shard] = new == gid && (old == gid && self.ready[shard] || old == 0);
++                    if new == gid && old == 0 { self.shards[shard] = ShardData::default(); }
++                }
++                self.previous = std::mem::replace(&mut self.config, config); Reply::Ok
++            }
++            Op::Import { epoch, shard, data } => {
++                if shard < N_SHARDS && super::transfer::can_import(self.config.num, epoch, self.config.shards[shard] == self.gid, self.ready[shard]) {
++                    self.shards[shard] = data; self.ready[shard] = true;
++                    let peers = self.previous.groups.get(&self.previous.shards[shard]).cloned().unwrap_or_default();
++                    self.acks.insert((epoch, shard), peers);
++                }
++                Reply::Ok
++            }
++            Op::Delete { epoch, shard } => { if epoch <= self.config.num { self.outgoing.remove(&(epoch, shard)); Reply::Ok } else { Reply::WrongGroup } }
++            Op::Acked { epoch, shard } => { self.acks.remove(&(epoch, shard)); Reply::Ok }
++        }
++    }
++}
+--- before/madraft/src/shardkv/transfer.rs
++++ after/madraft/src/shardkv/transfer.rs
+@@ -0,0 +1,13 @@
++//! Actual migration guards; payload provenance/history correspondence is OPEN.
++use vstd::prelude::*;
++verus! {
++pub fn next_configuration(current: u64, next: u64, complete: bool, old_gid: u64, gid: u64) -> (yes: bool)
++    ensures yes == (current < u64::MAX && next == current + 1 && complete
++        && gid != 0 && (old_gid == 0 || old_gid == gid)),
++{
++    current < u64::MAX && next == current + 1 && complete && gid != 0 && (old_gid == 0 || old_gid == gid)
++}
++pub fn can_import(epoch: u64, received: u64, owned: bool, ready: bool) -> (yes: bool)
++    ensures yes == (epoch == received && owned && !ready),
++{ epoch == received && owned && !ready }
++}

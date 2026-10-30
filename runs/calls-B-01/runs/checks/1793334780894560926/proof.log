@@ -1,0 +1,24 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/calls-B-01/runs/checks/1793334780894560926/candidate/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 15 verified, 1 errors
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+ --> /home/nitro/Desktop/raft_verus/runs/calls-B-01/runs/checks/1793334780894560926/candidate/madraft/proof/progress.rs:9:1
+  |
+9 | pub fn election_core_calls() {
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/calls-B-01/runs/checks/1793334780894560926/candidate/madraft/proof/progress.rs:14:12
+   |
+14 |     assert(ballots.voters@.to_set() =~= set![0usize]);
+   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed
+
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/calls-B-01/runs/checks/1793334780894560926/candidate/madraft/proof/progress.rs:24:12
+   |
+24 |     assert(s.term == 2 && s.voted_for == None::<u64>);
+   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed
+
+error: aborting due to 2 previous errors
+
+
+process=COMPLETED exit=1

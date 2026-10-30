@@ -1,0 +1,38 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333379694847577/candidate/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+error[E0308]: `if` and `else` have incompatible types
+  --> /home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333379694847577/candidate/madraft/proof/../src/raft/storage.rs:25:53
+   |
+25 |     ensures r.0 == (if stage < 4 { p.first } else { 1 - p.first }), r.0 < 2,
+   |                                    -------          ^^^^^^^^^^^ expected `usize`, found `int`
+   |                                    |
+   |                                    expected because of this
+
+error[E0308]: mismatched types
+  --> /home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333379694847577/candidate/madraft/proof/../src/raft/storage.rs:68:42
+   |
+68 |         let op = match (stage - 1) % 4 { 0 => Operation::CreateSnapshot, 1 => Operation::WriteSnapshot,
+   |                        ---------------   ^ expected `int`, found integer
+   |                        |
+   |                        this expression has type `vstd::prelude::int`
+
+error[E0308]: mismatched types
+  --> /home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333379694847577/candidate/madraft/proof/../src/raft/storage.rs:68:74
+   |
+68 |         let op = match (stage - 1) % 4 { 0 => Operation::CreateSnapshot, 1 => Operation::WriteSnapshot,
+   |                        ---------------                                   ^ expected `int`, found integer
+   |                        |
+   |                        this expression has type `vstd::prelude::int`
+
+error[E0308]: mismatched types
+  --> /home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793333379694847577/candidate/madraft/proof/../src/raft/storage.rs:69:13
+   |
+68 |         let op = match (stage - 1) % 4 { 0 => Operation::CreateSnapshot, 1 => Operation::WriteSnapshot,
+   |                        --------------- this expression has type `vstd::prelude::int`
+69 |             2 => Operation::CreateState, _ => Operation::WriteState };
+   |             ^ expected `int`, found integer
+
+error: aborting due to 4 previous errors
+
+For more information about this error, try `rustc --explain E0308`.
+
+process=COMPLETED exit=1

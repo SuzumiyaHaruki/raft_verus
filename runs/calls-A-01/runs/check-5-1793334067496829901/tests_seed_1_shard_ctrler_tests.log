@@ -1,0 +1,101 @@
+$ /home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo test --manifest-path madraft/Cargo.toml --locked --offline --release --lib --no-fail-fast shard_ctrler::tests:: -- --test-threads=1
+
+running 2 tests
+test shard_ctrler::tests::basic_4a ... ok
+test shard_ctrler::tests::multi_4a ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 61 filtered out; finished in 0.04s
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+  --> src/kvraft/tester.rs:95:31
+   |
+95 |             NetSim::current().connect2(node_id(&self.handle, self.addrs[i]), node_id(&self.handle, self.addrs[j]));
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+   --> src/kvraft/tester.rs:103:31
+    |
+103 |             NetSim::current().disconnect2(node_id(&self.handle, self.addrs[i]), node_id(&self.handle, self.addrs[j]));
+    |                               ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead
+   --> src/kvraft/tester.rs:148:27
+    |
+148 |         NetSim::current().connect(node_id(&self.handle, addr));
+    |                           ^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+   --> src/kvraft/tester.rs:150:31
+    |
+150 |             NetSim::current().disconnect2(node_id(&self.handle, addr), node_id(&self.handle, self.addrs[i]));
+    |                               ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+   --> src/kvraft/tester.rs:153:31
+    |
+153 |             NetSim::current().connect2(node_id(&self.handle, addr), node_id(&self.handle, self.addrs[i]));
+    |                               ^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect`: use `clog_node` instead
+   --> src/raft/storage_tests.rs:101:28
+    |
+101 |     net::NetSim::current().disconnect(victim_id);
+    |                            ^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead
+   --> src/raft/storage_tests.rs:107:28
+    |
+107 |     net::NetSim::current().connect(victim_id);
+    |                            ^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect`: use `clog_node` instead
+   --> src/raft/storage_tests.rs:112:28
+    |
+112 |     net::NetSim::current().disconnect(victim_id);
+    |                            ^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead
+   --> src/raft/storage_tests.rs:123:28
+    |
+123 |     net::NetSim::current().connect(victim_id);
+    |                            ^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect`: use `clog_node` instead
+   --> src/raft/tester.rs:271:27
+    |
+271 |         NetSim::current().disconnect(node_id(&self.handle, self.addrs[i]));
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead
+   --> src/raft/tester.rs:278:27
+    |
+278 |         NetSim::current().connect(node_id(&self.handle, self.addrs[i]));
+    |                           ^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+  --> src/test_support.rs:77:23
+   |
+77 |     NetSim::current().disconnect2(server.id(), client.id());
+   |                       ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+  --> src/test_support.rs:79:23
+   |
+79 |     NetSim::current().connect2(server.id(), client.id());
+   |                       ^^^^^^^^
+
+warning: struct `Pair` is never constructed
+  --> src/raft/storage.rs:48:12
+   |
+48 | pub struct Pair { pub metadata: Option<Stamp>, pub snapshot: Option<u64> }
+   |            ^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `madraft` (lib test) generated 14 warnings
+    Finished `release` profile [optimized] target(s) in 0.15s
+     Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/runs/.controller/calls-A-01/cargo-target/release/deps/madraft-9d1fbd9857b1c1bd)
+
+process=COMPLETED exit=0

@@ -1,0 +1,28 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793332787958261026/candidate/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+ --> /home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793332787958261026/candidate/madraft/proof/../src/raft/log.rs:4:17
+  |
+4 | #[derive(Debug, Clone)]
+  |                 ^^^^^
+
+error: disallowed: field expression for a non-visible datatype
+  --> /home/nitro/Desktop/raft_verus/runs/calls-A-01/runs/checks/1793332787958261026/candidate/madraft/proof/../src/raft/state.rs:22:45
+   |
+ 5 | / pub(super) struct State {
+ 6 | |     pub(super) term: u64,
+ 7 | |     pub(super) role: Role,
+ 8 | |     pub(super) vote: Option<u64>,
+ 9 | |     pub(super) votes: Vec<bool>,
+10 | |     pub(super) me: usize,
+11 | | }
+   | |_- this datatype is only visible to `progress`
+...
+22 |       pub open spec fn valid(&self) -> bool { self.votes.len() > 0 && self.me < self.votes.len() }
+   |                                               ^^^^^^^^^^ this field expression is disallowed because of non-visibility
+   |
+   = help: note that because this is a pub open spec function, this field expression must be well-formed everywhere, which is wider than `progress`
+
+error: aborting due to 1 previous error; 1 warning emitted
+
+
+process=COMPLETED exit=1
