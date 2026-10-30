@@ -1,0 +1,14 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793345988473339803/candidate/madraft/proof/storage_correspondence.rs --crate-type lib --no-cheating --triggers-mode silent
+error: cannot use function `storage_correspondence::storage::Phase::eq` which is ignored because it is either declared outside the verus! macro or it is marked as `external`.
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793345988473339803/candidate/madraft/proof/../src/raft/storage.rs:75:12
+   |
+75 |         if self.phase == Phase::Ready { Some(WrittenVote { operation: self.operation }) }
+   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: The following declaration may resolve this error:
+           pub assume_specification [<crate::storage::Phase as std::cmp::PartialEq>::crate::eq] (_0: &crate::storage::Phase, _1: &crate::storage::Phase) -> bool;
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

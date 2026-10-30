@@ -1,0 +1,225 @@
+--- before/madraft/proof/execution_connection.rs
++++ after/madraft/proof/execution_connection.rs
+@@ -87,4 +87,14 @@
+     assert(e::step(h.states[k], h.inputs[k], h.states[k+1], h.outputs[k]));
+ }
+ 
++pub proof fn actual_collector_grants(t: implementation::election::Tally)
++    requires t.invariant(),
++    ensures t.view().voters.no_duplicates(),
++        forall|i: int| 0 <= i < t.view().voters.len() ==>
++            #[trigger] t.view().voters[i] < t.view().members
++            && exists|j: int| 0 <= j < t.view().replies.len()
++                && t.view().replies[j].0 == t.view().voters[i]
++                && implementation::election::granted(t.view(), t.view().voters[i], t.view().replies[j].1),
++{ t.evidence(); }
++
+ }
+--- before/madraft/proof/implementation.rs
++++ after/madraft/proof/implementation.rs
+@@ -6,6 +6,8 @@
+ pub use durable_vote_reply::storage_correspondence::{protocol, state, storage};
+ #[path = "../src/raft/execution.rs"]
+ pub mod executable;
++#[path = "../src/raft/election.rs"]
++pub mod election;
+ use vstd::prelude::*;
+ verus! {
+ pub proof fn actual_runtime_is_connected(r: executable::Runtime)
+--- before/madraft/src/raft/election.rs
++++ after/madraft/src/raft/election.rs
+@@ -0,0 +1,124 @@
++//! Executable vote-call contexts and distinct reply collection.
++//! RPC transport provenance and durable self-vote composition remain caller obligations.
++use super::state::{VoteRequest, VoteReply};
++use vstd::prelude::*;
++verus! {
++pub struct VoteCall { request: VoteRequest, peer: usize }
++pub struct Tally {
++    request: VoteRequest,
++    members: usize,
++    voters: Vec<usize>,
++    replies: Ghost<Seq<(usize, Option<VoteReply>)>>,
++}
++pub struct TallyView {
++    pub request: VoteRequest,
++    pub members: usize,
++    pub voters: Seq<usize>,
++    pub replies: Seq<(usize, Option<VoteReply>)>,
++}
++pub open spec fn granted(v: TallyView, peer: usize, reply: Option<VoteReply>) -> bool {
++    peer < v.members && reply.is_some() && reply.unwrap().term == v.request.term && reply.unwrap().granted
++}
++pub open spec fn valid(v: TallyView) -> bool {
++    v.members > 0 && v.request.candidate < v.members
++    && v.voters.no_duplicates()
++    && forall|i: int| 0 <= i < v.voters.len() ==> #[trigger] v.voters[i] < v.members
++        && exists|j: int| 0 <= j < v.replies.len() && v.replies[j].0 == v.voters[i]
++            && granted(v, v.voters[i], v.replies[j].1)
++}
++pub open spec fn record_step(s: TallyView, peer: usize, reply: Option<VoteReply>, t: TallyView) -> bool {
++    t.request == s.request && t.members == s.members
++    && t.replies == s.replies.push((peer, reply))
++    && t.voters == if granted(s, peer, reply) && !s.voters.contains(peer) { s.voters.push(peer) } else { s.voters }
++}
++impl VoteCall {
++    pub closed spec fn request(&self) -> VoteRequest { self.request }
++    pub closed spec fn peer(&self) -> usize { self.peer }
++    pub fn args(&self) -> (q: VoteRequest) ensures q == self.request(), { self.request }
++    pub fn destination(&self) -> (p: usize) ensures p == self.peer(), { self.peer }
++}
++impl Tally {
++    pub closed spec fn view(&self) -> TallyView {
++        TallyView { request: self.request, members: self.members, voters: self.voters@, replies: self.replies@ }
++    }
++    pub closed spec fn invariant(&self) -> bool { valid(self.view()) }
++    pub fn new(request: VoteRequest, members: usize) -> (r: Option<Self>)
++        ensures r.is_some() == (members > 0 && request.candidate < members),
++            r.is_some() ==> r.unwrap().invariant() && r.unwrap().view().request == request
++                && r.unwrap().view().members == members && r.unwrap().view().voters.len() == 0
++                && r.unwrap().view().replies.len() == 0,
++    {
++        if members == 0 || request.candidate >= members { return None; }
++        Some(Self { request, members, voters: Vec::new(), replies: Ghost(Seq::empty()) })
++    }
++    pub fn outbound(&self, peer: usize) -> (r: Option<VoteCall>)
++        ensures r.is_some() == (peer < self.view().members && peer != self.view().request.candidate),
++            r.is_some() ==> r.unwrap().request() == self.view().request && r.unwrap().peer() == peer,
++    {
++        if peer >= self.members || peer == self.request.candidate { return None; }
++        Some(VoteCall { request: self.request, peer })
++    }
++    fn contains(&self, peer: usize) -> (r: bool)
++        ensures r == self.view().voters.contains(peer),
++    {
++        let mut i = 0;
++        while i < self.voters.len()
++            invariant i <= self.voters.len(),
++                forall|j: int| 0 <= j < i ==> self.voters[j] != peer,
++            decreases self.voters.len() - i,
++        {
++            if self.voters[i] == peer { return true; }
++            i += 1;
++        }
++        false
++    }
++    pub proof fn evidence(&self)
++        requires self.invariant(),
++        ensures valid(self.view()),
++    {}
++    pub fn record(&mut self, peer: usize, reply: Option<VoteReply>)
++        requires old(self).invariant(),
++        ensures self.invariant(), record_step(old(self).view(), peer, reply, self.view()),
++    {
++        let ghost before = self.view();
++        self.replies = Ghost(self.replies@.push((peer, reply)));
++        let accepted = match reply { Some(r) => peer < self.members && r.term == self.request.term && r.granted, None => false };
++        if accepted && !self.contains(peer) {
++            self.voters.push(peer);
++            assert(self.voters@.no_duplicates());
++        }
++        let ghost after = self.view();
++        assert forall|i: int| 0 <= i < after.voters.len() implies #[trigger] after.voters[i] < after.members
++            && exists|j: int| 0 <= j < after.replies.len() && after.replies[j].0 == after.voters[i]
++                && granted(after, after.voters[i], after.replies[j].1) by {
++            if i < before.voters.len() {
++                assert(before.voters[i] < before.members);
++                let j = choose|j: int| 0 <= j < before.replies.len() && before.replies[j].0 == before.voters[i]
++                    && granted(before, before.voters[i], before.replies[j].1);
++                assert(after.replies[j] == before.replies[j]);
++                assert(granted(after, after.voters[i], after.replies[j].1));
++            } else {
++                let j = before.replies.len() as int;
++                assert(after.replies[j] == (peer, reply));
++                assert(granted(after, after.voters[i], after.replies[j].1));
++            }
++        }
++    }
++    pub fn complete_call(&mut self, call: VoteCall, reply: Option<VoteReply>)
++        requires old(self).invariant(),
++        ensures self.invariant(),
++            call.request() == old(self).view().request ==>
++                record_step(old(self).view(), call.peer(), reply, self.view()),
++            call.request() != old(self).view().request ==> self.view() == old(self).view(),
++    {
++        let q = call.request;
++        if q.term != self.request.term || q.candidate != self.request.candidate
++            || q.last_index != self.request.last_index || q.last_term != self.request.last_term { return; }
++        self.record(call.peer, reply);
++    }
++    pub fn has_quorum(&self) -> (r: bool)
++        requires self.invariant(),
++        ensures r == (self.view().voters.len() > self.view().members / 2),
++    { self.voters.len() > self.members / 2 }
++}
++}
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -76,6 +76,8 @@
+ mod storage;
+ #[path = "execution.rs"]
+ mod execution;
++#[path = "election.rs"]
++mod election;
+ use execution::Runtime;
+ use state::{VoteRequest as RequestVoteArgs, VoteReply as RequestVoteReply};
+ 
+@@ -235,21 +237,27 @@
+             None => return Ok(()),
+         };
+         let written = self.persist(operation).await?;
+-        let (net, peers, me) = {
++        let (net, peers, me, tally) = {
+             let mut raft = self.inner.lock().unwrap();
+             let reply = raft.machine.finish_rpc(context, written);
+             if !matches!(reply, Some(RequestVoteReply { granted: true, .. }))
+                 || !raft.machine.campaign(args.term) { return Ok(()); }
+-            (raft.endpoint.clone(), raft.peers.clone(), raft.me)
++            let mut tally = election::Tally::new(args, raft.peers.len()).expect("valid election membership");
++            tally.record(raft.me, reply);
++            (raft.endpoint.clone(), raft.peers.clone(), raft.me, Arc::new(Mutex::new(tally)))
+         };
+         drop(guard);
+         // Each real send uses the exact checked request authorized above.
+-        // Replies are currently observed but quorum collection is still OPEN.
++        // Each RPC owns its request/peer context; all results reach the checked tally.
++        // Leader authorization and higher-term step-down remain OPEN.
+         for (peer_id, peer) in peers.into_iter().enumerate() {
+             if peer_id == me { continue; }
+             let net = net.clone();
++            let tally = tally.clone();
++            let call = tally.lock().unwrap().outbound(peer_id).expect("valid peer");
+             task::spawn(async move {
+-                let _reply = net.call_timeout::<RequestVoteArgs>(peer, args, Duration::from_millis(150)).await;
++                let reply = net.call_timeout::<RequestVoteArgs>(peer, call.args(), Duration::from_millis(150)).await;
++                tally.lock().unwrap().complete_call(call, reply.ok());
+             });
+         }
+         Ok(())
+@@ -321,6 +329,26 @@
+ #[cfg(test)]
+ mod vote_tests {
+     use super::*;
++
++    #[test]
++    fn collection_rejects_duplicates_obsolete_and_wrong_context() {
++        let q = RequestVoteArgs { term: 7, candidate: 0, last_index: 0, last_term: 0 };
++        let yes = Some(RequestVoteReply { term: 7, granted: true });
++        let mut t = election::Tally::new(q, 5).unwrap();
++        t.record(0, yes);
++        t.complete_call(t.outbound(1).unwrap(), yes);
++        t.complete_call(t.outbound(1).unwrap(), yes);
++        t.record(2, None);
++        t.record(2, Some(RequestVoteReply { term: 6, granted: true }));
++        t.record(2, Some(RequestVoteReply { term: 7, granted: false }));
++        t.record(9, yes);
++        assert!(!t.has_quorum());
++        let old = election::Tally::new(RequestVoteArgs { term: 6, ..q }, 5).unwrap();
++        t.complete_call(old.outbound(2).unwrap(), yes);
++        assert!(!t.has_quorum());
++        t.complete_call(t.outbound(2).unwrap(), yes);
++        assert!(t.has_quorum());
++    }
+ 
+     #[test]
+     fn pending_completion_cannot_release_another_request() {

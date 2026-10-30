@@ -220,6 +220,8 @@ class CheckerTests(unittest.TestCase):
         cases=[(simulated_output("error: couldn't read x: No such file",1),'missing_entry_or_dependency'),
                (simulated_output('error[E0308]: mismatched types',1),'compilation_error'),
                (simulated_output('postcondition not satisfied',1),'verification_failure'),
+               (simulated_output('error: unsupported construct',1),'verifier_error'),
+               (simulated_output('failed to download required dependency',1),'dependency_or_toolchain_unavailable'),
                (simulated_output('',None,'TIMEOUT'),'verification_timeout'),
                (simulated_output('',None,'BLOCKED'),'tool_unavailable')]
         for result,reason in cases:self.assertEqual(check.classify(result,proof=True)[1],reason)
@@ -268,7 +270,7 @@ class CheckerTests(unittest.TestCase):
         for goal in check.OBLIGATIONS: c.record(goal, 'PASS', 'SIMULATED')
         with patch.object(check, 'run_process', return_value=simulated_output('verification results:: 1 verified, 0 errors')) as proc:
             c.connections()
-        self.assertEqual(proc.call_count, len(check.CONNECTIONS))
+        self.assertEqual(proc.call_count, 1)  # Same snapshot/unit, one real invocation.
         report = c.finish('final', list(c.results))
         self.assertEqual(report['status'], 'MACHINE_CHECKS_PASSED')  # Only a SIMULATED aggregation test.
         self.assertEqual(report['semantic_review'], 'NOT_PERFORMED')
@@ -281,9 +283,10 @@ class CheckerTests(unittest.TestCase):
         path = self.workspace/'PROGRESS.md'
         path.write_text(path.read_text().replace('::actual', '::invented'))
         c = self.checker()
-        with patch.object(check, 'run_process', side_effect=AssertionError('no valid nomination')):
+        with patch.object(check, 'run_process', return_value=simulated_output('verification results:: 1 verified, 0 errors')):
             c.connections()
-        self.assertTrue(all(i['reason']=='invalid_connection_reference' for i in c.results.values()))
+        self.assertTrue(all(c.results['connection_'+a]['reason']=='outer_paths_open' for a in check.CONNECTIONS))
+        self.assertTrue(all(c.results['connection_'+a+'_unit']['status']=='PASS' for a in check.CONNECTIONS))
 
     def test_same_content_is_rechecked_and_changed_source_or_seed_never_reuses_pass(self):
         with patch.object(check, 'run_process', return_value=simulated_output('verification results:: 1 verified, 0 errors')) as proc:

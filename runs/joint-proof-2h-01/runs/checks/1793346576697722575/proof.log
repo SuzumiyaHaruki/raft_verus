@@ -1,0 +1,23 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793346576697722575/candidate/madraft/proof/implementation.rs --crate-type lib --no-cheating --triggers-mode silent
+error[E0382]: use of partially moved value: `op`
+   --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793346576697722575/candidate/madraft/proof/../src/raft/execution.rs:120:9
+    |
+118 |             Some(w) => Some((w.number(), w.contents())) });
+    |                  - value partially moved here
+119 |         self.journal = Ghost(extend(self.journal@, Input::Request(q), self.core.view(), output));
+120 |         op
+    |         ^^ value used here after partial move
+    |
+    = note: partial move occurs because value has type `WriteVote`, which does not implement the `Copy` trait
+    = note: the full name for the type has been written to 'implementation.long-type-5709849625928892967.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+help: borrow this binding in the pattern to avoid moving the value
+    |
+118 |             Some(ref w) => Some((w.number(), w.contents())) });
+    |                  +++
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0382`.
+
+process=COMPLETED exit=1

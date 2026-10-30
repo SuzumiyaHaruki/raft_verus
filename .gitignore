@@ -1,6 +1,5 @@
 /runs/*
-!/runs/calls-A-01/
-!/runs/calls-B-01/
+!/runs/joint-proof-2h-01/
 codex-home/
 cargo-target/
 /target/

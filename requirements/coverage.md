@@ -20,7 +20,7 @@ Source-link scans and literal vacuity checks detect a few obvious mistakes, not 
 
 The report separates formula verification, nominated actual-connection proof units, and complete implementation acceptance. `execution_link` checks the runtime-relation to model-relation projection, including preservation of inputs/outputs/sends. It does not alone prove that actual code obeys the runtime relation. A PASS remains a mathematical PASS even when actual callers, outputs or recovery are not covered. Even MACHINE_CHECKS_PASSED leaves semantic review NOT_PERFORMED and implementation acceptance NOT_ESTABLISHED; there is no interactive approval checkpoint in generation.
 
-Maintain exactly one short connection table in PROGRESS.md between the markers below. Each row names one candidate proof unit and comma-separated actual function references in `madraft/src/file.rs::function` form. Extend the nominated unit or split auxiliary files as needed; these five review areas are not a fixed implementation architecture or task sequence. Preserve open premises in the last column. The checker checks references, imports and the entire nominated Verus unit, never interprets the table as proof. A passing unit still requires review of actual call coverage; declarations alone cannot establish implementation-level acceptance. Do not duplicate this table in JSON.
+Maintain exactly one short connection table in PROGRESS.md between the markers below. Each row names one candidate proof unit and comma-separated actual function references in `madraft/src/file.rs::function` form. Extend the nominated unit or split auxiliary files as needed; these five review areas are not a fixed implementation architecture or task sequence. Preserve open premises in the last column. The checker independently runs the nominated unit even when an outer reference is absent or not imported. It retains the unit result and separately lists imported-reference hints and unconnected paths; none of these scans is proof of caller semantics. A passing unit still requires review of actual call coverage; declarations alone cannot establish implementation-level acceptance. Do not duplicate this table in JSON.
 
 ```markdown
 <!-- connections -->
@@ -35,3 +35,29 @@ Maintain exactly one short connection table in PROGRESS.md between the markers b
 ```
 
 Names in this example are placeholders, not supplied functions or required filenames. Cover all real paths within each area, including state changes made by async coordination. An internal action cannot freely insert a log entry or assume a quorum: its actual input and caller context must justify it. The common support examples demonstrate real-function/model and recovery/caller obligations without any Raft implementation or invariant. See `restore_then_update`: ghost history need not be persisted, but recovery must prove its relation before calling a verified operation.
+
+Select one current obligation in the following flat block in PROGRESS.md. Replace every example value with your own bounded assignment. `goal` names a fixed top-level target; `parent` is its concrete upper use or an intermediate caller, not just a sentence claiming usefulness. `kind` is local, caller, initialization, step or composition. Comma-separated `dependencies` are ordered prerequisite proof units; keep each unit small and complete. `tests` contains existing Rust test filters, never shell commands. Blank optional fields are allowed. All candidate proof paths stay under madraft/src or madraft/proof. This block is a plan, not evidence, and creates no fixed Raft architecture.
+
+<!-- obligation -->
+```ini
+[obligation]
+id = constructor-to-history
+statement = The real constructor establishes the initial execution state.
+goal = execution_link
+kind = initialization
+functions = madraft/src/your_core.rs::new
+entry = madraft/proof/your_initialization.rs
+parent = madraft/proof/your_parent.rs
+dependencies =
+premises = Group identity and later handler correspondence remain open.
+tests = raft::tests::initial_election_2a
+```
+<!-- /obligation -->
+
+Run `python3 scripts/check.py obligation --timeout 120` to check this increment, including its ordered dependencies, entry, parent and selected tests. The controller rechecks the stopped candidate and independently replays up to three saved obligation microchecks per handoff under the cumulative budget; candidate-authored logs alone never establish progress. `runs/attempts.jsonl` is the controller's append-only evidence view. Each checked version retains source, commands and diagnostics. Changing a statement invalidates current evidence; changing an id or overlapping entry does not reset its recorded attempts. Review the first unfinished dependency before choosing the next increment. After two substantive handoffs with buildable protocol changes/local results but no checked initialization or step nomination, continuation prioritizes establishing that connection. This scheduling heuristic is not semantic coverage certification.
+
+Reports distinguish interface preparation, a checked local unit and a checked parent unit with unreviewed premises. An imported parent is only a use-site hint: inspect that it actually invokes the result and discharges the intended premises. Explicit `requires` remain conditional until actual initialization and preserved steps establish them. Do not put unproved protocol facts into execution or environment assumptions. The aggregate still verifies every fixed property, execution, observation and snapshot obligation on the same candidate with all retained tests/seeds.
+
+When an approach is abandoned, optionally add `rollback = cp-N` and `restore = src/your_core.rs, proof/your_initialization.rs` inside the same block, using only a checkpoint listed by this run's controller. Restoration includes the checkpoint's and current obligation's named code and transitive proof dependencies; explicitly name any additional affected candidate source/proof files. Protected requirements/tests and outside paths cannot be restored. The controller preserves the failed snapshot/diff and diagnostics, restores that scope, removes newly added files in the scope and rechecks affected work. Unrelated files remain. If representation changes affect more callers, include them and report the impact. Budget, session, failures and redesign counts never roll back. Checkpoints labeled BUILDABLE or LOCAL_UNIT_CHECKED are not globally verified programs.
+
+Three actual failed proof attempts without a newly checked related unit trigger reconsideration of this obligation. Missing entries, compilation failures, unavailable tools and timeouts have separate repair routes and do not count as mathematical dead ends. The default allows two redesigns per obligation and six in the run; reaching a limit requires a different necessary dependency or an honest stop. Renaming an obligation sharing its entries/functions retains that history; arbitrary semantic identity is still a review responsibility. Conditional liveness remains OPEN.

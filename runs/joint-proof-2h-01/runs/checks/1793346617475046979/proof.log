@@ -1,0 +1,23 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793346617475046979/candidate/madraft/proof/implementation.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 49 verified, 1 errors
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793346617475046979/candidate/madraft/proof/../src/raft/execution.rs:86:17
+   |
+86 |           ensures r.is_some() ==> r.unwrap().invariant()
+   |  _________________^
+87 | |             && r.unwrap().history().origin == Origin::Recovered(image)
+88 | |             && r.unwrap().history().inputs.len() == 0,
+   | |_____________________________________________________^ failed this postcondition
+89 |       {
+90 | /         match p::Machine::recover(me, members, image) {
+91 | |             None => None,
+92 | |             Some(core) => {
+93 | |                 proof { core.view_is_valid(); }
+...  |
+98 | |         }
+   | |_________- at the end of the function body
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

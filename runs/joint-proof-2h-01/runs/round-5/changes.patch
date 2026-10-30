@@ -1,0 +1,250 @@
+--- before/madraft/proof/implementation.rs
++++ after/madraft/proof/implementation.rs
+@@ -15,3 +15,60 @@
+         protocol::view_invariant(r.view()),
+ { r.connected(); }
+ }
++
++verus! {
++// Cluster adapter data shapes. The global initial/step/provenance definitions
++// remain unimplemented, so the fixed caller must still reject this partial entry.
++// Per-node journals retain distinct identities and incarnation records.
++pub struct NodeKey { pub group: nat, pub node: nat }
++pub enum Message { VoteRequest(state::VoteRequest), VoteReply(state::VoteReply) }
++pub struct State {
++    pub nodes: Map<NodeKey, protocol::OperationView>,
++}
++pub struct RuntimeState {
++    pub nodes: Map<NodeKey, executable::History>,
++    pub prior_incarnations: Map<NodeKey, Seq<executable::History>>,
++}
++pub struct Input { pub who: NodeKey, pub call: executable::Input }
++pub struct Output { pub who: NodeKey, pub result: executable::Output }
++
++pub open spec fn view(s: RuntimeState) -> State {
++    State { nodes: Map::new(|k: NodeKey| s.nodes.contains_key(k),
++        |k: NodeKey| s.nodes[k].states.last()) }
++}
++pub open spec fn initial(s: State) -> bool {
++    forall|k: NodeKey| s.nodes.contains_key(k) ==>
++        protocol::initial_view(#[trigger] s.nodes[k], s.nodes[k].state.me, s.nodes[k].state.members)
++}
++pub open spec fn runtime_initial(s: RuntimeState) -> bool {
++    s.prior_incarnations.dom().is_empty()
++    && forall|k: NodeKey| s.nodes.contains_key(k) ==> {
++        let h = #[trigger] s.nodes[k];
++        executable::valid(h) && h.inputs.len() == 0
++        && h.origin == executable::Origin::Fresh(h.states[0].state.me, h.states[0].state.members)
++    }
++}
++pub proof fn initial_registry_projection(s: RuntimeState)
++    requires runtime_initial(s),
++    ensures initial(view(s)),
++{
++    assert forall|k: NodeKey| view(s).nodes.contains_key(k) implies
++        protocol::initial_view(#[trigger] view(s).nodes[k],
++            view(s).nodes[k].state.me, view(s).nodes[k].state.members) by {
++        let h = s.nodes[k];
++        assert(h.states.len() == 1);
++        assert(h.states.last() == h.states[0]);
++    }
++}
++
++// Necessary registry projection: uses the actual runtime's maintained journal.
++// Network envelopes and disk histories must be incorporated before global step.
++pub proof fn register_actual_node(r: executable::Runtime, key: NodeKey,
++    nodes: Map<NodeKey, executable::History>)
++    requires r.invariant(),
++    ensures nodes.insert(key, r.history())[key].states.last() == r.view(),
++        executable::valid(nodes.insert(key, r.history())[key]),
++{
++    actual_runtime_is_connected(r);
++}
++}
+--- before/madraft/src/raft/execution.rs
++++ after/madraft/src/raft/execution.rs
+@@ -48,6 +48,21 @@
+         } else { assert(k == h.inputs.len()); }
+     }
+     next
++}
++
++// The async RPC future carries this immutable caller context across storage.
++// Fields are private, so the host cannot retarget a completion to a new request.
++pub struct ReplyContext {
++    id: u64,
++    image: p::VoteImage,
++    request: state::VoteRequest,
++    before: Ghost<p::OperationView>,
++}
++impl ReplyContext {
++    pub closed spec fn id(&self) -> u64 { self.id }
++    pub closed spec fn image(&self) -> p::VoteImage { self.image }
++    pub closed spec fn request(&self) -> state::VoteRequest { self.request }
++    pub closed spec fn before(&self) -> p::OperationView { self.before@ }
+ }
+ 
+ pub struct Runtime {
+@@ -121,15 +136,61 @@
+         self.journal = Ghost(extend(self.journal@, Input::Request(q), self.core.view(), output));
+         op
+     }
++    pub fn begin_rpc(&mut self, request: state::VoteRequest)
++        -> (r: Option<(p::WriteVote, ReplyContext)>)
++        requires old(self).invariant(),
++        ensures self.invariant(),
++            r.is_some() ==> r.unwrap().1.id() == r.unwrap().0.number()
++                && r.unwrap().1.image() == r.unwrap().0.contents()
++                && r.unwrap().1.request() == request
++                && r.unwrap().1.before() == old(self).view(),
++            self.history().inputs == old(self).history().inputs.push(Input::Request(request)),
++    {
++        let ghost before = self.core.view();
++        match self.begin_vote(request) {
++            None => None,
++            Some(operation) => {
++                let context = ReplyContext { id: operation.sequence(), image: operation.image(),
++                    request, before: Ghost(before) };
++                Some((operation, context))
++            }
++        }
++    }
++
++    pub fn finish_rpc(&mut self, context: ReplyContext, written: storage::WrittenVote)
++        -> (r: Option<state::VoteReply>)
++        requires old(self).invariant(),
++        ensures self.invariant(),
++            r.is_some() ==> written.id() == context.id() && written.image() == context.image()
++                && p::image(self.view().state) == context.image()
++                && (r.unwrap().granted ==> r.unwrap().term == context.request().term
++                    && self.view().state.voted_for == Some(context.request().candidate)),
++            r.is_none() && (written.id() != context.id() || written.image() != context.image())
++                ==> self.history() == old(self).history(),
++    {
++        if !written.matches(context.id, context.image) { return None; }
++        if !self.core.pending_matches(context.request) { return None; }
++        proof { self.core.view_is_valid(); }
++        let ghost before = self.core.view();
++        let r = self.release_vote(written);
++        proof {
++            assert(p::complete_step(before, context.id(), context.image(), self.view(), r));
++        }
++        r
++    }
++
+     pub fn release_vote(&mut self, written: storage::WrittenVote) -> (r: Option<state::VoteReply>)
+         requires old(self).invariant(),
+         ensures self.invariant(),
+             self.history().inputs == old(self).history().inputs.push(Input::Release(written.id(), written.image())),
+             self.history().states == old(self).history().states.push(self.view()),
+             self.history().outputs == old(self).history().outputs.push(Output::Reply(r)),
++            r.is_some() ==> p::image(self.view().state) == written.image(),
++            p::complete_step(old(self).view(), written.id(), written.image(), self.view(), r),
+     {
+         let ghost input = Input::Release(written.id(), written.image());
+         let r = written.release_reply(&mut self.core);
++        proof { self.core.view_is_valid(); }
+         self.journal = Ghost(extend(self.journal@, input, self.core.view(), Output::Reply(r)));
+         r
+     }
+--- before/madraft/src/raft/protocol.rs
++++ after/madraft/src/raft/protocol.rs
+@@ -80,6 +80,7 @@
+ impl WriteVote {
+     pub closed spec fn number(&self) -> u64 { self.id }
+     pub closed spec fn contents(&self) -> VoteImage { self.image }
++    pub fn sequence(&self) -> (r: u64) ensures r == self.number(), { self.id }
+     pub fn image(&self) -> (r: VoteImage) ensures r == self.contents(), { self.image }
+ }
+ 
+@@ -153,6 +154,17 @@
+         ensures r == (self.state().role == state::Role::Leader),
+     { self.state.is_leader() }
+ 
++    pub fn pending_matches(&self, request: state::VoteRequest) -> (r: bool)
++        ensures r == (self.pending_request() == Some(request)),
++            r ==> self.view().pending.is_some() && self.view().pending.unwrap().2 == request,
++    {
++        match self.pending {
++            None => false,
++            Some(p) => p.request.term == request.term && p.request.candidate == request.candidate
++                && p.request.last_index == request.last_index && p.request.last_term == request.last_term,
++        }
++    }
++
+     pub fn begin_vote(&mut self, request: VoteRequest) -> (op: Option<WriteVote>)
+         requires old(self).invariant(),
+         ensures self.invariant(),
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -227,14 +227,14 @@
+ 
+     async fn request_vote(&self, args: RequestVoteArgs) -> Result<RequestVoteReply> {
+         let _operation = self.storage_gate.lock().await;
+-        let operation = {
++        let (operation, context) = {
+             let mut this = self.inner.lock().unwrap();
+             this.request_vote(args).ok_or_else(|| io::Error::new(io::ErrorKind::Other, "vote operation busy or exhausted"))?
+         };
+         // The owned operation drives create/write/sync; only its completed flow releases it.
+         // On failure the pending operation remains blocked and no reply is released.
+         let written = self.persist(operation).await?;
+-        let reply = self.inner.lock().unwrap().machine.release_vote(written)
++        let reply = self.inner.lock().unwrap().machine.finish_rpc(context, written)
+             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "mismatched vote completion"))?;
+         Ok(reply)
+     }
+@@ -259,8 +259,8 @@
+         self.apply_ch.unbounded_send(msg).unwrap();
+     }
+ 
+-    fn request_vote(&mut self, args: RequestVoteArgs) -> Option<WriteVote> {
+-        self.machine.begin_vote(args)
++    fn request_vote(&mut self, args: RequestVoteArgs) -> Option<(WriteVote, execution::ReplyContext)> {
++        self.machine.begin_rpc(args)
+     }
+ 
+     // Here is an example to generate random number.
+@@ -361,6 +361,25 @@
+         flow.complete(Completion::Written);
+         flow.complete(Completion::Synced);
+         assert!(flow.release().unwrap().release_reply(&mut node).unwrap().granted);
++    }
++
++    #[test]
++    fn rpc_context_rejects_same_image_for_a_different_request() {
++        use storage::{Completion, VoteWrite};
++        let q = RequestVoteArgs { term: 8, candidate: 1, last_index: 0, last_term: 0 };
++        let mut first = Runtime::new(0, 2).unwrap();
++        let mut second = Runtime::new(0, 2).unwrap();
++        let (op, _own_context) = first.begin_rpc(q).unwrap();
++        // Both requests grant the same vote/image at the same operation number,
++        // but their log metadata differs. Image matching alone cannot identify
++        // the async caller whose response is being returned.
++        let (_other_op, other_context) = second.begin_rpc(RequestVoteArgs { last_index: 9, ..q }).unwrap();
++        let mut flow = VoteWrite::new(op);
++        flow.complete(Completion::Created);
++        flow.complete(Completion::Written);
++        flow.complete(Completion::Synced);
++        assert!(first.finish_rpc(other_context, flow.release().unwrap()).is_none());
++        assert!(first.begin_rpc(q).is_none()); // rejected context did not clear pending vote
+     }
+ 
+     // Exercises the actual RPC-facing wrapper, storage and recovery path.
+--- before/madraft/src/raft/storage.rs
++++ after/madraft/src/raft/storage.rs
+@@ -80,6 +80,14 @@
+ impl WrittenVote {
+     pub closed spec fn id(&self) -> u64 { self.operation.number() }
+     pub closed spec fn image(&self) -> VoteImage { self.operation.contents() }
++    pub fn matches(&self, id: u64, image: VoteImage) -> (r: bool)
++        ensures r == (id == self.id() && image == self.image()),
++    {
++        let actual = self.operation.image();
++        self.operation.sequence() == id && actual.version == image.version
++            && actual.term == image.term && actual.voted_for == image.voted_for
++            && actual.me == image.me && actual.members == image.members
++    }
+     pub fn release_reply(self, machine: &mut Machine) -> (r: Option<VoteReply>)
+         requires old(machine).invariant(),
+         ensures machine.invariant(), machine.state() == old(machine).state(),

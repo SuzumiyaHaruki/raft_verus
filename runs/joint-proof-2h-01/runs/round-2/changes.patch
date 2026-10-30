@@ -1,0 +1,473 @@
+--- before/madraft/proof/progress.rs
++++ after/madraft/proof/progress.rs
+@@ -3,3 +3,5 @@
+ mod vote_history;
+ #[path = "recovery.rs"]
+ mod recovery;
++#[path = "vote_operation_history.rs"]
++mod vote_operation_history;
+--- before/madraft/proof/vote_operation.rs
++++ after/madraft/proof/vote_operation.rs
+@@ -0,0 +1,17 @@
++//! The actual phase machine called by the RPC wrapper, with local correspondence.
++#[path = "initialization.rs"]
++pub mod initialization;
++pub use initialization::state;
++#[path = "../src/raft/protocol.rs"]
++pub mod protocol;
++use vstd::prelude::*;
++verus! {
++// Conditional on the real filesystem completing this submitted operation.
++// This lemma supplies no fake completion and does not discharge the async caller.
++pub proof fn completed_operation(m: protocol::Machine, op: protocol::WriteVote)
++    requires m.invariant(), m.accepts(&op),
++    ensures op.contents() == protocol::image(m.state()),
++{
++    m.matching_operation(&op);
++}
++}
+--- before/madraft/proof/vote_operation_history.rs
++++ after/madraft/proof/vote_operation_history.rs
+@@ -0,0 +1,66 @@
++//! Parent use of the real begin/complete transition contracts.
++//! Local operation histories; cluster transport and durable history remain OPEN.
++#[path = "vote_operation.rs"]
++pub mod vote_operation;
++use vote_operation::{protocol as p, state};
++use vstd::prelude::*;
++verus! {
++pub enum Input { Request(state::VoteRequest), Completion(u64, p::VoteImage) }
++pub enum Output { Submission(Option<(u64, p::VoteImage)>), Reply(Option<state::VoteReply>) }
++pub open spec fn step(s: p::OperationView, i: Input, t: p::OperationView, o: Output) -> bool {
++    match (i, o) {
++        (Input::Request(q), Output::Submission(op)) => p::begin_step(s, q, t, op),
++        (Input::Completion(id, image), Output::Reply(r)) => p::complete_step(s, id, image, t, r),
++        _ => false,
++    }
++}
++
++pub proof fn initialize(v: p::OperationView, me: usize, members: usize)
++    requires p::initial_view(v, me, members),
++    ensures p::view_invariant(v),
++{
++    vote_operation::initialization::initialized_view(v.state, me, members);
++}
++
++pub proof fn preserve(s: p::OperationView, i: Input, t: p::OperationView, o: Output)
++    requires p::view_invariant(s), step(s, i, t, o),
++    ensures p::view_invariant(t),
++{
++}
++
++// Every released reply has a retained request, exact completed image and
++// checked voting transition. This deliberately does not infer that I/O occurred.
++pub proof fn released_reply(s: p::OperationView, id: u64, image: p::VoteImage,
++    t: p::OperationView, reply: state::VoteReply)
++    requires p::view_invariant(s), p::complete_step(s, id, image, t, Some(reply)),
++    ensures s.pending.is_some(), image == p::image(t.state),
++        state::vote_step(s.pending.unwrap().4, s.pending.unwrap().2, t.state, reply),
++        reply.granted ==> t.state.voted_for == Some(s.pending.unwrap().2.candidate),
++{}
++
++pub struct OperationHistory {
++    pub states: Seq<p::OperationView>,
++    pub inputs: Seq<Input>,
++    pub outputs: Seq<Output>,
++}
++pub open spec fn execution(h: OperationHistory) -> bool {
++    h.states.len() == h.inputs.len() + 1 && h.outputs.len() == h.inputs.len()
++    && p::initial_view(h.states[0], h.states[0].state.me, h.states[0].state.members)
++    && forall|k: int| 0 <= k < h.inputs.len() ==>
++        step(h.states[k], h.inputs[k], h.states[k+1], #[trigger] h.outputs[k])
++}
++pub proof fn invariant_at(h: OperationHistory, k: int)
++    requires execution(h), 0 <= k < h.states.len(),
++    ensures p::view_invariant(h.states[k]),
++    decreases k,
++{
++    if k == 0 {
++        initialize(h.states[0], h.states[0].state.me, h.states[0].state.members);
++    } else {
++        invariant_at(h, k-1);
++        assert(step(h.states[k-1], h.inputs[k-1], h.states[k], h.outputs[k-1]));
++        preserve(h.states[k-1], h.inputs[k-1], h.states[k], h.outputs[k-1]);
++    }
++}
++
++}
+--- before/madraft/src/raft/protocol.rs
++++ after/madraft/src/raft/protocol.rs
+@@ -0,0 +1,203 @@
++//! Verified request/storage/reply phases used by the asynchronous Raft host.
++use super::state::{self, State, VoteRequest, VoteReply};
++use vstd::prelude::*;
++
++verus! {
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++#[cfg_attr(not(verus_keep_ghost), derive(serde::Serialize, serde::Deserialize))]
++pub struct VoteImage {
++    pub version: u64,
++    pub term: u64,
++    pub voted_for: Option<usize>,
++    pub me: usize,
++    pub members: usize,
++}
++
++// Only begin_vote constructs this operation. The host borrows its image while
++// writing, then returns the owned operation after successful I/O completion.
++pub struct WriteVote { id: u64, image: VoteImage }
++
++#[derive(Clone, Copy)]
++struct PendingVote {
++    id: u64,
++    image: VoteImage,
++    request: VoteRequest,
++    reply: VoteReply,
++    before: Ghost<State>,
++}
++
++pub struct Machine {
++    state: State,
++    serial: u64,
++    pending: Option<PendingVote>,
++}
++
++pub open spec fn image(s: State) -> VoteImage {
++    VoteImage { version: 1, term: s.term, voted_for: s.voted_for, me: s.me, members: s.members }
++}
++
++// Observable local operation state, including the pending request and exact reply.
++pub struct OperationView {
++    pub state: State,
++    pub serial: u64,
++    pub pending: Option<(u64, VoteImage, VoteRequest, VoteReply, State)>,
++}
++
++pub open spec fn view_invariant(v: OperationView) -> bool {
++    state::well_formed(v.state) && v.state.last_index == 0 && v.state.last_term == 0
++    && match v.pending {
++        None => true,
++        Some(p) => p.0 == v.serial && p.1 == image(v.state)
++            && state::well_formed(p.4) && state::vote_step(p.4, p.2, v.state, p.3),
++    }
++}
++
++pub open spec fn initial_view(v: OperationView, me: usize, members: usize) -> bool {
++    state::initial(v.state, me, members) && v.serial == 0 && v.pending.is_none()
++}
++
++pub open spec fn begin_step(s: OperationView, q: VoteRequest, t: OperationView,
++    output: Option<(u64, VoteImage)>) -> bool {
++    if s.pending.is_some() || s.serial == u64::MAX {
++        t == s && output.is_none()
++    } else {
++        t.serial == s.serial + 1 && t.pending.is_some()
++        && t.pending.unwrap().0 == t.serial && t.pending.unwrap().1 == image(t.state)
++        && t.pending.unwrap().2 == q && t.pending.unwrap().4 == s.state
++        && state::vote_step(s.state, q, t.state, t.pending.unwrap().3)
++        && output == Some((t.serial, image(t.state)))
++    }
++}
++
++pub open spec fn complete_step(s: OperationView, id: u64, saved: VoteImage,
++    t: OperationView, reply: Option<VoteReply>) -> bool {
++    if s.pending.is_some() && s.pending.unwrap().0 == id && s.pending.unwrap().1 == saved {
++        t.state == s.state && t.serial == s.serial && t.pending.is_none()
++        && reply == Some(s.pending.unwrap().3)
++    } else { t == s && reply.is_none() }
++}
++
++impl WriteVote {
++    pub closed spec fn number(&self) -> u64 { self.id }
++    pub closed spec fn contents(&self) -> VoteImage { self.image }
++    pub fn image(&self) -> (r: VoteImage) ensures r == self.contents(), { self.image }
++}
++
++impl Machine {
++    pub closed spec fn view(&self) -> OperationView {
++        OperationView { state: self.state, serial: self.serial,
++            pending: match self.pending { None => None,
++                Some(p) => Some((p.id, p.image, p.request, p.reply, p.before@)) } }
++    }
++    pub proof fn view_is_valid(&self)
++        requires self.invariant(),
++        ensures view_invariant(self.view()), self.view().state == self.state(),
++    {}
++    pub closed spec fn state(&self) -> State { self.state }
++    pub closed spec fn idle(&self) -> bool { self.pending.is_none() }
++    pub closed spec fn invariant(&self) -> bool {
++        state::well_formed(self.state) && self.state.last_index == 0 && self.state.last_term == 0
++        && match self.pending {
++            None => true,
++            Some(p) => p.id == self.serial && p.image == image(self.state)
++                && state::well_formed(p.before@)
++                && state::vote_step(p.before@, p.request, self.state, p.reply),
++        }
++    }
++    pub closed spec fn pending_request(&self) -> Option<VoteRequest> {
++        match self.pending { None => None, Some(p) => Some(p.request) }
++    }
++    pub closed spec fn pending_before(&self) -> State {
++        self.pending.unwrap().before@
++    }
++    pub closed spec fn accepts(&self, op: &WriteVote) -> bool {
++        match self.pending { None => false, Some(p) => p.id == op.id && p.image == op.image }
++    }
++
++    pub proof fn matching_operation(&self, op: &WriteVote)
++        requires self.invariant(), self.accepts(op),
++        ensures op.contents() == image(self.state()),
++    {}
++
++    pub fn new(me: usize, members: usize) -> (r: Option<Self>)
++        ensures r.is_some() == (members > 0 && me < members),
++            r.is_some() ==> r.unwrap().invariant() && r.unwrap().idle()
++                && state::initial(r.unwrap().state(), me, members)
++                && initial_view(r.unwrap().view(), me, members),
++    {
++        match State::new(me, members) {
++            None => None,
++            Some(s) => Some(Self { state: s, serial: 0, pending: None }),
++        }
++    }
++
++    // Version and deployment identity are checked inside verified code.
++    pub fn recover(me: usize, members: usize, saved: VoteImage) -> (r: Option<Self>)
++        ensures r.is_some() ==> r.unwrap().invariant() && r.unwrap().idle()
++            && r.unwrap().state().me == me && r.unwrap().state().members == members
++            && r.unwrap().state().term == saved.term
++            && r.unwrap().state().voted_for == saved.voted_for,
++    {
++        if saved.version != 1 || saved.me != me || saved.members != members { return None; }
++        match State::restore_vote(me, members, saved.term, saved.voted_for) {
++            None => None,
++            Some(s) => Some(Self { state: s, serial: 0, pending: None }),
++        }
++    }
++
++    pub fn term(&self) -> (r: u64) ensures r == self.state().term, { self.state.term }
++    pub fn is_leader(&self) -> (r: bool)
++        ensures r == (self.state().role == state::Role::Leader),
++    { self.state.is_leader() }
++
++    pub fn begin_vote(&mut self, request: VoteRequest) -> (op: Option<WriteVote>)
++        requires old(self).invariant(),
++        ensures self.invariant(),
++            op.is_some() ==> self.accepts(&op.unwrap())
++                && op.unwrap().contents() == image(self.state())
++                && self.pending_request() == Some(request)
++                && self.pending_before() == old(self).state(),
++            op.is_none() ==> self.state() == old(self).state(),
++            begin_step(old(self).view(), request, self.view(),
++                match op { None => None, Some(o) => Some((o.number(), o.contents())) }),
++    {
++        if self.pending.is_some() || self.serial == u64::MAX { return None; }
++        let ghost before = self.state;
++        let reply = self.state.request_vote(request);
++        self.serial = self.serial + 1;
++        let saved = VoteImage { version: 1, term: self.state.term,
++            voted_for: self.state.voted_for, me: self.state.me, members: self.state.members };
++        self.pending = Some(PendingVote { id: self.serial, image: saved,
++            request, reply, before: Ghost(before) });
++        Some(WriteVote { id: self.serial, image: saved })
++    }
++
++    // This is reply authorization, not a claim that arbitrary input is durable.
++    // The host caller must supply this operation only after its real write returns.
++    pub fn complete_vote(&mut self, completed: WriteVote) -> (reply: Option<VoteReply>)
++        requires old(self).invariant(),
++        ensures self.invariant(), self.state() == old(self).state(),
++            reply.is_some() == old(self).accepts(&completed),
++            reply.is_some() ==> self.idle()
++                && state::vote_step(old(self).pending_before(),
++                    old(self).pending_request().unwrap(), self.state(), reply.unwrap())
++                && completed.contents() == image(self.state()),
++            complete_step(old(self).view(), completed.number(), completed.contents(), self.view(), reply),
++    {
++        match self.pending {
++            None => None,
++            Some(p) => {
++                let same = p.id == completed.id
++                    && p.image.version == completed.image.version
++                    && p.image.term == completed.image.term
++                    && p.image.voted_for == completed.image.voted_for
++                    && p.image.me == completed.image.me
++                    && p.image.members == completed.image.members;
++                if !same { return None; }
++                self.pending = None;
++                Some(p.reply)
++            }
++        }
++    }
++}
++}
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -65,22 +65,16 @@
+     // Your data here (2A, 2B, 2C).
+     // Look at the paper's Figure 2 for a description of what
+     // state a Raft server must maintain.
+-    state: State,
++    machine: protocol::Machine,
+ }
+ 
+ #[path = "state.rs"]
+ mod state;
+-use state::{State, VoteRequest as RequestVoteArgs, VoteReply as RequestVoteReply};
+-
+-/// Data needs to be persisted.
+-#[derive(Debug, Clone, Serialize, Deserialize)]
+-struct Persist {
+-    version: u64,
+-    term: u64,
+-    voted_for: Option<usize>,
+-    me: usize,
+-    members: usize,
+-}
++#[path = "protocol.rs"]
++mod protocol;
++use state::{VoteRequest as RequestVoteArgs, VoteReply as RequestVoteReply};
++
++use protocol::{Machine, VoteImage as Persist, WriteVote};
+ 
+ impl fmt::Debug for Raft {
+     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+@@ -91,7 +85,7 @@
+ // HINT: put async functions here
+ impl RaftHandle {
+     pub async fn new(peers: Vec<SocketAddr>, me: usize) -> (Self, MsgRecver) {
+-        let state = State::new(me, peers.len()).expect("invalid Raft membership");
++        let machine = Machine::new(me, peers.len()).expect("invalid Raft membership");
+         let endpoint = net::Endpoint::bind(peers[me]).await.expect("bind Raft RPC");
+         let (apply_ch, recver) = mpsc::unbounded();
+         let inner = Arc::new(Mutex::new(Raft {
+@@ -99,7 +93,7 @@
+             peers,
+             me,
+             apply_ch,
+-            state,
++            machine,
+         }));
+         let handle = RaftHandle { inner, endpoint, storage_gate: Arc::new(futures::lock::Mutex::new(())) };
+         // initialize from state persisted before a crash
+@@ -125,13 +119,13 @@
+     /// The current term of this peer.
+     pub fn term(&self) -> u64 {
+         let raft = self.inner.lock().unwrap();
+-        raft.state.term
++        raft.machine.term()
+     }
+ 
+     /// Whether this peer believes it is the leader.
+     pub fn is_leader(&self) -> bool {
+         let raft = self.inner.lock().unwrap();
+-        raft.state.is_leader()
++        raft.machine.is_leader()
+     }
+ 
+     /// A service wants to switch to snapshot.  
+@@ -160,12 +154,8 @@
+     /// see paper's Figure 2 for a description of what should be persistent.
+     // Caller holds storage_gate from decision through reply release.
+     // Until log/snapshot support is implemented this image contains votes only.
+-    async fn persist(&self) -> io::Result<()> {
+-        let persist = {
+-            let raft = self.inner.lock().unwrap();
+-            Persist { version: 1, term: raft.state.term, voted_for: raft.state.voted_for,
+-                me: raft.state.me, members: raft.state.members }
+-        };
++    async fn persist(&self, operation: &WriteVote) -> io::Result<()> {
++        let persist = operation.image();
+         let bytes = bincode::serialize(&persist)
+             .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+         // A crash after truncation leaves a non-decodable image and recovery
+@@ -191,10 +181,7 @@
+                 let saved: Persist = bincode::deserialize(&bytes)
+                     .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+                 let mut raft = self.inner.lock().unwrap();
+-                if saved.version != 1 || saved.me != raft.me || saved.members != raft.peers.len() {
+-                    return Err(io::Error::new(io::ErrorKind::InvalidData, "inconsistent vote image"));
+-                }
+-                raft.state = State::restore_vote(saved.me, saved.members, saved.term, saved.voted_for)
++                raft.machine = Machine::recover(raft.me, raft.peers.len(), saved)
+                     .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "invalid durable vote"))?;
+             }
+             Err(e) if e.kind() == io::ErrorKind::NotFound => {}
+@@ -216,13 +203,15 @@
+ 
+     async fn request_vote(&self, args: RequestVoteArgs) -> Result<RequestVoteReply> {
+         let _operation = self.storage_gate.lock().await;
+-        let reply = {
++        let operation = {
+             let mut this = self.inner.lock().unwrap();
+-            this.request_vote(args)
++            this.request_vote(args).ok_or_else(|| io::Error::new(io::ErrorKind::Other, "vote operation busy or exhausted"))?
+         };
+-        // if you need to persist or call async functions here,
+-        // make sure the lock is scoped and dropped.
+-        self.persist().await.expect("failed to persist");
++        // The borrowed operation cannot change while these exact bytes are written.
++        // On failure the pending operation remains blocked and no reply is released.
++        self.persist(&operation).await?;
++        let reply = self.inner.lock().unwrap().machine.complete_vote(operation)
++            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "mismatched vote completion"))?;
+         Ok(reply)
+     }
+ }
+@@ -230,7 +219,7 @@
+ // HINT: put mutable non-async functions here
+ impl Raft {
+     fn start(&mut self, data: &[u8]) -> Result<Start> {
+-        if !self.state.is_leader() {
++        if !self.machine.is_leader() {
+             let leader = (self.me + 1) % self.peers.len();
+             return Err(Error::NotLeader(leader));
+         }
+@@ -246,8 +235,8 @@
+         self.apply_ch.unbounded_send(msg).unwrap();
+     }
+ 
+-    fn request_vote(&mut self, args: RequestVoteArgs) -> RequestVoteReply {
+-        self.state.request_vote(args)
++    fn request_vote(&mut self, args: RequestVoteArgs) -> Option<WriteVote> {
++        self.machine.begin_vote(args)
+     }
+ 
+     // Here is an example to generate random number.
+@@ -295,6 +284,27 @@
+ mod vote_tests {
+     use super::*;
+ 
++    #[test]
++    fn pending_completion_cannot_release_another_request() {
++        let q = RequestVoteArgs { term: 4, candidate: 1, last_index: 0, last_term: 0 };
++        let mut node = Machine::new(0, 2).unwrap();
++        let current = node.begin_vote(q).unwrap();
++        assert!(node.begin_vote(RequestVoteArgs { term: 5, ..q }).is_none());
++        // A genuine operation from another context has the same sequence number
++        // but different contents. It cannot consume this pending request.
++        let mut other = Machine::new(0, 2).unwrap();
++        let unrelated = other.begin_vote(RequestVoteArgs { term: 5, ..q }).unwrap();
++        assert!(node.complete_vote(unrelated).is_none());
++        let reply = node.complete_vote(current).unwrap();
++        assert!(reply.granted);
++        assert_eq!(reply.term, 4);
++        let next = node.begin_vote(RequestVoteArgs { candidate: 0, ..q }).unwrap();
++        assert!(!node.complete_vote(next).unwrap().granted);
++        // Recovery checks identity in the verified core before permitting calls.
++        let wrong_identity = Persist { version: 1, me: 1, members: 2, term: 4, voted_for: Some(1) };
++        assert!(Machine::recover(0, 2, wrong_identity).is_none());
++    }
++
+     // Exercises the actual RPC-facing wrapper, storage and recovery path.
+     #[madsim::test]
+     async fn vote_persists_before_reply_and_restores() {
+@@ -308,7 +318,7 @@
+         let saved: Persist = bincode::deserialize(&fs::read("state").await.unwrap()).unwrap();
+         assert_eq!(saved.term, 7);
+         assert_eq!(saved.voted_for, Some(1));
+-        raft.inner.lock().unwrap().state = State::new(0, 2).unwrap();
++        raft.inner.lock().unwrap().machine = Machine::new(0, 2).unwrap();
+         raft.restore().await.unwrap();
+         assert!(!raft.request_vote(RequestVoteArgs { candidate: 0, ..request }).await.unwrap().granted);
+         assert!(raft.request_vote(request).await.unwrap().granted);

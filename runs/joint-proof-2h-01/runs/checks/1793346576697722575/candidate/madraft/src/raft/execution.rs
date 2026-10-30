@@ -1,0 +1,135 @@
+//! Per-incarnation execution journal of the real vote runtime.
+//! Ghost history is updated by actual constructors and handlers; it is not a
+//! replacement for cluster provenance or durable cross-crash history.
+use super::{protocol as p, state, storage};
+use vstd::prelude::*;
+verus! {
+pub enum Origin { Fresh(usize, usize), Recovered(p::VoteImage) }
+pub enum Input { Request(state::VoteRequest), Release(u64, p::VoteImage) }
+pub enum Output { Submission(Option<(u64, p::VoteImage)>), Reply(Option<state::VoteReply>) }
+pub struct History {
+    pub origin: Origin,
+    pub states: Seq<p::OperationView>,
+    pub inputs: Seq<Input>,
+    pub outputs: Seq<Output>,
+}
+pub open spec fn start(v: p::OperationView, origin: Origin) -> bool {
+    p::view_invariant(v) && match origin {
+        Origin::Fresh(me, members) => p::initial_view(v, me, members),
+        Origin::Recovered(image) => p::image(v.state) == image && v.state.role == state::Role::Follower,
+    }
+}
+pub open spec fn step(s: p::OperationView, i: Input, t: p::OperationView, o: Output) -> bool {
+    match (i, o) {
+        (Input::Request(q), Output::Submission(op)) => p::begin_step(s, q, t, op),
+        (Input::Release(id, image), Output::Reply(reply)) => p::complete_step(s, id, image, t, reply),
+        _ => false,
+    }
+}
+pub open spec fn valid(h: History) -> bool {
+    h.states.len() == h.inputs.len() + 1 && h.outputs.len() == h.inputs.len()
+    && start(h.states[0], h.origin)
+    && forall|k: int| 0 <= k < h.inputs.len() ==>
+        step(h.states[k], #[trigger] h.inputs[k], h.states[k+1], h.outputs[k])
+}
+pub proof fn extend(h: History, i: Input, t: p::OperationView, o: Output) -> (next: History)
+    requires valid(h), step(h.states.last(), i, t, o),
+    ensures valid(next), next.states.last() == t,
+        next.origin == h.origin, next.states == h.states.push(t),
+        next.inputs == h.inputs.push(i), next.outputs == h.outputs.push(o),
+{
+    let next = History { origin: h.origin, states: h.states.push(t),
+        inputs: h.inputs.push(i), outputs: h.outputs.push(o) };
+    assert forall|k: int| 0 <= k < next.inputs.len() implies
+        step(next.states[k], #[trigger] next.inputs[k], next.states[k+1], next.outputs[k]) by {
+        if k < h.inputs.len() {
+            assert(step(h.states[k], h.inputs[k], h.states[k+1], h.outputs[k]));
+        } else { assert(k == h.inputs.len()); }
+    }
+    next
+}
+
+pub struct Runtime {
+    core: p::Machine,
+    journal: Ghost<History>,
+}
+impl Runtime {
+    pub closed spec fn history(&self) -> History { self.journal@ }
+    pub closed spec fn view(&self) -> p::OperationView { self.core.view() }
+    pub closed spec fn invariant(&self) -> bool {
+        self.core.invariant() && valid(self.journal@)
+        && self.journal@.states.last() == self.core.view()
+    }
+    pub proof fn connected(&self)
+        requires self.invariant(),
+        ensures valid(self.history()), self.history().states.last() == self.view(),
+            p::view_invariant(self.view()),
+    { self.core.view_is_valid(); }
+
+    pub fn new(me: usize, members: usize) -> (r: Option<Self>)
+        ensures r.is_some() == (members > 0 && me < members),
+            r.is_some() ==> r.unwrap().invariant()
+                && r.unwrap().history().inputs.len() == 0
+                && r.unwrap().history().origin == Origin::Fresh(me, members),
+    {
+        match p::Machine::new(me, members) {
+            None => None,
+            Some(core) => {
+                proof { core.view_is_valid(); }
+                let journal = Ghost(History { origin: Origin::Fresh(me, members),
+                    states: seq![core.view()], inputs: Seq::empty(), outputs: Seq::empty() });
+                Some(Self { core, journal })
+            }
+        }
+    }
+    pub fn recover(me: usize, members: usize, image: p::VoteImage) -> (r: Option<Self>)
+        ensures r.is_some() ==> r.unwrap().invariant()
+            && r.unwrap().history().origin == Origin::Recovered(image)
+            && r.unwrap().history().inputs.len() == 0,
+    {
+        match p::Machine::recover(me, members, image) {
+            None => None,
+            Some(core) => {
+                proof { core.view_is_valid(); }
+                let journal = Ghost(History { origin: Origin::Recovered(image),
+                    states: seq![core.view()], inputs: Seq::empty(), outputs: Seq::empty() });
+                Some(Self { core, journal })
+            }
+        }
+    }
+    pub fn term(&self) -> (r: u64)
+        ensures r == self.view().state.term,
+    { proof { self.core.view_is_valid(); } self.core.term() }
+    pub fn is_leader(&self) -> (r: bool)
+        requires self.invariant(),
+        ensures r == (self.view().state.role == state::Role::Leader),
+    { proof { self.core.view_is_valid(); } self.core.is_leader() }
+
+    pub fn begin_vote(&mut self, q: state::VoteRequest) -> (op: Option<p::WriteVote>)
+        requires old(self).invariant(),
+        ensures self.invariant(),
+            self.history().inputs == old(self).history().inputs.push(Input::Request(q)),
+            self.history().states == old(self).history().states.push(self.view()),
+            self.history().outputs == old(self).history().outputs.push(Output::Submission(
+                match op { None => None, Some(w) => Some((w.number(), w.contents())) })),
+    {
+        let op = self.core.begin_vote(q);
+        let ghost output = Output::Submission(match op { None => None,
+            Some(w) => Some((w.number(), w.contents())) });
+        self.journal = Ghost(extend(self.journal@, Input::Request(q), self.core.view(), output));
+        op
+    }
+    pub fn release_vote(&mut self, written: storage::WrittenVote) -> (r: Option<state::VoteReply>)
+        requires old(self).invariant(),
+        ensures self.invariant(),
+            self.history().inputs == old(self).history().inputs.push(Input::Release(written.id(), written.image())),
+            self.history().states == old(self).history().states.push(self.view()),
+            self.history().outputs == old(self).history().outputs.push(Output::Reply(r)),
+    {
+        let ghost input = Input::Release(written.id(), written.image());
+        let r = written.release_reply(&mut self.core);
+        self.journal = Ghost(extend(self.journal@, input, self.core.view(), Output::Reply(r)));
+        r
+    }
+}
+}

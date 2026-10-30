@@ -1,0 +1,141 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-4-1793346930315597132/snapshot_observation-caller.rs --crate-type lib --no-cheating --triggers-mode silent
+error[E0412]: cannot find type `State` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-4-1793346930315597132/snapshot_observation-caller.rs:13:42
+   |
+13 | pub type Execution = support::History<c::State, c::Input, c::Output, c::Message>;
+   |                                          ^^^^^ not found in `c`
+   |
+help: consider importing one of these structs
+   |
+ 9 + use crate::implementation::state::State;
+   |
+ 9 + use vstd::rwlock::RwLockToks::State;
+   |
+ 9 + use vstd::shared::Dupe::State;
+   |
+help: if you import `State`, refer to it directly
+   |
+13 - pub type Execution = support::History<c::State, c::Input, c::Output, c::Message>;
+13 + pub type Execution = support::History<State, c::Input, c::Output, c::Message>;
+   |
+
+error[E0412]: cannot find type `Input` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-4-1793346930315597132/snapshot_observation-caller.rs:13:52
+   |
+13 | pub type Execution = support::History<c::State, c::Input, c::Output, c::Message>;
+   |                                                    ^^^^^ not found in `c`
+   |
+help: consider importing one of these enums
+   |
+ 9 + use crate::implementation::durable_vote_reply::storage_correspondence::vote_operation_history::Input;
+   |
+ 9 + use crate::implementation::executable::Input;
+   |
+help: if you import `Input`, refer to it directly
+   |
+13 - pub type Execution = support::History<c::State, c::Input, c::Output, c::Message>;
+13 + pub type Execution = support::History<c::State, Input, c::Output, c::Message>;
+   |
+
+error[E0412]: cannot find type `Output` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-4-1793346930315597132/snapshot_observation-caller.rs:13:62
+   |
+13 | pub type Execution = support::History<c::State, c::Input, c::Output, c::Message>;
+   |                                                              ^^^^^^ not found in `c`
+   |
+help: consider importing one of these items
+   |
+ 9 + use crate::implementation::durable_vote_reply::storage_correspondence::vote_operation_history::Output;
+   |
+ 9 + use crate::implementation::executable::Output;
+   |
+ 9 + use std::process::Output;
+   |
+help: if you import `Output`, refer to it directly
+   |
+13 - pub type Execution = support::History<c::State, c::Input, c::Output, c::Message>;
+13 + pub type Execution = support::History<c::State, c::Input, Output, c::Message>;
+   |
+
+error[E0412]: cannot find type `Message` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-4-1793346930315597132/snapshot_observation-caller.rs:13:73
+   |
+13 | pub type Execution = support::History<c::State, c::Input, c::Output, c::Message>;
+   |                                                                         ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `initial` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-4-1793346930315597132/snapshot_observation-caller.rs:15:30
+   |
+15 |     support::valid(h, |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                              ^^^^^^^ not found in `c`
+   |
+help: consider importing this function
+   |
+ 9 + use crate::implementation::state::initial;
+   |
+help: if you import `initial`, refer to it directly
+   |
+15 -     support::valid(h, |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+15 +     support::valid(h, |s| initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |
+
+error[E0425]: cannot find function `step` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-4-1793346930315597132/snapshot_observation-caller.rs:15:55
+   |
+15 |     support::valid(h, |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                                                       ^^^^ not found in `c`
+   |
+help: consider importing one of these functions
+   |
+ 9 + use crate::implementation::durable_vote_reply::storage_correspondence::vote_operation_history::step;
+   |
+ 9 + use crate::implementation::executable::step;
+   |
+help: if you import `step`, refer to it directly
+   |
+15 -     support::valid(h, |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+15 +     support::valid(h, |s| c::initial(s), |s,i,t,o| step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |
+
+error[E0425]: cannot find function `receive` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-4-1793346930315597132/snapshot_observation-caller.rs:15:77
+   |
+15 |     support::valid(h, |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                                                                             ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `emit` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-4-1793346930315597132/snapshot_observation-caller.rs:15:96
+   |
+15 |     support::valid(h, |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                                                                                                ^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-4-1793346930315597132/snapshot_observation-caller.rs:21:31
+   |
+21 |     ensures targets::shape(c::observe(run)),
+   |                               ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-4-1793346930315597132/snapshot_observation-caller.rs:22:39
+   |
+22 |         targets::snapshot_fidelity(c::observe(run), c::applications()),
+   |                                       ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `applications` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-4-1793346930315597132/snapshot_observation-caller.rs:22:56
+   |
+22 |         targets::snapshot_fidelity(c::observe(run), c::applications()),
+   |                                                        ^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `prove_observation_and_snapshots` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-4-1793346930315597132/snapshot_observation-caller.rs:23:6
+   |
+23 | { c::prove_observation_and_snapshots(run); }
+   |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in `c`
+
+error: aborting due to 12 previous errors
+
+Some errors have detailed explanations: E0412, E0425.
+For more information about an error, try `rustc --explain E0412`.
+
+process=COMPLETED exit=1

@@ -1,1 +1,0 @@
-madraft/RESULT.md

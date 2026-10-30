@@ -1,0 +1,447 @@
+use futures::{channel::mpsc, stream::FuturesUnordered, StreamExt};
+use madsim::{
+    fs, net,
+    rand::{self, Rng},
+    task,
+    time::*,
+};
+use serde::{Deserialize, Serialize};
+use std::{
+    fmt, io,
+    net::SocketAddr,
+    sync::{Arc, Mutex},
+};
+
+#[derive(Clone)]
+pub struct RaftHandle {
+    pub(crate) endpoint: net::Endpoint,
+    inner: Arc<Mutex<Raft>>,
+    storage_gate: Arc<futures::lock::Mutex<()>>,
+}
+
+type MsgSender = mpsc::UnboundedSender<ApplyMsg>;
+pub type MsgRecver = mpsc::UnboundedReceiver<ApplyMsg>;
+
+/// As each Raft peer becomes aware that successive log entries are committed,
+/// the peer should send an `ApplyMsg` to the service (or tester) on the same
+/// server, via the `apply_ch` passed to `Raft::new`.
+pub enum ApplyMsg {
+    Command {
+        data: Vec<u8>,
+        index: u64,
+    },
+    // For 2D:
+    Snapshot {
+        data: Vec<u8>,
+        term: u64,
+        index: u64,
+    },
+}
+
+#[derive(Debug)]
+pub struct Start {
+    /// The index that the command will appear at if it's ever committed.
+    pub index: u64,
+    /// The current term.
+    pub term: u64,
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error("this node is not a leader, next leader: {0}")]
+    NotLeader(usize),
+    #[error("IO error")]
+    IO(#[from] io::Error),
+}
+
+pub type Result<T> = std::result::Result<T, Error>;
+
+struct Raft {
+    endpoint: net::Endpoint,
+    peers: Vec<SocketAddr>,
+    me: usize,
+    apply_ch: MsgSender,
+
+    // Your data here (2A, 2B, 2C).
+    // Look at the paper's Figure 2 for a description of what
+    // state a Raft server must maintain.
+    machine: Runtime,
+}
+
+#[path = "state.rs"]
+mod state;
+#[path = "protocol.rs"]
+mod protocol;
+#[path = "storage.rs"]
+mod storage;
+#[path = "execution.rs"]
+mod execution;
+use execution::Runtime;
+use state::{VoteRequest as RequestVoteArgs, VoteReply as RequestVoteReply};
+
+use protocol::{Machine, VoteImage as Persist, WriteVote};
+
+impl fmt::Debug for Raft {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Raft({})", self.me)
+    }
+}
+
+// HINT: put async functions here
+impl RaftHandle {
+    pub async fn new(peers: Vec<SocketAddr>, me: usize) -> (Self, MsgRecver) {
+        let machine = Runtime::new(me, peers.len()).expect("invalid Raft membership");
+        let endpoint = net::Endpoint::bind(peers[me]).await.expect("bind Raft RPC");
+        let (apply_ch, recver) = mpsc::unbounded();
+        let inner = Arc::new(Mutex::new(Raft {
+            endpoint: endpoint.clone(),
+            peers,
+            me,
+            apply_ch,
+            machine,
+        }));
+        let handle = RaftHandle { inner, endpoint, storage_gate: Arc::new(futures::lock::Mutex::new(())) };
+        // initialize from state persisted before a crash
+        handle.restore().await.expect("failed to restore");
+        handle.start_rpc_server();
+        handle.start_election_timer();
+
+        (handle, recver)
+    }
+
+    /// Start agreement on the next command to be appended to Raft's log.
+    ///
+    /// If this server isn't the leader, returns [`Error::NotLeader`].
+    /// Otherwise start the agreement and return immediately.
+    ///
+    /// There is no guarantee that this command will ever be committed to the
+    /// Raft log, since the leader may fail or lose an election.
+    pub async fn start(&self, cmd: &[u8]) -> Result<Start> {
+        let mut raft = self.inner.lock().unwrap();
+        info!("{:?} start", *raft);
+        raft.start(cmd)
+    }
+
+    /// The current term of this peer.
+    pub fn term(&self) -> u64 {
+        let raft = self.inner.lock().unwrap();
+        raft.machine.term()
+    }
+
+    /// Whether this peer believes it is the leader.
+    pub fn is_leader(&self) -> bool {
+        let raft = self.inner.lock().unwrap();
+        raft.machine.is_leader()
+    }
+
+    /// A service wants to switch to snapshot.  
+    ///
+    /// Only do so if Raft hasn't have more recent info since it communicate
+    /// the snapshot on `apply_ch`.
+    pub async fn cond_install_snapshot(
+        &self,
+        last_included_term: u64,
+        last_included_index: u64,
+        snapshot: &[u8],
+    ) -> bool {
+        todo!()
+    }
+
+    /// The service says it has created a snapshot that has all info up to and
+    /// including index. This means the service no longer needs the log through
+    /// (and including) that index. Raft should now trim its log as much as
+    /// possible.
+    pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {
+        todo!()
+    }
+
+    /// save Raft's persistent state to stable storage,
+    /// where it can later be retrieved after a crash and restart.
+    /// see paper's Figure 2 for a description of what should be persistent.
+    // Caller holds storage_gate from decision through reply release.
+    // Until log/snapshot support is implemented this image contains votes only.
+    async fn persist(&self, operation: WriteVote) -> io::Result<storage::WrittenVote> {
+        use storage::{Action, Completion, VoteWrite};
+        let mut flow = VoteWrite::new(operation);
+        let mut file = None;
+        loop {
+            match flow.action() {
+                Action::Create => match fs::File::create("state").await {
+                    Ok(created) => { file = Some(created); flow.complete(Completion::Created); }
+                    Err(e) => { flow.complete(Completion::Failed); return Err(e); }
+                },
+                Action::Write(image) => {
+                    let bytes = bincode::serialize(&image)
+                        .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+                    // The actual submitted buffer comes from the checked action.
+                    let result = file.as_ref().expect("created state file").write_all_at(&bytes, 0).await;
+                    match result {
+                        Ok(()) => flow.complete(Completion::Written),
+                        Err(e) => { flow.complete(Completion::Failed); return Err(e); }
+                    }
+                }
+                Action::Sync => match file.as_ref().expect("written state file").sync_all().await {
+                    Ok(()) => flow.complete(Completion::Synced),
+                    Err(e) => { flow.complete(Completion::Failed); return Err(e); }
+                },
+                Action::Release => return flow.release()
+                    .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "invalid release phase")),
+                Action::Stop => return Err(io::Error::new(io::ErrorKind::Other, "storage flow stopped")),
+            }
+        }
+    }
+
+    async fn restore(&self) -> io::Result<()> {
+        // No snapshot can yet be interpreted by this partial implementation.
+        match fs::read("snapshot").await {
+            Ok(bytes) if !bytes.is_empty() => {
+                return Err(io::Error::new(io::ErrorKind::InvalidData, "snapshot recovery unfinished"));
+            }
+            Ok(_) => {}
+            Err(e) if e.kind() == io::ErrorKind::NotFound => {}
+            Err(e) => return Err(e),
+        }
+        match fs::read("state").await {
+            Ok(bytes) => {
+                let saved: Persist = bincode::deserialize(&bytes)
+                    .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+                let mut raft = self.inner.lock().unwrap();
+                raft.machine = Runtime::recover(raft.me, raft.peers.len(), saved)
+                    .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "invalid durable vote"))?;
+            }
+            Err(e) if e.kind() == io::ErrorKind::NotFound => {}
+            Err(e) => return Err(e),
+        }
+        Ok(())
+    }
+
+    fn start_election_timer(&self) {
+        let this = self.clone();
+        task::spawn(async move {
+            loop {
+                sleep(Raft::generate_election_timeout()).await;
+                if let Err(error) = this.send_vote_request().await {
+                    warn!("election initiation stopped: {}", error);
+                    return;
+                }
+            }
+        });
+    }
+
+    async fn send_vote_request(&self) -> Result<()> {
+        let guard = self.storage_gate.lock().await;
+        let (args, operation, context) = match self.inner.lock().unwrap().machine.begin_election() {
+            Some(election) => election,
+            None => return Ok(()),
+        };
+        let written = self.persist(operation).await?;
+        let (net, peers, me) = {
+            let mut raft = self.inner.lock().unwrap();
+            let reply = raft.machine.finish_rpc(context, written);
+            if !matches!(reply, Some(RequestVoteReply { granted: true, .. }))
+                || !raft.machine.campaign(args.term) { return Ok(()); }
+            (raft.endpoint.clone(), raft.peers.clone(), raft.me)
+        };
+        drop(guard);
+        // Each real send uses the exact checked request authorized above.
+        // Replies are currently observed but quorum collection is still OPEN.
+        for (peer_id, peer) in peers.into_iter().enumerate() {
+            if peer_id == me { continue; }
+            let net = net.clone();
+            task::spawn(async move {
+                let _reply = net.call_timeout::<RequestVoteArgs>(peer, args, Duration::from_millis(150)).await;
+            });
+        }
+        Ok(())
+    }
+
+    fn start_rpc_server(&self) {
+        let net = self.endpoint.clone();
+
+        let this = self.clone();
+        net.add_rpc_handler(move |args: RequestVoteArgs| {
+            let this = this.clone();
+            async move { this.request_vote(args).await.unwrap() }
+        });
+        // add more RPC handers here
+    }
+
+    async fn request_vote(&self, args: RequestVoteArgs) -> Result<RequestVoteReply> {
+        let _operation = self.storage_gate.lock().await;
+        let (operation, context) = {
+            let mut this = self.inner.lock().unwrap();
+            this.request_vote(args).ok_or_else(|| io::Error::new(io::ErrorKind::Other, "vote operation busy or exhausted"))?
+        };
+        // The owned operation drives create/write/sync; only its completed flow releases it.
+        // On failure the pending operation remains blocked and no reply is released.
+        let written = self.persist(operation).await?;
+        let reply = self.inner.lock().unwrap().machine.finish_rpc(context, written)
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "mismatched vote completion"))?;
+        Ok(reply)
+    }
+}
+
+// HINT: put mutable non-async functions here
+impl Raft {
+    fn start(&mut self, data: &[u8]) -> Result<Start> {
+        if !self.machine.is_leader() {
+            let leader = (self.me + 1) % self.peers.len();
+            return Err(Error::NotLeader(leader));
+        }
+        todo!("start agreement");
+    }
+
+    // Here is an example to apply committed message.
+    fn apply(&self) {
+        let msg = ApplyMsg::Command {
+            data: todo!("apply msg"),
+            index: todo!("apply msg"),
+        };
+        self.apply_ch.unbounded_send(msg).unwrap();
+    }
+
+    fn request_vote(&mut self, args: RequestVoteArgs) -> Option<(WriteVote, execution::ReplyContext)> {
+        self.machine.begin_rpc(args)
+    }
+
+    // Here is an example to generate random number.
+    fn generate_election_timeout() -> Duration {
+        // see rand crate for more details
+        Duration::from_millis(rand::thread_rng().gen_range(150..300))
+    }
+
+
+}
+
+impl net::rpc::Request for RequestVoteArgs {
+    type Response = RequestVoteReply;
+    const ID: u64 = 1;
+}
+
+#[cfg(test)]
+mod vote_tests {
+    use super::*;
+
+    #[test]
+    fn pending_completion_cannot_release_another_request() {
+        let q = RequestVoteArgs { term: 4, candidate: 1, last_index: 0, last_term: 0 };
+        let mut node = Machine::new(0, 2).unwrap();
+        let current = node.begin_vote(q).unwrap();
+        assert!(node.begin_vote(RequestVoteArgs { term: 5, ..q }).is_none());
+        // A genuine operation from another context has the same sequence number
+        // but different contents. It cannot consume this pending request.
+        let mut other = Machine::new(0, 2).unwrap();
+        let unrelated = other.begin_vote(RequestVoteArgs { term: 5, ..q }).unwrap();
+        assert!(node.complete_vote(unrelated).is_none());
+        let reply = node.complete_vote(current).unwrap();
+        assert!(reply.granted);
+        assert_eq!(reply.term, 4);
+        let next = node.begin_vote(RequestVoteArgs { candidate: 0, ..q }).unwrap();
+        assert!(!node.complete_vote(next).unwrap().granted);
+        // Recovery checks identity in the verified core before permitting calls.
+        let wrong_identity = Persist { version: 1, me: 1, members: 2, term: 4, voted_for: Some(1) };
+        assert!(Machine::recover(0, 2, wrong_identity).is_none());
+    }
+
+    #[test]
+    fn storage_receipt_requires_the_whole_sequence() {
+        use storage::{Completion, VoteWrite, Action};
+        let q = RequestVoteArgs { term: 8, candidate: 1, last_index: 0, last_term: 0 };
+        let mut node = Machine::new(0, 2).unwrap();
+        let issued = node.begin_vote(q).unwrap();
+        let flow = VoteWrite::new(issued);
+        assert!(flow.release().is_none());
+
+        let mut node = Machine::new(0, 2).unwrap();
+        let mut flow = VoteWrite::new(node.begin_vote(q).unwrap());
+        flow.complete(Completion::Written); // a write completion before create
+        assert!(matches!(flow.action(), Action::Stop));
+        assert!(flow.release().is_none());
+
+        let mut node = Machine::new(0, 2).unwrap();
+        let mut flow = VoteWrite::new(node.begin_vote(q).unwrap());
+        flow.complete(Completion::Created);
+        flow.complete(Completion::Failed);
+        flow.complete(Completion::Synced); // failure cannot be repaired by a late success
+        assert!(flow.release().is_none());
+
+        let mut node = Machine::new(0, 2).unwrap();
+        let mut flow = VoteWrite::new(node.begin_vote(q).unwrap());
+        flow.complete(Completion::Created);
+        match flow.action() {
+            Action::Write(image) => { assert_eq!(image.term, 8); assert_eq!(image.voted_for, Some(1)); }
+            _ => panic!("expected submitted image"),
+        }
+        flow.complete(Completion::Written);
+        flow.complete(Completion::Synced);
+        assert!(flow.release().unwrap().release_reply(&mut node).unwrap().granted);
+    }
+
+    #[test]
+    fn rpc_context_rejects_same_image_for_a_different_request() {
+        use storage::{Completion, VoteWrite};
+        let q = RequestVoteArgs { term: 8, candidate: 1, last_index: 0, last_term: 0 };
+        let mut first = Runtime::new(0, 2).unwrap();
+        let mut second = Runtime::new(0, 2).unwrap();
+        let (op, _own_context) = first.begin_rpc(q).unwrap();
+        // Both requests grant the same vote/image at the same operation number,
+        // but their log metadata differs. Image matching alone cannot identify
+        // the async caller whose response is being returned.
+        let (_other_op, other_context) = second.begin_rpc(RequestVoteArgs { last_index: 9, ..q }).unwrap();
+        let mut flow = VoteWrite::new(op);
+        flow.complete(Completion::Created);
+        flow.complete(Completion::Written);
+        flow.complete(Completion::Synced);
+        assert!(first.finish_rpc(other_context, flow.release().unwrap()).is_none());
+        assert!(first.begin_rpc(q).is_none()); // rejected context did not clear pending vote
+    }
+
+    #[madsim::test]
+    async fn election_sends_persisted_self_vote() {
+        let peers: Vec<SocketAddr> = vec!["127.0.0.1:20801".parse().unwrap(), "127.0.0.1:20802".parse().unwrap()];
+        let receiver = net::Endpoint::bind(peers[1]).await.unwrap();
+        let (observed, mut requests) = mpsc::unbounded();
+        receiver.add_rpc_handler(move |q: RequestVoteArgs| {
+            let observed = observed.clone();
+            async move {
+                // The sender and observing endpoint share this simulator node.
+                // Read durable state at delivery, before replying to the sender.
+                let saved: Persist = bincode::deserialize(&fs::read("state").await.unwrap()).unwrap();
+                observed.unbounded_send((q, saved)).unwrap();
+                RequestVoteReply { term: q.term, granted: true }
+            }
+        });
+        let (raft, _) = RaftHandle::new(peers, 0).await;
+        raft.send_vote_request().await.unwrap();
+        let (q, saved) = timeout(Duration::from_secs(1), requests.next()).await.unwrap().unwrap();
+        assert_eq!(q.candidate, 0);
+        assert_eq!(q.term, 1);
+        assert_eq!((q.last_index, q.last_term), (0, 0));
+        assert!(saved.term >= q.term);
+        assert_eq!(saved.voted_for, Some(0));
+        assert!(!raft.is_leader()); // a received grant is not yet a quorum transition
+    }
+
+    // Exercises the actual RPC-facing wrapper, storage and recovery path.
+    #[madsim::test]
+    async fn vote_persists_before_reply_and_restores() {
+        let peers = vec!["127.0.0.1:20701".parse().unwrap(), "127.0.0.1:20702".parse().unwrap()];
+        let (raft, _) = RaftHandle::new(peers, 0).await;
+        let request = RequestVoteArgs { term: 7, candidate: 1, last_index: 0, last_term: 0 };
+        let sender = net::Endpoint::bind("127.0.0.1:20702".parse::<SocketAddr>().unwrap()).await.unwrap();
+        let reply = sender.call_timeout::<RequestVoteArgs>(
+            "127.0.0.1:20701".parse().unwrap(), request, Duration::from_secs(1)).await.unwrap();
+        assert!(reply.granted);
+        let saved: Persist = bincode::deserialize(&fs::read("state").await.unwrap()).unwrap();
+        assert_eq!(saved.term, 7);
+        assert_eq!(saved.voted_for, Some(1));
+        raft.inner.lock().unwrap().machine = Runtime::new(0, 2).unwrap();
+        raft.restore().await.unwrap();
+        assert!(!raft.request_vote(RequestVoteArgs { candidate: 0, ..request }).await.unwrap().granted);
+        assert!(raft.request_vote(request).await.unwrap().granted);
+        assert!(!raft.request_vote(RequestVoteArgs { term: 6, ..request }).await.unwrap().granted);
+        // An interrupted truncate/write must stop recovery, never reset votes.
+        let _truncated = fs::File::create("state").await.unwrap();
+        assert!(raft.restore().await.is_err());
+    }
+}

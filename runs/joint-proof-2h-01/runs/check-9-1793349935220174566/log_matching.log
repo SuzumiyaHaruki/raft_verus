@@ -1,0 +1,18 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-9-1793349935220174566/log_matching-caller.rs --crate-type lib --no-cheating --triggers-mode silent
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-9-1793349935220174566/log_matching-caller.rs:21:38
+   |
+21 |     ensures targets::log_matching(c::observe(run)),
+   |                                      ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `prove_log_matching` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-9-1793349935220174566/log_matching-caller.rs:22:6
+   |
+22 | { c::prove_log_matching(run); }
+   |      ^^^^^^^^^^^^^^^^^^ not found in `c`
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0425`.
+
+process=COMPLETED exit=1

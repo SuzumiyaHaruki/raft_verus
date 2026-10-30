@@ -1,0 +1,325 @@
+$ /home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo test --manifest-path madraft/Cargo.toml --locked --offline --release --lib --no-fail-fast raft::tests::initial_election_2a -- --test-threads=1
+
+running 1 test
+test raft::tests::initial_election_2a ... FAILED
+
+failures:
+
+---- raft::tests::initial_election_2a stdout ----
+
+thread '<unnamed>' (85) panicked at src/raft/tester.rs:95:9:
+expected one leader, got none
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+context: node=0 "madsim-main", task=0 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+
+failures:
+    raft::tests::initial_election_2a
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 60 filtered out; finished in 0.00s
+
+warning: unreachable statement
+  --> src/shardkv/server.rs:20:9
+   |
+19 |         todo!("construct ShardKv");
+   |         -------------------------- any code following this expression is unreachable
+20 |         let inner = Server::new(servers, me, max_raft_state).await;
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unreachable statement
+   |
+   = note: `#[warn(unreachable_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+  --> src/kvraft/tester.rs:95:31
+   |
+95 |             NetSim::current().connect2(node_id(&self.handle, self.addrs[i]), node_id(&self.handle, self.addrs[j]));
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+   --> src/kvraft/tester.rs:103:31
+    |
+103 |             NetSim::current().disconnect2(node_id(&self.handle, self.addrs[i]), node_id(&self.handle, self.addrs[j]));
+    |                               ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead
+   --> src/kvraft/tester.rs:148:27
+    |
+148 |         NetSim::current().connect(node_id(&self.handle, addr));
+    |                           ^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+   --> src/kvraft/tester.rs:150:31
+    |
+150 |             NetSim::current().disconnect2(node_id(&self.handle, addr), node_id(&self.handle, self.addrs[i]));
+    |                               ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+   --> src/kvraft/tester.rs:153:31
+    |
+153 |             NetSim::current().connect2(node_id(&self.handle, addr), node_id(&self.handle, self.addrs[i]));
+    |                               ^^^^^^^^
+
+warning: unreachable expression
+   --> src/raft/raft.rs:244:20
+    |
+243 |             data: todo!("apply msg"),
+    |                   ------------------ any code following this expression is unreachable
+244 |             index: todo!("apply msg"),
+    |                    ^^^^^^^^^^^^^^^^^^ unreachable expression
+    |
+    = note: this warning originates in the macro `$crate::panic::panic_2021` which comes from the expansion of the macro `todo` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: unreachable statement
+   --> src/raft/raft.rs:262:9
+    |
+261 |         let args: RequestVoteArgs = todo!("construct RPC request");
+    |                                     ------------------------------ any code following this expression is unreachable
+262 |         let timeout = Self::generate_election_timeout();
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unreachable statement
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect`: use `clog_node` instead
+   --> src/raft/tester.rs:271:27
+    |
+271 |         NetSim::current().disconnect(node_id(&self.handle, self.addrs[i]));
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead
+   --> src/raft/tester.rs:278:27
+    |
+278 |         NetSim::current().connect(node_id(&self.handle, self.addrs[i]));
+    |                           ^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+  --> src/test_support.rs:77:23
+   |
+77 |     NetSim::current().disconnect2(server.id(), client.id());
+   |                       ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+  --> src/test_support.rs:79:23
+   |
+79 |     NetSim::current().connect2(server.id(), client.id());
+   |                       ^^^^^^^^
+
+warning: unused variable: `ret`
+  --> src/kvraft/client.rs:52:17
+   |
+52 |             let ret = net
+   |                 ^^^ help: if this is intentional, prefix it with an underscore: `_ret`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `max_raft_state`
+  --> src/kvraft/server.rs:34:9
+   |
+34 |         max_raft_state: Option<usize>,
+   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`
+
+warning: unused variable: `apply_ch`
+  --> src/kvraft/server.rs:37:18
+   |
+37 |         let (rf, apply_ch) = raft::RaftHandle::new(servers, me).await;
+   |                  ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_apply_ch`
+
+warning: unused variable: `cmd`
+  --> src/kvraft/server.rs:68:27
+   |
+68 |     async fn apply(&self, cmd: S::Command) -> Result<S::Output, Error> {
+   |                           ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`
+
+warning: unused variable: `cmd`
+  --> src/kvraft/server.rs:84:25
+   |
+84 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {
+   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`
+
+warning: unused variable: `last_included_term`
+   --> src/raft/raft.rs:143:9
+    |
+143 |         last_included_term: u64,
+    |         ^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_term`
+
+warning: unused variable: `last_included_index`
+   --> src/raft/raft.rs:144:9
+    |
+144 |         last_included_index: u64,
+    |         ^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_index`
+
+warning: unused variable: `snapshot`
+   --> src/raft/raft.rs:145:9
+    |
+145 |         snapshot: &[u8],
+    |         ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`
+
+warning: unused variable: `index`
+   --> src/raft/raft.rs:154:34
+    |
+154 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {
+    |                                  ^^^^^ help: if this is intentional, prefix it with an underscore: `_index`
+
+warning: unused variable: `snapshot`
+   --> src/raft/raft.rs:154:46
+    |
+154 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {
+    |                                              ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`
+
+warning: unused variable: `data`
+   --> src/raft/raft.rs:232:25
+    |
+232 |     fn start(&mut self, data: &[u8]) -> Result<Start> {
+    |                         ^^^^ help: if this is intentional, prefix it with an underscore: `_data`
+
+warning: unused variable: `msg`
+   --> src/raft/raft.rs:242:13
+    |
+242 |         let msg = ApplyMsg::Command {
+    |             ^^^ help: if this is intentional, prefix it with an underscore: `_msg`
+
+warning: unused variable: `args`
+   --> src/raft/raft.rs:261:13
+    |
+261 |         let args: RequestVoteArgs = todo!("construct RPC request");
+    |             ^^^^ help: if this is intentional, prefix it with an underscore: `_args`
+
+warning: unused variable: `res`
+   --> src/raft/raft.rs:282:28
+    |
+282 |             while let Some(res) = rpcs.next().await {
+    |                            ^^^ help: if this is intentional, prefix it with an underscore: `_res`
+
+warning: unused variable: `cmd`
+  --> src/shard_ctrler/server.rs:16:25
+   |
+16 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {
+   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`
+
+warning: unused variable: `key`
+  --> src/shardkv/client.rs:15:29
+   |
+15 |     pub async fn get(&self, key: String) -> String {
+   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`
+
+warning: unused variable: `key`
+  --> src/shardkv/client.rs:19:29
+   |
+19 |     pub async fn put(&self, key: String, value: String) {
+   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`
+
+warning: unused variable: `value`
+  --> src/shardkv/client.rs:19:42
+   |
+19 |     pub async fn put(&self, key: String, value: String) {
+   |                                          ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`
+
+warning: unused variable: `key`
+  --> src/shardkv/client.rs:23:32
+   |
+23 |     pub async fn append(&self, key: String, value: String) {
+   |                                ^^^ help: if this is intentional, prefix it with an underscore: `_key`
+
+warning: unused variable: `value`
+  --> src/shardkv/client.rs:23:45
+   |
+23 |     pub async fn append(&self, key: String, value: String) {
+   |                                             ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`
+
+warning: unused variable: `ctrl_ck`
+  --> src/shardkv/server.rs:13:9
+   |
+13 |         ctrl_ck: CtrlerClerk,
+   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_ctrl_ck`
+
+warning: unused variable: `servers`
+  --> src/shardkv/server.rs:14:9
+   |
+14 |         servers: Vec<SocketAddr>,
+   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_servers`
+
+warning: unused variable: `gid`
+  --> src/shardkv/server.rs:15:9
+   |
+15 |         gid: u64,
+   |         ^^^ help: if this is intentional, prefix it with an underscore: `_gid`
+
+warning: unused variable: `me`
+  --> src/shardkv/server.rs:16:9
+   |
+16 |         me: usize,
+   |         ^^ help: if this is intentional, prefix it with an underscore: `_me`
+
+warning: unused variable: `max_raft_state`
+  --> src/shardkv/server.rs:17:9
+   |
+17 |         max_raft_state: Option<usize>,
+   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`
+
+warning: unused variable: `cmd`
+  --> src/shardkv/server.rs:34:25
+   |
+34 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {
+   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`
+
+warning: fields `endpoint` and `apply_ch` are never read
+  --> src/raft/raft.rs:60:5
+   |
+59 | struct Raft {
+   |        ---- fields in this struct
+60 |     endpoint: net::Endpoint,
+   |     ^^^^^^^^
+...
+63 |     apply_ch: MsgSender,
+   |     ^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated items `apply`, `generate_election_timeout`, and `send_vote_request` are never used
+   --> src/raft/raft.rs:241:8
+    |
+231 | impl Raft {
+    | --------- associated items in this implementation
+...
+241 |     fn apply(&self) {
+    |        ^^^^^
+...
+254 |     fn generate_election_timeout() -> Duration {
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+260 |     fn send_vote_request(&mut self) {
+    |        ^^^^^^^^^^^^^^^^^
+
+warning: variants `Candidate` and `Leader` are never constructed
+  --> src/raft/state.rs:17:27
+   |
+17 | pub enum Role { Follower, Candidate, Leader }
+   |          ----             ^^^^^^^^^  ^^^^^^
+   |          |
+   |          variants in this enum
+   |
+   = note: `Role` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: field `ctrl_ck` is never read
+ --> src/shardkv/client.rs:5:5
+  |
+4 | pub struct Clerk {
+  |            ----- field in this struct
+5 |     ctrl_ck: CtrlerClerk,
+  |     ^^^^^^^
+
+warning: field `inner` is never read
+ --> src/shardkv/server.rs:8:5
+  |
+7 | pub struct ShardKvServer {
+  |            ------------- field in this struct
+8 |     inner: Arc<Server<ShardKv>>,
+  |     ^^^^^
+
+warning: `madraft` (lib test) generated 43 warnings (run `cargo fix --lib -p madraft --tests` to apply 26 suggestions)
+    Finished `release` profile [optimized] target(s) in 0.08s
+     Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/cargo-target/release/deps/madraft-9d1fbd9857b1c1bd)
+error: test failed, to rerun pass `--lib`
+error: 1 target failed:
+    `--lib`
+
+process=COMPLETED exit=101

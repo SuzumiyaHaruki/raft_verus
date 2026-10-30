@@ -1,0 +1,47 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793348377927898552/candidate/madraft/proof/implementation.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 69 verified, 2 errors
+note: while loop: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793348377927898552/candidate/madraft/proof/../src/raft/election.rs:70:13
+   |
+70 |             while i < self.voters.len()
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793348377927898552/candidate/madraft/proof/../src/raft/election.rs:63:17
+   |
+63 |         ensures self.invariant(), record_step(old(self).view(), peer, reply, self.view()),
+   |                 ^^^^^^^^^^^^^^^^ failed this postcondition
+...
+77 |                 if self.voters[i] == peer { return; }
+   |                                             ------ at this exit
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793348377927898552/candidate/madraft/proof/../src/raft/election.rs:63:17
+   |
+63 |         ensures self.invariant(), record_step(old(self).view(), peer, reply, self.view()),
+   |                 ^^^^^^^^^^^^^^^^ failed this postcondition
+...
+84 |         assert forall|i: int| 0 <= i < self.voters.len() implies self.voters[i] < self.members
+   |         ------ at the end of the function body
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793348377927898552/candidate/madraft/proof/../src/raft/election.rs:63:35
+   |
+63 |         ensures self.invariant(), record_step(old(self).view(), peer, reply, self.view()),
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+77 |                 if self.voters[i] == peer { return; }
+   |                                             ------ at this exit
+
+note: recommendation not met: cannot prove that there exists values that satisfy the condition of the choose expression
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793348377927898552/candidate/madraft/proof/../src/raft/election.rs:88:40
+   |
+88 |                   let j = choose|j: int| 0 <= j < before.replies.len() && before.replies[j].0 == before.voters[i]
+   |  ________________________________________^
+89 | |                     && granted(before, before.voters[i], before.replies[j].1);
+   | |_____________________________________________________________________________^
+
+error: aborting due to 3 previous errors
+
+
+process=COMPLETED exit=1

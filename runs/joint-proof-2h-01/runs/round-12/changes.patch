@@ -1,0 +1,117 @@
+--- before/madraft/proof/execution_connection.rs
++++ after/madraft/proof/execution_connection.rs
+@@ -156,4 +156,19 @@
+     implementation::received_journal_enters_registry(s,k,r.history(),v,output);
+ }
+ 
++// Upper use of the actual finish_received contract: its exact descriptor
++// becomes the response-submission segment without asserting host emission.
++pub proof fn actual_received_response_submission(k: implementation::NodeKey,
++    s: implementation::State, c: e::ReceivedContext, response: implementation::wire::ResponseSend)
++    requires c.valid(), k.node == c.inbound().recipient,
++        response.view().sender == c.inbound().recipient,
++        response.view().recipient == c.inbound().sender,
++        response.view().request == c.request(),
++    ensures implementation::step(s, implementation::Input::ResponseSubmission(k,response.view()),
++        implementation::State { submitted: s.submitted.push(implementation::response_envelope(k,response.view())), ..s },
++        implementation::Output::ResponseSubmission(k,response.view())),
++        implementation::response_envelope(k,response.view()).recipient == c.inbound().sender,
++        implementation::response_envelope(k,response.view()).body == implementation::Message::VoteReply(c.request(),response.view().reply),
++{}
++
+ }
+--- before/madraft/src/raft/execution.rs
++++ after/madraft/src/raft/execution.rs
+@@ -77,6 +77,22 @@
+     pub closed spec fn before(&self) -> p::OperationView { self.before@ }
+ }
+ 
++// Owned by the actual receiver continuation across storage. The transport
++// identity and request cannot be replaced when the reply is released.
++pub struct ReceivedContext {
++    delivered: wire::InboundVote,
++    reply: ReplyContext,
++}
++impl ReceivedContext {
++    pub closed spec fn inbound(&self) -> wire::InboundView { self.delivered.view() }
++    pub closed spec fn request(&self) -> state::VoteRequest { self.reply.request() }
++    pub closed spec fn id(&self) -> u64 { self.reply.id() }
++    pub closed spec fn image(&self) -> p::VoteImage { self.reply.image() }
++    pub closed spec fn valid(&self) -> bool {
++        self.delivered.valid() && self.inbound().request == self.request()
++    }
++}
++
+ pub struct Runtime {
+     core: p::Machine,
+     journal: Ghost<History>,
+@@ -210,7 +226,7 @@
+         ok
+     }
+ 
+-    pub fn begin_received(&mut self, delivered: wire::InboundVote) -> (r: Option<(p::WriteVote, ReplyContext)>)
++    pub fn begin_received(&mut self, delivered: wire::InboundVote) -> (r: Option<(p::WriteVote, ReceivedContext)>)
+         requires old(self).invariant(), delivered.valid(),
+         ensures self.invariant(),
+             self.history().inputs == old(self).history().inputs.push(Input::Received(delivered.view())),
+@@ -218,7 +234,8 @@
+             self.history().origin == old(self).history().origin,
+             self.history().outputs == old(self).history().outputs.push(Output::Submission(
+                 match r { None => None, Some((w, _)) => Some((w.number(), w.contents())) })),
+-            r.is_some() ==> r.unwrap().1.request() == delivered.view().request
++            r.is_some() ==> r.unwrap().1.valid() && r.unwrap().1.inbound() == delivered.view()
++                && r.unwrap().1.request() == delivered.view().request
+                 && r.unwrap().1.id() == r.unwrap().0.number() && r.unwrap().1.image() == r.unwrap().0.contents(),
+     {
+         proof { delivered.evidence(); }
+@@ -231,7 +248,7 @@
+             None => None,
+             Some(op) => {
+                 let ctx = ReplyContext { id: op.sequence(), image: op.image(), request: q, before: Ghost(before) };
+-                Some((op, ctx))
++                Some((op, ReceivedContext { delivered, reply: ctx }))
+             }
+         }
+     }
+@@ -254,6 +271,27 @@
+                     request, before: Ghost(before) };
+                 Some((operation, context))
+             }
++        }
++    }
++
++    pub fn finish_received(&mut self, context: ReceivedContext, written: storage::WrittenVote)
++        -> (r: Option<wire::ResponseSend>)
++        requires old(self).invariant(), context.valid(),
++        ensures self.invariant(),
++            r.is_some() ==> r.unwrap().view().sender == context.inbound().recipient
++                && r.unwrap().view().recipient == context.inbound().sender
++                && r.unwrap().view().request == context.request()
++                && written.id() == context.id() && written.image() == context.image()
++                && p::image(self.view().state) == context.image()
++                && (r.unwrap().view().reply.granted ==> self.view().state.voted_for == Some(context.inbound().sender)
++                    && r.unwrap().view().reply.term == context.request().term),
++    {
++        let delivered = context.delivered;
++        proof { delivered.evidence(); }
++        let q = delivered.request();
++        match self.finish_rpc(context.reply, written) {
++            None => None,
++            Some(reply) => Some(wire::ResponseSend::new(delivered.recipient(), delivered.sender(), q, reply)),
+         }
+     }
+ 
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -306,10 +306,9 @@
+                     let operation = handler.inner.lock().unwrap().machine.begin_received(delivered);
+                     let (operation, context) = match operation { Some(v) => v, None => return };
+                     let written = match handler.persist(operation).await { Ok(v) => v, Err(_) => return };
+-                    let reply = match handler.inner.lock().unwrap().machine.finish_rpc(context, written) {
++                    let sent = match handler.inner.lock().unwrap().machine.finish_received(context, written) {
+                         Some(v) => v, None => return,
+                     };
+-                    let sent = wire::ResponseSend::new(delivered.recipient(), delivered.sender(), delivered.request(), reply);
+                     drop(_gate);
+                     let _result = handler.endpoint.send_to_raw(from, tag,
+                         Box::new((sent.body(), net::rpc::Bytes::new()))).await;

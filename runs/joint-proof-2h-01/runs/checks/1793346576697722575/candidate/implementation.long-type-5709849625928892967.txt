@@ -1,0 +1,1 @@
+durable_vote_reply::storage_correspondence::vote_operation_history::vote_operation::protocol::WriteVote

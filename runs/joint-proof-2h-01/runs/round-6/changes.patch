@@ -1,0 +1,330 @@
+--- before/madraft/proof/execution_connection.rs
++++ after/madraft/proof/execution_connection.rs
+@@ -1,5 +1,5 @@
+ //! Parent theorem over histories maintained by the ACTUAL executable Runtime.
+-//! The Runtime constructors establish invariant, and its two mutators preserve it.
++//! The Runtime constructors establish invariant, and its vote and candidate-entry mutators preserve it.
+ #[path = "implementation.rs"]
+ pub mod implementation;
+ use implementation::{executable as e, protocol as p, state};
+@@ -19,7 +19,8 @@
+ pub proof fn pending_origin(h: e::History, k: int)
+     requires e::valid(h), 0 <= k < h.states.len(), h.states[k].pending.is_some(),
+     ensures exists|j: int| 0 <= j < k
+-        && h.inputs[j] == e::Input::Request(h.states[k].pending.unwrap().2)
++        && (h.inputs[j] == e::Input::Request(h.states[k].pending.unwrap().2)
++            || h.inputs[j] == e::Input::SelfVote(h.states[k].pending.unwrap().2))
+         && h.states[j].state == h.states[k].pending.unwrap().4,
+     decreases k,
+ {
+@@ -28,10 +29,12 @@
+     if h.states[k-1].pending == h.states[k].pending {
+         pending_origin(h, k-1);
+     } else {
+-        assert(h.inputs[k-1] == e::Input::Request(h.states[k].pending.unwrap().2));
++        assert(h.inputs[k-1] == e::Input::Request(h.states[k].pending.unwrap().2)
++            || h.inputs[k-1] == e::Input::SelfVote(h.states[k].pending.unwrap().2));
+         assert(h.states[k-1].state == h.states[k].pending.unwrap().4);
+         assert(exists|j: int| 0 <= j < k
+-            && h.inputs[j] == e::Input::Request(h.states[k].pending.unwrap().2)
++            && (h.inputs[j] == e::Input::Request(h.states[k].pending.unwrap().2)
++            || h.inputs[j] == e::Input::SelfVote(h.states[k].pending.unwrap().2))
+             && h.states[j].state == h.states[k].pending.unwrap().4);
+     }
+ }
+@@ -51,7 +54,8 @@
+         r.history().outputs[k] == e::Output::Reply(Some(reply)),
+     ensures image == p::image(r.history().states[k+1].state),
+         exists|j: int| 0 <= j < k
+-            && r.history().inputs[j] == e::Input::Request(r.history().states[k].pending.unwrap().2),
++            && (r.history().inputs[j] == e::Input::Request(r.history().states[k].pending.unwrap().2)
++                || r.history().inputs[j] == e::Input::SelfVote(r.history().states[k].pending.unwrap().2)),
+         r.history().states[k].pending.is_some(),
+         state::vote_step(r.history().states[k].pending.unwrap().4,
+             r.history().states[k].pending.unwrap().2, r.history().states[k+1].state, reply),
+@@ -64,4 +68,23 @@
+         h.states[k], id, image, h.states[k+1], reply);
+     pending_origin(h, k);
+ }
++
++// Parent use of the actual candidate-entry record. Storage correspondence is
++// still a separate conditional obligation; this theorem makes no disk claim.
++pub proof fn actual_candidate_entry(r: e::Runtime, k: int, term: u64)
++    requires r.invariant(), 0 <= k < r.history().inputs.len(),
++        r.history().inputs[k] == e::Input::Campaign(term),
++        r.history().outputs[k] == e::Output::Campaign(true),
++    ensures r.history().states[k].pending.is_none(),
++        r.history().states[k].state.voted_for == Some(r.history().states[k].state.me),
++        r.history().states[k+1].state.term == term,
++        r.history().states[k+1].state.role == state::Role::Candidate,
++        p::image(r.history().states[k+1].state) == p::image(r.history().states[k].state),
++{
++    implementation::actual_runtime_is_connected(r);
++    let h = r.history();
++    state_at(h, k);
++    assert(e::step(h.states[k], h.inputs[k], h.states[k+1], h.outputs[k]));
+ }
++
++}
+--- before/madraft/src/raft/execution.rs
++++ after/madraft/src/raft/execution.rs
+@@ -5,8 +5,8 @@
+ use vstd::prelude::*;
+ verus! {
+ pub enum Origin { Fresh(usize, usize), Recovered(p::VoteImage) }
+-pub enum Input { Request(state::VoteRequest), Release(u64, p::VoteImage) }
+-pub enum Output { Submission(Option<(u64, p::VoteImage)>), Reply(Option<state::VoteReply>) }
++pub enum Input { Request(state::VoteRequest), SelfVote(state::VoteRequest), Campaign(u64), Release(u64, p::VoteImage) }
++pub enum Output { Submission(Option<(u64, p::VoteImage)>), Campaign(bool), Reply(Option<state::VoteReply>) }
+ pub struct History {
+     pub origin: Origin,
+     pub states: Seq<p::OperationView>,
+@@ -23,6 +23,11 @@
+ pub open spec fn step(s: p::OperationView, i: Input, t: p::OperationView, o: Output) -> bool {
+     match (i, o) {
+         (Input::Request(q), Output::Submission(op)) => p::begin_step(s, q, t, op),
++        (Input::SelfVote(q), Output::Submission(op)) =>
++            q.term == s.state.term + 1 && q.candidate == s.state.me
++            && q.last_index == s.state.last_index && q.last_term == s.state.last_term
++            && p::begin_step(s, q, t, op),
++        (Input::Campaign(term), Output::Campaign(ok)) => p::campaign_step(s, term, t, ok),
+         (Input::Release(id, image), Output::Reply(reply)) => p::complete_step(s, id, image, t, reply),
+         _ => false,
+     }
+@@ -136,6 +141,39 @@
+         self.journal = Ghost(extend(self.journal@, Input::Request(q), self.core.view(), output));
+         op
+     }
++    pub fn begin_election(&mut self) -> (r: Option<(state::VoteRequest, p::WriteVote, ReplyContext)>)
++        requires old(self).invariant(),
++        ensures self.invariant(),
++            r.is_some() ==> r.unwrap().0.candidate == old(self).view().state.me
++                && r.unwrap().0.term == old(self).view().state.term + 1
++                && r.unwrap().2.request() == r.unwrap().0,
++    {
++        let request = match self.core.election_request() { Some(q) => q, None => return None };
++        let ghost before = self.core.view();
++        let op = self.core.begin_vote(request);
++        let ghost output = Output::Submission(match op { None => None,
++            Some(ref w) => Some((w.number(), w.contents())) });
++        self.journal = Ghost(extend(self.journal@, Input::SelfVote(request), self.core.view(), output));
++        match op {
++            None => None,
++            Some(operation) => {
++                let context = ReplyContext { id: operation.sequence(), image: operation.image(),
++                    request, before: Ghost(before) };
++                Some((request, operation, context))
++            }
++        }
++    }
++    pub fn campaign(&mut self, term: u64) -> (r: bool)
++        requires old(self).invariant(),
++        ensures self.invariant(),
++            r ==> self.view().state.term == term && self.view().state.role == state::Role::Candidate
++                && self.view().state.voted_for == Some(self.view().state.me),
++    {
++        let ok = self.core.campaign(term);
++        self.journal = Ghost(extend(self.journal@, Input::Campaign(term), self.core.view(), Output::Campaign(ok)));
++        ok
++    }
++
+     pub fn begin_rpc(&mut self, request: state::VoteRequest)
+         -> (r: Option<(p::WriteVote, ReplyContext)>)
+         requires old(self).invariant(),
+--- before/madraft/src/raft/protocol.rs
++++ after/madraft/src/raft/protocol.rs
+@@ -75,6 +75,12 @@
+         t.state == s.state && t.serial == s.serial && t.pending.is_none()
+         && reply == Some(s.pending.unwrap().3)
+     } else { t == s && reply.is_none() }
++}
++
++pub open spec fn campaign_step(s: OperationView, term: u64, t: OperationView, ok: bool) -> bool {
++    ok == (s.pending.is_none() && s.state.term == term && s.state.voted_for == Some(s.state.me))
++    && t.serial == s.serial && t.pending == s.pending
++    && t.state == state::State { role: if ok { state::Role::Candidate } else { s.state.role }, ..s.state }
+ }
+ 
+ impl WriteVote {
+@@ -154,6 +160,22 @@
+         ensures r == (self.state().role == state::Role::Leader),
+     { self.state.is_leader() }
+ 
++    pub fn election_request(&self) -> (r: Option<state::VoteRequest>)
++        ensures r.is_some() == (self.state().term < u64::MAX),
++            r.is_some() ==> r.unwrap().term == self.view().state.term + 1
++                && r.unwrap().candidate == self.view().state.me
++                && r.unwrap().last_index == self.view().state.last_index
++                && r.unwrap().last_term == self.view().state.last_term,
++    { self.state.election_request() }
++
++    pub fn campaign(&mut self, term: u64) -> (r: bool)
++        requires old(self).invariant(),
++        ensures self.invariant(), campaign_step(old(self).view(), term, self.view(), r),
++    {
++        if self.pending.is_some() { return false; }
++        self.state.campaign(term)
++    }
++
+     pub fn pending_matches(&self, request: state::VoteRequest) -> (r: bool)
+         ensures r == (self.pending_request() == Some(request)),
+             r ==> self.view().pending.is_some() && self.view().pending.unwrap().2 == request,
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -104,6 +104,7 @@
+         // initialize from state persisted before a crash
+         handle.restore().await.expect("failed to restore");
+         handle.start_rpc_server();
++        handle.start_election_timer();
+ 
+         (handle, recver)
+     }
+@@ -214,6 +215,46 @@
+         Ok(())
+     }
+ 
++    fn start_election_timer(&self) {
++        let this = self.clone();
++        task::spawn(async move {
++            loop {
++                sleep(Raft::generate_election_timeout()).await;
++                if let Err(error) = this.send_vote_request().await {
++                    warn!("election initiation stopped: {}", error);
++                    return;
++                }
++            }
++        });
++    }
++
++    async fn send_vote_request(&self) -> Result<()> {
++        let guard = self.storage_gate.lock().await;
++        let (args, operation, context) = match self.inner.lock().unwrap().machine.begin_election() {
++            Some(election) => election,
++            None => return Ok(()),
++        };
++        let written = self.persist(operation).await?;
++        let (net, peers, me) = {
++            let mut raft = self.inner.lock().unwrap();
++            let reply = raft.machine.finish_rpc(context, written);
++            if !matches!(reply, Some(RequestVoteReply { granted: true, .. }))
++                || !raft.machine.campaign(args.term) { return Ok(()); }
++            (raft.endpoint.clone(), raft.peers.clone(), raft.me)
++        };
++        drop(guard);
++        // Each real send uses the exact checked request authorized above.
++        // Replies are currently observed but quorum collection is still OPEN.
++        for (peer_id, peer) in peers.into_iter().enumerate() {
++            if peer_id == me { continue; }
++            let net = net.clone();
++            task::spawn(async move {
++                let _reply = net.call_timeout::<RequestVoteArgs>(peer, args, Duration::from_millis(150)).await;
++            });
++        }
++        Ok(())
++    }
++
+     fn start_rpc_server(&self) {
+         let net = self.endpoint.clone();
+ 
+@@ -269,34 +310,7 @@
+         Duration::from_millis(rand::thread_rng().gen_range(150..300))
+     }
+ 
+-    // Here is an example to send RPC and manage concurrent tasks.
+-    fn send_vote_request(&mut self) {
+-        let args: RequestVoteArgs = todo!("construct RPC request");
+-        let timeout = Self::generate_election_timeout();
+-        let net = self.endpoint.clone();
+-
+-        let mut rpcs = FuturesUnordered::new();
+-        for (i, &peer) in self.peers.iter().enumerate() {
+-            if i == self.me {
+-                continue;
+-            }
+-            // NOTE: `call` function takes ownerships
+-            let net = net.clone();
+-            let args = args.clone();
+-            rpcs.push(async move {
+-                net.call_timeout::<RequestVoteArgs>(peer, args, timeout)
+-                    .await
+-            });
+-        }
+-
+-        // spawn a concurrent task
+-        task::spawn(async move {
+-            // handle RPC tasks in completion order
+-            while let Some(res) = rpcs.next().await {
+-                todo!("handle RPC results");
+-            }
+-        }); // MadSim 0.2 detaches JoinHandle on drop.
+-    }
++
+ }
+ 
+ impl net::rpc::Request for RequestVoteArgs {
+@@ -380,6 +394,32 @@
+         flow.complete(Completion::Synced);
+         assert!(first.finish_rpc(other_context, flow.release().unwrap()).is_none());
+         assert!(first.begin_rpc(q).is_none()); // rejected context did not clear pending vote
++    }
++
++    #[madsim::test]
++    async fn election_sends_persisted_self_vote() {
++        let peers: Vec<SocketAddr> = vec!["127.0.0.1:20801".parse().unwrap(), "127.0.0.1:20802".parse().unwrap()];
++        let receiver = net::Endpoint::bind(peers[1]).await.unwrap();
++        let (observed, mut requests) = mpsc::unbounded();
++        receiver.add_rpc_handler(move |q: RequestVoteArgs| {
++            let observed = observed.clone();
++            async move {
++                // The sender and observing endpoint share this simulator node.
++                // Read durable state at delivery, before replying to the sender.
++                let saved: Persist = bincode::deserialize(&fs::read("state").await.unwrap()).unwrap();
++                observed.unbounded_send((q, saved)).unwrap();
++                RequestVoteReply { term: q.term, granted: true }
++            }
++        });
++        let (raft, _) = RaftHandle::new(peers, 0).await;
++        raft.send_vote_request().await.unwrap();
++        let (q, saved) = timeout(Duration::from_secs(1), requests.next()).await.unwrap().unwrap();
++        assert_eq!(q.candidate, 0);
++        assert_eq!(q.term, 1);
++        assert_eq!((q.last_index, q.last_term), (0, 0));
++        assert!(saved.term >= q.term);
++        assert_eq!(saved.voted_for, Some(0));
++        assert!(!raft.is_leader()); // a received grant is not yet a quorum transition
+     }
+ 
+     // Exercises the actual RPC-facing wrapper, storage and recovery path.
+--- before/madraft/src/raft/state.rs
++++ after/madraft/src/raft/state.rs
+@@ -92,6 +92,30 @@
+         ensures result == (self.role is Leader),
+     { matches!(self.role, Role::Leader) }
+ 
++    pub fn election_request(&self) -> (r: Option<VoteRequest>)
++        ensures r.is_some() == (self.term < u64::MAX),
++            r.is_some() ==> r.unwrap().term == self.term + 1
++                && r.unwrap().candidate == self.me
++                && r.unwrap().last_index == self.last_index && r.unwrap().last_term == self.last_term,
++    {
++        if self.term == u64::MAX { return None; }
++        Some(VoteRequest { term: self.term + 1, candidate: self.me,
++            last_index: self.last_index, last_term: self.last_term })
++    }
++    pub fn campaign(&mut self, term: u64) -> (r: bool)
++        requires well_formed(*old(self)),
++        ensures well_formed(*self),
++            r == (old(self).term == term && old(self).voted_for == Some(old(self).me)),
++            self.term == old(self).term, self.voted_for == old(self).voted_for,
++            self.me == old(self).me, self.members == old(self).members,
++            self.last_index == old(self).last_index, self.last_term == old(self).last_term,
++            self.role == (if r { Role::Candidate } else { old(self).role }),
++    {
++        let valid = self.term == term && self.voted_for == Some(self.me);
++        if valid { self.role = Role::Candidate; }
++        valid
++    }
++
+     pub fn request_vote(&mut self, q: VoteRequest) -> (reply: VoteReply)
+         requires well_formed(*old(self)),
+         ensures well_formed(*self), vote_step(*old(self), q, *self, reply),

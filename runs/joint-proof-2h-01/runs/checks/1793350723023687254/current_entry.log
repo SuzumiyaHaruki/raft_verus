@@ -1,0 +1,21 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350723023687254/candidate/madraft/proof/adapter.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 100 verified, 1 errors
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350723023687254/candidate/madraft/proof/implementation.rs:222:13
+    |
+222 |     ensures runtime_invariant(t,b), step(view(s),i,view(t),o),
+    |             ^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+235 |     assert forall|j: int| 0 <= j < t.received.len() implies exists|n: int| 0 <= n < b.len()
+    |     ------ at the end of the function body
+
+note: recommendation not met: cannot prove that there exists values that satisfy the condition of the choose expression
+   --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350723023687254/candidate/madraft/proof/implementation.rs:238:36
+    |
+238 |             let n = choose|n: int| 0 <= n < a.len() && a[n] == s.received[j];
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

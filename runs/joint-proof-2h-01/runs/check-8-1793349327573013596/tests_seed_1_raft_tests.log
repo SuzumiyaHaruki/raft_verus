@@ -1,0 +1,567 @@
+$ /home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo test --manifest-path madraft/Cargo.toml --locked --offline --release --lib --no-fail-fast raft::tests:: -- --test-threads=1 --skip kvraft:: --skip shardkv::
+
+running 23 tests
+test raft::tests::backup_2b ... FAILED
+test raft::tests::basic_agree_2b ... FAILED
+test raft::tests::concurrent_starts_2b ... FAILED
+test raft::tests::count_2b ... FAILED
+test raft::tests::fail_agree_2b ... FAILED
+test raft::tests::fail_no_agree_2b ... FAILED
+test raft::tests::figure_8_2c ... FAILED
+test raft::tests::figure_8_unreliable_2c ... FAILED
+test raft::tests::initial_election_2a ... ok
+test raft::tests::many_election_2a ... ok
+test raft::tests::persist1_2c ... FAILED
+test raft::tests::persist2_2c ... FAILED
+test raft::tests::persist3_2c ... FAILED
+test raft::tests::reelection_2a ... ok
+test raft::tests::rejoin_2b ... FAILED
+test raft::tests::reliable_churn_2c ... FAILED
+test raft::tests::snapshot_basic_2d ... FAILED
+test raft::tests::snapshot_install_2d ... FAILED
+test raft::tests::snapshot_install_crash_2d ... FAILED
+test raft::tests::snapshot_install_unreliable_2d ... FAILED
+test raft::tests::snapshot_install_unreliable_crash_2d ... FAILED
+test raft::tests::unreliable_agree_2c ... FAILED
+test raft::tests::unreliable_churn_2c ... FAILED
+
+failures:
+
+---- raft::tests::backup_2b stdout ----
+
+thread '<unnamed>' (76135) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+context: node=1 "0.0.1.0:1", task=65 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::basic_agree_2b stdout ----
+
+thread '<unnamed>' (76137) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=1 "0.0.1.0:1", task=131 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::concurrent_starts_2b stdout ----
+
+thread '<unnamed>' (76139) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=2 "0.0.1.1:1", task=165 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::count_2b stdout ----
+
+thread '<unnamed>' (76141) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=3 "0.0.1.2:1", task=223 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::fail_agree_2b stdout ----
+
+thread '<unnamed>' (76143) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=1 "0.0.1.0:1", task=255 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::fail_no_agree_2b stdout ----
+
+thread '<unnamed>' (76145) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=1 "0.0.1.0:1", task=321 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::figure_8_2c stdout ----
+
+thread '<unnamed>' (76147) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=1 "0.0.1.0:1", task=387 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::figure_8_unreliable_2c stdout ----
+
+thread '<unnamed>' (76149) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=5 "0.0.1.4:1", task=466 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::persist1_2c stdout ----
+
+thread '<unnamed>' (76155) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=1 "0.0.1.0:1", task=3179 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::persist2_2c stdout ----
+
+thread '<unnamed>' (76157) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=1 "0.0.1.0:1", task=3245 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::persist3_2c stdout ----
+
+thread '<unnamed>' (76159) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=1 "0.0.1.0:1", task=3277 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::rejoin_2b stdout ----
+
+thread '<unnamed>' (76163) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=1 "0.0.1.0:1", task=3521 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::reliable_churn_2c stdout ----
+
+thread '<unnamed>' (76165) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=1 "0.0.1.0:1", task=3597 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::snapshot_basic_2d stdout ----
+
+thread '<unnamed>' (76167) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=1 "0.0.1.0:1", task=3629 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::snapshot_install_2d stdout ----
+
+thread '<unnamed>' (76169) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=1 "0.0.1.0:1", task=3661 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::snapshot_install_crash_2d stdout ----
+
+thread '<unnamed>' (76171) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=1 "0.0.1.0:1", task=3693 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::snapshot_install_unreliable_2d stdout ----
+
+thread '<unnamed>' (76173) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=1 "0.0.1.0:1", task=3730 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::snapshot_install_unreliable_crash_2d stdout ----
+
+thread '<unnamed>' (76175) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=1 "0.0.1.0:1", task=3767 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::unreliable_agree_2c stdout ----
+
+thread '<unnamed>' (76177) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=1 "0.0.1.0:1", task=4024 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+---- raft::tests::unreliable_churn_2c stdout ----
+
+thread '<unnamed>' (76179) panicked at src/raft/raft.rs:314:9:
+not yet implemented: start agreement
+context: node=1 "0.0.1.0:1", task=4107 (spawned at src/raft/tester.rs:172:14)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+
+
+failures:
+    raft::tests::backup_2b
+    raft::tests::basic_agree_2b
+    raft::tests::concurrent_starts_2b
+    raft::tests::count_2b
+    raft::tests::fail_agree_2b
+    raft::tests::fail_no_agree_2b
+    raft::tests::figure_8_2c
+    raft::tests::figure_8_unreliable_2c
+    raft::tests::persist1_2c
+    raft::tests::persist2_2c
+    raft::tests::persist3_2c
+    raft::tests::rejoin_2b
+    raft::tests::reliable_churn_2c
+    raft::tests::snapshot_basic_2d
+    raft::tests::snapshot_install_2d
+    raft::tests::snapshot_install_crash_2d
+    raft::tests::snapshot_install_unreliable_2d
+    raft::tests::snapshot_install_unreliable_crash_2d
+    raft::tests::unreliable_agree_2c
+    raft::tests::unreliable_churn_2c
+
+test result: FAILED. 3 passed; 20 failed; 0 ignored; 0 measured; 45 filtered out; finished in 0.06s
+
+warning: unused import: `stream::FuturesUnordered`
+ --> src/raft/raft.rs:1:30
+  |
+1 | use futures::{channel::mpsc, stream::FuturesUnordered, StreamExt};
+  |                              ^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused imports: `Deserialize` and `Serialize`
+ --> src/raft/raft.rs:8:13
+  |
+8 | use serde::{Deserialize, Serialize};
+  |             ^^^^^^^^^^^  ^^^^^^^^^
+
+warning: unreachable statement
+  --> src/shardkv/server.rs:20:9
+   |
+19 |         todo!("construct ShardKv");
+   |         -------------------------- any code following this expression is unreachable
+20 |         let inner = Server::new(servers, me, max_raft_state).await;
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unreachable statement
+   |
+   = note: `#[warn(unreachable_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+  --> src/kvraft/tester.rs:95:31
+   |
+95 |             NetSim::current().connect2(node_id(&self.handle, self.addrs[i]), node_id(&self.handle, self.addrs[j]));
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+   --> src/kvraft/tester.rs:103:31
+    |
+103 |             NetSim::current().disconnect2(node_id(&self.handle, self.addrs[i]), node_id(&self.handle, self.addrs[j]));
+    |                               ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead
+   --> src/kvraft/tester.rs:148:27
+    |
+148 |         NetSim::current().connect(node_id(&self.handle, addr));
+    |                           ^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+   --> src/kvraft/tester.rs:150:31
+    |
+150 |             NetSim::current().disconnect2(node_id(&self.handle, addr), node_id(&self.handle, self.addrs[i]));
+    |                               ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+   --> src/kvraft/tester.rs:153:31
+    |
+153 |             NetSim::current().connect2(node_id(&self.handle, addr), node_id(&self.handle, self.addrs[i]));
+    |                               ^^^^^^^^
+
+warning: unreachable expression
+   --> src/raft/raft.rs:321:20
+    |
+320 |             data: todo!("apply msg"),
+    |                   ------------------ any code following this expression is unreachable
+321 |             index: todo!("apply msg"),
+    |                    ^^^^^^^^^^^^^^^^^^ unreachable expression
+    |
+    = note: this warning originates in the macro `$crate::panic::panic_2021` which comes from the expansion of the macro `todo` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect`: use `clog_node` instead
+   --> src/raft/tester.rs:271:27
+    |
+271 |         NetSim::current().disconnect(node_id(&self.handle, self.addrs[i]));
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead
+   --> src/raft/tester.rs:278:27
+    |
+278 |         NetSim::current().connect(node_id(&self.handle, self.addrs[i]));
+    |                           ^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead
+  --> src/test_support.rs:77:23
+   |
+77 |     NetSim::current().disconnect2(server.id(), client.id());
+   |                       ^^^^^^^^^^^
+
+warning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead
+  --> src/test_support.rs:79:23
+   |
+79 |     NetSim::current().connect2(server.id(), client.id());
+   |                       ^^^^^^^^
+
+warning: unused variable: `ret`
+  --> src/kvraft/client.rs:52:17
+   |
+52 |             let ret = net
+   |                 ^^^ help: if this is intentional, prefix it with an underscore: `_ret`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `max_raft_state`
+  --> src/kvraft/server.rs:34:9
+   |
+34 |         max_raft_state: Option<usize>,
+   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`
+
+warning: unused variable: `apply_ch`
+  --> src/kvraft/server.rs:37:18
+   |
+37 |         let (rf, apply_ch) = raft::RaftHandle::new(servers, me).await;
+   |                  ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_apply_ch`
+
+warning: unused variable: `cmd`
+  --> src/kvraft/server.rs:68:27
+   |
+68 |     async fn apply(&self, cmd: S::Command) -> Result<S::Output, Error> {
+   |                           ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`
+
+warning: unused variable: `cmd`
+  --> src/kvraft/server.rs:84:25
+   |
+84 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {
+   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`
+
+warning: unused variable: `last_included_term`
+   --> src/raft/raft.rs:145:9
+    |
+145 |         last_included_term: u64,
+    |         ^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_term`
+
+warning: unused variable: `last_included_index`
+   --> src/raft/raft.rs:146:9
+    |
+146 |         last_included_index: u64,
+    |         ^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_index`
+
+warning: unused variable: `snapshot`
+   --> src/raft/raft.rs:147:9
+    |
+147 |         snapshot: &[u8],
+    |         ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`
+
+warning: unused variable: `index`
+   --> src/raft/raft.rs:156:34
+    |
+156 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {
+    |                                  ^^^^^ help: if this is intentional, prefix it with an underscore: `_index`
+
+warning: unused variable: `snapshot`
+   --> src/raft/raft.rs:156:46
+    |
+156 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {
+    |                                              ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`
+
+warning: unused variable: `data`
+   --> src/raft/raft.rs:309:25
+    |
+309 |     fn start(&mut self, data: &[u8]) -> Result<Start> {
+    |                         ^^^^ help: if this is intentional, prefix it with an underscore: `_data`
+
+warning: unused variable: `msg`
+   --> src/raft/raft.rs:319:13
+    |
+319 |         let msg = ApplyMsg::Command {
+    |             ^^^ help: if this is intentional, prefix it with an underscore: `_msg`
+
+warning: unused variable: `cmd`
+  --> src/shard_ctrler/server.rs:16:25
+   |
+16 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {
+   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`
+
+warning: unused variable: `key`
+  --> src/shardkv/client.rs:15:29
+   |
+15 |     pub async fn get(&self, key: String) -> String {
+   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`
+
+warning: unused variable: `key`
+  --> src/shardkv/client.rs:19:29
+   |
+19 |     pub async fn put(&self, key: String, value: String) {
+   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`
+
+warning: unused variable: `value`
+  --> src/shardkv/client.rs:19:42
+   |
+19 |     pub async fn put(&self, key: String, value: String) {
+   |                                          ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`
+
+warning: unused variable: `key`
+  --> src/shardkv/client.rs:23:32
+   |
+23 |     pub async fn append(&self, key: String, value: String) {
+   |                                ^^^ help: if this is intentional, prefix it with an underscore: `_key`
+
+warning: unused variable: `value`
+  --> src/shardkv/client.rs:23:45
+   |
+23 |     pub async fn append(&self, key: String, value: String) {
+   |                                             ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`
+
+warning: unused variable: `ctrl_ck`
+  --> src/shardkv/server.rs:13:9
+   |
+13 |         ctrl_ck: CtrlerClerk,
+   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_ctrl_ck`
+
+warning: unused variable: `servers`
+  --> src/shardkv/server.rs:14:9
+   |
+14 |         servers: Vec<SocketAddr>,
+   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_servers`
+
+warning: unused variable: `gid`
+  --> src/shardkv/server.rs:15:9
+   |
+15 |         gid: u64,
+   |         ^^^ help: if this is intentional, prefix it with an underscore: `_gid`
+
+warning: unused variable: `me`
+  --> src/shardkv/server.rs:16:9
+   |
+16 |         me: usize,
+   |         ^^ help: if this is intentional, prefix it with an underscore: `_me`
+
+warning: unused variable: `max_raft_state`
+  --> src/shardkv/server.rs:17:9
+   |
+17 |         max_raft_state: Option<usize>,
+   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`
+
+warning: unused variable: `cmd`
+  --> src/shardkv/server.rs:34:25
+   |
+34 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {
+   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`
+
+warning: field `apply_ch` is never read
+  --> src/raft/raft.rs:63:5
+   |
+59 | struct Raft {
+   |        ---- field in this struct
+...
+63 |     apply_ch: MsgSender,
+   |     ^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `apply` is never used
+   --> src/raft/raft.rs:318:8
+    |
+308 | impl Raft {
+    | --------- method in this implementation
+...
+318 |     fn apply(&self) {
+    |        ^^^^^
+
+warning: field `before` is never read
+  --> src/raft/protocol.rs:27:5
+   |
+22 | struct PendingVote {
+   |        ----------- field in this struct
+...
+27 |     before: Ghost<State>,
+   |     ^^^^^^
+   |
+   = note: `PendingVote` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+warning: fields `state`, `serial`, and `pending` are never read
+  --> src/raft/protocol.rs:42:9
+   |
+41 | pub struct OperationView {
+   |            ------------- fields in this struct
+42 |     pub state: State,
+   |         ^^^^^
+43 |     pub serial: u64,
+   |         ^^^^^^
+44 |     pub pending: Option<(u64, VoteImage, VoteRequest, VoteReply, State)>,
+   |         ^^^^^^^
+
+warning: fields `id`, `previous`, `peer`, and `reply` are never read
+  --> src/raft/protocol.rs:98:27
+   |
+98 | pub struct TermView { pub id: u64, pub previous: VoteImage, pub peer: usize, pub reply: VoteReply }
+   |            --------       ^^           ^^^^^^^^                 ^^^^             ^^^^^
+   |            |
+   |            fields in this struct
+
+warning: variants `Fresh` and `Recovered` are never constructed
+ --> src/raft/execution.rs:7:19
+  |
+7 | pub enum Origin { Fresh(usize, usize), Recovered(p::VoteImage) }
+  |          ------   ^^^^^                ^^^^^^^^^
+  |          |
+  |          variants in this enum
+
+warning: multiple variants are never constructed
+ --> src/raft/execution.rs:8:18
+  |
+8 | ...um Input { Request(state::VoteRequest), SelfVote(state::VoteRequest), Campaign(u64), Elect(election::TallyView), HigherReply(usize, state::VoteReply), TermComplete(p::TermView, u64, p::VoteImage), Release(u6...
+  |       -----   ^^^^^^^                      ^^^^^^^^                      ^^^^^^^^       ^^^^^                       ^^^^^^^^^^^                           ^^^^^^^^^^^^                                  ^^^^^^^
+  |       |
+  |       variants in this enum
+
+warning: variants `Submission`, `Campaign`, `Elected`, `TermOp`, `TermApplied`, and `Reply` are never constructed
+ --> src/raft/execution.rs:9:19
+  |
+9 | ...um Output { Submission(Option<(u64, p::VoteImage)>), Campaign(bool), Elected(bool), TermOp(Option<p::TermView>), TermApplied(bool), Reply(Op...
+  |       ------   ^^^^^^^^^^                               ^^^^^^^^        ^^^^^^^        ^^^^^^                       ^^^^^^^^^^^        ^^^^^
+  |       |
+  |       variants in this enum
+
+warning: fields `origin`, `states`, `inputs`, and `outputs` are never read
+  --> src/raft/execution.rs:11:9
+   |
+10 | pub struct History {
+   |            ------- fields in this struct
+11 |     pub origin: Origin,
+   |         ^^^^^^
+12 |     pub states: Seq<p::OperationView>,
+   |         ^^^^^^
+13 |     pub inputs: Seq<Input>,
+   |         ^^^^^^
+14 |     pub outputs: Seq<Output>,
+   |         ^^^^^^^
+
+warning: field `before` is never read
+  --> src/raft/execution.rs:67:5
+   |
+63 | pub struct ReplyContext {
+   |            ------------ field in this struct
+...
+67 |     before: Ghost<p::OperationView>,
+   |     ^^^^^^
+
+warning: fields `request`, `members`, `voters`, and `replies` are never read
+  --> src/raft/election.rs:14:9
+   |
+13 | pub struct TallyView {
+   |            --------- fields in this struct
+14 |     pub request: VoteRequest,
+   |         ^^^^^^^
+15 |     pub members: usize,
+   |         ^^^^^^^
+16 |     pub voters: Seq<usize>,
+   |         ^^^^^^
+17 |     pub replies: Seq<(usize, Option<VoteReply>)>,
+   |         ^^^^^^^
+
+warning: field `ctrl_ck` is never read
+ --> src/shardkv/client.rs:5:5
+  |
+4 | pub struct Clerk {
+  |            ----- field in this struct
+5 |     ctrl_ck: CtrlerClerk,
+  |     ^^^^^^^
+
+warning: field `inner` is never read
+ --> src/shardkv/server.rs:8:5
+  |
+7 | pub struct ShardKvServer {
+  |            ------------- field in this struct
+8 |     inner: Arc<Server<ShardKv>>,
+  |     ^^^^^
+
+warning: `madraft` (lib test) generated 50 warnings (run `cargo fix --lib -p madraft --tests` to apply 26 suggestions)
+    Finished `release` profile [optimized] target(s) in 0.08s
+     Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target/release/deps/madraft-9d1fbd9857b1c1bd)
+error: test failed, to rerun pass `--lib`
+error: 1 target failed:
+    `--lib`
+
+process=COMPLETED exit=101

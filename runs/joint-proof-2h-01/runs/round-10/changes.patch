@@ -1,0 +1,272 @@
+--- before/madraft/proof/execution_connection.rs
++++ after/madraft/proof/execution_connection.rs
+@@ -21,8 +21,7 @@
+ pub proof fn pending_origin(h: e::History, k: int)
+     requires e::valid(h), 0 <= k < h.states.len(), h.states[k].pending.is_some(),
+     ensures exists|j: int| 0 <= j < k
+-        && (h.inputs[j] == e::Input::Request(h.states[k].pending.unwrap().2)
+-            || h.inputs[j] == e::Input::SelfVote(h.states[k].pending.unwrap().2))
++        && e::request_input(h.inputs[j], h.states[k].pending.unwrap().2)
+         && h.states[j].state == h.states[k].pending.unwrap().4,
+     decreases k,
+ {
+@@ -31,12 +30,10 @@
+     if h.states[k-1].pending == h.states[k].pending {
+         pending_origin(h, k-1);
+     } else {
+-        assert(h.inputs[k-1] == e::Input::Request(h.states[k].pending.unwrap().2)
+-            || h.inputs[k-1] == e::Input::SelfVote(h.states[k].pending.unwrap().2));
++        assert(e::request_input(h.inputs[k-1], h.states[k].pending.unwrap().2));
+         assert(h.states[k-1].state == h.states[k].pending.unwrap().4);
+         assert(exists|j: int| 0 <= j < k
+-            && (h.inputs[j] == e::Input::Request(h.states[k].pending.unwrap().2)
+-            || h.inputs[j] == e::Input::SelfVote(h.states[k].pending.unwrap().2))
++            && e::request_input(h.inputs[j], h.states[k].pending.unwrap().2)
+             && h.states[j].state == h.states[k].pending.unwrap().4);
+     }
+ }
+@@ -56,8 +53,7 @@
+         r.history().outputs[k] == e::Output::Reply(Some(reply)),
+     ensures image == p::image(r.history().states[k+1].state),
+         exists|j: int| 0 <= j < k
+-            && (r.history().inputs[j] == e::Input::Request(r.history().states[k].pending.unwrap().2)
+-                || r.history().inputs[j] == e::Input::SelfVote(r.history().states[k].pending.unwrap().2)),
++            && e::request_input(r.history().inputs[j], r.history().states[k].pending.unwrap().2),
+         r.history().states[k].pending.is_some(),
+         state::vote_step(r.history().states[k].pending.unwrap().4,
+             r.history().states[k].pending.unwrap().2, r.history().states[k+1].state, reply),
+--- before/madraft/proof/implementation.rs
++++ after/madraft/proof/implementation.rs
+@@ -114,10 +114,18 @@
+ pub open spec fn emit(o: Output) -> Seq<segment_support::Envelope<Message>> {
+     match o { Output::Emitted(message) => seq![message], _ => Seq::empty() }
+ }
++pub open spec fn delivered_request(s: State, k: NodeKey, v: wire::InboundView) -> bool {
++    v.recipient == k.node && exists|j: int| 0 <= j < s.received.len()
++        && s.received[j].group == k.group && s.received[j].sender == v.sender
++        && s.received[j].recipient == v.recipient && s.received[j].body == Message::VoteRequest(v.request)
++}
++pub open spec fn input_authorized(s: State, k: NodeKey, i: executable::Input) -> bool {
++    match i { executable::Input::Received(v) => delivered_request(s,k,v), _ => true }
++}
+ pub open spec fn step(s: State, i: Input, t: State, o: Output) -> bool {
+     match (i,o) {
+         (Input::Local(k, call), Output::Local(j, result)) => k == j && s.nodes.contains_key(k)
+-            && t.nodes.contains_key(k) && executable::step(s.nodes[k], call, t.nodes[k], result)
++            && t.nodes.contains_key(k) && input_authorized(s,k,call) && executable::step(s.nodes[k], call, t.nodes[k], result)
+             && t == State { nodes: s.nodes.insert(k, t.nodes[k]), ..s },
+         (Input::RequestSubmission(k, q), Output::RequestSubmission(j, out)) =>
+             j == k && out == q && k.node == q.sender
+@@ -154,4 +162,43 @@
+         !s.emitted.contains(slot), t.emitted.contains(slot),
+         emit(Output::Emitted(message)) == seq![message],
+ {}
+-}
++// This partial executable registry relation retains real per-node journal
++// extensions. Crash/restart and host-effect adequacy are still unfinished.
++pub open spec fn runtime_step(s: RuntimeState, i: Input, t: RuntimeState, o: Output) -> bool {
++    match (i,o) {
++        (Input::Local(k, call), Output::Local(j, result)) => k == j && s.nodes.contains_key(k) && t.nodes.contains_key(k)
++            && input_authorized(view(s),k,call)
++            && t.nodes[k].origin == s.nodes[k].origin
++            && t.nodes[k].inputs == s.nodes[k].inputs.push(call)
++            && t.nodes[k].outputs == s.nodes[k].outputs.push(result)
++            && t.nodes[k].states == s.nodes[k].states.push(t.nodes[k].states.last())
++            && executable::step(s.nodes[k].states.last(), call, t.nodes[k].states.last(), result)
++            && t == RuntimeState { nodes: s.nodes.insert(k,t.nodes[k]), ..s },
++        (Input::RequestSubmission(k,q), Output::RequestSubmission(j,out)) => k == j && q == out && k.node == q.sender
++            && t == RuntimeState { submitted: s.submitted.push(request_envelope(k,q)), ..s },
++        (Input::ResponseSubmission(k,q), Output::ResponseSubmission(j,out)) => k == j && q == out && k.node == q.sender
++            && t == RuntimeState { submitted: s.submitted.push(response_envelope(k,q)), ..s },
++        (Input::HostEmission(k,slot), Output::Emitted(message)) => slot < s.submitted.len() && !s.emitted.contains(slot)
++            && message == s.submitted[slot as int] && message.sender == k.node && message.group == k.group
++            && t == RuntimeState { emitted: s.emitted.insert(slot), ..s },
++        (Input::Delivery(k,d), Output::Delivered(j)) => j == k && d.message.group == k.group && d.message.recipient == k.node
++            && t == RuntimeState { received: s.received.push(d.message), ..s },
++        _ => false,
++    }
++}
++pub proof fn received_journal_enters_registry(s: RuntimeState, k: NodeKey, h: executable::History,
++    v: wire::InboundView, output: executable::Output)
++    requires s.nodes.contains_key(k), executable::valid(h), delivered_request(view(s),k,v),
++        h.origin == s.nodes[k].origin,
++        h.inputs == s.nodes[k].inputs.push(executable::Input::Received(v)),
++        h.outputs == s.nodes[k].outputs.push(output),
++        h.states == s.nodes[k].states.push(h.states.last()),
++    ensures runtime_step(s, Input::Local(k, executable::Input::Received(v)),
++        RuntimeState { nodes: s.nodes.insert(k,h), ..s }, Output::Local(k,output)),
++{
++    let i = h.inputs.len() as int - 1;
++    assert(executable::step(h.states[i], h.inputs[i], h.states[i+1], h.outputs[i]));
++    assert(h.states[i] == s.nodes[k].states.last());
++}
++
++}
+--- before/madraft/src/raft/execution.rs
++++ after/madraft/src/raft/execution.rs
+@@ -1,11 +1,11 @@
+ //! Per-incarnation execution journal of the real vote runtime.
+ //! Ghost history is updated by actual constructors and handlers; it is not a
+ //! replacement for cluster provenance or durable cross-crash history.
+-use super::{protocol as p, state, storage, election};
++use super::{protocol as p, state, storage, election, wire};
+ use vstd::prelude::*;
+ verus! {
+ pub enum Origin { Fresh(usize, usize), Recovered(p::VoteImage) }
+-pub enum Input { Request(state::VoteRequest), SelfVote(state::VoteRequest), Campaign(u64), Elect(election::TallyView), HigherReply(usize, state::VoteReply), TermComplete(p::TermView, u64, p::VoteImage), Release(u64, p::VoteImage) }
++pub enum Input { Received(wire::InboundView), Request(state::VoteRequest), SelfVote(state::VoteRequest), Campaign(u64), Elect(election::TallyView), HigherReply(usize, state::VoteReply), TermComplete(p::TermView, u64, p::VoteImage), Release(u64, p::VoteImage) }
+ pub enum Output { Submission(Option<(u64, p::VoteImage)>), Campaign(bool), Elected(bool), TermOp(Option<p::TermView>), TermApplied(bool), Reply(Option<state::VoteReply>) }
+ pub struct History {
+     pub origin: Origin,
+@@ -22,6 +22,7 @@
+ }
+ pub open spec fn step(s: p::OperationView, i: Input, t: p::OperationView, o: Output) -> bool {
+     match (i, o) {
++        (Input::Received(v), Output::Submission(op)) => wire::inbound_valid(v) && p::begin_step(s, v.request, t, op),
+         (Input::Request(q), Output::Submission(op)) => p::begin_step(s, q, t, op),
+         (Input::SelfVote(q), Output::Submission(op)) =>
+             q.term == s.state.term + 1 && q.candidate == s.state.me
+@@ -34,6 +35,9 @@
+         (Input::Release(id, image), Output::Reply(reply)) => p::complete_step(s, id, image, t, reply),
+         _ => false,
+     }
++}
++pub open spec fn request_input(i: Input, q: state::VoteRequest) -> bool {
++    match i { Input::Request(x) | Input::SelfVote(x) => x == q, Input::Received(v) => v.request == q, _ => false }
+ }
+ pub open spec fn valid(h: History) -> bool {
+     h.states.len() == h.inputs.len() + 1 && h.outputs.len() == h.inputs.len()
+@@ -206,6 +210,32 @@
+         ok
+     }
+ 
++    pub fn begin_received(&mut self, delivered: wire::InboundVote) -> (r: Option<(p::WriteVote, ReplyContext)>)
++        requires old(self).invariant(), delivered.valid(),
++        ensures self.invariant(),
++            self.history().inputs == old(self).history().inputs.push(Input::Received(delivered.view())),
++            self.history().states == old(self).history().states.push(self.view()),
++            self.history().origin == old(self).history().origin,
++            self.history().outputs == old(self).history().outputs.push(Output::Submission(
++                match r { None => None, Some((w, _)) => Some((w.number(), w.contents())) })),
++            r.is_some() ==> r.unwrap().1.request() == delivered.view().request
++                && r.unwrap().1.id() == r.unwrap().0.number() && r.unwrap().1.image() == r.unwrap().0.contents(),
++    {
++        proof { delivered.evidence(); }
++        let q = delivered.request();
++        let ghost before = self.core.view();
++        let op = self.core.begin_vote(q);
++        let ghost output = Output::Submission(match op { None => None, Some(ref w) => Some((w.number(), w.contents())) });
++        self.journal = Ghost(extend(self.journal@, Input::Received(delivered.view()), self.core.view(), output));
++        match op {
++            None => None,
++            Some(op) => {
++                let ctx = ReplyContext { id: op.sequence(), image: op.image(), request: q, before: Ghost(before) };
++                Some((op, ctx))
++            }
++        }
++    }
++
+     pub fn begin_rpc(&mut self, request: state::VoteRequest)
+         -> (r: Option<(p::WriteVote, ReplyContext)>)
+         requires old(self).invariant(),
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -283,18 +283,39 @@
+     }
+ 
+     fn start_rpc_server(&self) {
+-        let net = self.endpoint.clone();
+-
++        // Same raw envelope as the pinned Endpoint::add_rpc_handler, with the
++        // transport source retained rather than hidden from the Raft handler.
+         let this = self.clone();
+-        net.add_rpc_handler(move |args: RequestVoteArgs| {
+-            let this = this.clone();
+-            async move {
+-                let reply = this.request_vote(args).await.unwrap();
+-                let sender = this.inner.lock().unwrap().me;
+-                wire::ResponseSend::new(sender, args, reply).body()
++        task::spawn(async move {
++            loop {
++                let (payload, from) = match this.endpoint.recv_from_raw(<RequestVoteArgs as net::rpc::Request>::ID).await {
++                    Ok(v) => v, Err(_) => return,
++                };
++                let (tag, request, _data) = match payload.downcast::<(u64, RequestVoteArgs, net::rpc::Bytes)>() {
++                    Ok(v) => *v, Err(_) => continue,
++                };
++                let delivered = {
++                    let raft = this.inner.lock().unwrap();
++                    raft.peers.iter().position(|p| *p == from)
++                        .and_then(|sender| wire::InboundVote::new(sender, raft.me, raft.peers.len(), request))
++                };
++                let delivered = match delivered { Some(v) => v, None => continue };
++                let handler = this.clone();
++                task::spawn(async move {
++                    let _gate = handler.storage_gate.lock().await;
++                    let operation = handler.inner.lock().unwrap().machine.begin_received(delivered);
++                    let (operation, context) = match operation { Some(v) => v, None => return };
++                    let written = match handler.persist(operation).await { Ok(v) => v, Err(_) => return };
++                    let reply = match handler.inner.lock().unwrap().machine.finish_rpc(context, written) {
++                        Some(v) => v, None => return,
++                    };
++                    let sent = wire::ResponseSend::new(delivered.recipient(), delivered.sender(), delivered.request(), reply);
++                    drop(_gate);
++                    let _result = handler.endpoint.send_to_raw(from, tag,
++                        Box::new((sent.body(), net::rpc::Bytes::new()))).await;
++                });
+             }
+         });
+-        // add more RPC handers here
+     }
+ 
+     async fn request_vote(&self, args: RequestVoteArgs) -> Result<RequestVoteReply> {
+@@ -369,7 +390,7 @@
+         let sent = wire::RequestSend::from_call(&call);
+         assert_eq!(sent.destination(), 1);
+         assert_eq!(sent.args().last_term, 9); // malformed payload is not silently repaired
+-        let response = wire::ResponseSend::new(1, q, RequestVoteReply { term: 0, granted: true });
++        let response = wire::ResponseSend::new(1, 0, q, RequestVoteReply { term: 0, granted: true });
+         assert_eq!(response.body().term, 0);
+         assert!(response.body().granted); // an erroneous output remains observable
+     }
+--- before/madraft/src/raft/wire.rs
++++ after/madraft/src/raft/wire.rs
+@@ -24,10 +24,35 @@
+     pub closed spec fn view(&self) -> ResponseView {
+         ResponseView { sender: self.sender, recipient: self.recipient, request: self.request, reply: self.reply }
+     }
+-    pub fn new(sender: usize, request: VoteRequest, reply: VoteReply) -> (r: Self)
+-        ensures r.view().sender == sender, r.view().recipient == request.candidate,
++    pub fn new(sender: usize, recipient: usize, request: VoteRequest, reply: VoteReply) -> (r: Self)
++        ensures r.view().sender == sender, r.view().recipient == recipient,
+             r.view().request == request, r.view().reply == reply,
+-    { Self { sender, recipient: request.candidate, request, reply } }
++    { Self { sender, recipient, request, reply } }
+     pub fn body(&self) -> (r: VoteReply) ensures r == self.view().reply, { self.reply }
+ }
++#[derive(Clone, Copy)]
++pub struct InboundVote { sender: usize, recipient: usize, members: usize, request: VoteRequest }
++pub struct InboundView { pub sender: usize, pub recipient: usize, pub members: usize, pub request: VoteRequest }
++pub open spec fn inbound_valid(v: InboundView) -> bool {
++    v.sender < v.members && v.recipient < v.members && v.request.candidate == v.sender
+ }
++impl InboundVote {
++    pub closed spec fn view(&self) -> InboundView {
++        InboundView { sender: self.sender, recipient: self.recipient, members: self.members, request: self.request }
++    }
++    pub fn new(sender: usize, recipient: usize, members: usize, request: VoteRequest) -> (r: Option<Self>)
++        ensures r.is_some() == (sender < members && recipient < members && request.candidate == sender),
++            r.is_some() ==> r.unwrap().valid() && inbound_valid(r.unwrap().view())
++                && r.unwrap().view() == (InboundView { sender, recipient, members, request }),
++    {
++        if sender >= members || recipient >= members || request.candidate != sender { return None; }
++        Some(Self { sender, recipient, members, request })
++    }
++    pub proof fn evidence(&self) requires self.valid(), ensures inbound_valid(self.view()), {}
++    pub closed spec fn valid(&self) -> bool { inbound_valid(self.view()) }
++    pub fn request(&self) -> (q: VoteRequest) ensures q == self.view().request, { self.request }
++    pub fn sender(&self) -> (p: usize) ensures p == self.view().sender, { self.sender }
++    pub fn recipient(&self) -> (p: usize) ensures p == self.view().recipient, { self.recipient }
++}
++
++}

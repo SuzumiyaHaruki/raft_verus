@@ -1,0 +1,275 @@
+{
+  "status": "INCOMPLETE",
+  "mode": "proof",
+  "input_version": "madraft-joint-proof-5",
+  "candidate_revision": "standalone-1793348523324547267",
+  "workspace": "/home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01",
+  "checker_authority": "/home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01",
+  "snapshot": "/home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793348523324547267/candidate",
+  "source_files": [
+    "Cargo.lock",
+    "Cargo.toml",
+    "LICENSE",
+    "README.md",
+    "proof/README.md",
+    "proof/durable_vote_reply.rs",
+    "proof/execution_connection.rs",
+    "proof/implementation.rs",
+    "proof/initialization.rs",
+    "proof/progress.rs",
+    "proof/recovery.rs",
+    "proof/storage_correspondence.rs",
+    "proof/vote_correspondence.rs",
+    "proof/vote_history.rs",
+    "proof/vote_operation.rs",
+    "proof/vote_operation_history.rs",
+    "src/kvraft/client.rs",
+    "src/kvraft/mod.rs",
+    "src/kvraft/msg.rs",
+    "src/kvraft/server.rs",
+    "src/kvraft/tester.rs",
+    "src/kvraft/tests.rs",
+    "src/lib.rs",
+    "src/raft/election.rs",
+    "src/raft/execution.rs",
+    "src/raft/mod.rs",
+    "src/raft/protocol.rs",
+    "src/raft/raft.rs",
+    "src/raft/state.rs",
+    "src/raft/storage.rs",
+    "src/raft/tester.rs",
+    "src/raft/tests.rs",
+    "src/shard_ctrler/client.rs",
+    "src/shard_ctrler/mod.rs",
+    "src/shard_ctrler/msg.rs",
+    "src/shard_ctrler/server.rs",
+    "src/shard_ctrler/tester.rs",
+    "src/shard_ctrler/tests.rs",
+    "src/shardkv/client.rs",
+    "src/shardkv/mod.rs",
+    "src/shardkv/msg.rs",
+    "src/shardkv/server.rs",
+    "src/shardkv/tester.rs",
+    "src/shardkv/tests.rs",
+    "src/test_support.rs"
+  ],
+  "checks": {
+    "proof": {
+      "status": "OPEN",
+      "reason": "verification_failure",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "standalone-1793348523324547267",
+      "input_fingerprint": "d9d228ea4595ccfe31c215a180e42cff47bf32dd6dc11b9c5fd06c663b723eac",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793348523324547267/candidate/madraft/proof/implementation.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793348523324547267/proof.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 2.225198439999076,
+      "seed": null,
+      "diagnostic": "error: assertion failed\n   --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793348523324547267/candidate/madraft/proof/../src/raft/election.rs:107:73\n    |\n107 |           assert forall|i: int| 0 <= i < self.view().voters.len() implies #[trigger] self.view().voters[i] < self.view().members\n    |  _________________________________________________________________________^\n108 | |             && exists|j: int| 0 <= j < self.view().replies.len() && self.view().replies[j].0 == self.view().voters[i]\n109 | |                 && granted(self.view(), self.view().voters[i], self.view().replies[j].1) by {\n    | |________________________________________________________________________________________^ assertion failed\n\nerror: aborting due to 1 previous error\n\nverification results:: 72 verified, 1 errors\n",
+      "errors": [
+        {
+          "file": "madraft/proof/../src/raft/election.rs",
+          "function": "record",
+          "line": 107,
+          "column": 73,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        }
+      ],
+      "category": "proof_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    }
+  },
+  "required": [
+    "proof"
+  ],
+  "input_fingerprint": "d9d228ea4595ccfe31c215a180e42cff47bf32dd6dc11b9c5fd06c663b723eac",
+  "evidence_mismatches": [],
+  "result_reuse": "No historical PASS reuse; identical units in this invocation share one actual result/log.",
+  "current_obligation": {},
+  "assessments": {
+    "election_safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "leader_append_only": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "log_matching": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "leader_completeness": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "state_machine_safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "execution_link": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "snapshot_observation": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "nonempty_execution": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    }
+  },
+  "functional_plan": [],
+  "placeholders": [
+    "madraft/src/kvraft/client.rs::call",
+    "madraft/src/kvraft/server.rs::apply",
+    "madraft/src/raft/raft.rs::apply",
+    "madraft/src/raft/raft.rs::cond_install_snapshot",
+    "madraft/src/raft/raft.rs::snapshot",
+    "madraft/src/raft/raft.rs::start",
+    "madraft/src/shard_ctrler/server.rs::apply",
+    "madraft/src/shardkv/client.rs::append",
+    "madraft/src/shardkv/client.rs::get",
+    "madraft/src/shardkv/client.rs::put",
+    "madraft/src/shardkv/server.rs::apply",
+    "madraft/src/shardkv/server.rs::new"
+  ],
+  "semantic_review": "NOT_PERFORMED",
+  "implementation_acceptance": "NOT_ESTABLISHED",
+  "elapsed_seconds": 2.282769374000054,
+  "diagnostics": [
+    {
+      "file": "madraft/proof/../src/raft/election.rs",
+      "function": "record",
+      "line": 107,
+      "column": 73,
+      "message": "assertion failed",
+      "category": "dependency_failure",
+      "affected": [
+        "proof"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793348523324547267/proof.log"
+      ]
+    }
+  ],
+  "changed_standards": [],
+  "concurrent_changes": [],
+  "liveness": "OPEN \u2014 not accepted by safety checks",
+  "semantic_boundary": "Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.",
+  "task_completion": "OPEN"
+}

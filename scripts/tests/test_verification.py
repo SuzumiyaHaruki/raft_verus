@@ -2,14 +2,15 @@
 from pathlib import Path
 import shlex
 import sys
+import tempfile
 import time
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import check
 from process import run_process
-from tools import ROOT, environment
-from inputs import save_json
+from tools import ROOT, environment, settings
+from inputs import save_json, input_files, copy_files
 
 
 class RealVerusTests(unittest.TestCase):
@@ -17,10 +18,10 @@ class RealVerusTests(unittest.TestCase):
     def setUpClass(cls):
         cls.cfg, cls.env = environment()
         if not Path(cls.cfg['verus']).is_file() or not (Path(cls.cfg['rust_bin'])/'rustc').is_file():
-            path = ROOT / 'runs/maintenance-v4/real-tools-BLOCKED.json'
+            path = ROOT / 'runs/maintenance-p012/real-tools-BLOCKED.json'
             save_json(path, dict(status='BLOCKED', reason='Actual Rust/Verus unavailable; real checks NOT RUN'))
             raise unittest.SkipTest('BLOCKED: actual Rust/Verus unavailable; real checks NOT RUN')
-        cls.logs = ROOT / 'runs/maintenance-v4' / ('real-tools-' + str(time.time_ns()))
+        cls.logs = ROOT / 'runs/maintenance-p012' / ('real-tools-' + str(time.time_ns()))
         cls.logs.mkdir(parents=True)
 
     def execute(self, name, argv, directory):
@@ -181,6 +182,62 @@ pub proof fn prove_observation_and_snapshots(h: Execution)
         self.assertNotIn('error[E', result.stderr)
         repaired = self.verus('recovery-caller-accepted', source)
         self.assertEqual(check.classify(repaired, True), ('PASS', 'checked'), repaired.stderr)
+
+    def test_local_modification_requires_actual_request_context(self):
+        source = self.example_source()
+        wrong = source.replace('None => (s, None), // no request authorizes no internal modification',
+                               'None => (1, None), // deliberately unauthorized mutation')
+        self.assertNotEqual(source, wrong)
+        rejected = self.verus('requestless-local-mutation-rejected', wrong)
+        self.assertEqual(check.classify(rejected, True)[1], 'verification_failure')
+        self.assertIn('postcondition not satisfied', rejected.stderr)
+        self.assertNotIn('error[E', rejected.stderr)
+        accepted = self.verus('real-request-context-accepted', source)
+        self.assertEqual(check.classify(accepted, True), ('PASS', 'checked'), accepted.stderr)
+
+    def test_selected_real_unit_preserves_partial_evidence_and_rejects_defect(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace=Path(directory)/'workspace'
+            copy_files(ROOT, workspace, input_files(ROOT))
+            cfg = settings(ROOT)
+            for key in ('verus', 'rust_bin', 'rustup_home', 'cargo_home'):
+                cfg['tools'][key] = self.cfg[key]
+            with (workspace/'tools.ini').open('w') as file: cfg.write(file)
+            source=workspace/'madraft/src/counter_toy.rs'
+            correct='''use vstd::prelude::*;
+verus! { pub fn actual(n:u64)->(r:u64) requires n<100, ensures r==n+1, { n+1 } }
+'''
+            (workspace/'madraft/src/outer_toy.rs').write_text('pub async fn caller() {}')
+            (workspace/'madraft/proof/selected.rs').write_text('#[path="../src/counter_toy.rs"] mod counter;')
+            (workspace/'PROGRESS.md').write_text('''<!-- obligation -->
+```ini
+[obligation]
+id = toy-counter
+statement = Actual counter increments by one.
+goal = execution_link
+kind = local
+functions = madraft/src/counter_toy.rs::actual, madraft/src/outer_toy.rs::caller
+entry = madraft/proof/selected.rs
+parent = madraft/proof/unfinished_parent.rs
+premises = Outer caller and execution history remain open.
+```
+<!-- /obligation -->
+<!-- connections -->
+| transitions | madraft/src/counter_toy.rs::actual, madraft/src/outer_toy.rs::caller | madraft/proof/selected.rs | Outer caller open |
+<!-- /connections -->
+''')
+            for label,body,expected in [('selected-good',correct,'PASS'),('selected-defect',correct.replace('{ n+1 }','{ n+2 }'),'OPEN')]:
+                source.write_text(body)
+                c=check.Checks(workspace,ROOT,ROOT,self.logs/label,60,label)
+                c.obligation();c.connections()
+                report=c.finish('obligation',list(c.results))
+                self.assertEqual(report['checks']['current_entry']['status'],expected)
+                self.assertEqual(report['checks']['connection_transitions_unit']['status'],expected)
+                self.assertEqual(report['checks']['connection_transitions']['status'],'OPEN')
+                self.assertEqual(report['status'],'INCOMPLETE')
+                if expected=='OPEN':
+                    self.assertEqual(report['checks']['current_entry']['reason'],'verification_failure')
+                    self.assertIn('postcondition not satisfied',report['checks']['current_entry']['diagnostic'])
 
     def test_single_top_caller_does_not_skip_other_imported_bodies(self):
         module = self.toy_adapter('imported-dependency')

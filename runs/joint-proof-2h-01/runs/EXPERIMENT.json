@@ -1,0 +1,3128 @@
+{
+  "status": "INCOMPLETE",
+  "reason": "Insufficient budget for useful work and final checks",
+  "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+  "input_version": "madraft-joint-proof-5",
+  "git_revision": "UNAVAILABLE: Git metadata not exposed",
+  "model": "gpt-6-astra",
+  "effort": "high",
+  "attempts": 12,
+  "redesigns": 0,
+  "seconds_spent": 6668.736357983995,
+  "total_seconds": 7200.0,
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "last_check": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-12-1793351241131800847/results.json",
+  "semantic_boundary": "Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.",
+  "liveness": "OPEN",
+  "guidance": "B",
+  "system_version": "madraft-generate-check-5",
+  "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+  "prompt_version": "4f74e5f6b9759e7b5c84331a688e0181cdc229a4e4ef2041aa8feb1a073a082f",
+  "unused_seconds": 531.2636420160052,
+  "costs": [
+    {
+      "round": 0,
+      "kind": "preflight",
+      "reserved_seconds": 40,
+      "actual_seconds": 0.19800393200057442
+    },
+    {
+      "round": 0,
+      "kind": "check",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 37.83630802999687
+    },
+    {
+      "round": 1,
+      "kind": "agent",
+      "reserved_seconds": 600.0,
+      "actual_seconds": 544.9651563589978
+    },
+    {
+      "round": 1,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 2.6619603050021396
+    },
+    {
+      "round": 1,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 2.8340843670011964
+    },
+    {
+      "round": 1,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 2.9113832950024516
+    },
+    {
+      "round": 1,
+      "kind": "check",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 35.87049504999959
+    },
+    {
+      "round": 2,
+      "kind": "agent",
+      "reserved_seconds": 600.0,
+      "actual_seconds": 508.24751846399886
+    },
+    {
+      "round": 2,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 3.135596266001812
+    },
+    {
+      "round": 2,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 5.2296925619994
+    },
+    {
+      "round": 2,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 5.220490547999361
+    },
+    {
+      "round": 2,
+      "kind": "check",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 35.893765902997984
+    },
+    {
+      "round": 3,
+      "kind": "agent",
+      "reserved_seconds": 600.0,
+      "actual_seconds": 536.9289436170002
+    },
+    {
+      "round": 3,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 4.725267317000544
+    },
+    {
+      "round": 3,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 8.030724898002518
+    },
+    {
+      "round": 3,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 8.491020724999544
+    },
+    {
+      "round": 3,
+      "kind": "check",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 41.10499586699734
+    },
+    {
+      "round": 4,
+      "kind": "agent",
+      "reserved_seconds": 600.0,
+      "actual_seconds": 485.987846005999
+    },
+    {
+      "round": 4,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 3.1436687280001934
+    },
+    {
+      "round": 4,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 6.312050725999143
+    },
+    {
+      "round": 4,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 8.88186585800213
+    },
+    {
+      "round": 4,
+      "kind": "check",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 47.032864001001144
+    },
+    {
+      "round": 5,
+      "kind": "agent",
+      "reserved_seconds": 600.0,
+      "actual_seconds": 503.0346347500017
+    },
+    {
+      "round": 5,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 9.024415510000836
+    },
+    {
+      "round": 5,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 8.986819871999614
+    },
+    {
+      "round": 5,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 9.704086326000834
+    },
+    {
+      "round": 5,
+      "kind": "check",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 45.42326361600135
+    },
+    {
+      "round": 6,
+      "kind": "agent",
+      "reserved_seconds": 600.0,
+      "actual_seconds": 484.05705819099967
+    },
+    {
+      "round": 6,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 8.469568246000563
+    },
+    {
+      "round": 6,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 9.614160081000591
+    },
+    {
+      "round": 6,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 9.381439020999096
+    },
+    {
+      "round": 6,
+      "kind": "check",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 45.55420771300123
+    },
+    {
+      "round": 7,
+      "kind": "agent",
+      "reserved_seconds": 600.0,
+      "actual_seconds": 590.0791486870003
+    },
+    {
+      "round": 7,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 9.235253414000908
+    },
+    {
+      "round": 7,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 9.70314311599941
+    },
+    {
+      "round": 7,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 6.451766458001657
+    },
+    {
+      "round": 7,
+      "kind": "check",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 47.81008063400077
+    },
+    {
+      "round": 8,
+      "kind": "agent",
+      "reserved_seconds": 600.0,
+      "actual_seconds": 529.0815775379997
+    },
+    {
+      "round": 8,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 6.107472518000577
+    },
+    {
+      "round": 8,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 8.458029230998363
+    },
+    {
+      "round": 8,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 8.965377595999598
+    },
+    {
+      "round": 8,
+      "kind": "check",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 51.372955948998424
+    },
+    {
+      "round": 9,
+      "kind": "agent",
+      "reserved_seconds": 600.0,
+      "actual_seconds": 528.4544696669982
+    },
+    {
+      "round": 9,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 10.73384207900017
+    },
+    {
+      "round": 9,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 10.727465092000784
+    },
+    {
+      "round": 9,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 6.036216808999598
+    },
+    {
+      "round": 9,
+      "kind": "check",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 52.824366519998875
+    },
+    {
+      "round": 10,
+      "kind": "agent",
+      "reserved_seconds": 600.0,
+      "actual_seconds": 518.75399148
+    },
+    {
+      "round": 10,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 13.50391719700201
+    },
+    {
+      "round": 10,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 11.667576281000947
+    },
+    {
+      "round": 10,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 13.863507868998568
+    },
+    {
+      "round": 10,
+      "kind": "check",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 61.079657189999125
+    },
+    {
+      "round": 11,
+      "kind": "agent",
+      "reserved_seconds": 333.56876394100254,
+      "actual_seconds": 284.8210495550011
+    },
+    {
+      "round": 11,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 8.907908629000303
+    },
+    {
+      "round": 11,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 9.712517859999934
+    },
+    {
+      "round": 11,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 5.698217173001467
+    },
+    {
+      "round": 11,
+      "kind": "check",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 64.45339291900018
+    },
+    {
+      "round": 12,
+      "kind": "agent",
+      "reserved_seconds": 259.69746920500256,
+      "actual_seconds": 226.7986594670001
+    },
+    {
+      "round": 12,
+      "kind": "attempt-replay",
+      "reserved_seconds": 32.85200767200513,
+      "actual_seconds": 13.568025373999262
+    },
+    {
+      "round": 12,
+      "kind": "attempt-replay",
+      "reserved_seconds": 19.2482543430051,
+      "actual_seconds": 12.214105548999214
+    },
+    {
+      "round": 12,
+      "kind": "attempt-replay",
+      "reserved_seconds": 7.01434404900283,
+      "actual_seconds": 7.186188095001853
+    },
+    {
+      "round": 12,
+      "kind": "final",
+      "reserved_seconds": 599.8055345740031,
+      "actual_seconds": 68.41173242200239
+    }
+  ],
+  "interventions": [],
+  "historical_test_coverage": {
+    "raft::tests::": {
+      "last_attempt": 12,
+      "last_completed": 12,
+      "last_result": "OPEN",
+      "candidate_revision": "check-12-1793351241131800847",
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-12-1793351241131800847/tests_seed_5_raft_tests.log",
+      "uncovered_tests": [
+        "raft::tests::backup_2b",
+        "raft::tests::basic_agree_2b",
+        "raft::tests::concurrent_starts_2b",
+        "raft::tests::count_2b",
+        "raft::tests::fail_agree_2b",
+        "raft::tests::fail_no_agree_2b",
+        "raft::tests::figure_8_2c",
+        "raft::tests::figure_8_unreliable_2c",
+        "raft::tests::persist1_2c",
+        "raft::tests::persist2_2c",
+        "raft::tests::persist3_2c",
+        "raft::tests::rejoin_2b",
+        "raft::tests::reliable_churn_2c",
+        "raft::tests::snapshot_basic_2d",
+        "raft::tests::snapshot_install_2d",
+        "raft::tests::snapshot_install_crash_2d",
+        "raft::tests::snapshot_install_unreliable_2d",
+        "raft::tests::snapshot_install_unreliable_crash_2d",
+        "raft::tests::unreliable_agree_2c",
+        "raft::tests::unreliable_churn_2c"
+      ]
+    },
+    "kvraft::tests::": {
+      "last_attempt": 12,
+      "last_completed": 12,
+      "last_result": "OPEN",
+      "candidate_revision": "check-12-1793351241131800847",
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-12-1793351241131800847/tests_seed_5_kvraft_tests.log",
+      "uncovered_tests": [
+        "kvraft::tests::basic_3a",
+        "kvraft::tests::concurrent_3a",
+        "kvraft::tests::many_partitions_many_clients_3a",
+        "kvraft::tests::many_partitions_one_client_3a",
+        "kvraft::tests::one_partition_3a",
+        "kvraft::tests::persist_concurrent_3a",
+        "kvraft::tests::persist_concurrent_unreliable_3a",
+        "kvraft::tests::persist_one_client_3a",
+        "kvraft::tests::persist_partition_3a",
+        "kvraft::tests::persist_partition_unreliable_3a",
+        "kvraft::tests::snapshot_recover_3b",
+        "kvraft::tests::snapshot_recover_many_clients_3b",
+        "kvraft::tests::snapshot_rpc_3b",
+        "kvraft::tests::snapshot_size_3b",
+        "kvraft::tests::snapshot_unreliable_3b",
+        "kvraft::tests::snapshot_unreliable_recover_3b",
+        "kvraft::tests::snapshot_unreliable_recover_concurrent_partition_3b",
+        "kvraft::tests::unreliable_3a",
+        "kvraft::tests::unreliable_one_key_3a"
+      ]
+    },
+    "test_support::": {
+      "last_attempt": 12,
+      "last_completed": 12,
+      "last_result": "PASS",
+      "candidate_revision": "check-12-1793351241131800847",
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-12-1793351241131800847/tests_seed_5_test_support.log",
+      "uncovered_tests": []
+    },
+    "shard_ctrler::tests::": {
+      "last_attempt": 12,
+      "last_completed": 12,
+      "last_result": "OPEN",
+      "candidate_revision": "check-12-1793351241131800847",
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-12-1793351241131800847/tests_seed_5_shard_ctrler_tests.log",
+      "uncovered_tests": [
+        "shard_ctrler::tests::basic_4a",
+        "shard_ctrler::tests::multi_4a"
+      ]
+    },
+    "shardkv::tests::": {
+      "last_attempt": 12,
+      "last_completed": 12,
+      "last_result": "OPEN",
+      "candidate_revision": "check-12-1793351241131800847",
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-12-1793351241131800847/tests_seed_5_shardkv_tests.log",
+      "uncovered_tests": [
+        "shardkv::tests::challenge1_delete_4b",
+        "shardkv::tests::challenge2_partial_4b",
+        "shardkv::tests::challenge2_unaffected_4b",
+        "shardkv::tests::concurrent1_4b",
+        "shardkv::tests::concurrent2_4b",
+        "shardkv::tests::concurrent3_4b",
+        "shardkv::tests::join_leave_4b",
+        "shardkv::tests::miss_change_4b",
+        "shardkv::tests::snapshot_4b",
+        "shardkv::tests::static_shards_4b",
+        "shardkv::tests::unreliable1_4b",
+        "shardkv::tests::unreliable2_4b"
+      ]
+    }
+  },
+  "semantic_review": "NOT_PERFORMED",
+  "implementation_acceptance": "NOT_ESTABLISHED",
+  "generation_experiments": 1,
+  "continuation_rounds": 11,
+  "token_usage": [
+    {
+      "raw_events": [
+        {
+          "event": "turn.completed",
+          "counters": {
+            "input_tokens": 1071000,
+            "cached_input_tokens": 1030912,
+            "output_tokens": 12862
+          }
+        }
+      ],
+      "counter_scope": "UNKNOWN",
+      "summed_tokens": null,
+      "dollar_cost": null
+    },
+    {
+      "raw_events": [
+        {
+          "event": "turn.completed",
+          "counters": {
+            "input_tokens": 2094335,
+            "cached_input_tokens": 2038400,
+            "output_tokens": 25189
+          }
+        }
+      ],
+      "counter_scope": "UNKNOWN",
+      "summed_tokens": null,
+      "dollar_cost": null
+    },
+    {
+      "raw_events": [
+        {
+          "event": "turn.completed",
+          "counters": {
+            "input_tokens": 3795823,
+            "cached_input_tokens": 3632896,
+            "output_tokens": 36752
+          }
+        }
+      ],
+      "counter_scope": "UNKNOWN",
+      "summed_tokens": null,
+      "dollar_cost": null
+    },
+    {
+      "raw_events": [
+        {
+          "event": "turn.completed",
+          "counters": {
+            "input_tokens": 6309102,
+            "cached_input_tokens": 6128512,
+            "output_tokens": 48187
+          }
+        }
+      ],
+      "counter_scope": "UNKNOWN",
+      "summed_tokens": null,
+      "dollar_cost": null
+    },
+    {
+      "raw_events": [
+        {
+          "event": "turn.completed",
+          "counters": {
+            "input_tokens": 8829460,
+            "cached_input_tokens": 8630912,
+            "output_tokens": 60382
+          }
+        }
+      ],
+      "counter_scope": "UNKNOWN",
+      "summed_tokens": null,
+      "dollar_cost": null
+    },
+    {
+      "raw_events": [
+        {
+          "event": "turn.completed",
+          "counters": {
+            "input_tokens": 10087407,
+            "cached_input_tokens": 9826176,
+            "output_tokens": 69571
+          }
+        }
+      ],
+      "counter_scope": "UNKNOWN",
+      "summed_tokens": null,
+      "dollar_cost": null
+    },
+    {
+      "raw_events": [
+        {
+          "event": "turn.completed",
+          "counters": {
+            "input_tokens": 13060885,
+            "cached_input_tokens": 12768384,
+            "output_tokens": 81897
+          }
+        }
+      ],
+      "counter_scope": "UNKNOWN",
+      "summed_tokens": null,
+      "dollar_cost": null
+    },
+    {
+      "raw_events": [
+        {
+          "event": "turn.completed",
+          "counters": {
+            "input_tokens": 15498801,
+            "cached_input_tokens": 15184640,
+            "output_tokens": 96543
+          }
+        }
+      ],
+      "counter_scope": "UNKNOWN",
+      "summed_tokens": null,
+      "dollar_cost": null
+    },
+    {
+      "raw_events": [
+        {
+          "event": "turn.completed",
+          "counters": {
+            "input_tokens": 17731284,
+            "cached_input_tokens": 17398400,
+            "output_tokens": 109369
+          }
+        }
+      ],
+      "counter_scope": "UNKNOWN",
+      "summed_tokens": null,
+      "dollar_cost": null
+    },
+    {
+      "raw_events": [
+        {
+          "event": "turn.completed",
+          "counters": {
+            "input_tokens": 19545231,
+            "cached_input_tokens": 19135104,
+            "output_tokens": 119125
+          }
+        }
+      ],
+      "counter_scope": "UNKNOWN",
+      "summed_tokens": null,
+      "dollar_cost": null
+    },
+    {
+      "raw_events": [
+        {
+          "event": "turn.completed",
+          "counters": {
+            "input_tokens": 21387345,
+            "cached_input_tokens": 20874880,
+            "output_tokens": 123624
+          }
+        }
+      ],
+      "counter_scope": "UNKNOWN",
+      "summed_tokens": null,
+      "dollar_cost": null
+    },
+    {
+      "raw_events": [
+        {
+          "event": "turn.completed",
+          "counters": {
+            "input_tokens": 23097298,
+            "cached_input_tokens": 22571136,
+            "output_tokens": 127052
+          }
+        }
+      ],
+      "counter_scope": "UNKNOWN",
+      "summed_tokens": null,
+      "dollar_cost": null
+    }
+  ],
+  "tools": {
+    "codex": {
+      "command": [
+        "codex",
+        "--version"
+      ],
+      "output": "codex-cli 0.162.0-alpha.17.2",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "codex_help": {
+      "command": [
+        "codex",
+        "--help"
+      ],
+      "output": "Codex CLI\n\nIf no subcommand is specified, options will be forwarded to the interactive CLI.\n\nUsage: codex [OPTIONS] [PROMPT]\n       codex [OPTIONS] <COMMAND> [ARGS]\n\nCommands:\n  agents            Browse all agent sessions on the shared local app-server daemon\n  exec              Run Codex non-interactively [aliases: e]\n  review            Run a code review non-interactively\n  login             Manage login\n  logout            Remove stored authentication credentials\n  mcp               Manage external MCP servers for Codex\n  plugin            Manage Codex plugins\n  app-server        [experimental] Run the app server or related tooling\n  remote-control    [experimental] Manage the app-server daemon with remote control enabled\n  completion        Generate shell completion scripts\n  update            Update Codex to the latest version\n  doctor            Diagnose local Codex installation, config, auth, and runtime health\n  sandbox           Run commands within a Codex-provided sandbox\n  debug             Debugging tools\n  apply             Apply the latest diff produced by Codex agent as a `git apply` to your local\n                    working tree [aliases: a]\n  resume            Resume a previous interactive session (picker by default; use --last to continue\n                    the most recent)\n  queue             Queue a message for an existing session\n  archive           Archive a saved session by id or session name\n  delete            Permanently delete a saved session by id or session name\n  migrate-rollouts  Inspect or migrate legacy local sessions to paginated thread history\n  unarchive         Unarchive a saved session by id or session name\n  fork              Fork a previous interactive session (picker by default; use --last to fork the\n                    most recent)\n  cloud             [EXPERIMENTAL] Browse tasks from Codex Cloud and apply changes locally\n  exec-server       [EXPERIMENTAL] Run the standalone exec-server service\n  features          Inspect feature flags\n  help              Print this message or the help of the given subcommand(s)\n\nArguments:\n  [PROMPT]\n          Optional user prompt to start the session\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n      --remote <ADDR>\n          Connect the TUI to a remote app server endpoint.\n          \n          Accepted forms: `ws://host:port`, `wss://host:port`, `unix://`, or `unix://PATH`.\n\n      --remote-auth-token-env <ENV_VAR>\n          Name of the environment variable containing the bearer token to send to a remote app\n          server websocket\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -i, --image <FILE>...\n          Optional image(s) to attach to the initial prompt\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --oss\n          Use open-source provider\n\n      --local-provider <OSS_PROVIDER>\n          Specify which local provider to use (lmstudio or ollama). If not specified with --oss,\n          will use config default or show selection\n\n  -p, --profile <CONFIG_PROFILE_V2>\n          Layer $CODEX_HOME/<name>.config.toml on top of the base user config\n\n  -s, --sandbox <SANDBOX_MODE>\n          Select the sandbox policy to use when executing model-generated shell commands\n          \n          [possible values: read-only, workspace-write, danger-full-access]\n\n      --approve-for-me\n          Route approval requests through automatic review using the workspace-write sandbox\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n  -C, --cd <DIR>\n          Tell the agent to use the specified directory as its working root\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --add-dir <DIR>\n          Additional directories that should be writable alongside the primary workspace\n\n  -a, --ask-for-approval <APPROVAL_POLICY>\n          Configure when the model requires human approval before executing a command\n\n          Possible values:\n          - on-request: The model decides when to ask the user for approval\n          - never:      Never ask for user approval Execution failures are immediately returned to\n            the model\n\n      --search\n          Enable live web search. When enabled, the native Responses `web_search` tool is available\n          to the model (no per\u2011call approval)\n\n      --no-alt-screen\n          Disable alternate screen mode\n          \n          Runs the TUI in inline mode, preserving terminal scrollback history.\n\n      --no-daemon\n          Run without the shared background server, even if it is already running\n\n  -h, --help\n          Print help (see a summary with '-h')\n\n  -V, --version\n          Print version",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "exec_help": {
+      "command": [
+        "codex",
+        "exec",
+        "--help"
+      ],
+      "output": "Run Codex non-interactively\n\nUsage: codex exec [OPTIONS] [PROMPT]\n       codex exec [OPTIONS] <COMMAND> [ARGS]\n\nCommands:\n  resume  Resume a previous session by id or pick the most recent with --last\n  fork    Fork a previous session by id into a new session\n  review  Run a code review against the current repository\n  help    Print this message or the help of the given subcommand(s)\n\nArguments:\n  [PROMPT]\n          Initial instructions for the agent. If not provided as an argument (or if `-` is used),\n          instructions are read from stdin. If stdin is piped and a prompt is also provided, stdin\n          is appended as a `<stdin>` block\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -i, --image <FILE>...\n          Optional image(s) to attach to the initial prompt\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --oss\n          Use open-source provider\n\n      --local-provider <OSS_PROVIDER>\n          Specify which local provider to use (lmstudio or ollama). If not specified with --oss,\n          will use config default or show selection\n\n  -p, --profile <CONFIG_PROFILE_V2>\n          Layer $CODEX_HOME/<name>.config.toml on top of the base user config\n\n  -s, --sandbox <SANDBOX_MODE>\n          Select the sandbox policy to use when executing model-generated shell commands\n          \n          [possible values: read-only, workspace-write, danger-full-access]\n\n      --approve-for-me\n          Route approval requests through automatic review using the workspace-write sandbox\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n  -C, --cd <DIR>\n          Tell the agent to use the specified directory as its working root\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --add-dir <DIR>\n          Additional directories that should be writable alongside the primary workspace\n\n      --thread-source <SOURCE>\n          Source classification for newly created or forked threads\n\n      --cyber-access-program <PROGRAM>\n          Request an experimental Cyber access program for this turn (OpenAI provider only). Omit to\n          use server defaults. Not supported with review; fork requires a prompt\n          \n          [possible values: standard, daybreak_blue, daybreak_red]\n\n      --skip-git-repo-check\n          Allow running Codex outside a Git repository\n\n      --ephemeral\n          Run without persisting session files to disk\n\n      --ignore-user-config\n          Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`\n\n      --ignore-rules\n          Do not load user or project execpolicy `.rules` files\n\n      --output-schema <FILE>\n          Path to a JSON Schema file describing the model's final response shape\n\n      --color <COLOR>\n          Specifies color settings for use in the output\n          \n          [default: auto]\n          [possible values: always, never, auto]\n\n      --json\n          Print events to stdout as JSONL\n\n  -o, --output-last-message <FILE>\n          Specifies file where the last message from the agent should be written\n\n  -h, --help\n          Print help (see a summary with '-h')\n\n  -V, --version\n          Print version",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "resume_help": {
+      "command": [
+        "codex",
+        "exec",
+        "resume",
+        "--help"
+      ],
+      "output": "Resume a previous session by id or pick the most recent with --last\n\nUsage: codex exec resume [OPTIONS] [SESSION_ID] [PROMPT]\n\nArguments:\n  [SESSION_ID]\n          Conversation/session id (UUID) or thread name. UUIDs take precedence if it parses. If\n          omitted, use --last to pick the most recent recorded session\n\n  [PROMPT]\n          Prompt to send after resuming the session. If `-` is used, read from stdin\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --last\n          Resume the most recent recorded session (newest) without specifying an id\n\n      --all\n          Show all sessions (disables cwd filtering)\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n  -i, --image <FILE>\n          Optional image(s) to attach to the prompt sent after resuming\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --thread-source <SOURCE>\n          Source classification for newly created or forked threads\n\n      --cyber-access-program <PROGRAM>\n          Request an experimental Cyber access program for this turn (OpenAI provider only). Omit to\n          use server defaults. Not supported with review; fork requires a prompt\n          \n          [possible values: standard, daybreak_blue, daybreak_red]\n\n      --skip-git-repo-check\n          Allow running Codex outside a Git repository\n\n      --ephemeral\n          Run without persisting session files to disk\n\n      --ignore-user-config\n          Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`\n\n      --ignore-rules\n          Do not load user or project execpolicy `.rules` files\n\n      --output-schema <FILE>\n          Path to a JSON Schema file describing the model's final response shape\n\n      --json\n          Print events to stdout as JSONL\n\n  -o, --output-last-message <FILE>\n          Specifies file where the last message from the agent should be written\n\n  -h, --help\n          Print help (see a summary with '-h')",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "rustc": {
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--version"
+      ],
+      "output": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "cargo": {
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "--version"
+      ],
+      "output": "cargo 1.92.0 (344c4567c 2025-10-21)",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "verus": {
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "--version"
+      ],
+      "output": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "new_command_help": {
+      "command": [
+        "codex",
+        "--no-daemon",
+        "--ask-for-approval",
+        "never",
+        "-c",
+        "sandbox_mode=\"workspace-write\"",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "exec",
+        "--ignore-user-config",
+        "--skip-git-repo-check",
+        "--json",
+        "--model",
+        "gpt-6-astra",
+        "--output-last-message",
+        "/home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/probe-unused.md",
+        "--help"
+      ],
+      "output": "Run Codex non-interactively\n\nUsage: codex exec [OPTIONS] [PROMPT]\n       codex exec [OPTIONS] <COMMAND> [ARGS]\n\nCommands:\n  resume  Resume a previous session by id or pick the most recent with --last\n  fork    Fork a previous session by id into a new session\n  review  Run a code review against the current repository\n  help    Print this message or the help of the given subcommand(s)\n\nArguments:\n  [PROMPT]\n          Initial instructions for the agent. If not provided as an argument (or if `-` is used),\n          instructions are read from stdin. If stdin is piped and a prompt is also provided, stdin\n          is appended as a `<stdin>` block\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -i, --image <FILE>...\n          Optional image(s) to attach to the initial prompt\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --oss\n          Use open-source provider\n\n      --local-provider <OSS_PROVIDER>\n          Specify which local provider to use (lmstudio or ollama). If not specified with --oss,\n          will use config default or show selection\n\n  -p, --profile <CONFIG_PROFILE_V2>\n          Layer $CODEX_HOME/<name>.config.toml on top of the base user config\n\n  -s, --sandbox <SANDBOX_MODE>\n          Select the sandbox policy to use when executing model-generated shell commands\n          \n          [possible values: read-only, workspace-write, danger-full-access]\n\n      --approve-for-me\n          Route approval requests through automatic review using the workspace-write sandbox\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n  -C, --cd <DIR>\n          Tell the agent to use the specified directory as its working root\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --add-dir <DIR>\n          Additional directories that should be writable alongside the primary workspace\n\n      --thread-source <SOURCE>\n          Source classification for newly created or forked threads\n\n      --cyber-access-program <PROGRAM>\n          Request an experimental Cyber access program for this turn (OpenAI provider only). Omit to\n          use server defaults. Not supported with review; fork requires a prompt\n          \n          [possible values: standard, daybreak_blue, daybreak_red]\n\n      --skip-git-repo-check\n          Allow running Codex outside a Git repository\n\n      --ephemeral\n          Run without persisting session files to disk\n\n      --ignore-user-config\n          Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`\n\n      --ignore-rules\n          Do not load user or project execpolicy `.rules` files\n\n      --output-schema <FILE>\n          Path to a JSON Schema file describing the model's final response shape\n\n      --color <COLOR>\n          Specifies color settings for use in the output\n          \n          [default: auto]\n          [possible values: always, never, auto]\n\n      --json\n          Print events to stdout as JSONL\n\n  -o, --output-last-message <FILE>\n          Specifies file where the last message from the agent should be written\n\n  -h, --help\n          Print help (see a summary with '-h')\n\n  -V, --version\n          Print version",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "resume_command_help": {
+      "command": [
+        "codex",
+        "--no-daemon",
+        "--ask-for-approval",
+        "never",
+        "-c",
+        "sandbox_mode=\"workspace-write\"",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "exec",
+        "resume",
+        "00000000-0000-0000-0000-000000000000",
+        "--ignore-user-config",
+        "--skip-git-repo-check",
+        "--json",
+        "--model",
+        "gpt-6-astra",
+        "--output-last-message",
+        "/home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/probe-unused.md",
+        "--help"
+      ],
+      "output": "Resume a previous session by id or pick the most recent with --last\n\nUsage: codex exec resume [OPTIONS] [SESSION_ID] [PROMPT]\n\nArguments:\n  [SESSION_ID]\n          Conversation/session id (UUID) or thread name. UUIDs take precedence if it parses. If\n          omitted, use --last to pick the most recent recorded session\n\n  [PROMPT]\n          Prompt to send after resuming the session. If `-` is used, read from stdin\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --last\n          Resume the most recent recorded session (newest) without specifying an id\n\n      --all\n          Show all sessions (disables cwd filtering)\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n  -i, --image <FILE>\n          Optional image(s) to attach to the prompt sent after resuming\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --thread-source <SOURCE>\n          Source classification for newly created or forked threads\n\n      --cyber-access-program <PROGRAM>\n          Request an experimental Cyber access program for this turn (OpenAI provider only). Omit to\n          use server defaults. Not supported with review; fork requires a prompt\n          \n          [possible values: standard, daybreak_blue, daybreak_red]\n\n      --skip-git-repo-check\n          Allow running Codex outside a Git repository\n\n      --ephemeral\n          Run without persisting session files to disk\n\n      --ignore-user-config\n          Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`\n\n      --ignore-rules\n          Do not load user or project execpolicy `.rules` files\n\n      --output-schema <FILE>\n          Path to a JSON Schema file describing the model's final response shape\n\n      --json\n          Print events to stdout as JSONL\n\n  -o, --output-last-message <FILE>\n          Specifies file where the last message from the agent should be written\n\n  -h, --help\n          Print help (see a summary with '-h')",
+      "exit": 0,
+      "process": "COMPLETED"
+    }
+  },
+  "assessments": {
+    "election_safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery"
+      ],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "leader_append_only": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery"
+      ],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "log_matching": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery"
+      ],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "leader_completeness": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery"
+      ],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "state_machine_safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery"
+      ],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "execution_link": {
+      "formula_status": "PASS",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery"
+      ],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "snapshot_observation": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery"
+      ],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "nonempty_execution": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery"
+      ],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery"
+      ],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    }
+  },
+  "current_obligation": {
+    "plan": {
+      "id": "fresh-state-vote-correspondence",
+      "statement": "The real receiver carries a private inbound request and peer context through persistence and checked reply release into the exact response submission.",
+      "goal": "execution_link",
+      "kind": "step",
+      "functions": [
+        "madraft/src/raft/execution.rs::begin_received",
+        "madraft/src/raft/execution.rs::finish_received",
+        "madraft/src/raft/raft.rs::start_rpc_server"
+      ],
+      "entry": "madraft/proof/adapter.rs",
+      "parent": "madraft/proof/execution_connection.rs",
+      "dependencies": [
+        "madraft/proof/initialization.rs",
+        "madraft/proof/durable_vote_reply.rs"
+      ],
+      "premises": "Checked inbound contexts and concrete history extensions are connected conditionally to recorded deliveries. Actual host send/delivery linearization, deployment source mapping, reply continuation provenance, storage callbacks and cross-crash histories remain open. Initialized/preserved registry projection is checked for the supplied partial runtime_step segments; actual execution adequacy, storage and crash segments remain open.",
+      "tests": [
+        "raft::raft::vote_tests",
+        "raft::tests::initial_election_2a"
+      ],
+      "restore": []
+    },
+    "units": {
+      "current_dependency_1": "madraft/proof/initialization.rs",
+      "current_dependency_2": "madraft/proof/durable_vote_reply.rs",
+      "current_entry": "madraft/proof/adapter.rs",
+      "current_parent": "madraft/proof/execution_connection.rs"
+    },
+    "layer": "LOCAL_UNIT_CHECKED",
+    "first_blocker": {
+      "reason": "outer_paths_open",
+      "paths": [
+        "madraft/src/raft/raft.rs::start_rpc_server"
+      ],
+      "premises": "Checked inbound contexts and concrete history extensions are connected conditionally to recorded deliveries. Actual host send/delivery linearization, deployment source mapping, reply continuation provenance, storage callbacks and cross-crash histories remain open. Initialized/preserved registry projection is checked for the supplied partial runtime_step segments; actual execution adequacy, storage and crash segments remain open."
+    },
+    "imported_references": [
+      "madraft/src/raft/execution.rs::begin_received",
+      "madraft/src/raft/execution.rs::finish_received"
+    ],
+    "open_paths": [
+      "madraft/src/raft/raft.rs::start_rpc_server"
+    ],
+    "external_paths": [],
+    "semantic_coverage": "NOT_AUTOMATICALLY_DECIDED",
+    "parent_imports_entry": false,
+    "semantic_review": "NOT_PERFORMED"
+  },
+  "obligations": {
+    "obligation-1": {
+      "aliases": [
+        "fresh-state-vote-correspondence"
+      ],
+      "goal": "execution_link",
+      "entries": [
+        "madraft/proof/adapter.rs",
+        "madraft/proof/durable_vote_reply.rs",
+        "madraft/proof/execution_connection.rs",
+        "madraft/proof/implementation.rs",
+        "madraft/proof/initialization.rs",
+        "madraft/proof/storage_correspondence.rs",
+        "madraft/proof/vote_correspondence.rs",
+        "madraft/proof/vote_history.rs",
+        "madraft/proof/vote_operation.rs",
+        "madraft/proof/vote_operation_history.rs"
+      ],
+      "roots": [
+        "madraft/proof/adapter.rs",
+        "madraft/proof/implementation.rs",
+        "madraft/proof/initialization.rs",
+        "madraft/proof/storage_correspondence.rs",
+        "madraft/proof/vote_operation.rs"
+      ],
+      "functions": [
+        "madraft/src/raft/election.rs::complete_call",
+        "madraft/src/raft/election.rs::outbound",
+        "madraft/src/raft/election.rs::record",
+        "madraft/src/raft/execution.rs::begin_election",
+        "madraft/src/raft/execution.rs::begin_received",
+        "madraft/src/raft/execution.rs::begin_rpc",
+        "madraft/src/raft/execution.rs::begin_vote",
+        "madraft/src/raft/execution.rs::campaign",
+        "madraft/src/raft/execution.rs::elect",
+        "madraft/src/raft/execution.rs::finish_received",
+        "madraft/src/raft/execution.rs::finish_rpc",
+        "madraft/src/raft/execution.rs::finish_term",
+        "madraft/src/raft/execution.rs::new",
+        "madraft/src/raft/execution.rs::prepare_term",
+        "madraft/src/raft/execution.rs::recover",
+        "madraft/src/raft/execution.rs::release_vote",
+        "madraft/src/raft/protocol.rs::begin_vote",
+        "madraft/src/raft/protocol.rs::complete_vote",
+        "madraft/src/raft/protocol.rs::elect",
+        "madraft/src/raft/protocol.rs::new",
+        "madraft/src/raft/raft.rs::new",
+        "madraft/src/raft/raft.rs::persist",
+        "madraft/src/raft/raft.rs::request_vote",
+        "madraft/src/raft/raft.rs::send_vote_request",
+        "madraft/src/raft/raft.rs::start_rpc_server",
+        "madraft/src/raft/state.rs::election_request",
+        "madraft/src/raft/state.rs::new",
+        "madraft/src/raft/state.rs::request_vote",
+        "madraft/src/raft/storage.rs::action",
+        "madraft/src/raft/storage.rs::complete",
+        "madraft/src/raft/storage.rs::new",
+        "madraft/src/raft/storage.rs::release",
+        "madraft/src/raft/storage.rs::release_reply",
+        "madraft/src/raft/wire.rs::args",
+        "madraft/src/raft/wire.rs::body",
+        "madraft/src/raft/wire.rs::from_call",
+        "madraft/src/raft/wire.rs::new"
+      ],
+      "versions": [
+        {
+          "version": 1,
+          "plan": {
+            "statement": "The real State::new constructor establishes well-formed empty-log state and enables RequestVote with exact term/vote/reply correspondence.",
+            "goal": "execution_link",
+            "kind": "initialization",
+            "functions": [
+              "madraft/src/raft/state.rs::new",
+              "madraft/src/raft/state.rs::request_vote",
+              "madraft/src/raft/raft.rs::new",
+              "madraft/src/raft/raft.rs::request_vote"
+            ],
+            "entry": "madraft/proof/initialization.rs",
+            "parent": "madraft/proof/vote_correspondence.rs",
+            "dependencies": [],
+            "premises": "Async constructor and RPC wrapper composition, durable vote release, recovery, message provenance, and cluster induction remain open. Observation currently applies only to the implemented empty-log segment.",
+            "tests": [
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 2,
+          "plan": {
+            "statement": "The real State::new constructor establishes well-formed empty-log state and enables RequestVote with exact term/vote/reply correspondence.",
+            "goal": "execution_link",
+            "kind": "initialization",
+            "functions": [
+              "madraft/src/raft/state.rs::new",
+              "madraft/src/raft/state.rs::request_vote",
+              "madraft/src/raft/raft.rs::new",
+              "madraft/src/raft/raft.rs::request_vote"
+            ],
+            "entry": "madraft/proof/initialization.rs",
+            "parent": "madraft/proof/vote_correspondence.rs",
+            "dependencies": [],
+            "premises": "Async constructor and RPC wrapper composition, durable vote release, recovery, message provenance, and cluster induction remain open. Observation currently applies only to the implemented empty-log segment.",
+            "tests": [
+              "raft::raft::vote_tests::vote_persists_before_reply_and_restores",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 3,
+          "plan": {
+            "statement": "The real State::new constructor establishes well-formed empty-log state and enables RequestVote with exact term/vote/reply correspondence.",
+            "goal": "execution_link",
+            "kind": "initialization",
+            "functions": [
+              "madraft/src/raft/state.rs::new",
+              "madraft/src/raft/state.rs::request_vote",
+              "madraft/src/raft/raft.rs::new",
+              "madraft/src/raft/raft.rs::request_vote"
+            ],
+            "entry": "madraft/proof/initialization.rs",
+            "parent": "madraft/proof/vote_history.rs",
+            "dependencies": [],
+            "premises": "Async constructor and RPC wrapper composition, durable vote release, recovery, message provenance, and cluster induction remain open. Observation currently applies only to the implemented empty-log segment.",
+            "tests": [
+              "raft::raft::vote_tests::vote_persists_before_reply_and_restores",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 4,
+          "plan": {
+            "statement": "The real RPC caller uses a checked phase machine to initialize state, bind each RequestVote to an immutable storage operation, and release only the matching pending reply.",
+            "goal": "execution_link",
+            "kind": "caller",
+            "functions": [
+              "madraft/src/raft/protocol.rs::new",
+              "madraft/src/raft/protocol.rs::begin_vote",
+              "madraft/src/raft/protocol.rs::complete_vote",
+              "madraft/src/raft/raft.rs::new",
+              "madraft/src/raft/raft.rs::request_vote"
+            ],
+            "entry": "madraft/proof/vote_operation.rs",
+            "parent": "madraft/proof/vote_operation_history.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs"
+            ],
+            "premises": "Async constructor and RPC wrapper composition, durable vote release, recovery, message provenance, and cluster induction remain open. Observation currently applies only to the implemented empty-log segment.",
+            "tests": [
+              "raft::raft::vote_tests::vote_persists_before_reply_and_restores",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 5,
+          "plan": {
+            "statement": "The real RPC caller uses a checked phase machine to initialize state, bind each RequestVote to an immutable storage operation, and release only the matching pending reply.",
+            "goal": "execution_link",
+            "kind": "caller",
+            "functions": [
+              "madraft/src/raft/protocol.rs::new",
+              "madraft/src/raft/protocol.rs::begin_vote",
+              "madraft/src/raft/protocol.rs::complete_vote",
+              "madraft/src/raft/raft.rs::new",
+              "madraft/src/raft/raft.rs::request_vote"
+            ],
+            "entry": "madraft/proof/vote_operation.rs",
+            "parent": "madraft/proof/vote_operation_history.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs"
+            ],
+            "premises": "Async constructor and RPC wrapper composition, durable vote release, recovery, message provenance, and cluster induction remain open. Observation currently applies only to the implemented empty-log segment.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 6,
+          "plan": {
+            "statement": "The real RPC caller uses a checked phase machine to initialize state, bind each RequestVote to an immutable storage operation, and release only the matching pending reply.",
+            "goal": "execution_link",
+            "kind": "caller",
+            "functions": [
+              "madraft/src/raft/protocol.rs::new",
+              "madraft/src/raft/protocol.rs::begin_vote",
+              "madraft/src/raft/protocol.rs::complete_vote",
+              "madraft/src/raft/raft.rs::new",
+              "madraft/src/raft/raft.rs::request_vote"
+            ],
+            "entry": "madraft/proof/vote_operation.rs",
+            "parent": "madraft/proof/vote_operation_history.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs"
+            ],
+            "premises": "Async constructor and filesystem completion composition, actual network provenance, deployment group identity, crash histories and cluster induction remain open. A matching operation token alone is not durable evidence. Local operation histories cover only the implemented vote segment.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 7,
+          "plan": {
+            "statement": "The real RPC persistence driver obtains create/write/sync actions from checked code and releases the pending reply only through the completed operation, with an explicit filesystem-effect premise.",
+            "goal": "execution_link",
+            "kind": "caller",
+            "functions": [
+              "madraft/src/raft/storage.rs::new",
+              "madraft/src/raft/storage.rs::action",
+              "madraft/src/raft/storage.rs::complete",
+              "madraft/src/raft/storage.rs::release",
+              "madraft/src/raft/raft.rs::persist",
+              "madraft/src/raft/raft.rs::request_vote"
+            ],
+            "entry": "madraft/proof/storage_correspondence.rs",
+            "parent": "madraft/proof/durable_vote_reply.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/vote_operation_history.rs"
+            ],
+            "premises": "Async constructor and filesystem completion composition, actual network provenance, deployment group identity, crash histories and cluster induction remain open. A matching operation token alone is not durable evidence. Local operation histories cover only the implemented vote segment.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 8,
+          "plan": {
+            "statement": "The real RPC persistence driver obtains create/write/sync actions from checked code and releases the pending reply only through the completed operation, with an explicit filesystem-effect premise.",
+            "goal": "execution_link",
+            "kind": "caller",
+            "functions": [
+              "madraft/src/raft/storage.rs::new",
+              "madraft/src/raft/storage.rs::action",
+              "madraft/src/raft/storage.rs::complete",
+              "madraft/src/raft/storage.rs::release",
+              "madraft/src/raft/storage.rs::release_reply",
+              "madraft/src/raft/raft.rs::persist",
+              "madraft/src/raft/raft.rs::request_vote"
+            ],
+            "entry": "madraft/proof/storage_correspondence.rs",
+            "parent": "madraft/proof/durable_vote_reply.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/vote_operation_history.rs"
+            ],
+            "premises": "Actual async dispatch must establish the specified submitted filesystem action and returned result, including exact buffer and handle; serde and pinned filesystem effects are explicit host contracts. Network provenance, group identity, arbitrary crash/restart histories and cluster induction remain open. A receipt alone is not durable evidence.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 9,
+          "plan": {
+            "statement": "The actual runtime constructor and vote handlers establish and preserve a ghost execution history containing their exact inputs, state boundaries, submitted operations and released replies.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/execution.rs::new",
+              "madraft/src/raft/execution.rs::recover",
+              "madraft/src/raft/execution.rs::begin_vote",
+              "madraft/src/raft/execution.rs::release_vote",
+              "madraft/src/raft/raft.rs::request_vote"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Actual async dispatch must establish the specified submitted filesystem action and returned result, including exact buffer and handle; serde and pinned filesystem effects are explicit host contracts. Network provenance, group identity, arbitrary crash/restart histories and cluster induction remain open. A receipt alone is not durable evidence.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 10,
+          "plan": {
+            "statement": "The actual runtime constructor and vote handlers establish and preserve a ghost execution history containing their exact inputs, state boundaries, submitted operations and released replies.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/execution.rs::new",
+              "madraft/src/raft/execution.rs::recover",
+              "madraft/src/raft/execution.rs::begin_vote",
+              "madraft/src/raft/execution.rs::release_vote",
+              "madraft/src/raft/raft.rs::request_vote"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "This checked connection covers actual per-incarnation handler histories. Async dispatch and filesystem-buffer/handle correspondence, genuine network sends, group identity and cross-crash cluster histories remain open. implementation.rs is a partial entry and does not export the final cluster adapter/theorem interface.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 11,
+          "plan": {
+            "statement": "The actual runtime constructor and vote handlers establish and preserve a ghost execution history containing their exact inputs, state boundaries, submitted operations and released replies.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/execution.rs::new",
+              "madraft/src/raft/execution.rs::recover",
+              "madraft/src/raft/execution.rs::begin_vote",
+              "madraft/src/raft/execution.rs::release_vote",
+              "madraft/src/raft/raft.rs::request_vote"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Actual async dispatch must establish the specified submitted filesystem action and returned result, including exact buffer and handle; serde and pinned filesystem effects are explicit host contracts. Network provenance, group identity, arbitrary crash/restart histories and cluster induction remain open. A receipt alone is not durable evidence.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 12,
+          "plan": {
+            "statement": "The actual RPC caller carries an immutable request/operation context across storage and checks the returned receipt against that context before releasing a reply, preserving the checked handler history.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/execution.rs::begin_rpc",
+              "madraft/src/raft/execution.rs::finish_rpc",
+              "madraft/src/raft/execution.rs::begin_vote",
+              "madraft/src/raft/execution.rs::release_vote",
+              "madraft/src/raft/raft.rs::request_vote"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "This checked connection covers actual per-incarnation handler histories. Async dispatch and filesystem-buffer/handle correspondence, genuine network sends, group identity and cross-crash cluster histories remain open. implementation.rs is a partial entry and does not export the final cluster adapter/theorem interface.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 13,
+          "plan": {
+            "statement": "The actual RPC caller carries an immutable request/operation context across storage and checks the returned receipt against that context before releasing a reply, preserving the checked handler history.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/execution.rs::begin_rpc",
+              "madraft/src/raft/execution.rs::finish_rpc",
+              "madraft/src/raft/execution.rs::begin_vote",
+              "madraft/src/raft/execution.rs::release_vote",
+              "madraft/src/raft/raft.rs::request_vote"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Checked caller context and histories are per-incarnation. Actual filesystem effects, network envelopes and prior sends, deployment group identity, and cross-crash history remain open. Global adapter types, projection and initial-registry relation exist; global steps and provenance/theorem exports remain missing.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 14,
+          "plan": {
+            "statement": "The actual RPC caller carries an immutable request/operation context across storage and checks the returned receipt against that context before releasing a reply, preserving the checked handler history.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/execution.rs::begin_rpc",
+              "madraft/src/raft/execution.rs::finish_rpc",
+              "madraft/src/raft/execution.rs::begin_vote",
+              "madraft/src/raft/execution.rs::release_vote",
+              "madraft/src/raft/raft.rs::request_vote"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "This checked connection covers actual per-incarnation handler histories. Async dispatch and filesystem-buffer/handle correspondence, genuine network sends, group identity and cross-crash cluster histories remain open. implementation.rs is a partial entry and does not export the final cluster adapter/theorem interface.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 15,
+          "plan": {
+            "statement": "A real election timeout initiates a checked self-vote, persists it through the existing caller, records candidate entry, and sends the exact authorized RequestVote payload to peers.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/state.rs::election_request",
+              "madraft/src/raft/execution.rs::begin_election",
+              "madraft/src/raft/execution.rs::campaign",
+              "madraft/src/raft/raft.rs::send_vote_request",
+              "madraft/src/raft/raft.rs::request_vote"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Checked caller context and histories are per-incarnation. Actual filesystem effects, network envelopes and prior sends, deployment group identity, and cross-crash history remain open. Global adapter types, projection and initial-registry relation exist; global steps and provenance/theorem exports remain missing.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 16,
+          "plan": {
+            "statement": "A real election timeout initiates a checked self-vote, persists it through the existing caller, records candidate entry, and sends the exact authorized RequestVote payload to peers.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/state.rs::election_request",
+              "madraft/src/raft/execution.rs::begin_election",
+              "madraft/src/raft/execution.rs::campaign",
+              "madraft/src/raft/raft.rs::send_vote_request",
+              "madraft/src/raft/raft.rs::request_vote"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Checked self-vote/candidate histories are per-incarnation. Async timer/send composition, exact filesystem effects, network envelopes and prior sends, deployment identity and cross-crash history remain open. Reply collection and heartbeat behavior remain unfinished; global step/provenance/theorem exports remain missing.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 17,
+          "plan": {
+            "statement": "A real election timeout initiates a checked self-vote, persists it through the existing caller, records candidate entry, and sends the exact authorized RequestVote payload to peers.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/state.rs::election_request",
+              "madraft/src/raft/execution.rs::begin_election",
+              "madraft/src/raft/execution.rs::campaign",
+              "madraft/src/raft/raft.rs::send_vote_request",
+              "madraft/src/raft/raft.rs::request_vote"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Checked caller context and histories are per-incarnation. Actual filesystem effects, network envelopes and prior sends, deployment group identity, and cross-crash history remain open. Global adapter types, projection and initial-registry relation exist; global steps and provenance/theorem exports remain missing.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 18,
+          "plan": {
+            "statement": "A real election timeout initiates a checked self-vote, persists it through the existing caller, records candidate entry, and sends the exact authorized RequestVote payload to peers.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/state.rs::election_request",
+              "madraft/src/raft/execution.rs::begin_election",
+              "madraft/src/raft/execution.rs::campaign",
+              "madraft/src/raft/raft.rs::send_vote_request",
+              "madraft/src/raft/raft.rs::request_vote"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Checked self-vote/candidate histories are per-incarnation. Async timer/send composition, exact filesystem effects, network envelopes and prior sends, deployment identity and cross-crash history remain open. Reply collection and heartbeat behavior remain unfinished; global step/provenance/theorem exports remain missing.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 19,
+          "plan": {
+            "statement": "The actual election RPC continuations retain exact request and peer contexts and collect only distinct in-range matching-term grants, preserving every completion including errors and obsolete replies.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/election.rs::outbound",
+              "madraft/src/raft/election.rs::complete_call",
+              "madraft/src/raft/election.rs::record",
+              "madraft/src/raft/raft.rs::send_vote_request"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Checked self-vote/candidate histories are per-incarnation. Async timer/send composition, exact filesystem effects, network envelopes and prior sends, deployment identity and cross-crash history remain open. Reply collection and heartbeat behavior remain unfinished; global step/provenance/theorem exports remain missing.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 20,
+          "plan": {
+            "statement": "The actual election RPC continuations retain exact request and peer contexts and collect only distinct in-range matching-term grants, preserving every completion including errors and obsolete replies.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/election.rs::outbound",
+              "madraft/src/raft/election.rs::complete_call",
+              "madraft/src/raft/election.rs::record",
+              "madraft/src/raft/raft.rs::send_vote_request"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Checked histories cover per-incarnation voting and per-election collectors. Async sender/receiver composition, network send provenance, exact filesystem effects, deployment identity and cross-crash history remain open. Leader authorization, higher-term reply persistence and heartbeats remain unfinished. The last Cargo check timed out and needs a longer build/test check.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 21,
+          "plan": {
+            "statement": "The actual election RPC continuations retain exact request and peer contexts and collect only distinct in-range matching-term grants, preserving every completion including errors and obsolete replies.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/election.rs::outbound",
+              "madraft/src/raft/election.rs::complete_call",
+              "madraft/src/raft/election.rs::record",
+              "madraft/src/raft/raft.rs::send_vote_request"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Checked self-vote/candidate histories are per-incarnation. Async timer/send composition, exact filesystem effects, network envelopes and prior sends, deployment identity and cross-crash history remain open. Reply collection and heartbeat behavior remain unfinished; global step/provenance/theorem exports remain missing.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 22,
+          "plan": {
+            "statement": "The real RPC continuation feeds its checked distinct-grant tally into a term/member/candidate-checked leader transition recorded in the actual runtime history.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/election.rs::complete_call",
+              "madraft/src/raft/protocol.rs::elect",
+              "madraft/src/raft/execution.rs::elect",
+              "madraft/src/raft/execution.rs::prepare_term",
+              "madraft/src/raft/execution.rs::finish_term",
+              "madraft/src/raft/raft.rs::send_vote_request"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Per-incarnation leader and higher-term transitions use checked tallies and owned storage contexts. Async composition, real sends and cross-node grant provenance, term-submission history linking, deployment identity and cross-crash histories remain open. Heartbeats, stable timeouts, logs and snapshots remain unfinished; global adapter step/provenance exports remain missing.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 23,
+          "plan": {
+            "statement": "The actual election RPC continuations retain exact request and peer contexts and collect only distinct in-range matching-term grants, preserving every completion including errors and obsolete replies.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/election.rs::outbound",
+              "madraft/src/raft/election.rs::complete_call",
+              "madraft/src/raft/election.rs::record",
+              "madraft/src/raft/raft.rs::send_vote_request"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Checked self-vote/candidate histories are per-incarnation. Async timer/send composition, exact filesystem effects, network envelopes and prior sends, deployment identity and cross-crash history remain open. Reply collection and heartbeat behavior remain unfinished; global step/provenance/theorem exports remain missing.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 24,
+          "plan": {
+            "statement": "The real RPC continuation feeds its checked distinct-grant tally into a term/member/candidate-checked leader transition recorded in the actual runtime history.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/election.rs::complete_call",
+              "madraft/src/raft/protocol.rs::elect",
+              "madraft/src/raft/execution.rs::elect",
+              "madraft/src/raft/raft.rs::send_vote_request"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Checked histories cover per-incarnation voting and per-election collectors. Async sender/receiver composition, network send provenance, exact filesystem effects, deployment identity and cross-crash history remain open. Leader authorization, higher-term reply persistence and heartbeats remain unfinished. The last Cargo check timed out and needs a longer build/test check.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 25,
+          "plan": {
+            "statement": "The actual RPC caller uses checked exact-value request/reply descriptors; the partial cluster adapter extracts matching envelopes without filtering erroneous payloads.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/wire.rs::from_call",
+              "madraft/src/raft/wire.rs::args",
+              "madraft/src/raft/wire.rs::new",
+              "madraft/src/raft/wire.rs::body",
+              "madraft/src/raft/raft.rs::send_vote_request",
+              "madraft/src/raft/raft.rs::start_rpc_server"
+            ],
+            "entry": "madraft/proof/adapter.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Exact executable descriptor extraction and partial adapter segments are checked. Actual host emission linearization, send and delivery linkage to local handlers, deployment group mapping, storage callbacks and cross-crash history remain open. runtime_step/runtime_invariant and projection theorem exports remain missing; no full cluster coverage is claimed.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 26,
+          "plan": {
+            "statement": "The real RPC continuation feeds its checked distinct-grant tally into a term/member/candidate-checked leader transition recorded in the actual runtime history.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/election.rs::complete_call",
+              "madraft/src/raft/protocol.rs::elect",
+              "madraft/src/raft/execution.rs::elect",
+              "madraft/src/raft/raft.rs::send_vote_request"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Checked histories cover per-incarnation voting and per-election collectors. Async sender/receiver composition, network send provenance, exact filesystem effects, deployment identity and cross-crash history remain open. Leader authorization, higher-term reply persistence and heartbeats remain unfinished. The last Cargo check timed out and needs a longer build/test check.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 27,
+          "plan": {
+            "statement": "The real RPC continuation feeds its checked distinct-grant tally into a term/member/candidate-checked leader transition recorded in the actual runtime history.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/election.rs::complete_call",
+              "madraft/src/raft/protocol.rs::elect",
+              "madraft/src/raft/execution.rs::elect",
+              "madraft/src/raft/execution.rs::prepare_term",
+              "madraft/src/raft/execution.rs::finish_term",
+              "madraft/src/raft/raft.rs::send_vote_request"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Per-incarnation leader and higher-term transitions use checked tallies and owned storage contexts. Async composition, real sends and cross-node grant provenance, term-submission history linking, deployment identity and cross-crash histories remain open. Heartbeats, stable timeouts, logs and snapshots remain unfinished; global adapter step/provenance exports remain missing.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 28,
+          "plan": {
+            "statement": "The actual RPC caller uses checked exact-value request/reply descriptors; the partial cluster adapter extracts matching envelopes without filtering erroneous payloads.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/wire.rs::from_call",
+              "madraft/src/raft/wire.rs::args",
+              "madraft/src/raft/wire.rs::new",
+              "madraft/src/raft/wire.rs::body",
+              "madraft/src/raft/raft.rs::send_vote_request",
+              "madraft/src/raft/raft.rs::start_rpc_server"
+            ],
+            "entry": "madraft/proof/implementation.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Per-incarnation leader and higher-term transitions use checked tallies and owned storage contexts. Async composition, real sends and cross-node grant provenance, term-submission history linking, deployment identity and cross-crash histories remain open. Heartbeats, stable timeouts, logs and snapshots remain unfinished; global adapter step/provenance exports remain missing.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 29,
+          "plan": {
+            "statement": "The actual RPC receiver retains the transport source, validates its candidate identity in checked code, and records the same delivered request in the running vote handler and response context.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/wire.rs::new",
+              "madraft/src/raft/execution.rs::begin_received",
+              "madraft/src/raft/execution.rs::finish_rpc",
+              "madraft/src/raft/raft.rs::start_rpc_server"
+            ],
+            "entry": "madraft/proof/adapter.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Checked inbound contexts and concrete history extensions are connected conditionally to recorded deliveries. Actual host send/delivery linearization, deployment source mapping, reply continuation provenance, storage callbacks and cross-crash histories remain open. runtime_invariant and initialized/preserved projection theorem exports remain missing; runtime_step covers only the supplied partial segments.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 30,
+          "plan": {
+            "statement": "The actual RPC caller uses checked exact-value request/reply descriptors; the partial cluster adapter extracts matching envelopes without filtering erroneous payloads.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/wire.rs::from_call",
+              "madraft/src/raft/wire.rs::args",
+              "madraft/src/raft/wire.rs::new",
+              "madraft/src/raft/wire.rs::body",
+              "madraft/src/raft/raft.rs::send_vote_request",
+              "madraft/src/raft/raft.rs::start_rpc_server"
+            ],
+            "entry": "madraft/proof/adapter.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Per-incarnation leader and higher-term transitions use checked tallies and owned storage contexts. Async composition, real sends and cross-node grant provenance, term-submission history linking, deployment identity and cross-crash histories remain open. Heartbeats, stable timeouts, logs and snapshots remain unfinished; global adapter step/provenance exports remain missing.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 31,
+          "plan": {
+            "statement": "The actual RPC caller uses checked exact-value request/reply descriptors; the partial cluster adapter extracts matching envelopes without filtering erroneous payloads.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/wire.rs::from_call",
+              "madraft/src/raft/wire.rs::args",
+              "madraft/src/raft/wire.rs::new",
+              "madraft/src/raft/wire.rs::body",
+              "madraft/src/raft/raft.rs::send_vote_request",
+              "madraft/src/raft/raft.rs::start_rpc_server"
+            ],
+            "entry": "madraft/proof/adapter.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Exact executable descriptor extraction and partial adapter segments are checked. Actual host emission linearization, send and delivery linkage to local handlers, deployment group mapping, storage callbacks and cross-crash history remain open. runtime_step/runtime_invariant and projection theorem exports remain missing; no full cluster coverage is claimed.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 32,
+          "plan": {
+            "statement": "The actual RPC receiver retains the transport source, validates its candidate identity in checked code, and records the same delivered request in the running vote handler and response context.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/wire.rs::new",
+              "madraft/src/raft/execution.rs::begin_received",
+              "madraft/src/raft/execution.rs::finish_rpc",
+              "madraft/src/raft/raft.rs::start_rpc_server"
+            ],
+            "entry": "madraft/proof/adapter.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Exact executable descriptor extraction and partial adapter segments are checked. Actual host emission linearization, send and delivery linkage to local handlers, deployment group mapping, storage callbacks and cross-crash history remain open. runtime_step/runtime_invariant and projection theorem exports remain missing; no full cluster coverage is claimed.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 33,
+          "plan": {
+            "statement": "The actual RPC receiver retains the transport source, validates its candidate identity in checked code, and records the same delivered request in the running vote handler and response context.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/wire.rs::new",
+              "madraft/src/raft/execution.rs::begin_received",
+              "madraft/src/raft/execution.rs::finish_rpc",
+              "madraft/src/raft/raft.rs::start_rpc_server"
+            ],
+            "entry": "madraft/proof/adapter.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Checked inbound contexts and concrete history extensions are connected conditionally to recorded deliveries. Actual host send/delivery linearization, deployment source mapping, reply continuation provenance, storage callbacks and cross-crash histories remain open. Initialized/preserved registry projection is checked for the supplied partial runtime_step segments; actual execution adequacy, storage and crash segments remain open.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 34,
+          "plan": {
+            "statement": "The actual RPC receiver retains the transport source, validates its candidate identity in checked code, and records the same delivered request in the running vote handler and response context.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/wire.rs::new",
+              "madraft/src/raft/execution.rs::begin_received",
+              "madraft/src/raft/execution.rs::finish_rpc",
+              "madraft/src/raft/raft.rs::start_rpc_server"
+            ],
+            "entry": "madraft/proof/adapter.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Exact executable descriptor extraction and partial adapter segments are checked. Actual host emission linearization, send and delivery linkage to local handlers, deployment group mapping, storage callbacks and cross-crash history remain open. runtime_step/runtime_invariant and projection theorem exports remain missing; no full cluster coverage is claimed.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 35,
+          "plan": {
+            "statement": "The actual RPC receiver retains the transport source, validates its candidate identity in checked code, and records the same delivered request in the running vote handler and response context.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/wire.rs::new",
+              "madraft/src/raft/execution.rs::begin_received",
+              "madraft/src/raft/execution.rs::finish_rpc",
+              "madraft/src/raft/raft.rs::start_rpc_server"
+            ],
+            "entry": "madraft/proof/adapter.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Checked inbound contexts and concrete history extensions are connected conditionally to recorded deliveries. Actual host send/delivery linearization, deployment source mapping, reply continuation provenance, storage callbacks and cross-crash histories remain open. runtime_invariant and initialized/preserved projection theorem exports remain missing; runtime_step covers only the supplied partial segments.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        },
+        {
+          "version": 36,
+          "plan": {
+            "statement": "The real receiver carries a private inbound request and peer context through persistence and checked reply release into the exact response submission.",
+            "goal": "execution_link",
+            "kind": "step",
+            "functions": [
+              "madraft/src/raft/execution.rs::begin_received",
+              "madraft/src/raft/execution.rs::finish_received",
+              "madraft/src/raft/raft.rs::start_rpc_server"
+            ],
+            "entry": "madraft/proof/adapter.rs",
+            "parent": "madraft/proof/execution_connection.rs",
+            "dependencies": [
+              "madraft/proof/initialization.rs",
+              "madraft/proof/durable_vote_reply.rs"
+            ],
+            "premises": "Checked inbound contexts and concrete history extensions are connected conditionally to recorded deliveries. Actual host send/delivery linearization, deployment source mapping, reply continuation provenance, storage callbacks and cross-crash histories remain open. Initialized/preserved registry projection is checked for the supplied partial runtime_step segments; actual execution adequacy, storage and crash segments remain open.",
+            "tests": [
+              "raft::raft::vote_tests",
+              "raft::tests::initial_election_2a"
+            ]
+          }
+        }
+      ],
+      "units": {
+        "madraft/proof/initialization.rs": "PASS",
+        "madraft/proof/vote_correspondence.rs": "PASS",
+        "madraft/proof/vote_history.rs": "PASS",
+        "madraft/proof/vote_operation.rs": "PASS",
+        "madraft/proof/vote_operation_history.rs": "PASS",
+        "madraft/proof/storage_correspondence.rs": "PASS",
+        "madraft/proof/durable_vote_reply.rs": "PASS",
+        "madraft/proof/implementation.rs": "PASS",
+        "madraft/proof/execution_connection.rs": "PASS",
+        "madraft/proof/adapter.rs": "PASS"
+      },
+      "stalled": 1,
+      "redesigns": 0,
+      "blocked": false,
+      "attempts": 48,
+      "passed_units": [
+        {
+          "entry": "madraft/proof/initialization.rs",
+          "snapshot": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793345224026956657/checked/candidate"
+        },
+        {
+          "entry": "madraft/proof/vote_correspondence.rs",
+          "snapshot": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793345224026956657/checked/candidate"
+        },
+        {
+          "entry": "madraft/proof/vote_history.rs",
+          "snapshot": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793345229557661222/checked/candidate"
+        },
+        {
+          "entry": "madraft/proof/vote_operation.rs",
+          "snapshot": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793345779865118887/checked/candidate"
+        },
+        {
+          "entry": "madraft/proof/vote_operation_history.rs",
+          "snapshot": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793345779865118887/checked/candidate"
+        },
+        {
+          "entry": "madraft/proof/storage_correspondence.rs",
+          "snapshot": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793346368020761249/checked/candidate"
+        },
+        {
+          "entry": "madraft/proof/durable_vote_reply.rs",
+          "snapshot": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793346368020761249/checked/candidate"
+        },
+        {
+          "entry": "madraft/proof/implementation.rs",
+          "snapshot": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793346921332059934/checked/candidate"
+        },
+        {
+          "entry": "madraft/proof/execution_connection.rs",
+          "snapshot": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793346921332059934/checked/candidate"
+        },
+        {
+          "entry": "madraft/proof/adapter.rs",
+          "snapshot": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-9-1793349935220174566/candidate"
+        }
+      ],
+      "last_outcome": "LOCAL_ONLY_OR_REVIEW",
+      "newly_checked": [],
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::start_rpc_server"
+        ],
+        "premises": "Checked inbound contexts and concrete history extensions are connected conditionally to recorded deliveries. Actual host send/delivery linearization, deployment source mapping, reply continuation provenance, storage callbacks and cross-crash histories remain open. Initialized/preserved registry projection is checked for the supplied partial runtime_step segments; actual execution adequacy, storage and crash segments remain open."
+      }
+    }
+  },
+  "checkpoints": [
+    {
+      "id": "cp-1",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793345224026956657/checked/results.json",
+      "scope": [
+        "proof/initialization.rs",
+        "proof/vote_correspondence.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "Async constructor and RPC wrapper composition, durable vote release, recovery, message provenance, and cluster induction remain open. Observation currently applies only to the implemented empty-log segment.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::new",
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "Async constructor and RPC wrapper composition, durable vote release, recovery, message provenance, and cluster induction remain open. Observation currently applies only to the implemented empty-log segment."
+      }
+    },
+    {
+      "id": "cp-2",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793345226704438095/checked/results.json",
+      "scope": [
+        "proof/initialization.rs",
+        "proof/vote_correspondence.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "Async constructor and RPC wrapper composition, durable vote release, recovery, message provenance, and cluster induction remain open. Observation currently applies only to the implemented empty-log segment.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::new",
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "Async constructor and RPC wrapper composition, durable vote release, recovery, message provenance, and cluster induction remain open. Observation currently applies only to the implemented empty-log segment."
+      }
+    },
+    {
+      "id": "cp-3",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793345229557661222/checked/results.json",
+      "scope": [
+        "proof/initialization.rs",
+        "proof/vote_correspondence.rs",
+        "proof/vote_history.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "Async constructor and RPC wrapper composition, durable vote release, recovery, message provenance, and cluster induction remain open. Observation currently applies only to the implemented empty-log segment.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::new",
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "Async constructor and RPC wrapper composition, durable vote release, recovery, message provenance, and cluster induction remain open. Observation currently applies only to the implemented empty-log segment."
+      }
+    },
+    {
+      "id": "cp-4",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-1-1793345232512353989/results.json",
+      "scope": [
+        "proof/initialization.rs",
+        "proof/vote_correspondence.rs",
+        "proof/vote_history.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "PASS",
+      "premises": "Async constructor and RPC wrapper composition, durable vote release, recovery, message provenance, and cluster induction remain open. Observation currently applies only to the implemented empty-log segment.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::new",
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "Async constructor and RPC wrapper composition, durable vote release, recovery, message provenance, and cluster induction remain open. Observation currently applies only to the implemented empty-log segment."
+      }
+    },
+    {
+      "id": "cp-5",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793345779865118887/checked/results.json",
+      "scope": [
+        "proof/initialization.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "Async constructor and RPC wrapper composition, durable vote release, recovery, message provenance, and cluster induction remain open. Observation currently applies only to the implemented empty-log segment.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::new",
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "Async constructor and RPC wrapper composition, durable vote release, recovery, message provenance, and cluster induction remain open. Observation currently applies only to the implemented empty-log segment."
+      }
+    },
+    {
+      "id": "cp-6",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793345785137632084/checked/results.json",
+      "scope": [
+        "proof/initialization.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "Async constructor and RPC wrapper composition, durable vote release, recovery, message provenance, and cluster induction remain open. Observation currently applies only to the implemented empty-log segment.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::new",
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "Async constructor and RPC wrapper composition, durable vote release, recovery, message provenance, and cluster induction remain open. Observation currently applies only to the implemented empty-log segment."
+      }
+    },
+    {
+      "id": "cp-7",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-2-1793345790407534604/results.json",
+      "scope": [
+        "proof/initialization.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "PASS",
+      "premises": "Async constructor and filesystem completion composition, actual network provenance, deployment group identity, crash histories and cluster induction remain open. A matching operation token alone is not durable evidence. Local operation histories cover only the implemented vote segment.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::new",
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "Async constructor and filesystem completion composition, actual network provenance, deployment group identity, crash histories and cluster induction remain open. A matching operation token alone is not durable evidence. Local operation histories cover only the implemented vote segment."
+      }
+    },
+    {
+      "id": "cp-8",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793346368020761249/checked/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "Async constructor and filesystem completion composition, actual network provenance, deployment group identity, crash histories and cluster induction remain open. A matching operation token alone is not durable evidence. Local operation histories cover only the implemented vote segment.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::persist",
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "Async constructor and filesystem completion composition, actual network provenance, deployment group identity, crash histories and cluster induction remain open. A matching operation token alone is not durable evidence. Local operation histories cover only the implemented vote segment."
+      }
+    },
+    {
+      "id": "cp-9",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793346376140535809/checked/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "Async constructor and filesystem completion composition, actual network provenance, deployment group identity, crash histories and cluster induction remain open. A matching operation token alone is not durable evidence. Local operation histories cover only the implemented vote segment.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::persist",
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "Async constructor and filesystem completion composition, actual network provenance, deployment group identity, crash histories and cluster induction remain open. A matching operation token alone is not durable evidence. Local operation histories cover only the implemented vote segment."
+      }
+    },
+    {
+      "id": "cp-10",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "PASS",
+      "premises": "Actual async dispatch must establish the specified submitted filesystem action and returned result, including exact buffer and handle; serde and pinned filesystem effects are explicit host contracts. Network provenance, group identity, arbitrary crash/restart histories and cluster induction remain open. A receipt alone is not durable evidence.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::persist",
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "Actual async dispatch must establish the specified submitted filesystem action and returned result, including exact buffer and handle; serde and pinned filesystem effects are explicit host contracts. Network provenance, group identity, arbitrary crash/restart histories and cluster induction remain open. A receipt alone is not durable evidence."
+      }
+    },
+    {
+      "id": "cp-11",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793346921332059934/checked/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "Actual async dispatch must establish the specified submitted filesystem action and returned result, including exact buffer and handle; serde and pinned filesystem effects are explicit host contracts. Network provenance, group identity, arbitrary crash/restart histories and cluster induction remain open. A receipt alone is not durable evidence.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "Actual async dispatch must establish the specified submitted filesystem action and returned result, including exact buffer and handle; serde and pinned filesystem effects are explicit host contracts. Network provenance, group identity, arbitrary crash/restart histories and cluster induction remain open. A receipt alone is not durable evidence."
+      }
+    },
+    {
+      "id": "cp-12",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-4-1793346930315597132/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "PASS",
+      "premises": "This checked connection covers actual per-incarnation handler histories. Async dispatch and filesystem-buffer/handle correspondence, genuine network sends, group identity and cross-crash cluster histories remain open. implementation.rs is a partial entry and does not export the final cluster adapter/theorem interface.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "This checked connection covers actual per-incarnation handler histories. Async dispatch and filesystem-buffer/handle correspondence, genuine network sends, group identity and cross-crash cluster histories remain open. implementation.rs is a partial entry and does not export the final cluster adapter/theorem interface."
+      }
+    },
+    {
+      "id": "cp-13",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793347480511782843/checked/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "Actual async dispatch must establish the specified submitted filesystem action and returned result, including exact buffer and handle; serde and pinned filesystem effects are explicit host contracts. Network provenance, group identity, arbitrary crash/restart histories and cluster induction remain open. A receipt alone is not durable evidence.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "Actual async dispatch must establish the specified submitted filesystem action and returned result, including exact buffer and handle; serde and pinned filesystem effects are explicit host contracts. Network provenance, group identity, arbitrary crash/restart histories and cluster induction remain open. A receipt alone is not durable evidence."
+      }
+    },
+    {
+      "id": "cp-14",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793347498566779395/checked/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "This checked connection covers actual per-incarnation handler histories. Async dispatch and filesystem-buffer/handle correspondence, genuine network sends, group identity and cross-crash cluster histories remain open. implementation.rs is a partial entry and does not export the final cluster adapter/theorem interface.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "This checked connection covers actual per-incarnation handler histories. Async dispatch and filesystem-buffer/handle correspondence, genuine network sends, group identity and cross-crash cluster histories remain open. implementation.rs is a partial entry and does not export the final cluster adapter/theorem interface."
+      }
+    },
+    {
+      "id": "cp-15",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-5-1793347508322809051/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "PASS",
+      "premises": "Checked caller context and histories are per-incarnation. Actual filesystem effects, network envelopes and prior sends, deployment group identity, and cross-crash history remain open. Global adapter types, projection and initial-registry relation exist; global steps and provenance/theorem exports remain missing.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "Checked caller context and histories are per-incarnation. Actual filesystem effects, network envelopes and prior sends, deployment group identity, and cross-crash history remain open. Global adapter types, projection and initial-registry relation exist; global steps and provenance/theorem exports remain missing."
+      }
+    },
+    {
+      "id": "cp-16",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793348037922959290/checked/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "This checked connection covers actual per-incarnation handler histories. Async dispatch and filesystem-buffer/handle correspondence, genuine network sends, group identity and cross-crash cluster histories remain open. implementation.rs is a partial entry and does not export the final cluster adapter/theorem interface.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "This checked connection covers actual per-incarnation handler histories. Async dispatch and filesystem-buffer/handle correspondence, genuine network sends, group identity and cross-crash cluster histories remain open. implementation.rs is a partial entry and does not export the final cluster adapter/theorem interface."
+      }
+    },
+    {
+      "id": "cp-17",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793348046486999509/checked/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "This checked connection covers actual per-incarnation handler histories. Async dispatch and filesystem-buffer/handle correspondence, genuine network sends, group identity and cross-crash cluster histories remain open. implementation.rs is a partial entry and does not export the final cluster adapter/theorem interface.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "This checked connection covers actual per-incarnation handler histories. Async dispatch and filesystem-buffer/handle correspondence, genuine network sends, group identity and cross-crash cluster histories remain open. implementation.rs is a partial entry and does not export the final cluster adapter/theorem interface."
+      }
+    },
+    {
+      "id": "cp-18",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793348056146211502/checked/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "Checked caller context and histories are per-incarnation. Actual filesystem effects, network envelopes and prior sends, deployment group identity, and cross-crash history remain open. Global adapter types, projection and initial-registry relation exist; global steps and provenance/theorem exports remain missing.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::send_vote_request",
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "Checked caller context and histories are per-incarnation. Actual filesystem effects, network envelopes and prior sends, deployment group identity, and cross-crash history remain open. Global adapter types, projection and initial-registry relation exist; global steps and provenance/theorem exports remain missing."
+      }
+    },
+    {
+      "id": "cp-19",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "PASS",
+      "premises": "Checked self-vote/candidate histories are per-incarnation. Async timer/send composition, exact filesystem effects, network envelopes and prior sends, deployment identity and cross-crash history remain open. Reply collection and heartbeat behavior remain unfinished; global step/provenance/theorem exports remain missing.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::send_vote_request",
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "Checked self-vote/candidate histories are per-incarnation. Async timer/send composition, exact filesystem effects, network envelopes and prior sends, deployment identity and cross-crash history remain open. Reply collection and heartbeat behavior remain unfinished; global step/provenance/theorem exports remain missing."
+      }
+    },
+    {
+      "id": "cp-20",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793348701390367346/checked/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "Checked caller context and histories are per-incarnation. Actual filesystem effects, network envelopes and prior sends, deployment group identity, and cross-crash history remain open. Global adapter types, projection and initial-registry relation exist; global steps and provenance/theorem exports remain missing.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::send_vote_request",
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "Checked caller context and histories are per-incarnation. Actual filesystem effects, network envelopes and prior sends, deployment group identity, and cross-crash history remain open. Global adapter types, projection and initial-registry relation exist; global steps and provenance/theorem exports remain missing."
+      }
+    },
+    {
+      "id": "cp-21",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793348710702285901/checked/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "Checked self-vote/candidate histories are per-incarnation. Async timer/send composition, exact filesystem effects, network envelopes and prior sends, deployment identity and cross-crash history remain open. Reply collection and heartbeat behavior remain unfinished; global step/provenance/theorem exports remain missing.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::send_vote_request",
+          "madraft/src/raft/raft.rs::request_vote"
+        ],
+        "premises": "Checked self-vote/candidate histories are per-incarnation. Async timer/send composition, exact filesystem effects, network envelopes and prior sends, deployment identity and cross-crash history remain open. Reply collection and heartbeat behavior remain unfinished; global step/provenance/theorem exports remain missing."
+      }
+    },
+    {
+      "id": "cp-22",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-7-1793348726919647224/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/election.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "PASS",
+      "premises": "Checked histories cover per-incarnation voting and per-election collectors. Async sender/receiver composition, network send provenance, exact filesystem effects, deployment identity and cross-crash history remain open. Leader authorization, higher-term reply persistence and heartbeats remain unfinished. The last Cargo check timed out and needs a longer build/test check.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::send_vote_request"
+        ],
+        "premises": "Checked histories cover per-incarnation voting and per-election collectors. Async sender/receiver composition, network send provenance, exact filesystem effects, deployment identity and cross-crash history remain open. Leader authorization, higher-term reply persistence and heartbeats remain unfinished. The last Cargo check timed out and needs a longer build/test check."
+      }
+    },
+    {
+      "id": "cp-23",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/election.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "PASS",
+      "premises": "Per-incarnation leader and higher-term transitions use checked tallies and owned storage contexts. Async composition, real sends and cross-node grant provenance, term-submission history linking, deployment identity and cross-crash histories remain open. Heartbeats, stable timeouts, logs and snapshots remain unfinished; global adapter step/provenance exports remain missing.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::send_vote_request"
+        ],
+        "premises": "Per-incarnation leader and higher-term transitions use checked tallies and owned storage contexts. Async composition, real sends and cross-node grant provenance, term-submission history linking, deployment identity and cross-crash histories remain open. Heartbeats, stable timeouts, logs and snapshots remain unfinished; global adapter step/provenance exports remain missing."
+      }
+    },
+    {
+      "id": "cp-24",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793349907574910409/checked/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/election.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "Checked self-vote/candidate histories are per-incarnation. Async timer/send composition, exact filesystem effects, network envelopes and prior sends, deployment identity and cross-crash history remain open. Reply collection and heartbeat behavior remain unfinished; global step/provenance/theorem exports remain missing.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::send_vote_request"
+        ],
+        "premises": "Checked self-vote/candidate histories are per-incarnation. Async timer/send composition, exact filesystem effects, network envelopes and prior sends, deployment identity and cross-crash history remain open. Reply collection and heartbeat behavior remain unfinished; global step/provenance/theorem exports remain missing."
+      }
+    },
+    {
+      "id": "cp-25",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793349918371410819/checked/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/election.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "Checked histories cover per-incarnation voting and per-election collectors. Async sender/receiver composition, network send provenance, exact filesystem effects, deployment identity and cross-crash history remain open. Leader authorization, higher-term reply persistence and heartbeats remain unfinished. The last Cargo check timed out and needs a longer build/test check.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::send_vote_request"
+        ],
+        "premises": "Checked histories cover per-incarnation voting and per-election collectors. Async sender/receiver composition, network send provenance, exact filesystem effects, deployment identity and cross-crash history remain open. Leader authorization, higher-term reply persistence and heartbeats remain unfinished. The last Cargo check timed out and needs a longer build/test check."
+      }
+    },
+    {
+      "id": "cp-26",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-9-1793349935220174566/results.json",
+      "scope": [
+        "proof/adapter.rs",
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/election.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs",
+        "src/raft/wire.rs"
+      ],
+      "layer": "LOCAL_UNIT_CHECKED",
+      "build_status": "PASS",
+      "premises": "Exact executable descriptor extraction and partial adapter segments are checked. Actual host emission linearization, send and delivery linkage to local handlers, deployment group mapping, storage callbacks and cross-crash history remain open. runtime_step/runtime_invariant and projection theorem exports remain missing; no full cluster coverage is claimed.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::send_vote_request",
+          "madraft/src/raft/raft.rs::start_rpc_server"
+        ],
+        "premises": "Exact executable descriptor extraction and partial adapter segments are checked. Actual host emission linearization, send and delivery linkage to local handlers, deployment group mapping, storage callbacks and cross-crash history remain open. runtime_step/runtime_invariant and projection theorem exports remain missing; no full cluster coverage is claimed."
+      }
+    },
+    {
+      "id": "cp-27",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793350506952363507/checked/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/election.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "Checked histories cover per-incarnation voting and per-election collectors. Async sender/receiver composition, network send provenance, exact filesystem effects, deployment identity and cross-crash history remain open. Leader authorization, higher-term reply persistence and heartbeats remain unfinished. The last Cargo check timed out and needs a longer build/test check.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::send_vote_request"
+        ],
+        "premises": "Checked histories cover per-incarnation voting and per-election collectors. Async sender/receiver composition, network send provenance, exact filesystem effects, deployment identity and cross-crash history remain open. Leader authorization, higher-term reply persistence and heartbeats remain unfinished. The last Cargo check timed out and needs a longer build/test check."
+      }
+    },
+    {
+      "id": "cp-28",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793350520532382931/checked/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/election.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "Per-incarnation leader and higher-term transitions use checked tallies and owned storage contexts. Async composition, real sends and cross-node grant provenance, term-submission history linking, deployment identity and cross-crash histories remain open. Heartbeats, stable timeouts, logs and snapshots remain unfinished; global adapter step/provenance exports remain missing.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::send_vote_request"
+        ],
+        "premises": "Per-incarnation leader and higher-term transitions use checked tallies and owned storage contexts. Async composition, real sends and cross-node grant provenance, term-submission history linking, deployment identity and cross-crash histories remain open. Heartbeats, stable timeouts, logs and snapshots remain unfinished; global adapter step/provenance exports remain missing."
+      }
+    },
+    {
+      "id": "cp-29",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793350532255318513/checked/results.json",
+      "scope": [
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/election.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs",
+        "src/raft/wire.rs"
+      ],
+      "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+      "build_status": "NOT_RUN",
+      "premises": "Per-incarnation leader and higher-term transitions use checked tallies and owned storage contexts. Async composition, real sends and cross-node grant provenance, term-submission history linking, deployment identity and cross-crash histories remain open. Heartbeats, stable timeouts, logs and snapshots remain unfinished; global adapter step/provenance exports remain missing.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::send_vote_request",
+          "madraft/src/raft/raft.rs::start_rpc_server"
+        ],
+        "premises": "Per-incarnation leader and higher-term transitions use checked tallies and owned storage contexts. Async composition, real sends and cross-node grant provenance, term-submission history linking, deployment identity and cross-crash histories remain open. Heartbeats, stable timeouts, logs and snapshots remain unfinished; global adapter step/provenance exports remain missing."
+      }
+    },
+    {
+      "id": "cp-30",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-10-1793350546218783652/results.json",
+      "scope": [
+        "proof/adapter.rs",
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/election.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs",
+        "src/raft/wire.rs"
+      ],
+      "layer": "LOCAL_UNIT_CHECKED",
+      "build_status": "PASS",
+      "premises": "Checked inbound contexts and concrete history extensions are connected conditionally to recorded deliveries. Actual host send/delivery linearization, deployment source mapping, reply continuation provenance, storage callbacks and cross-crash histories remain open. runtime_invariant and initialized/preserved projection theorem exports remain missing; runtime_step covers only the supplied partial segments.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::start_rpc_server"
+        ],
+        "premises": "Checked inbound contexts and concrete history extensions are connected conditionally to recorded deliveries. Actual host send/delivery linearization, deployment source mapping, reply continuation provenance, storage callbacks and cross-crash histories remain open. runtime_invariant and initialized/preserved projection theorem exports remain missing; runtime_step covers only the supplied partial segments."
+      }
+    },
+    {
+      "id": "cp-31",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793350892240951679/checked/results.json",
+      "scope": [
+        "proof/adapter.rs",
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/election.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs",
+        "src/raft/wire.rs"
+      ],
+      "layer": "LOCAL_UNIT_CHECKED",
+      "build_status": "NOT_RUN",
+      "premises": "Per-incarnation leader and higher-term transitions use checked tallies and owned storage contexts. Async composition, real sends and cross-node grant provenance, term-submission history linking, deployment identity and cross-crash histories remain open. Heartbeats, stable timeouts, logs and snapshots remain unfinished; global adapter step/provenance exports remain missing.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::send_vote_request",
+          "madraft/src/raft/raft.rs::start_rpc_server"
+        ],
+        "premises": "Per-incarnation leader and higher-term transitions use checked tallies and owned storage contexts. Async composition, real sends and cross-node grant provenance, term-submission history linking, deployment identity and cross-crash histories remain open. Heartbeats, stable timeouts, logs and snapshots remain unfinished; global adapter step/provenance exports remain missing."
+      }
+    },
+    {
+      "id": "cp-32",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793350901189867188/checked/results.json",
+      "scope": [
+        "proof/adapter.rs",
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/election.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs",
+        "src/raft/wire.rs"
+      ],
+      "layer": "LOCAL_UNIT_CHECKED",
+      "build_status": "NOT_RUN",
+      "premises": "Exact executable descriptor extraction and partial adapter segments are checked. Actual host emission linearization, send and delivery linkage to local handlers, deployment group mapping, storage callbacks and cross-crash history remain open. runtime_step/runtime_invariant and projection theorem exports remain missing; no full cluster coverage is claimed.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::send_vote_request",
+          "madraft/src/raft/raft.rs::start_rpc_server"
+        ],
+        "premises": "Exact executable descriptor extraction and partial adapter segments are checked. Actual host emission linearization, send and delivery linkage to local handlers, deployment group mapping, storage callbacks and cross-crash history remain open. runtime_step/runtime_invariant and projection theorem exports remain missing; no full cluster coverage is claimed."
+      }
+    },
+    {
+      "id": "cp-33",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-11-1793350916703886231/results.json",
+      "scope": [
+        "proof/adapter.rs",
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/election.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs",
+        "src/raft/wire.rs"
+      ],
+      "layer": "LOCAL_UNIT_CHECKED",
+      "build_status": "PASS",
+      "premises": "Checked inbound contexts and concrete history extensions are connected conditionally to recorded deliveries. Actual host send/delivery linearization, deployment source mapping, reply continuation provenance, storage callbacks and cross-crash histories remain open. Initialized/preserved registry projection is checked for the supplied partial runtime_step segments; actual execution adequacy, storage and crash segments remain open.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::start_rpc_server"
+        ],
+        "premises": "Checked inbound contexts and concrete history extensions are connected conditionally to recorded deliveries. Actual host send/delivery linearization, deployment source mapping, reply continuation provenance, storage callbacks and cross-crash histories remain open. Initialized/preserved registry projection is checked for the supplied partial runtime_step segments; actual execution adequacy, storage and crash segments remain open."
+      }
+    },
+    {
+      "id": "cp-34",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/replay-1793351208085438858/checked/results.json",
+      "scope": [
+        "proof/adapter.rs",
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/election.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs",
+        "src/raft/wire.rs"
+      ],
+      "layer": "LOCAL_UNIT_CHECKED",
+      "build_status": "NOT_RUN",
+      "premises": "Exact executable descriptor extraction and partial adapter segments are checked. Actual host emission linearization, send and delivery linkage to local handlers, deployment group mapping, storage callbacks and cross-crash history remain open. runtime_step/runtime_invariant and projection theorem exports remain missing; no full cluster coverage is claimed.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::start_rpc_server"
+        ],
+        "premises": "Exact executable descriptor extraction and partial adapter segments are checked. Actual host emission linearization, send and delivery linkage to local handlers, deployment group mapping, storage callbacks and cross-crash history remain open. runtime_step/runtime_invariant and projection theorem exports remain missing; no full cluster coverage is claimed."
+      }
+    },
+    {
+      "id": "cp-35",
+      "run_id": "b86194d0-7e39-415b-94d0-40a123eb4b82",
+      "input_fingerprint": "7e5fd9a4dee8d33c0562c6645814dbfd7dbfd9f53e5e53b3011e2473dcc51ab1",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-12-1793351241131800847/results.json",
+      "scope": [
+        "proof/adapter.rs",
+        "proof/durable_vote_reply.rs",
+        "proof/execution_connection.rs",
+        "proof/implementation.rs",
+        "proof/initialization.rs",
+        "proof/storage_correspondence.rs",
+        "proof/vote_operation.rs",
+        "proof/vote_operation_history.rs",
+        "src/raft/election.rs",
+        "src/raft/execution.rs",
+        "src/raft/protocol.rs",
+        "src/raft/raft.rs",
+        "src/raft/state.rs",
+        "src/raft/storage.rs",
+        "src/raft/wire.rs"
+      ],
+      "layer": "LOCAL_UNIT_CHECKED",
+      "build_status": "PASS",
+      "premises": "Checked inbound contexts and concrete history extensions are connected conditionally to recorded deliveries. Actual host send/delivery linearization, deployment source mapping, reply continuation provenance, storage callbacks and cross-crash histories remain open. Initialized/preserved registry projection is checked for the supplied partial runtime_step segments; actual execution adequacy, storage and crash segments remain open.",
+      "first_blocker": {
+        "reason": "outer_paths_open",
+        "paths": [
+          "madraft/src/raft/raft.rs::start_rpc_server"
+        ],
+        "premises": "Checked inbound contexts and concrete history extensions are connected conditionally to recorded deliveries. Actual host send/delivery linearization, deployment source mapping, reply continuation provenance, storage callbacks and cross-crash histories remain open. Initialized/preserved registry projection is checked for the supplied partial runtime_step segments; actual execution adequacy, storage and crash segments remain open."
+      }
+    }
+  ],
+  "rollbacks": [],
+  "pending_local_attempts": 3,
+  "unchanged_source_agent_seconds": 0,
+  "idle_or_wasted_seconds": null,
+  "interrupted_budget_seconds": 0,
+  "controller_overhead_seconds": 3.161389465985849
+}

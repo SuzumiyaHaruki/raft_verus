@@ -1,0 +1,72 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350445028927461/execution_link-caller.rs --crate-type lib --no-cheating --triggers-mode silent
+error[E0425]: cannot find function `runtime_invariant` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350445028927461/execution_link-caller.rs:35:23
+   |
+35 |         #[trigger] c::runtime_invariant(s, Seq::empty()) && c::initial(c::view(s)) by {
+   |                       ^^^^^^^^^^^^^^^^^ help: a function with a similar name exists: `runtime_initial`
+   |
+  ::: /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350445028927461/candidate/madraft/proof/implementation.rs:65:1
+   |
+65 | pub open spec fn runtime_initial(s: RuntimeState) -> bool {
+   | --------------------------------------------------------- similarly named function `runtime_initial` defined here
+
+error[E0425]: cannot find function `prove_runtime_initial` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350445028927461/execution_link-caller.rs:36:12
+   |
+36 |         c::prove_runtime_initial(s);
+   |            ^^^^^^^^^^^^^^^^^^^^^ help: a function with a similar name exists: `runtime_initial`
+   |
+  ::: /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350445028927461/candidate/madraft/proof/implementation.rs:65:1
+   |
+65 | pub open spec fn runtime_initial(s: RuntimeState) -> bool {
+   | --------------------------------------------------------- similarly named function `runtime_initial` defined here
+
+error[E0425]: cannot find function `runtime_invariant` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350445028927461/execution_link-caller.rs:40:23
+   |
+40 |         #[trigger] c::runtime_invariant(s,a) && #[trigger] c::runtime_step(s,i,t,o)
+   |                       ^^^^^^^^^^^^^^^^^ help: a function with a similar name exists: `runtime_initial`
+   |
+  ::: /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350445028927461/candidate/madraft/proof/implementation.rs:65:1
+   |
+65 | pub open spec fn runtime_initial(s: RuntimeState) -> bool {
+   | --------------------------------------------------------- similarly named function `runtime_initial` defined here
+
+error[E0425]: cannot find function `runtime_invariant` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350445028927461/execution_link-caller.rs:42:20
+   |
+42 |         implies c::runtime_invariant(t,b) && c::step(c::view(s),i,c::view(t),o) by {
+   |                    ^^^^^^^^^^^^^^^^^ help: a function with a similar name exists: `runtime_initial`
+   |
+  ::: /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350445028927461/candidate/madraft/proof/implementation.rs:65:1
+   |
+65 | pub open spec fn runtime_initial(s: RuntimeState) -> bool {
+   | --------------------------------------------------------- similarly named function `runtime_initial` defined here
+
+error[E0425]: cannot find function `prove_runtime_step` in module `c`
+   --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350445028927461/execution_link-caller.rs:43:12
+    |
+ 43 |         c::prove_runtime_step(s,i,t,o,a,b);
+    |            ^^^^^^^^^^^^^^^^^^ help: a function with a similar name exists: `runtime_step`
+    |
+   ::: /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350445028927461/candidate/madraft/proof/implementation.rs:167:1
+    |
+167 | pub open spec fn runtime_step(s: RuntimeState, i: Input, t: RuntimeState, o: Output) -> bool {
+    | -------------------------------------------------------------------------------------------- similarly named function `runtime_step` defined here
+
+error[E0425]: cannot find function `runtime_invariant` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350445028927461/execution_link-caller.rs:47:37
+   |
+47 |         |s| c::view(s), |s,sent| c::runtime_invariant(s,sent));
+   |                                     ^^^^^^^^^^^^^^^^^ help: a function with a similar name exists: `runtime_initial`
+   |
+  ::: /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350445028927461/candidate/madraft/proof/implementation.rs:65:1
+   |
+65 | pub open spec fn runtime_initial(s: RuntimeState) -> bool {
+   | --------------------------------------------------------- similarly named function `runtime_initial` defined here
+
+error: aborting due to 6 previous errors
+
+For more information about this error, try `rustc --explain E0425`.
+
+process=COMPLETED exit=1

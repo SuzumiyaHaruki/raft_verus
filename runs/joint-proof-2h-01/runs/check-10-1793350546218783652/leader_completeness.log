@@ -1,0 +1,18 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-10-1793350546218783652/leader_completeness-caller.rs --crate-type lib --no-cheating --triggers-mode silent
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-10-1793350546218783652/leader_completeness-caller.rs:21:45
+   |
+21 |     ensures targets::leader_completeness(c::observe(run)),
+   |                                             ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `prove_leader_completeness` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-10-1793350546218783652/leader_completeness-caller.rs:22:6
+   |
+22 | { c::prove_leader_completeness(run); }
+   |      ^^^^^^^^^^^^^^^^^^^^^^^^^ not found in `c`
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0425`.
+
+process=COMPLETED exit=1

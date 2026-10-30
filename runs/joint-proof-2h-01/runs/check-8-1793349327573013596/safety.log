@@ -1,0 +1,361 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs --crate-type lib --no-cheating --triggers-mode silent
+error[E0425]: cannot find function `step` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:15:55
+   |
+15 |     support::valid(h, |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                                                       ^^^^ not found in `c`
+   |
+help: consider importing one of these functions
+   |
+ 9 + use crate::implementation::durable_vote_reply::storage_correspondence::vote_operation_history::step;
+   |
+ 9 + use crate::implementation::executable::step;
+   |
+help: if you import `step`, refer to it directly
+   |
+15 -     support::valid(h, |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+15 +     support::valid(h, |s| c::initial(s), |s,i,t,o| step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |
+
+error[E0425]: cannot find function `receive` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:15:77
+   |
+15 |     support::valid(h, |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                                                                             ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `emit` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:15:96
+   |
+15 |     support::valid(h, |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                                                                                                ^^^^ not found in `c`
+
+error[E0425]: cannot find function `runtime_step` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:20:63
+   |
+20 |     support::valid(h, |s| c::runtime_initial(s), |s,i,t,o| c::runtime_step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                                                               ^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `receive` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:20:93
+   |
+20 |     support::valid(h, |s| c::runtime_initial(s), |s,i,t,o| c::runtime_step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                                                                                             ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `emit` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:20:112
+   |
+20 |     support::valid(h, |s| c::runtime_initial(s), |s,i,t,o| c::runtime_step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                                                                                                                ^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:29:41
+   |
+29 |     ensures targets::election_safety(c::observe(run)),
+   |                                         ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `prove_election_safety` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:30:6
+   |
+30 | { c::prove_election_safety(run); }
+   |      ^^^^^^^^^^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:35:44
+   |
+35 |     ensures targets::leader_append_only(c::observe(run)),
+   |                                            ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `prove_leader_append_only` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:36:6
+   |
+36 | { c::prove_leader_append_only(run); }
+   |      ^^^^^^^^^^^^^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:41:38
+   |
+41 |     ensures targets::log_matching(c::observe(run)),
+   |                                      ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `prove_log_matching` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:42:6
+   |
+42 | { c::prove_log_matching(run); }
+   |      ^^^^^^^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:47:45
+   |
+47 |     ensures targets::leader_completeness(c::observe(run)),
+   |                                             ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `prove_leader_completeness` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:48:6
+   |
+48 | { c::prove_leader_completeness(run); }
+   |      ^^^^^^^^^^^^^^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:53:46
+   |
+53 |     ensures targets::state_machine_safety(c::observe(run)),
+   |                                              ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `prove_state_machine_safety` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:54:6
+   |
+54 | { c::prove_state_machine_safety(run); }
+   |      ^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `runtime_invariant` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:67:23
+   |
+67 |         #[trigger] c::runtime_invariant(s, Seq::empty()) && c::initial(c::view(s)) by {
+   |                       ^^^^^^^^^^^^^^^^^ help: a function with a similar name exists: `runtime_initial`
+   |
+  ::: /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/candidate/madraft/proof/implementation.rs:43:1
+   |
+43 | pub open spec fn runtime_initial(s: RuntimeState) -> bool {
+   | --------------------------------------------------------- similarly named function `runtime_initial` defined here
+
+error[E0425]: cannot find function `prove_runtime_initial` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:68:12
+   |
+68 |         c::prove_runtime_initial(s);
+   |            ^^^^^^^^^^^^^^^^^^^^^ help: a function with a similar name exists: `runtime_initial`
+   |
+  ::: /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/candidate/madraft/proof/implementation.rs:43:1
+   |
+43 | pub open spec fn runtime_initial(s: RuntimeState) -> bool {
+   | --------------------------------------------------------- similarly named function `runtime_initial` defined here
+
+error[E0425]: cannot find function `runtime_invariant` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:72:23
+   |
+72 |         #[trigger] c::runtime_invariant(s,a) && #[trigger] c::runtime_step(s,i,t,o)
+   |                       ^^^^^^^^^^^^^^^^^ help: a function with a similar name exists: `runtime_initial`
+   |
+  ::: /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/candidate/madraft/proof/implementation.rs:43:1
+   |
+43 | pub open spec fn runtime_initial(s: RuntimeState) -> bool {
+   | --------------------------------------------------------- similarly named function `runtime_initial` defined here
+
+error[E0425]: cannot find function `runtime_step` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:72:63
+   |
+72 |         #[trigger] c::runtime_invariant(s,a) && #[trigger] c::runtime_step(s,i,t,o)
+   |                                                               ^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `receive` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:73:46
+   |
+73 |         && #[trigger] support::exchange(a,c::receive(i),c::emit(o),b)
+   |                                              ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `emit` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:73:60
+   |
+73 |         && #[trigger] support::exchange(a,c::receive(i),c::emit(o),b)
+   |                                                            ^^^^ not found in `c`
+
+error[E0425]: cannot find function `runtime_invariant` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:74:20
+   |
+74 |         implies c::runtime_invariant(t,b) && c::step(c::view(s),i,c::view(t),o) by {
+   |                    ^^^^^^^^^^^^^^^^^ help: a function with a similar name exists: `runtime_initial`
+   |
+  ::: /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/candidate/madraft/proof/implementation.rs:43:1
+   |
+43 | pub open spec fn runtime_initial(s: RuntimeState) -> bool {
+   | --------------------------------------------------------- similarly named function `runtime_initial` defined here
+
+error[E0425]: cannot find function `step` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:74:49
+   |
+74 |         implies c::runtime_invariant(t,b) && c::step(c::view(s),i,c::view(t),o) by {
+   |                                                 ^^^^ not found in `c`
+   |
+help: consider importing one of these functions
+   |
+ 9 + use crate::implementation::durable_vote_reply::storage_correspondence::vote_operation_history::step;
+   |
+ 9 + use crate::implementation::executable::step;
+   |
+help: if you import `step`, refer to it directly
+   |
+74 -         implies c::runtime_invariant(t,b) && c::step(c::view(s),i,c::view(t),o) by {
+74 +         implies c::runtime_invariant(t,b) && step(c::view(s),i,c::view(t),o) by {
+   |
+
+error[E0425]: cannot find function `prove_runtime_step` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:75:12
+   |
+75 |         c::prove_runtime_step(s,i,t,o,a,b);
+   |            ^^^^^^^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `runtime_step` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:77:68
+   |
+77 |     support::simulate(run, |s| c::runtime_initial(s), |s,i,t,o| c::runtime_step(s,i,t,o),
+   |                                                                    ^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `step` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:78:41
+   |
+78 |         |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o),
+   |                                         ^^^^ not found in `c`
+   |
+help: consider importing one of these functions
+   |
+ 9 + use crate::implementation::durable_vote_reply::storage_correspondence::vote_operation_history::step;
+   |
+ 9 + use crate::implementation::executable::step;
+   |
+help: if you import `step`, refer to it directly
+   |
+78 -         |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o),
+78 +         |s| c::initial(s), |s,i,t,o| step(s,i,t,o), |i| c::receive(i), |o| c::emit(o),
+   |
+
+error[E0425]: cannot find function `receive` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:78:63
+   |
+78 |         |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o),
+   |                                                               ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `emit` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:78:82
+   |
+78 |         |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o),
+   |                                                                                  ^^^^ not found in `c`
+
+error[E0425]: cannot find function `runtime_invariant` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:79:37
+   |
+79 |         |s| c::view(s), |s,sent| c::runtime_invariant(s,sent));
+   |                                     ^^^^^^^^^^^^^^^^^ help: a function with a similar name exists: `runtime_initial`
+   |
+  ::: /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/candidate/madraft/proof/implementation.rs:43:1
+   |
+43 | pub open spec fn runtime_initial(s: RuntimeState) -> bool {
+   | --------------------------------------------------------- similarly named function `runtime_initial` defined here
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:87:31
+   |
+87 |     ensures targets::shape(c::observe(run)),
+   |                               ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:88:39
+   |
+88 |         targets::snapshot_fidelity(c::observe(run), c::applications()),
+   |                                       ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `applications` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:88:56
+   |
+88 |         targets::snapshot_fidelity(c::observe(run), c::applications()),
+   |                                                        ^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `prove_observation_and_snapshots` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:89:6
+   |
+89 | { c::prove_observation_and_snapshots(run); }
+   |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:95:30
+   |
+95 |         && targets::shape(c::observe(abstract_execution(run)))
+   |                              ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:96:39
+   |
+96 |         && exists|i: int| 0 <= i < c::observe(abstract_execution(run)).events.len()
+   |                                       ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:97:21
+   |
+97 |             && !(c::observe(abstract_execution(run)).events[i] is Silent),
+   |                     ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `execution_witness` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:99:18
+   |
+99 |     let run = c::execution_witness();
+   |                  ^^^^^^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+   --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:101:30
+    |
+101 |     assert(targets::shape(c::observe(abstract_execution(run))));
+    |                              ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+   --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:102:39
+    |
+102 |     assert(exists|i: int| 0 <= i < c::observe(abstract_execution(run)).events.len()
+    |                                       ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+   --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:103:17
+    |
+103 |         && !(c::observe(abstract_execution(run)).events[i] is Silent));
+    |                 ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+   --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:110:41
+    |
+110 |     ensures targets::election_safety(c::observe(abstract_execution(run))),
+    |                                         ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+   --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:111:40
+    |
+111 |         targets::leader_append_only(c::observe(abstract_execution(run))),
+    |                                        ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+   --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:112:34
+    |
+112 |         targets::log_matching(c::observe(abstract_execution(run))),
+    |                                  ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+   --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:113:41
+    |
+113 |         targets::leader_completeness(c::observe(abstract_execution(run))),
+    |                                         ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+   --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:114:42
+    |
+114 |         targets::state_machine_safety(c::observe(abstract_execution(run))),
+    |                                          ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+   --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:115:27
+    |
+115 |         targets::shape(c::observe(abstract_execution(run))),
+    |                           ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+   --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:116:39
+    |
+116 |         targets::snapshot_fidelity(c::observe(abstract_execution(run)), c::applications()),
+    |                                       ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `applications` in module `c`
+   --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-8-1793349327573013596/safety-caller.rs:116:76
+    |
+116 |         targets::snapshot_fidelity(c::observe(abstract_execution(run)), c::applications()),
+    |                                                                            ^^^^^^^^^^^^ not found in `c`
+
+error: aborting due to 49 previous errors
+
+For more information about this error, try `rustc --explain E0425`.
+
+process=COMPLETED exit=1

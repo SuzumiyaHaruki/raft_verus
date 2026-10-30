@@ -8,7 +8,7 @@ import subprocess
 
 HELPERS = ('check.py', 'process.py', 'tools.py', 'inputs.py')
 SKIP = {'target', 'runs', '__pycache__', '.git', '.codex', '.agents', 'codex-home', '.verus-log'}
-INPUT_VERSION = 'madraft-joint-proof-4'
+INPUT_VERSION = 'madraft-joint-proof-5'
 
 
 def fingerprint(files):

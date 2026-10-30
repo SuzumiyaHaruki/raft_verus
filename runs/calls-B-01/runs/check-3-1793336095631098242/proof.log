@@ -1,4 +1,0 @@
-$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/.controller/calls-B-01/check-3-1793336095631098242/candidate/madraft/proof/progress.rs --crate-type lib --no-cheating --triggers-mode silent
-verification results:: 31 verified, 0 errors
-
-process=COMPLETED exit=0

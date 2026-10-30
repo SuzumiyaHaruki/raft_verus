@@ -44,7 +44,7 @@ class LoopTests(unittest.TestCase):
         self.workspace = self.root / 'runs/new-experiment'
         cfg = controller.settings(self.root)
         cfg['agent'].update(total_seconds='30', slice_seconds='1', check_seconds='1', max_rounds='3',
-                            stall_rounds='2', max_redesigns='1', min_work_seconds='.1', handoff_seconds='.1', final_seconds='1')
+                            stall_attempts='3', max_obligation_redesigns='2', max_redesigns='6', min_work_seconds='.1', handoff_seconds='.1', final_seconds='1')
         with (self.root / 'tools.ini').open('w') as f: cfg.write(f)
         self.home = Path(self.tmp.name) / 'personal'
         self.home.mkdir()
@@ -194,14 +194,22 @@ pathlib.Path(sys.argv[sys.argv.index('--output-last-message')+1]).write_text('SI
         self.assertEqual(self.invoke('resume','--execute'),1)
         self.assertEqual(self.state()['status'],'INCOMPLETE')
 
-    def test_stagnation_triggers_bounded_redesign(self):
+    def test_missing_interfaces_do_not_consume_redesigns(self):
         self.invoke('new','--execute','--max-rounds','8')
         state=self.state()
-        self.assertEqual(state['redesigns'],1)
+        self.assertEqual(state['redesigns'],0)
         self.assertEqual(state['attempts'],8)
         self.assertIn('Maximum generation rounds',state['reason'])
-        self.assertTrue(any(h['mode']=='redesign' for h in state['history']))
+        self.assertFalse(any(h['mode']=='redesign' for h in state['history']))
         self.assertIn('SIMULATED approach',(self.workspace/'runs/round-3/prompt.md').read_text())
+
+    def test_fake_agent_can_continue_past_eight_handoffs(self):
+        self.invoke('new','--execute','--max-rounds','9','--total-seconds','7200')
+        state=self.state()
+        self.assertEqual(state['attempts'],9)
+        self.assertLess(state['seconds_spent'],7200)
+        self.assertEqual(state['history'][7]['next_check'],'feedback')
+        self.assertEqual(state['history'][8]['next_check'],'final')
 
     def test_changed_fixed_inputs_require_review(self):
         self.invoke('new','--execute','--max-rounds','1')
@@ -240,16 +248,6 @@ pathlib.Path(sys.argv[sys.argv.index('--output-last-message')+1]).write_text('SI
         self.invoke('resume', '--execute', '--max-rounds', '2')
         self.assertEqual(len(self.state()['history']), 2)
 
-    def test_changed_real_diagnostics_are_not_stagnation_from_local_counts(self):
-        first = {'checks': {'election_safety': {'status': 'OPEN', 'reason': 'verification_failure',
-                                                'diagnostic': 'SIMULATED: initialization postcondition'}}}
-        second = {'checks': {'election_safety': {'status': 'OPEN', 'reason': 'verification_failure',
-                                                 'diagnostic': 'SIMULATED: transition postcondition'}}}
-        self.assertNotEqual(controller.unresolved(first), controller.unresolved(second))
-        second['checks']['election_safety']['diagnostic'] = first['checks']['election_safety']['diagnostic']
-        second['checks']['proof'] = {'status': 'PASS', 'reason': 'checked', 'diagnostic': '999 verified SIMULATED'}
-        self.assertEqual(controller.unresolved(first), controller.unresolved(second))
-
     def test_timeout_keeps_candidate_logs_and_same_session(self):
         self.invoke('new','--execute','--max-rounds','1')
         (self.workspace/'SIMULATED-sleep').touch()
@@ -276,48 +274,6 @@ pathlib.Path(sys.argv[sys.argv.index('--output-last-message')+1]).write_text('SI
         self.assertIn('Soft handoff deadline:', prompt)
         self.assertIn('return normally', prompt)
 
-    def test_test_progress_does_not_reset_individual_proof_stagnation(self):
-        state = {'proof_gaps': {}}
-        report = {'checks': {'execution_link': {'status':'OPEN', 'reason':'verification_failure',
-                                              'diagnostic':'SIMULATED same init lemma'},
-                             'election_safety': {'status':'OPEN', 'reason':'verification_failure',
-                                                'diagnostic':'SIMULATED election'},
-                             'tests_seed_1': {'status':'OPEN', 'reason':'test_failure', 'passed_tests':[]}}}
-        controller.track_proofs(state, report)
-        for n in range(3):
-            report['checks']['tests_seed_1']['passed_tests'].append(str(n))
-            report['checks']['election_safety']['diagnostic'] += ' changed'
-            controller.track_proofs(state, report)
-        self.assertEqual(state['proof_gaps']['execution_link']['repeats'], 3)
-        self.assertEqual(state['proof_gaps']['election_safety']['repeats'], 0)
-
-    def test_common_dependency_remains_stalled_when_other_errors_change(self):
-        state = {'proof_gaps': {}}
-        error = dict(file='madraft/src/core.rs', function='actual_step', line=10, column=1,
-                     message='postcondition not satisfied', category='dependency_failure')
-        report = {'checks': {'execution_link': {'status':'OPEN','reason':'verification_failure','errors':[error]}}}
-        controller.track_proofs(state, report)
-        error['line'] = 20  # Moving code is not mathematical progress.
-        report['checks']['execution_link']['errors'].append(dict(error, function='another_lemma'))
-        controller.track_proofs(state, report)
-        self.assertEqual(state['proof_gaps']['dependency:madraft/src/core.rs::actual_step']['repeats'], 1)
-
-    def test_resume_recheck_does_not_count_as_another_generation_round(self):
-        state = {'proof_gaps': {}}
-        report = {'checks': {'execution_link': {'status':'OPEN','reason':'verification_failure','diagnostic':'SIMULATED'}}}
-        controller.track_proofs(state, report)
-        controller.track_proofs(state, report)
-        before = state['stale_rounds']
-        controller.track_proofs(state, report, advance=False)
-        self.assertEqual(state['stale_rounds'], before)
-
-    def test_unrun_proof_is_a_scheduling_problem_not_redesign(self):
-        state = {'proof_gaps': {}}
-        report = {'checks': {'execution_link': {'status':'OPEN', 'reason':'check_budget_exhausted'}}}
-        for _ in range(3): controller.track_proofs(state, report)
-        self.assertEqual(state['stale_rounds'], 0)
-        self.assertEqual(state['proof_gaps']['execution_link']['missed'], 3)
-
     def test_lock_prevents_two_writers(self):
         self.invoke('new','--execute','--max-rounds','1')
         with (controller.control_path(self.root,self.workspace)/'session.lock').open('w') as lock:
@@ -330,25 +286,8 @@ pathlib.Path(sys.argv[sys.argv.index('--output-last-message')+1]).write_text('SI
         self.invoke('new','--execute','--max-rounds','2')
         prompt=(self.workspace/'runs/round-2/prompt.md').read_text()
         self.assertIn('connection_recovery: OPEN',prompt)
-        self.assertIn('actual-execution connection',prompt)
+        self.assertIn('outer paths',prompt)
         self.assertEqual(self.state()['status'],'INCOMPLETE')
-
-    def test_auxiliary_unit_closure_is_progress_without_clearing_other_gap(self):
-        state={'proof_gaps':{}}
-        report={'checks':{'connection_recovery':dict(status='OPEN',reason='verification_failure',diagnostic='caller precondition'),
-                          'connection_outputs':dict(status='OPEN',reason='verification_failure',diagnostic='actual send')}}
-        controller.track_proofs(state,report)
-        report['checks']['connection_outputs'].update(status='PASS',reason='checked')
-        controller.track_proofs(state,report)
-        self.assertEqual(state['newly_checked_dependencies'],['connection_outputs'])
-        self.assertEqual(state['proof_gaps']['connection_recovery']['repeats'],1)
-
-    def test_timeouts_do_not_count_as_mathematical_stagnation(self):
-        state={'proof_gaps':{}}
-        report={'checks':{'connection_recovery':dict(status='OPEN',reason='verification_timeout')}}
-        for _ in range(3):controller.track_proofs(state,report)
-        self.assertEqual(state['stale_rounds'],0)
-        self.assertEqual(state['proof_gaps']['connection_recovery']['missed'],3)
 
     def test_closing_budget_uses_work_then_final_without_feedback_reserve(self):
         state=dict(total_seconds=3600,seconds_spent=2650,slice_seconds=600,check_seconds=300,

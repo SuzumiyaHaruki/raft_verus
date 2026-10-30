@@ -1,0 +1,48 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-10-1793350546218783652/nonempty_execution-caller.rs --crate-type lib --no-cheating --triggers-mode silent
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-10-1793350546218783652/nonempty_execution-caller.rs:30:30
+   |
+30 |         && targets::shape(c::observe(abstract_execution(run)))
+   |                              ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-10-1793350546218783652/nonempty_execution-caller.rs:31:39
+   |
+31 |         && exists|i: int| 0 <= i < c::observe(abstract_execution(run)).events.len()
+   |                                       ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-10-1793350546218783652/nonempty_execution-caller.rs:32:21
+   |
+32 |             && !(c::observe(abstract_execution(run)).events[i] is Silent),
+   |                     ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `execution_witness` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-10-1793350546218783652/nonempty_execution-caller.rs:34:18
+   |
+34 |     let run = c::execution_witness();
+   |                  ^^^^^^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-10-1793350546218783652/nonempty_execution-caller.rs:36:30
+   |
+36 |     assert(targets::shape(c::observe(abstract_execution(run))));
+   |                              ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-10-1793350546218783652/nonempty_execution-caller.rs:37:39
+   |
+37 |     assert(exists|i: int| 0 <= i < c::observe(abstract_execution(run)).events.len()
+   |                                       ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-10-1793350546218783652/nonempty_execution-caller.rs:38:17
+   |
+38 |         && !(c::observe(abstract_execution(run)).events[i] is Silent));
+   |                 ^^^^^^^ not found in `c`
+
+error: aborting due to 7 previous errors
+
+For more information about this error, try `rustc --explain E0425`.
+
+process=COMPLETED exit=1

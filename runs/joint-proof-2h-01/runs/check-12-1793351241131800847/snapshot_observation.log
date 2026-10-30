@@ -1,0 +1,30 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-12-1793351241131800847/snapshot_observation-caller.rs --crate-type lib --no-cheating --triggers-mode silent
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-12-1793351241131800847/snapshot_observation-caller.rs:21:31
+   |
+21 |     ensures targets::shape(c::observe(run)),
+   |                               ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-12-1793351241131800847/snapshot_observation-caller.rs:22:39
+   |
+22 |         targets::snapshot_fidelity(c::observe(run), c::applications()),
+   |                                       ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `applications` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-12-1793351241131800847/snapshot_observation-caller.rs:22:56
+   |
+22 |         targets::snapshot_fidelity(c::observe(run), c::applications()),
+   |                                                        ^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `prove_observation_and_snapshots` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-12-1793351241131800847/snapshot_observation-caller.rs:23:6
+   |
+23 | { c::prove_observation_and_snapshots(run); }
+   |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in `c`
+
+error: aborting due to 4 previous errors
+
+For more information about this error, try `rustc --explain E0425`.
+
+process=COMPLETED exit=1

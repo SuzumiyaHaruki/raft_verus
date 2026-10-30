@@ -1,0 +1,1641 @@
+{
+  "status": "INCOMPLETE",
+  "mode": "feedback",
+  "input_version": "madraft-joint-proof-5",
+  "candidate_revision": "check-3-1793346384651368250",
+  "workspace": "/home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01",
+  "checker_authority": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/inputs",
+  "snapshot": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/candidate",
+  "source_files": [
+    "Cargo.lock",
+    "Cargo.toml",
+    "LICENSE",
+    "README.md",
+    "proof/README.md",
+    "proof/durable_vote_reply.rs",
+    "proof/initialization.rs",
+    "proof/progress.rs",
+    "proof/recovery.rs",
+    "proof/storage_correspondence.rs",
+    "proof/vote_correspondence.rs",
+    "proof/vote_history.rs",
+    "proof/vote_operation.rs",
+    "proof/vote_operation_history.rs",
+    "src/kvraft/client.rs",
+    "src/kvraft/mod.rs",
+    "src/kvraft/msg.rs",
+    "src/kvraft/server.rs",
+    "src/kvraft/tester.rs",
+    "src/kvraft/tests.rs",
+    "src/lib.rs",
+    "src/raft/mod.rs",
+    "src/raft/protocol.rs",
+    "src/raft/raft.rs",
+    "src/raft/state.rs",
+    "src/raft/storage.rs",
+    "src/raft/tester.rs",
+    "src/raft/tests.rs",
+    "src/shard_ctrler/client.rs",
+    "src/shard_ctrler/mod.rs",
+    "src/shard_ctrler/msg.rs",
+    "src/shard_ctrler/server.rs",
+    "src/shard_ctrler/tester.rs",
+    "src/shard_ctrler/tests.rs",
+    "src/shardkv/client.rs",
+    "src/shardkv/mod.rs",
+    "src/shardkv/msg.rs",
+    "src/shardkv/server.rs",
+    "src/shardkv/tester.rs",
+    "src/shardkv/tests.rs",
+    "src/test_support.rs"
+  ],
+  "checks": {
+    "build": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--manifest-path",
+        "madraft/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--lib",
+        "--no-run"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/build.log",
+      "scope": "build",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 22.81163150500288,
+      "seed": 1,
+      "diagnostic": "info)\n\nwarning: unreachable statement\n   --> src/raft/raft.rs:272:9\n    |\n271 |         let args: RequestVoteArgs = todo!(\"construct RPC request\");\n    |                                     ------------------------------ any code following this expression is unreachable\n272 |         let timeout = Self::generate_election_timeout();\n    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unreachable statement\n\nwarning: use of deprecated method `madsim::net::NetSim::disconnect`: use `clog_node` instead\n   --> src/raft/tester.rs:271:27\n    |\n271 |         NetSim::current().disconnect(node_id(&self.handle, self.addrs[i]));\n    |                           ^^^^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead\n   --> src/raft/tester.rs:278:27\n    |\n278 |         NetSim::current().connect(node_id(&self.handle, self.addrs[i]));\n    |                           ^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead\n  --> src/test_support.rs:77:23\n   |\n77 |     NetSim::current().disconnect2(server.id(), client.id());\n   |                       ^^^^^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead\n  --> src/test_support.rs:79:23\n   |\n79 |     NetSim::current().connect2(server.id(), client.id());\n   |                       ^^^^^^^^\n\nwarning: unused variable: `ret`\n  --> src/kvraft/client.rs:52:17\n   |\n52 |             let ret = net\n   |                 ^^^ help: if this is intentional, prefix it with an underscore: `_ret`\n   |\n   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default\n\nwarning: unused variable: `max_raft_state`\n  --> src/kvraft/server.rs:34:9\n   |\n34 |         max_raft_state: Option<usize>,\n   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`\n\nwarning: unused variable: `apply_ch`\n  --> src/kvraft/server.rs:37:18\n   |\n37 |         let (rf, apply_ch) = raft::RaftHandle::new(servers, me).await;\n   |                  ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_apply_ch`\n\nwarning: unused variable: `cmd`\n  --> src/kvraft/server.rs:68:27\n   |\n68 |     async fn apply(&self, cmd: S::Command) -> Result<S::Output, Error> {\n   |                           ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: unused variable: `cmd`\n  --> src/kvraft/server.rs:84:25\n   |\n84 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: unused variable: `last_included_term`\n   --> src/raft/raft.rs:139:9\n    |\n139 |         last_included_term: u64,\n    |         ^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_term`\n\nwarning: unused variable: `last_included_index`\n   --> src/raft/raft.rs:140:9\n    |\n140 |         last_included_index: u64,\n    |         ^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_index`\n\nwarning: unused variable: `snapshot`\n   --> src/raft/raft.rs:141:9\n    |\n141 |         snapshot: &[u8],\n    |         ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`\n\nwarning: unused variable: `index`\n   --> src/raft/raft.rs:150:34\n    |\n150 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {\n    |                                  ^^^^^ help: if this is intentional, prefix it with an underscore: `_index`\n\nwarning: unused variable: `snapshot`\n   --> src/raft/raft.rs:150:46\n    |\n150 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {\n    |                                              ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`\n\nwarning: unused variable: `data`\n   --> src/raft/raft.rs:242:25\n    |\n242 |     fn start(&mut self, data: &[u8]) -> Result<Start> {\n    |                         ^^^^ help: if this is intentional, prefix it with an underscore: `_data`\n\nwarning: unused variable: `msg`\n   --> src/raft/raft.rs:252:13\n    |\n252 |         let msg = ApplyMsg::Command {\n    |             ^^^ help: if this is intentional, prefix it with an underscore: `_msg`\n\nwarning: unused variable: `args`\n   --> src/raft/raft.rs:271:13\n    |\n271 |         let args: RequestVoteArgs = todo!(\"construct RPC request\");\n    |             ^^^^ help: if this is intentional, prefix it with an underscore: `_args`\n\nwarning: unused variable: `res`\n   --> src/raft/raft.rs:292:28\n    |\n292 |             while let Some(res) = rpcs.next().await {\n    |                            ^^^ help: if this is intentional, prefix it with an underscore: `_res`\n\nwarning: unused variable: `cmd`\n  --> src/shard_ctrler/server.rs:16:25\n   |\n16 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:15:29\n   |\n15 |     pub async fn get(&self, key: String) -> String {\n   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:19:29\n   |\n19 |     pub async fn put(&self, key: String, value: String) {\n   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `value`\n  --> src/shardkv/client.rs:19:42\n   |\n19 |     pub async fn put(&self, key: String, value: String) {\n   |                                          ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:23:32\n   |\n23 |     pub async fn append(&self, key: String, value: String) {\n   |                                ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `value`\n  --> src/shardkv/client.rs:23:45\n   |\n23 |     pub async fn append(&self, key: String, value: String) {\n   |                                             ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`\n\nwarning: unused variable: `ctrl_ck`\n  --> src/shardkv/server.rs:13:9\n   |\n13 |         ctrl_ck: CtrlerClerk,\n   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_ctrl_ck`\n\nwarning: unused variable: `servers`\n  --> src/shardkv/server.rs:14:9\n   |\n14 |         servers: Vec<SocketAddr>,\n   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_servers`\n\nwarning: unused variable: `gid`\n  --> src/shardkv/server.rs:15:9\n   |\n15 |         gid: u64,\n   |         ^^^ help: if this is intentional, prefix it with an underscore: `_gid`\n\nwarning: unused variable: `me`\n  --> src/shardkv/server.rs:16:9\n   |\n16 |         me: usize,\n   |         ^^ help: if this is intentional, prefix it with an underscore: `_me`\n\nwarning: unused variable: `max_raft_state`\n  --> src/shardkv/server.rs:17:9\n   |\n17 |         max_raft_state: Option<usize>,\n   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`\n\nwarning: unused variable: `cmd`\n  --> src/shardkv/server.rs:34:25\n   |\n34 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: fields `endpoint` and `apply_ch` are never read\n  --> src/raft/raft.rs:60:5\n   |\n59 | struct Raft {\n   |        ---- fields in this struct\n60 |     endpoint: net::Endpoint,\n   |     ^^^^^^^^\n...\n63 |     apply_ch: MsgSender,\n   |     ^^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: associated items `apply`, `generate_election_timeout`, and `send_vote_request` are never used\n   --> src/raft/raft.rs:251:8\n    |\n241 | impl Raft {\n    | --------- associated items in this implementation\n...\n251 |     fn apply(&self) {\n    |        ^^^^^\n...\n264 |     fn generate_election_timeout() -> Duration {\n    |        ^^^^^^^^^^^^^^^^^^^^^^^^^\n...\n270 |     fn send_vote_request(&mut self) {\n    |        ^^^^^^^^^^^^^^^^^\n\nwarning: variants `Candidate` and `Leader` are never constructed\n  --> src/raft/state.rs:17:27\n   |\n17 | pub enum Role { Follower, Candidate, Leader }\n   |          ----             ^^^^^^^^^  ^^^^^^\n   |          |\n   |          variants in this enum\n   |\n   = note: `Role` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis\n\nwarning: fields `request` and `before` are never read\n  --> src/raft/protocol.rs:24:5\n   |\n21 | struct PendingVote {\n   |        ----------- fields in this struct\n...\n24 |     request: VoteRequest,\n   |     ^^^^^^^\n25 |     reply: VoteReply,\n26 |     before: Ghost<State>,\n   |     ^^^^^^\n   |\n   = note: `PendingVote` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis\n\nwarning: struct `OperationView` is never constructed\n  --> src/raft/protocol.rs:40:12\n   |\n40 | pub struct OperationView {\n   |            ^^^^^^^^^^^^^\n\nwarning: field `ctrl_ck` is never read\n --> src/shardkv/client.rs:5:5\n  |\n4 | pub struct Clerk {\n  |            ----- field in this struct\n5 |     ctrl_ck: CtrlerClerk,\n  |     ^^^^^^^\n\nwarning: field `inner` is never read\n --> src/shardkv/server.rs:8:5\n  |\n7 | pub struct ShardKvServer {\n  |            ------------- field in this struct\n8 |     inner: Arc<Server<ShardKv>>,\n  |     ^^^^^\n\nwarning: `madraft` (lib test) generated 48 warnings (run `cargo fix --lib -p madraft --tests` to apply 29 suggestions)\n    Finished `release` profile [optimized] target(s) in 22.78s\n  Executable unittests src/lib.rs (/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target/release/deps/madraft-9d1fbd9857b1c1bd)\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_SEED": "1",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "family": ""
+    },
+    "inventory": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--manifest-path",
+        "madraft/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--lib",
+        "--",
+        "--list"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/inventory.log",
+      "scope": "inventory",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.14594212500014692,
+      "seed": 1,
+      "diagnostic": "ded_term`\n   --> src/raft/raft.rs:139:9\n    |\n139 |         last_included_term: u64,\n    |         ^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_term`\n\nwarning: unused variable: `last_included_index`\n   --> src/raft/raft.rs:140:9\n    |\n140 |         last_included_index: u64,\n    |         ^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_index`\n\nwarning: unused variable: `snapshot`\n   --> src/raft/raft.rs:141:9\n    |\n141 |         snapshot: &[u8],\n    |         ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`\n\nwarning: unused variable: `index`\n   --> src/raft/raft.rs:150:34\n    |\n150 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {\n    |                                  ^^^^^ help: if this is intentional, prefix it with an underscore: `_index`\n\nwarning: unused variable: `snapshot`\n   --> src/raft/raft.rs:150:46\n    |\n150 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {\n    |                                              ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`\n\nwarning: unused variable: `data`\n   --> src/raft/raft.rs:242:25\n    |\n242 |     fn start(&mut self, data: &[u8]) -> Result<Start> {\n    |                         ^^^^ help: if this is intentional, prefix it with an underscore: `_data`\n\nwarning: unused variable: `msg`\n   --> src/raft/raft.rs:252:13\n    |\n252 |         let msg = ApplyMsg::Command {\n    |             ^^^ help: if this is intentional, prefix it with an underscore: `_msg`\n\nwarning: unused variable: `args`\n   --> src/raft/raft.rs:271:13\n    |\n271 |         let args: RequestVoteArgs = todo!(\"construct RPC request\");\n    |             ^^^^ help: if this is intentional, prefix it with an underscore: `_args`\n\nwarning: unused variable: `res`\n   --> src/raft/raft.rs:292:28\n    |\n292 |             while let Some(res) = rpcs.next().await {\n    |                            ^^^ help: if this is intentional, prefix it with an underscore: `_res`\n\nwarning: unused variable: `cmd`\n  --> src/shard_ctrler/server.rs:16:25\n   |\n16 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:15:29\n   |\n15 |     pub async fn get(&self, key: String) -> String {\n   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:19:29\n   |\n19 |     pub async fn put(&self, key: String, value: String) {\n   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `value`\n  --> src/shardkv/client.rs:19:42\n   |\n19 |     pub async fn put(&self, key: String, value: String) {\n   |                                          ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:23:32\n   |\n23 |     pub async fn append(&self, key: String, value: String) {\n   |                                ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `value`\n  --> src/shardkv/client.rs:23:45\n   |\n23 |     pub async fn append(&self, key: String, value: String) {\n   |                                             ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`\n\nwarning: unused variable: `ctrl_ck`\n  --> src/shardkv/server.rs:13:9\n   |\n13 |         ctrl_ck: CtrlerClerk,\n   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_ctrl_ck`\n\nwarning: unused variable: `servers`\n  --> src/shardkv/server.rs:14:9\n   |\n14 |         servers: Vec<SocketAddr>,\n   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_servers`\n\nwarning: unused variable: `gid`\n  --> src/shardkv/server.rs:15:9\n   |\n15 |         gid: u64,\n   |         ^^^ help: if this is intentional, prefix it with an underscore: `_gid`\n\nwarning: unused variable: `me`\n  --> src/shardkv/server.rs:16:9\n   |\n16 |         me: usize,\n   |         ^^ help: if this is intentional, prefix it with an underscore: `_me`\n\nwarning: unused variable: `max_raft_state`\n  --> src/shardkv/server.rs:17:9\n   |\n17 |         max_raft_state: Option<usize>,\n   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`\n\nwarning: unused variable: `cmd`\n  --> src/shardkv/server.rs:34:25\n   |\n34 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: fields `endpoint` and `apply_ch` are never read\n  --> src/raft/raft.rs:60:5\n   |\n59 | struct Raft {\n   |        ---- fields in this struct\n60 |     endpoint: net::Endpoint,\n   |     ^^^^^^^^\n...\n63 |     apply_ch: MsgSender,\n   |     ^^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: associated items `apply`, `generate_election_timeout`, and `send_vote_request` are never used\n   --> src/raft/raft.rs:251:8\n    |\n241 | impl Raft {\n    | --------- associated items in this implementation\n...\n251 |     fn apply(&self) {\n    |        ^^^^^\n...\n264 |     fn generate_election_timeout() -> Duration {\n    |        ^^^^^^^^^^^^^^^^^^^^^^^^^\n...\n270 |     fn send_vote_request(&mut self) {\n    |        ^^^^^^^^^^^^^^^^^\n\nwarning: variants `Candidate` and `Leader` are never constructed\n  --> src/raft/state.rs:17:27\n   |\n17 | pub enum Role { Follower, Candidate, Leader }\n   |          ----             ^^^^^^^^^  ^^^^^^\n   |          |\n   |          variants in this enum\n   |\n   = note: `Role` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis\n\nwarning: fields `request` and `before` are never read\n  --> src/raft/protocol.rs:24:5\n   |\n21 | struct PendingVote {\n   |        ----------- fields in this struct\n...\n24 |     request: VoteRequest,\n   |     ^^^^^^^\n25 |     reply: VoteReply,\n26 |     before: Ghost<State>,\n   |     ^^^^^^\n   |\n   = note: `PendingVote` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis\n\nwarning: struct `OperationView` is never constructed\n  --> src/raft/protocol.rs:40:12\n   |\n40 | pub struct OperationView {\n   |            ^^^^^^^^^^^^^\n\nwarning: field `ctrl_ck` is never read\n --> src/shardkv/client.rs:5:5\n  |\n4 | pub struct Clerk {\n  |            ----- field in this struct\n5 |     ctrl_ck: CtrlerClerk,\n  |     ^^^^^^^\n\nwarning: field `inner` is never read\n --> src/shardkv/server.rs:8:5\n  |\n7 | pub struct ShardKvServer {\n  |            ------------- field in this struct\n8 |     inner: Arc<Server<ShardKv>>,\n  |     ^^^^^\n\nwarning: `madraft` (lib test) generated 48 warnings (run `cargo fix --lib -p madraft --tests` to apply 29 suggestions)\n    Finished `release` profile [optimized] target(s) in 0.09s\n     Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target/release/deps/madraft-9d1fbd9857b1c1bd)\nkvraft::tests::basic_3a: test\nkvraft::tests::concurrent_3a: test\nkvraft::tests::many_partitions_many_clients_3a: test\nkvraft::tests::many_partitions_one_client_3a: test\nkvraft::tests::one_partition_3a: test\nkvraft::tests::persist_concurrent_3a: test\nkvraft::tests::persist_concurrent_unreliable_3a: test\nkvraft::tests::persist_one_client_3a: test\nkvraft::tests::persist_partition_3a: test\nkvraft::tests::persist_partition_unreliable_3a: test\nkvraft::tests::snapshot_recover_3b: test\nkvraft::tests::snapshot_recover_many_clients_3b: test\nkvraft::tests::snapshot_rpc_3b: test\nkvraft::tests::snapshot_size_3b: test\nkvraft::tests::snapshot_unreliable_3b: test\nkvraft::tests::snapshot_unreliable_recover_3b: test\nkvraft::tests::snapshot_unreliable_recover_concurrent_partition_3b: test\nkvraft::tests::unreliable_3a: test\nkvraft::tests::unreliable_one_key_3a: test\nraft::raft::vote_tests::pending_completion_cannot_release_another_request: test\nraft::raft::vote_tests::storage_receipt_requires_the_whole_sequence: test\nraft::raft::vote_tests::vote_persists_before_reply_and_restores: test\nraft::tests::backup_2b: test\nraft::tests::basic_agree_2b: test\nraft::tests::concurrent_starts_2b: test\nraft::tests::count_2b: test\nraft::tests::fail_agree_2b: test\nraft::tests::fail_no_agree_2b: test\nraft::tests::figure_8_2c: test\nraft::tests::figure_8_unreliable_2c: test\nraft::tests::initial_election_2a: test\nraft::tests::many_election_2a: test\nraft::tests::persist1_2c: test\nraft::tests::persist2_2c: test\nraft::tests::persist3_2c: test\nraft::tests::reelection_2a: test\nraft::tests::rejoin_2b: test\nraft::tests::reliable_churn_2c: test\nraft::tests::snapshot_basic_2d: test\nraft::tests::snapshot_install_2d: test\nraft::tests::snapshot_install_crash_2d: test\nraft::tests::snapshot_install_unreliable_2d: test\nraft::tests::snapshot_install_unreliable_crash_2d: test\nraft::tests::unreliable_agree_2c: test\nraft::tests::unreliable_churn_2c: test\nshard_ctrler::tests::basic_4a: test\nshard_ctrler::tests::multi_4a: test\nshardkv::tests::challenge1_delete_4b: test\nshardkv::tests::challenge2_partial_4b: test\nshardkv::tests::challenge2_unaffected_4b: test\nshardkv::tests::concurrent1_4b: test\nshardkv::tests::concurrent2_4b: test\nshardkv::tests::concurrent3_4b: test\nshardkv::tests::join_leave_4b: test\nshardkv::tests::miss_change_4b: test\nshardkv::tests::snapshot_4b: test\nshardkv::tests::static_shards_4b: test\nshardkv::tests::unreliable1_4b: test\nshardkv::tests::unreliable2_4b: test\nshardkv::tests::unreliable3_4b: test\ntest_support::explicit_abort_preserves_old_drop_cancellation: test\ntest_support::restart_preserves_node_and_simulated_file: test\ntest_support::rpc_partition_and_reconnect: test\n\n63 tests, 0 benchmarks\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_SEED": "1",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "family": "",
+      "uncovered_tests": []
+    },
+    "tests_seed_1_shardkv_tests": {
+      "status": "OPEN",
+      "reason": "test_or_build_failure",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--manifest-path",
+        "madraft/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--lib",
+        "--no-fail-fast",
+        "shardkv::tests::",
+        "--",
+        "--test-threads=1"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/tests_seed_1_shardkv_tests.log",
+      "scope": "tests_seed_1_shardkv_tests",
+      "process": "COMPLETED",
+      "exit_code": 101,
+      "elapsed_seconds": 0.18843924199973117,
+      "seed": 1,
+      "diagnostic": "   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:19:29\n   |\n19 |     pub async fn put(&self, key: String, value: String) {\n   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `value`\n  --> src/shardkv/client.rs:19:42\n   |\n19 |     pub async fn put(&self, key: String, value: String) {\n   |                                          ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:23:32\n   |\n23 |     pub async fn append(&self, key: String, value: String) {\n   |                                ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `value`\n  --> src/shardkv/client.rs:23:45\n   |\n23 |     pub async fn append(&self, key: String, value: String) {\n   |                                             ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`\n\nwarning: unused variable: `ctrl_ck`\n  --> src/shardkv/server.rs:13:9\n   |\n13 |         ctrl_ck: CtrlerClerk,\n   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_ctrl_ck`\n\nwarning: unused variable: `servers`\n  --> src/shardkv/server.rs:14:9\n   |\n14 |         servers: Vec<SocketAddr>,\n   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_servers`\n\nwarning: unused variable: `gid`\n  --> src/shardkv/server.rs:15:9\n   |\n15 |         gid: u64,\n   |         ^^^ help: if this is intentional, prefix it with an underscore: `_gid`\n\nwarning: unused variable: `me`\n  --> src/shardkv/server.rs:16:9\n   |\n16 |         me: usize,\n   |         ^^ help: if this is intentional, prefix it with an underscore: `_me`\n\nwarning: unused variable: `max_raft_state`\n  --> src/shardkv/server.rs:17:9\n   |\n17 |         max_raft_state: Option<usize>,\n   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`\n\nwarning: unused variable: `cmd`\n  --> src/shardkv/server.rs:34:25\n   |\n34 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: fields `endpoint` and `apply_ch` are never read\n  --> src/raft/raft.rs:60:5\n   |\n59 | struct Raft {\n   |        ---- fields in this struct\n60 |     endpoint: net::Endpoint,\n   |     ^^^^^^^^\n...\n63 |     apply_ch: MsgSender,\n   |     ^^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: associated items `apply`, `generate_election_timeout`, and `send_vote_request` are never used\n   --> src/raft/raft.rs:251:8\n    |\n241 | impl Raft {\n    | --------- associated items in this implementation\n...\n251 |     fn apply(&self) {\n    |        ^^^^^\n...\n264 |     fn generate_election_timeout() -> Duration {\n    |        ^^^^^^^^^^^^^^^^^^^^^^^^^\n...\n270 |     fn send_vote_request(&mut self) {\n    |        ^^^^^^^^^^^^^^^^^\n\nwarning: variants `Candidate` and `Leader` are never constructed\n  --> src/raft/state.rs:17:27\n   |\n17 | pub enum Role { Follower, Candidate, Leader }\n   |          ----             ^^^^^^^^^  ^^^^^^\n   |          |\n   |          variants in this enum\n   |\n   = note: `Role` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis\n\nwarning: fields `request` and `before` are never read\n  --> src/raft/protocol.rs:24:5\n   |\n21 | struct PendingVote {\n   |        ----------- fields in this struct\n...\n24 |     request: VoteRequest,\n   |     ^^^^^^^\n25 |     reply: VoteReply,\n26 |     before: Ghost<State>,\n   |     ^^^^^^\n   |\n   = note: `PendingVote` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis\n\nwarning: struct `OperationView` is never constructed\n  --> src/raft/protocol.rs:40:12\n   |\n40 | pub struct OperationView {\n   |            ^^^^^^^^^^^^^\n\nwarning: field `ctrl_ck` is never read\n --> src/shardkv/client.rs:5:5\n  |\n4 | pub struct Clerk {\n  |            ----- field in this struct\n5 |     ctrl_ck: CtrlerClerk,\n  |     ^^^^^^^\n\nwarning: field `inner` is never read\n --> src/shardkv/server.rs:8:5\n  |\n7 | pub struct ShardKvServer {\n  |            ------------- field in this struct\n8 |     inner: Arc<Server<ShardKv>>,\n  |     ^^^^^\n\nwarning: `madraft` (lib test) generated 48 warnings (run `cargo fix --lib -p madraft --tests` to apply 29 suggestions)\n    Finished `release` profile [optimized] target(s) in 0.11s\n     Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target/release/deps/madraft-9d1fbd9857b1c1bd)\nerror: test failed, to rerun pass `--lib`\nerror: 1 target failed:\n    `--lib`\n\nrunning 13 tests\ntest shardkv::tests::challenge1_delete_4b ... FAILED\ntest shardkv::tests::challenge2_partial_4b ... FAILED\ntest shardkv::tests::challenge2_unaffected_4b ... FAILED\ntest shardkv::tests::concurrent1_4b ... FAILED\ntest shardkv::tests::concurrent2_4b ... FAILED\ntest shardkv::tests::concurrent3_4b ... FAILED\ntest shardkv::tests::join_leave_4b ... FAILED\ntest shardkv::tests::miss_change_4b ... FAILED\ntest shardkv::tests::snapshot_4b ... FAILED\ntest shardkv::tests::static_shards_4b ... FAILED\ntest shardkv::tests::unreliable1_4b ... FAILED\ntest shardkv::tests::unreliable2_4b ... FAILED\ntest shardkv::tests::unreliable3_4b ... ignored\n\nfailures:\n\n---- shardkv::tests::challenge1_delete_4b stdout ----\n\nthread '<unnamed>' (60061) panicked at src/shardkv/server.rs:19:9:\nnot yet implemented: construct ShardKv\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\ncontext: node=4 \"0.1.0.0:1\", task=10 (spawned at src/shardkv/tester.rs:150:14)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- shardkv::tests::challenge2_partial_4b stdout ----\n\nthread '<unnamed>' (60063) panicked at src/shardkv/server.rs:19:9:\nnot yet implemented: construct ShardKv\ncontext: node=4 \"0.1.0.0:1\", task=21 (spawned at src/shardkv/tester.rs:150:14)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- shardkv::tests::challenge2_unaffected_4b stdout ----\n\nthread '<unnamed>' (60065) panicked at src/shardkv/server.rs:19:9:\nnot yet implemented: construct ShardKv\ncontext: node=4 \"0.1.0.0:1\", task=32 (spawned at src/shardkv/tester.rs:150:14)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- shardkv::tests::concurrent1_4b stdout ----\n\nthread '<unnamed>' (60067) panicked at src/shardkv/server.rs:19:9:\nnot yet implemented: construct ShardKv\ncontext: node=4 \"0.1.0.0:1\", task=43 (spawned at src/shardkv/tester.rs:150:14)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- shardkv::tests::concurrent2_4b stdout ----\n\nthread '<unnamed>' (60069) panicked at src/shardkv/server.rs:19:9:\nnot yet implemented: construct ShardKv\ncontext: node=4 \"0.1.0.0:1\", task=54 (spawned at src/shardkv/tester.rs:150:14)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- shardkv::tests::concurrent3_4b stdout ----\n\nthread '<unnamed>' (60071) panicked at src/shardkv/server.rs:19:9:\nnot yet implemented: construct ShardKv\ncontext: node=4 \"0.1.0.0:1\", task=65 (spawned at src/shardkv/tester.rs:150:14)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- shardkv::tests::join_leave_4b stdout ----\n\nthread '<unnamed>' (60073) panicked at src/shardkv/server.rs:19:9:\nnot yet implemented: construct ShardKv\ncontext: node=4 \"0.1.0.0:1\", task=76 (spawned at src/shardkv/tester.rs:150:14)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- shardkv::tests::miss_change_4b stdout ----\n\nthread '<unnamed>' (60075) panicked at src/shardkv/server.rs:19:9:\nnot yet implemented: construct ShardKv\ncontext: node=4 \"0.1.0.0:1\", task=87 (spawned at src/shardkv/tester.rs:150:14)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- shardkv::tests::snapshot_4b stdout ----\n\nthread '<unnamed>' (60077) panicked at src/shardkv/server.rs:19:9:\nnot yet implemented: construct ShardKv\ncontext: node=4 \"0.1.0.0:1\", task=98 (spawned at src/shardkv/tester.rs:150:14)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- shardkv::tests::static_shards_4b stdout ----\n\nthread '<unnamed>' (60079) panicked at src/shardkv/server.rs:19:9:\nnot yet implemented: construct ShardKv\ncontext: node=4 \"0.1.0.0:1\", task=109 (spawned at src/shardkv/tester.rs:150:14)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- shardkv::tests::unreliable1_4b stdout ----\n\nthread '<unnamed>' (60081) panicked at src/shardkv/server.rs:19:9:\nnot yet implemented: construct ShardKv\ncontext: node=4 \"0.1.0.0:1\", task=120 (spawned at src/shardkv/tester.rs:150:14)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- shardkv::tests::unreliable2_4b stdout ----\n\nthread '<unnamed>' (60083) panicked at src/shardkv/server.rs:19:9:\nnot yet implemented: construct ShardKv\ncontext: node=4 \"0.1.0.0:1\", task=131 (spawned at src/shardkv/tester.rs:150:14)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n\nfailures:\n    shardkv::tests::challenge1_delete_4b\n    shardkv::tests::challenge2_partial_4b\n    shardkv::tests::challenge2_unaffected_4b\n    shardkv::tests::concurrent1_4b\n    shardkv::tests::concurrent2_4b\n    shardkv::tests::concurrent3_4b\n    shardkv::tests::join_leave_4b\n    shardkv::tests::miss_change_4b\n    shardkv::tests::snapshot_4b\n    shardkv::tests::static_shards_4b\n    shardkv::tests::unreliable1_4b\n    shardkv::tests::unreliable2_4b\n\ntest result: FAILED. 0 passed; 12 failed; 1 ignored; 0 measured; 50 filtered out; finished in 0.01s\n\n",
+      "errors": [],
+      "category": "functional_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_SEED": "1",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "family": "shardkv::tests::",
+      "passed_tests": [],
+      "ignored_tests": [
+        "shardkv::tests::unreliable3_4b"
+      ],
+      "uncovered_tests": [
+        "shardkv::tests::challenge1_delete_4b",
+        "shardkv::tests::challenge2_partial_4b",
+        "shardkv::tests::challenge2_unaffected_4b",
+        "shardkv::tests::concurrent1_4b",
+        "shardkv::tests::concurrent2_4b",
+        "shardkv::tests::concurrent3_4b",
+        "shardkv::tests::join_leave_4b",
+        "shardkv::tests::miss_change_4b",
+        "shardkv::tests::snapshot_4b",
+        "shardkv::tests::static_shards_4b",
+        "shardkv::tests::unreliable1_4b",
+        "shardkv::tests::unreliable2_4b"
+      ]
+    },
+    "tests_seed_1_raft_raft_vote_tests": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--manifest-path",
+        "madraft/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--lib",
+        "--no-fail-fast",
+        "raft::raft::vote_tests",
+        "--",
+        "--test-threads=1"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/tests_seed_1_raft_raft_vote_tests.log",
+      "scope": "tests_seed_1_raft_raft_vote_tests",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.19143131300006644,
+      "seed": 1,
+      "diagnostic": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unreachable statement\n\nwarning: use of deprecated method `madsim::net::NetSim::disconnect`: use `clog_node` instead\n   --> src/raft/tester.rs:271:27\n    |\n271 |         NetSim::current().disconnect(node_id(&self.handle, self.addrs[i]));\n    |                           ^^^^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead\n   --> src/raft/tester.rs:278:27\n    |\n278 |         NetSim::current().connect(node_id(&self.handle, self.addrs[i]));\n    |                           ^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead\n  --> src/test_support.rs:77:23\n   |\n77 |     NetSim::current().disconnect2(server.id(), client.id());\n   |                       ^^^^^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead\n  --> src/test_support.rs:79:23\n   |\n79 |     NetSim::current().connect2(server.id(), client.id());\n   |                       ^^^^^^^^\n\nwarning: unused variable: `ret`\n  --> src/kvraft/client.rs:52:17\n   |\n52 |             let ret = net\n   |                 ^^^ help: if this is intentional, prefix it with an underscore: `_ret`\n   |\n   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default\n\nwarning: unused variable: `max_raft_state`\n  --> src/kvraft/server.rs:34:9\n   |\n34 |         max_raft_state: Option<usize>,\n   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`\n\nwarning: unused variable: `apply_ch`\n  --> src/kvraft/server.rs:37:18\n   |\n37 |         let (rf, apply_ch) = raft::RaftHandle::new(servers, me).await;\n   |                  ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_apply_ch`\n\nwarning: unused variable: `cmd`\n  --> src/kvraft/server.rs:68:27\n   |\n68 |     async fn apply(&self, cmd: S::Command) -> Result<S::Output, Error> {\n   |                           ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: unused variable: `cmd`\n  --> src/kvraft/server.rs:84:25\n   |\n84 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: unused variable: `last_included_term`\n   --> src/raft/raft.rs:139:9\n    |\n139 |         last_included_term: u64,\n    |         ^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_term`\n\nwarning: unused variable: `last_included_index`\n   --> src/raft/raft.rs:140:9\n    |\n140 |         last_included_index: u64,\n    |         ^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_index`\n\nwarning: unused variable: `snapshot`\n   --> src/raft/raft.rs:141:9\n    |\n141 |         snapshot: &[u8],\n    |         ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`\n\nwarning: unused variable: `index`\n   --> src/raft/raft.rs:150:34\n    |\n150 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {\n    |                                  ^^^^^ help: if this is intentional, prefix it with an underscore: `_index`\n\nwarning: unused variable: `snapshot`\n   --> src/raft/raft.rs:150:46\n    |\n150 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {\n    |                                              ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`\n\nwarning: unused variable: `data`\n   --> src/raft/raft.rs:242:25\n    |\n242 |     fn start(&mut self, data: &[u8]) -> Result<Start> {\n    |                         ^^^^ help: if this is intentional, prefix it with an underscore: `_data`\n\nwarning: unused variable: `msg`\n   --> src/raft/raft.rs:252:13\n    |\n252 |         let msg = ApplyMsg::Command {\n    |             ^^^ help: if this is intentional, prefix it with an underscore: `_msg`\n\nwarning: unused variable: `args`\n   --> src/raft/raft.rs:271:13\n    |\n271 |         let args: RequestVoteArgs = todo!(\"construct RPC request\");\n    |             ^^^^ help: if this is intentional, prefix it with an underscore: `_args`\n\nwarning: unused variable: `res`\n   --> src/raft/raft.rs:292:28\n    |\n292 |             while let Some(res) = rpcs.next().await {\n    |                            ^^^ help: if this is intentional, prefix it with an underscore: `_res`\n\nwarning: unused variable: `cmd`\n  --> src/shard_ctrler/server.rs:16:25\n   |\n16 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:15:29\n   |\n15 |     pub async fn get(&self, key: String) -> String {\n   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:19:29\n   |\n19 |     pub async fn put(&self, key: String, value: String) {\n   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `value`\n  --> src/shardkv/client.rs:19:42\n   |\n19 |     pub async fn put(&self, key: String, value: String) {\n   |                                          ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:23:32\n   |\n23 |     pub async fn append(&self, key: String, value: String) {\n   |                                ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `value`\n  --> src/shardkv/client.rs:23:45\n   |\n23 |     pub async fn append(&self, key: String, value: String) {\n   |                                             ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`\n\nwarning: unused variable: `ctrl_ck`\n  --> src/shardkv/server.rs:13:9\n   |\n13 |         ctrl_ck: CtrlerClerk,\n   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_ctrl_ck`\n\nwarning: unused variable: `servers`\n  --> src/shardkv/server.rs:14:9\n   |\n14 |         servers: Vec<SocketAddr>,\n   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_servers`\n\nwarning: unused variable: `gid`\n  --> src/shardkv/server.rs:15:9\n   |\n15 |         gid: u64,\n   |         ^^^ help: if this is intentional, prefix it with an underscore: `_gid`\n\nwarning: unused variable: `me`\n  --> src/shardkv/server.rs:16:9\n   |\n16 |         me: usize,\n   |         ^^ help: if this is intentional, prefix it with an underscore: `_me`\n\nwarning: unused variable: `max_raft_state`\n  --> src/shardkv/server.rs:17:9\n   |\n17 |         max_raft_state: Option<usize>,\n   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`\n\nwarning: unused variable: `cmd`\n  --> src/shardkv/server.rs:34:25\n   |\n34 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: fields `endpoint` and `apply_ch` are never read\n  --> src/raft/raft.rs:60:5\n   |\n59 | struct Raft {\n   |        ---- fields in this struct\n60 |     endpoint: net::Endpoint,\n   |     ^^^^^^^^\n...\n63 |     apply_ch: MsgSender,\n   |     ^^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: associated items `apply`, `generate_election_timeout`, and `send_vote_request` are never used\n   --> src/raft/raft.rs:251:8\n    |\n241 | impl Raft {\n    | --------- associated items in this implementation\n...\n251 |     fn apply(&self) {\n    |        ^^^^^\n...\n264 |     fn generate_election_timeout() -> Duration {\n    |        ^^^^^^^^^^^^^^^^^^^^^^^^^\n...\n270 |     fn send_vote_request(&mut self) {\n    |        ^^^^^^^^^^^^^^^^^\n\nwarning: variants `Candidate` and `Leader` are never constructed\n  --> src/raft/state.rs:17:27\n   |\n17 | pub enum Role { Follower, Candidate, Leader }\n   |          ----             ^^^^^^^^^  ^^^^^^\n   |          |\n   |          variants in this enum\n   |\n   = note: `Role` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis\n\nwarning: fields `request` and `before` are never read\n  --> src/raft/protocol.rs:24:5\n   |\n21 | struct PendingVote {\n   |        ----------- fields in this struct\n...\n24 |     request: VoteRequest,\n   |     ^^^^^^^\n25 |     reply: VoteReply,\n26 |     before: Ghost<State>,\n   |     ^^^^^^\n   |\n   = note: `PendingVote` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis\n\nwarning: struct `OperationView` is never constructed\n  --> src/raft/protocol.rs:40:12\n   |\n40 | pub struct OperationView {\n   |            ^^^^^^^^^^^^^\n\nwarning: field `ctrl_ck` is never read\n --> src/shardkv/client.rs:5:5\n  |\n4 | pub struct Clerk {\n  |            ----- field in this struct\n5 |     ctrl_ck: CtrlerClerk,\n  |     ^^^^^^^\n\nwarning: field `inner` is never read\n --> src/shardkv/server.rs:8:5\n  |\n7 | pub struct ShardKvServer {\n  |            ------------- field in this struct\n8 |     inner: Arc<Server<ShardKv>>,\n  |     ^^^^^\n\nwarning: `madraft` (lib test) generated 48 warnings (run `cargo fix --lib -p madraft --tests` to apply 29 suggestions)\n    Finished `release` profile [optimized] target(s) in 0.13s\n     Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target/release/deps/madraft-9d1fbd9857b1c1bd)\n\nrunning 3 tests\ntest raft::raft::vote_tests::pending_completion_cannot_release_another_request ... ok\ntest raft::raft::vote_tests::storage_receipt_requires_the_whole_sequence ... ok\ntest raft::raft::vote_tests::vote_persists_before_reply_and_restores ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 60 filtered out; finished in 0.00s\n\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_SEED": "1",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "family": "raft::raft::vote_tests",
+      "passed_tests": [
+        "raft::raft::vote_tests::pending_completion_cannot_release_another_request",
+        "raft::raft::vote_tests::storage_receipt_requires_the_whole_sequence",
+        "raft::raft::vote_tests::vote_persists_before_reply_and_restores"
+      ],
+      "ignored_tests": [],
+      "uncovered_tests": []
+    },
+    "tests_seed_1_raft_tests_initial_election_2a": {
+      "status": "OPEN",
+      "reason": "test_or_build_failure",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--manifest-path",
+        "madraft/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--lib",
+        "--no-fail-fast",
+        "raft::tests::initial_election_2a",
+        "--",
+        "--test-threads=1"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/tests_seed_1_raft_tests_initial_election_2a.log",
+      "scope": "tests_seed_1_raft_tests_initial_election_2a",
+      "process": "COMPLETED",
+      "exit_code": 101,
+      "elapsed_seconds": 0.16372716999831027,
+      "seed": 1,
+      "diagnostic": "s:278:27\n    |\n278 |         NetSim::current().connect(node_id(&self.handle, self.addrs[i]));\n    |                           ^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead\n  --> src/test_support.rs:77:23\n   |\n77 |     NetSim::current().disconnect2(server.id(), client.id());\n   |                       ^^^^^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead\n  --> src/test_support.rs:79:23\n   |\n79 |     NetSim::current().connect2(server.id(), client.id());\n   |                       ^^^^^^^^\n\nwarning: unused variable: `ret`\n  --> src/kvraft/client.rs:52:17\n   |\n52 |             let ret = net\n   |                 ^^^ help: if this is intentional, prefix it with an underscore: `_ret`\n   |\n   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default\n\nwarning: unused variable: `max_raft_state`\n  --> src/kvraft/server.rs:34:9\n   |\n34 |         max_raft_state: Option<usize>,\n   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`\n\nwarning: unused variable: `apply_ch`\n  --> src/kvraft/server.rs:37:18\n   |\n37 |         let (rf, apply_ch) = raft::RaftHandle::new(servers, me).await;\n   |                  ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_apply_ch`\n\nwarning: unused variable: `cmd`\n  --> src/kvraft/server.rs:68:27\n   |\n68 |     async fn apply(&self, cmd: S::Command) -> Result<S::Output, Error> {\n   |                           ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: unused variable: `cmd`\n  --> src/kvraft/server.rs:84:25\n   |\n84 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: unused variable: `last_included_term`\n   --> src/raft/raft.rs:139:9\n    |\n139 |         last_included_term: u64,\n    |         ^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_term`\n\nwarning: unused variable: `last_included_index`\n   --> src/raft/raft.rs:140:9\n    |\n140 |         last_included_index: u64,\n    |         ^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_index`\n\nwarning: unused variable: `snapshot`\n   --> src/raft/raft.rs:141:9\n    |\n141 |         snapshot: &[u8],\n    |         ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`\n\nwarning: unused variable: `index`\n   --> src/raft/raft.rs:150:34\n    |\n150 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {\n    |                                  ^^^^^ help: if this is intentional, prefix it with an underscore: `_index`\n\nwarning: unused variable: `snapshot`\n   --> src/raft/raft.rs:150:46\n    |\n150 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {\n    |                                              ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`\n\nwarning: unused variable: `data`\n   --> src/raft/raft.rs:242:25\n    |\n242 |     fn start(&mut self, data: &[u8]) -> Result<Start> {\n    |                         ^^^^ help: if this is intentional, prefix it with an underscore: `_data`\n\nwarning: unused variable: `msg`\n   --> src/raft/raft.rs:252:13\n    |\n252 |         let msg = ApplyMsg::Command {\n    |             ^^^ help: if this is intentional, prefix it with an underscore: `_msg`\n\nwarning: unused variable: `args`\n   --> src/raft/raft.rs:271:13\n    |\n271 |         let args: RequestVoteArgs = todo!(\"construct RPC request\");\n    |             ^^^^ help: if this is intentional, prefix it with an underscore: `_args`\n\nwarning: unused variable: `res`\n   --> src/raft/raft.rs:292:28\n    |\n292 |             while let Some(res) = rpcs.next().await {\n    |                            ^^^ help: if this is intentional, prefix it with an underscore: `_res`\n\nwarning: unused variable: `cmd`\n  --> src/shard_ctrler/server.rs:16:25\n   |\n16 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:15:29\n   |\n15 |     pub async fn get(&self, key: String) -> String {\n   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:19:29\n   |\n19 |     pub async fn put(&self, key: String, value: String) {\n   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `value`\n  --> src/shardkv/client.rs:19:42\n   |\n19 |     pub async fn put(&self, key: String, value: String) {\n   |                                          ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:23:32\n   |\n23 |     pub async fn append(&self, key: String, value: String) {\n   |                                ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `value`\n  --> src/shardkv/client.rs:23:45\n   |\n23 |     pub async fn append(&self, key: String, value: String) {\n   |                                             ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`\n\nwarning: unused variable: `ctrl_ck`\n  --> src/shardkv/server.rs:13:9\n   |\n13 |         ctrl_ck: CtrlerClerk,\n   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_ctrl_ck`\n\nwarning: unused variable: `servers`\n  --> src/shardkv/server.rs:14:9\n   |\n14 |         servers: Vec<SocketAddr>,\n   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_servers`\n\nwarning: unused variable: `gid`\n  --> src/shardkv/server.rs:15:9\n   |\n15 |         gid: u64,\n   |         ^^^ help: if this is intentional, prefix it with an underscore: `_gid`\n\nwarning: unused variable: `me`\n  --> src/shardkv/server.rs:16:9\n   |\n16 |         me: usize,\n   |         ^^ help: if this is intentional, prefix it with an underscore: `_me`\n\nwarning: unused variable: `max_raft_state`\n  --> src/shardkv/server.rs:17:9\n   |\n17 |         max_raft_state: Option<usize>,\n   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`\n\nwarning: unused variable: `cmd`\n  --> src/shardkv/server.rs:34:25\n   |\n34 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: fields `endpoint` and `apply_ch` are never read\n  --> src/raft/raft.rs:60:5\n   |\n59 | struct Raft {\n   |        ---- fields in this struct\n60 |     endpoint: net::Endpoint,\n   |     ^^^^^^^^\n...\n63 |     apply_ch: MsgSender,\n   |     ^^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: associated items `apply`, `generate_election_timeout`, and `send_vote_request` are never used\n   --> src/raft/raft.rs:251:8\n    |\n241 | impl Raft {\n    | --------- associated items in this implementation\n...\n251 |     fn apply(&self) {\n    |        ^^^^^\n...\n264 |     fn generate_election_timeout() -> Duration {\n    |        ^^^^^^^^^^^^^^^^^^^^^^^^^\n...\n270 |     fn send_vote_request(&mut self) {\n    |        ^^^^^^^^^^^^^^^^^\n\nwarning: variants `Candidate` and `Leader` are never constructed\n  --> src/raft/state.rs:17:27\n   |\n17 | pub enum Role { Follower, Candidate, Leader }\n   |          ----             ^^^^^^^^^  ^^^^^^\n   |          |\n   |          variants in this enum\n   |\n   = note: `Role` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis\n\nwarning: fields `request` and `before` are never read\n  --> src/raft/protocol.rs:24:5\n   |\n21 | struct PendingVote {\n   |        ----------- fields in this struct\n...\n24 |     request: VoteRequest,\n   |     ^^^^^^^\n25 |     reply: VoteReply,\n26 |     before: Ghost<State>,\n   |     ^^^^^^\n   |\n   = note: `PendingVote` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis\n\nwarning: struct `OperationView` is never constructed\n  --> src/raft/protocol.rs:40:12\n   |\n40 | pub struct OperationView {\n   |            ^^^^^^^^^^^^^\n\nwarning: field `ctrl_ck` is never read\n --> src/shardkv/client.rs:5:5\n  |\n4 | pub struct Clerk {\n  |            ----- field in this struct\n5 |     ctrl_ck: CtrlerClerk,\n  |     ^^^^^^^\n\nwarning: field `inner` is never read\n --> src/shardkv/server.rs:8:5\n  |\n7 | pub struct ShardKvServer {\n  |            ------------- field in this struct\n8 |     inner: Arc<Server<ShardKv>>,\n  |     ^^^^^\n\nwarning: `madraft` (lib test) generated 48 warnings (run `cargo fix --lib -p madraft --tests` to apply 29 suggestions)\n    Finished `release` profile [optimized] target(s) in 0.09s\n     Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target/release/deps/madraft-9d1fbd9857b1c1bd)\nerror: test failed, to rerun pass `--lib`\nerror: 1 target failed:\n    `--lib`\n\nrunning 1 test\ntest raft::tests::initial_election_2a ... FAILED\n\nfailures:\n\n---- raft::tests::initial_election_2a stdout ----\n\nthread '<unnamed>' (60103) panicked at src/raft/tester.rs:95:9:\nexpected one leader, got none\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\ncontext: node=0 \"madsim-main\", task=0 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n\nfailures:\n    raft::tests::initial_election_2a\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 62 filtered out; finished in 0.00s\n\n",
+      "errors": [],
+      "category": "functional_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_SEED": "1",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "family": "raft::tests::initial_election_2a",
+      "passed_tests": [],
+      "ignored_tests": [],
+      "uncovered_tests": [
+        "raft::tests::initial_election_2a"
+      ]
+    },
+    "tests_seed_1_raft_tests": {
+      "status": "OPEN",
+      "reason": "test_or_build_failure",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--manifest-path",
+        "madraft/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--lib",
+        "--no-fail-fast",
+        "raft::tests::",
+        "--",
+        "--test-threads=1",
+        "--skip",
+        "kvraft::",
+        "--skip",
+        "shardkv::"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/tests_seed_1_raft_tests.log",
+      "scope": "tests_seed_1_raft_tests",
+      "process": "COMPLETED",
+      "exit_code": 101,
+      "elapsed_seconds": 0.30345699899771716,
+      "seed": 1,
+      "diagnostic": "nvironment variable to reproduce this error\n\n---- raft::tests::concurrent_starts_2b stdout ----\n\nthread '<unnamed>' (60116) panicked at src/raft/tester.rs:95:9:\nexpected one leader, got none\ncontext: node=0 \"madsim-main\", task=2032 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::count_2b stdout ----\n\nthread '<unnamed>' (60118) panicked at src/raft/tester.rs:95:9:\nexpected one leader, got none\ncontext: node=0 \"madsim-main\", task=2042 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::fail_agree_2b stdout ----\n\nthread '<unnamed>' (60120) panicked at src/raft/tester.rs:264:9:\none(Entry { x: 101 }) failed to reach agreement\ncontext: node=0 \"madsim-main\", task=2052 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::fail_no_agree_2b stdout ----\n\nthread '<unnamed>' (60122) panicked at src/raft/tester.rs:264:9:\none(Entry { x: 10 }) failed to reach agreement\ncontext: node=0 \"madsim-main\", task=2662 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::figure_8_2c stdout ----\n\nthread '<unnamed>' (60124) panicked at src/raft/tester.rs:264:9:\none(Entry { x: 3871134291889952231 }) failed to reach agreement\ncontext: node=0 \"madsim-main\", task=3678 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::figure_8_unreliable_2c stdout ----\n\nthread '<unnamed>' (60126) panicked at src/raft/tester.rs:264:9:\none(Entry { x: 3871134291889952231 }) failed to reach agreement\ncontext: node=0 \"madsim-main\", task=4694 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::initial_election_2a stdout ----\n\nthread '<unnamed>' (60128) panicked at src/raft/tester.rs:95:9:\nexpected one leader, got none\ncontext: node=0 \"madsim-main\", task=5710 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::many_election_2a stdout ----\n\nthread '<unnamed>' (60130) panicked at src/raft/tester.rs:95:9:\nexpected one leader, got none\ncontext: node=0 \"madsim-main\", task=5720 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::persist1_2c stdout ----\n\nthread '<unnamed>' (60132) panicked at src/raft/tester.rs:264:9:\none(Entry { x: 11 }) failed to reach agreement\ncontext: node=0 \"madsim-main\", task=5742 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::persist2_2c stdout ----\n\nthread '<unnamed>' (60134) panicked at src/raft/tester.rs:264:9:\none(Entry { x: 11 }) failed to reach agreement\ncontext: node=0 \"madsim-main\", task=6352 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::persist3_2c stdout ----\n\nthread '<unnamed>' (60136) panicked at src/raft/tester.rs:264:9:\none(Entry { x: 101 }) failed to reach agreement\ncontext: node=0 \"madsim-main\", task=7368 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::reelection_2a stdout ----\n\nthread '<unnamed>' (60138) panicked at src/raft/tester.rs:95:9:\nexpected one leader, got none\ncontext: node=0 \"madsim-main\", task=7978 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::rejoin_2b stdout ----\n\nthread '<unnamed>' (60140) panicked at src/raft/tester.rs:264:9:\none(Entry { x: 101 }) failed to reach agreement\ncontext: node=0 \"madsim-main\", task=7988 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::reliable_churn_2c stdout ----\n\nthread '<unnamed>' (60142) panicked at src/raft/tester.rs:264:9:\none(Entry { x: 18435255030881324994 }) failed to reach agreement\ncontext: node=0 \"madsim-main\", task=8598 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::snapshot_basic_2d stdout ----\n\nthread '<unnamed>' (60144) panicked at src/raft/tester.rs:264:9:\none(Entry { x: 5741824577281331454 }) failed to reach agreement\ncontext: node=0 \"madsim-main\", task=11829 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::snapshot_install_2d stdout ----\n\nthread '<unnamed>' (60146) panicked at src/raft/tester.rs:264:9:\none(Entry { x: 5741824577281331454 }) failed to reach agreement\ncontext: node=0 \"madsim-main\", task=12439 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::snapshot_install_crash_2d stdout ----\n\nthread '<unnamed>' (60148) panicked at src/raft/tester.rs:264:9:\none(Entry { x: 5741824577281331454 }) failed to reach agreement\ncontext: node=0 \"madsim-main\", task=13049 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::snapshot_install_unreliable_2d stdout ----\n\nthread '<unnamed>' (60150) panicked at src/raft/tester.rs:264:9:\none(Entry { x: 5741824577281331454 }) failed to reach agreement\ncontext: node=0 \"madsim-main\", task=13659 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::snapshot_install_unreliable_crash_2d stdout ----\n\nthread '<unnamed>' (60152) panicked at src/raft/tester.rs:264:9:\none(Entry { x: 5741824577281331454 }) failed to reach agreement\ncontext: node=0 \"madsim-main\", task=14269 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::unreliable_agree_2c stdout ----\n\nthread '<unnamed>' (60154) panicked at src/raft/tester.rs:264:9:\none(Entry { x: 103 }) failed to reach agreement\ncontext: node=0 \"madsim-main\", task=14898 (spawned at src/raft/tests.rs:676:24)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- raft::tests::unreliable_churn_2c stdout ----\n\nthread '<unnamed>' (60156) panicked at src/raft/tester.rs:264:9:\none(Entry { x: 18435255030881324994 }) failed to reach agreement\ncontext: node=0 \"madsim-main\", task=19899 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n\nfailures:\n    raft::tests::backup_2b\n    raft::tests::basic_agree_2b\n    raft::tests::concurrent_starts_2b\n    raft::tests::count_2b\n    raft::tests::fail_agree_2b\n    raft::tests::fail_no_agree_2b\n    raft::tests::figure_8_2c\n    raft::tests::figure_8_unreliable_2c\n    raft::tests::initial_election_2a\n    raft::tests::many_election_2a\n    raft::tests::persist1_2c\n    raft::tests::persist2_2c\n    raft::tests::persist3_2c\n    raft::tests::reelection_2a\n    raft::tests::rejoin_2b\n    raft::tests::reliable_churn_2c\n    raft::tests::snapshot_basic_2d\n    raft::tests::snapshot_install_2d\n    raft::tests::snapshot_install_crash_2d\n    raft::tests::snapshot_install_unreliable_2d\n    raft::tests::snapshot_install_unreliable_crash_2d\n    raft::tests::unreliable_agree_2c\n    raft::tests::unreliable_churn_2c\n\ntest result: FAILED. 0 passed; 23 failed; 0 ignored; 0 measured; 40 filtered out; finished in 0.16s\n\n",
+      "errors": [],
+      "category": "functional_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_SEED": "1",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "family": "raft::tests::",
+      "passed_tests": [],
+      "ignored_tests": [],
+      "uncovered_tests": [
+        "raft::tests::backup_2b",
+        "raft::tests::basic_agree_2b",
+        "raft::tests::concurrent_starts_2b",
+        "raft::tests::count_2b",
+        "raft::tests::fail_agree_2b",
+        "raft::tests::fail_no_agree_2b",
+        "raft::tests::figure_8_2c",
+        "raft::tests::figure_8_unreliable_2c",
+        "raft::tests::initial_election_2a",
+        "raft::tests::many_election_2a",
+        "raft::tests::persist1_2c",
+        "raft::tests::persist2_2c",
+        "raft::tests::persist3_2c",
+        "raft::tests::reelection_2a",
+        "raft::tests::rejoin_2b",
+        "raft::tests::reliable_churn_2c",
+        "raft::tests::snapshot_basic_2d",
+        "raft::tests::snapshot_install_2d",
+        "raft::tests::snapshot_install_crash_2d",
+        "raft::tests::snapshot_install_unreliable_2d",
+        "raft::tests::snapshot_install_unreliable_crash_2d",
+        "raft::tests::unreliable_agree_2c",
+        "raft::tests::unreliable_churn_2c"
+      ]
+    },
+    "tests_seed_1_test_support": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--manifest-path",
+        "madraft/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--lib",
+        "--no-fail-fast",
+        "test_support::",
+        "--",
+        "--test-threads=1"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/tests_seed_1_test_support.log",
+      "scope": "tests_seed_1_test_support",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.22690149099798873,
+      "seed": 1,
+      "diagnostic": "erate_election_timeout();\n    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unreachable statement\n\nwarning: use of deprecated method `madsim::net::NetSim::disconnect`: use `clog_node` instead\n   --> src/raft/tester.rs:271:27\n    |\n271 |         NetSim::current().disconnect(node_id(&self.handle, self.addrs[i]));\n    |                           ^^^^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::connect`: use `unclog_node` instead\n   --> src/raft/tester.rs:278:27\n    |\n278 |         NetSim::current().connect(node_id(&self.handle, self.addrs[i]));\n    |                           ^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::disconnect2`: call `clog_link` twice instead\n  --> src/test_support.rs:77:23\n   |\n77 |     NetSim::current().disconnect2(server.id(), client.id());\n   |                       ^^^^^^^^^^^\n\nwarning: use of deprecated method `madsim::net::NetSim::connect2`: call `unclog_link` twice instead\n  --> src/test_support.rs:79:23\n   |\n79 |     NetSim::current().connect2(server.id(), client.id());\n   |                       ^^^^^^^^\n\nwarning: unused variable: `ret`\n  --> src/kvraft/client.rs:52:17\n   |\n52 |             let ret = net\n   |                 ^^^ help: if this is intentional, prefix it with an underscore: `_ret`\n   |\n   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default\n\nwarning: unused variable: `max_raft_state`\n  --> src/kvraft/server.rs:34:9\n   |\n34 |         max_raft_state: Option<usize>,\n   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`\n\nwarning: unused variable: `apply_ch`\n  --> src/kvraft/server.rs:37:18\n   |\n37 |         let (rf, apply_ch) = raft::RaftHandle::new(servers, me).await;\n   |                  ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_apply_ch`\n\nwarning: unused variable: `cmd`\n  --> src/kvraft/server.rs:68:27\n   |\n68 |     async fn apply(&self, cmd: S::Command) -> Result<S::Output, Error> {\n   |                           ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: unused variable: `cmd`\n  --> src/kvraft/server.rs:84:25\n   |\n84 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: unused variable: `last_included_term`\n   --> src/raft/raft.rs:139:9\n    |\n139 |         last_included_term: u64,\n    |         ^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_term`\n\nwarning: unused variable: `last_included_index`\n   --> src/raft/raft.rs:140:9\n    |\n140 |         last_included_index: u64,\n    |         ^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_index`\n\nwarning: unused variable: `snapshot`\n   --> src/raft/raft.rs:141:9\n    |\n141 |         snapshot: &[u8],\n    |         ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`\n\nwarning: unused variable: `index`\n   --> src/raft/raft.rs:150:34\n    |\n150 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {\n    |                                  ^^^^^ help: if this is intentional, prefix it with an underscore: `_index`\n\nwarning: unused variable: `snapshot`\n   --> src/raft/raft.rs:150:46\n    |\n150 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {\n    |                                              ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`\n\nwarning: unused variable: `data`\n   --> src/raft/raft.rs:242:25\n    |\n242 |     fn start(&mut self, data: &[u8]) -> Result<Start> {\n    |                         ^^^^ help: if this is intentional, prefix it with an underscore: `_data`\n\nwarning: unused variable: `msg`\n   --> src/raft/raft.rs:252:13\n    |\n252 |         let msg = ApplyMsg::Command {\n    |             ^^^ help: if this is intentional, prefix it with an underscore: `_msg`\n\nwarning: unused variable: `args`\n   --> src/raft/raft.rs:271:13\n    |\n271 |         let args: RequestVoteArgs = todo!(\"construct RPC request\");\n    |             ^^^^ help: if this is intentional, prefix it with an underscore: `_args`\n\nwarning: unused variable: `res`\n   --> src/raft/raft.rs:292:28\n    |\n292 |             while let Some(res) = rpcs.next().await {\n    |                            ^^^ help: if this is intentional, prefix it with an underscore: `_res`\n\nwarning: unused variable: `cmd`\n  --> src/shard_ctrler/server.rs:16:25\n   |\n16 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:15:29\n   |\n15 |     pub async fn get(&self, key: String) -> String {\n   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:19:29\n   |\n19 |     pub async fn put(&self, key: String, value: String) {\n   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `value`\n  --> src/shardkv/client.rs:19:42\n   |\n19 |     pub async fn put(&self, key: String, value: String) {\n   |                                          ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:23:32\n   |\n23 |     pub async fn append(&self, key: String, value: String) {\n   |                                ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `value`\n  --> src/shardkv/client.rs:23:45\n   |\n23 |     pub async fn append(&self, key: String, value: String) {\n   |                                             ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`\n\nwarning: unused variable: `ctrl_ck`\n  --> src/shardkv/server.rs:13:9\n   |\n13 |         ctrl_ck: CtrlerClerk,\n   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_ctrl_ck`\n\nwarning: unused variable: `servers`\n  --> src/shardkv/server.rs:14:9\n   |\n14 |         servers: Vec<SocketAddr>,\n   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_servers`\n\nwarning: unused variable: `gid`\n  --> src/shardkv/server.rs:15:9\n   |\n15 |         gid: u64,\n   |         ^^^ help: if this is intentional, prefix it with an underscore: `_gid`\n\nwarning: unused variable: `me`\n  --> src/shardkv/server.rs:16:9\n   |\n16 |         me: usize,\n   |         ^^ help: if this is intentional, prefix it with an underscore: `_me`\n\nwarning: unused variable: `max_raft_state`\n  --> src/shardkv/server.rs:17:9\n   |\n17 |         max_raft_state: Option<usize>,\n   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`\n\nwarning: unused variable: `cmd`\n  --> src/shardkv/server.rs:34:25\n   |\n34 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: fields `endpoint` and `apply_ch` are never read\n  --> src/raft/raft.rs:60:5\n   |\n59 | struct Raft {\n   |        ---- fields in this struct\n60 |     endpoint: net::Endpoint,\n   |     ^^^^^^^^\n...\n63 |     apply_ch: MsgSender,\n   |     ^^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: associated items `apply`, `generate_election_timeout`, and `send_vote_request` are never used\n   --> src/raft/raft.rs:251:8\n    |\n241 | impl Raft {\n    | --------- associated items in this implementation\n...\n251 |     fn apply(&self) {\n    |        ^^^^^\n...\n264 |     fn generate_election_timeout() -> Duration {\n    |        ^^^^^^^^^^^^^^^^^^^^^^^^^\n...\n270 |     fn send_vote_request(&mut self) {\n    |        ^^^^^^^^^^^^^^^^^\n\nwarning: variants `Candidate` and `Leader` are never constructed\n  --> src/raft/state.rs:17:27\n   |\n17 | pub enum Role { Follower, Candidate, Leader }\n   |          ----             ^^^^^^^^^  ^^^^^^\n   |          |\n   |          variants in this enum\n   |\n   = note: `Role` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis\n\nwarning: fields `request` and `before` are never read\n  --> src/raft/protocol.rs:24:5\n   |\n21 | struct PendingVote {\n   |        ----------- fields in this struct\n...\n24 |     request: VoteRequest,\n   |     ^^^^^^^\n25 |     reply: VoteReply,\n26 |     before: Ghost<State>,\n   |     ^^^^^^\n   |\n   = note: `PendingVote` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis\n\nwarning: struct `OperationView` is never constructed\n  --> src/raft/protocol.rs:40:12\n   |\n40 | pub struct OperationView {\n   |            ^^^^^^^^^^^^^\n\nwarning: field `ctrl_ck` is never read\n --> src/shardkv/client.rs:5:5\n  |\n4 | pub struct Clerk {\n  |            ----- field in this struct\n5 |     ctrl_ck: CtrlerClerk,\n  |     ^^^^^^^\n\nwarning: field `inner` is never read\n --> src/shardkv/server.rs:8:5\n  |\n7 | pub struct ShardKvServer {\n  |            ------------- field in this struct\n8 |     inner: Arc<Server<ShardKv>>,\n  |     ^^^^^\n\nwarning: `madraft` (lib test) generated 48 warnings (run `cargo fix --lib -p madraft --tests` to apply 29 suggestions)\n    Finished `release` profile [optimized] target(s) in 0.16s\n     Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target/release/deps/madraft-9d1fbd9857b1c1bd)\n\nrunning 3 tests\ntest test_support::explicit_abort_preserves_old_drop_cancellation ... ok\ntest test_support::restart_preserves_node_and_simulated_file ... ok\ntest test_support::rpc_partition_and_reconnect ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 60 filtered out; finished in 0.00s\n\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_SEED": "1",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "family": "test_support::",
+      "passed_tests": [
+        "test_support::explicit_abort_preserves_old_drop_cancellation",
+        "test_support::restart_preserves_node_and_simulated_file",
+        "test_support::rpc_partition_and_reconnect"
+      ],
+      "ignored_tests": [],
+      "uncovered_tests": []
+    },
+    "remaining_functional_coverage": {
+      "status": "OPEN",
+      "reason": "not_run_in_feedback",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [],
+      "log": null,
+      "scope": "remaining_functional_coverage",
+      "category": "not_run",
+      "diagnostic": "Final must run every retained test family on every configured seed."
+    },
+    "current_dependency_1": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/candidate/madraft/proof/initialization.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/current_dependency_1.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 1.2918447209995065,
+      "seed": null,
+      "diagnostic": "verification results:: 11 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "checked_entry": "madraft/proof/initialization.rs"
+    },
+    "current_dependency_2": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/candidate/madraft/proof/vote_operation_history.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/current_dependency_2.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 1.8002408659995126,
+      "seed": null,
+      "diagnostic": "verification results:: 27 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "checked_entry": "madraft/proof/vote_operation_history.rs"
+    },
+    "current_entry": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/candidate/madraft/proof/storage_correspondence.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/current_entry.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 1.9936190139997052,
+      "seed": null,
+      "diagnostic": "verification results:: 38 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "checked_entry": "madraft/proof/storage_correspondence.rs"
+    },
+    "current_parent": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/candidate/madraft/proof/durable_vote_reply.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/current_parent.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 2.3984094970001024,
+      "seed": null,
+      "diagnostic": "verification results:: 41 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "checked_entry": "madraft/proof/durable_vote_reply.rs"
+    },
+    "foundation": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/candidate/requirements/support_example.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/foundation.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 1.8170943229997647,
+      "seed": null,
+      "diagnostic": "verification results:: 15 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "definitions": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/candidate/requirements/target_checks.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/definitions.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 1.3801115040005243,
+      "seed": null,
+      "diagnostic": "verification results:: 9 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "execution_link": {
+      "status": "OPEN",
+      "reason": "missing_entry_or_dependency",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [],
+      "log": null,
+      "scope": "execution_link",
+      "category": "not_run",
+      "dependency": "madraft/proof/implementation.rs"
+    },
+    "election_safety": {
+      "status": "OPEN",
+      "reason": "missing_entry_or_dependency",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [],
+      "log": null,
+      "scope": "election_safety",
+      "category": "not_run",
+      "dependency": "madraft/proof/implementation.rs"
+    },
+    "leader_append_only": {
+      "status": "OPEN",
+      "reason": "missing_entry_or_dependency",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [],
+      "log": null,
+      "scope": "leader_append_only",
+      "category": "not_run",
+      "dependency": "madraft/proof/implementation.rs"
+    },
+    "log_matching": {
+      "status": "OPEN",
+      "reason": "missing_entry_or_dependency",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [],
+      "log": null,
+      "scope": "log_matching",
+      "category": "not_run",
+      "dependency": "madraft/proof/implementation.rs"
+    },
+    "leader_completeness": {
+      "status": "OPEN",
+      "reason": "missing_entry_or_dependency",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [],
+      "log": null,
+      "scope": "leader_completeness",
+      "category": "not_run",
+      "dependency": "madraft/proof/implementation.rs"
+    },
+    "state_machine_safety": {
+      "status": "OPEN",
+      "reason": "missing_entry_or_dependency",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [],
+      "log": null,
+      "scope": "state_machine_safety",
+      "category": "not_run",
+      "dependency": "madraft/proof/implementation.rs"
+    },
+    "snapshot_observation": {
+      "status": "OPEN",
+      "reason": "missing_entry_or_dependency",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [],
+      "log": null,
+      "scope": "snapshot_observation",
+      "category": "not_run",
+      "dependency": "madraft/proof/implementation.rs"
+    },
+    "nonempty_execution": {
+      "status": "OPEN",
+      "reason": "missing_entry_or_dependency",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [],
+      "log": null,
+      "scope": "nonempty_execution",
+      "category": "not_run",
+      "dependency": "madraft/proof/implementation.rs"
+    },
+    "linkage_review": {
+      "status": "OPEN",
+      "reason": "missing_implementation_entry",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [],
+      "log": null,
+      "scope": "linkage_review",
+      "diagnostic": "Create the execution/observation/refinement interface and its real dependencies; do not supply assumed invariants."
+    },
+    "connection_initialization_unit": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/candidate/madraft/proof/vote_operation.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/connection_initialization_unit.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 1.9209279200003948,
+      "seed": null,
+      "diagnostic": "verification results:: 23 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "checked_entry": "madraft/proof/vote_operation.rs"
+    },
+    "connection_initialization": {
+      "status": "OPEN",
+      "reason": "outer_paths_open",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [],
+      "log": null,
+      "scope": "connection_initialization",
+      "candidate_claim": {
+        "functions": "madraft/src/raft/protocol.rs::new, madraft/src/raft/raft.rs::new",
+        "entry": "madraft/proof/vote_operation.rs",
+        "open_premises": "Checked core constructor; async initialization, restore and stable group identity remain open."
+      },
+      "claim_status": "UNVERIFIED_DECLARATION",
+      "semantic_coverage": "NOT_AUTOMATICALLY_DECIDED",
+      "obligation": "Actual constructors establish the execution initial state and callee preconditions.",
+      "imported_references": [
+        "madraft/src/raft/protocol.rs::new"
+      ],
+      "open_paths": [
+        "madraft/src/raft/raft.rs::new"
+      ],
+      "external_paths": [],
+      "unit_check": "connection_initialization_unit",
+      "unit_status": "PASS",
+      "log_reference": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/connection_initialization_unit.log",
+      "checked_entry": "madraft/proof/vote_operation.rs",
+      "evidence_kind": "VERUS_UNIT_RESULT_WITH_UNREVIEWED_PATH_CLAIM"
+    },
+    "connection_transitions_unit": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/candidate/madraft/proof/vote_operation_history.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/current_dependency_2.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 1.8002408659995126,
+      "seed": null,
+      "diagnostic": "verification results:: 27 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "checked_entry": "madraft/proof/vote_operation_history.rs",
+      "reused_from": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/current_dependency_2.log"
+    },
+    "connection_transitions": {
+      "status": "OPEN",
+      "reason": "outer_paths_open",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [],
+      "log": null,
+      "scope": "connection_transitions",
+      "candidate_claim": {
+        "functions": "madraft/src/raft/protocol.rs::begin_vote, madraft/src/raft/raft.rs::request_vote",
+        "entry": "madraft/proof/vote_operation_history.rs",
+        "open_premises": "Exact request/submission transition checked; actual delivery and async wrapper preconditions remain open."
+      },
+      "claim_status": "UNVERIFIED_DECLARATION",
+      "semantic_coverage": "NOT_AUTOMATICALLY_DECIDED",
+      "obligation": "Actual handlers and their callers authorize every safety-relevant state change.",
+      "imported_references": [
+        "madraft/src/raft/protocol.rs::begin_vote"
+      ],
+      "open_paths": [
+        "madraft/src/raft/raft.rs::request_vote"
+      ],
+      "external_paths": [],
+      "unit_check": "connection_transitions_unit",
+      "unit_status": "PASS",
+      "log_reference": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/current_dependency_2.log",
+      "checked_entry": "madraft/proof/vote_operation_history.rs",
+      "evidence_kind": "VERUS_UNIT_RESULT_WITH_UNREVIEWED_PATH_CLAIM"
+    },
+    "connection_outputs_unit": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/candidate/madraft/proof/durable_vote_reply.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/current_parent.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 2.3984094970001024,
+      "seed": null,
+      "diagnostic": "verification results:: 41 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "checked_entry": "madraft/proof/durable_vote_reply.rs",
+      "reused_from": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/current_parent.log"
+    },
+    "connection_outputs": {
+      "status": "OPEN",
+      "reason": "outer_paths_open",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [],
+      "log": null,
+      "scope": "connection_outputs",
+      "candidate_claim": {
+        "functions": "madraft/src/raft/storage.rs::action, madraft/src/raft/storage.rs::complete, madraft/src/raft/storage.rs::release, madraft/src/raft/storage.rs::release_reply, madraft/src/raft/raft.rs::persist, madraft/src/raft/raft.rs::request_vote",
+        "entry": "madraft/proof/durable_vote_reply.rs",
+        "open_premises": "Checked sequencing, receipt and reply composition; actual async filesystem dispatch and RPC send provenance remain open."
+      },
+      "claim_status": "UNVERIFIED_DECLARATION",
+      "semantic_coverage": "NOT_AUTOMATICALLY_DECIDED",
+      "obligation": "Actual messages, storage completions and application outputs match the history, including release order.",
+      "imported_references": [
+        "madraft/src/raft/storage.rs::action",
+        "madraft/src/raft/storage.rs::complete",
+        "madraft/src/raft/storage.rs::release",
+        "madraft/src/raft/storage.rs::release_reply"
+      ],
+      "open_paths": [
+        "madraft/src/raft/raft.rs::persist",
+        "madraft/src/raft/raft.rs::request_vote"
+      ],
+      "external_paths": [],
+      "unit_check": "connection_outputs_unit",
+      "unit_status": "PASS",
+      "log_reference": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/current_parent.log",
+      "checked_entry": "madraft/proof/durable_vote_reply.rs",
+      "evidence_kind": "VERUS_UNIT_RESULT_WITH_UNREVIEWED_PATH_CLAIM"
+    },
+    "connection_recovery_unit": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/candidate/madraft/proof/durable_vote_reply.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/current_parent.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 2.3984094970001024,
+      "seed": null,
+      "diagnostic": "verification results:: 41 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "checked_entry": "madraft/proof/durable_vote_reply.rs",
+      "reused_from": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/current_parent.log"
+    },
+    "connection_recovery": {
+      "status": "OPEN",
+      "reason": "outer_paths_open",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [],
+      "log": null,
+      "scope": "connection_recovery",
+      "candidate_claim": {
+        "functions": "madraft/src/raft/protocol.rs::recover, madraft/src/raft/raft.rs::restore",
+        "entry": "madraft/proof/durable_vote_reply.rs",
+        "open_premises": "Recover now establishes exact saved-image equality; same-term conflicting request rejection follows conditionally. Durable history and decoder caller remain open."
+      },
+      "claim_status": "UNVERIFIED_DECLARATION",
+      "semantic_coverage": "NOT_AUTOMATICALLY_DECIDED",
+      "obligation": "Actual durable decoding and recovery re-establish subsequent callers' preconditions and history relation.",
+      "imported_references": [
+        "madraft/src/raft/protocol.rs::recover"
+      ],
+      "open_paths": [
+        "madraft/src/raft/raft.rs::restore"
+      ],
+      "external_paths": [],
+      "unit_check": "connection_recovery_unit",
+      "unit_status": "PASS",
+      "log_reference": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/current_parent.log",
+      "checked_entry": "madraft/proof/durable_vote_reply.rs",
+      "evidence_kind": "VERUS_UNIT_RESULT_WITH_UNREVIEWED_PATH_CLAIM"
+    },
+    "connection_snapshots_unit": {
+      "status": "OPEN",
+      "reason": "missing_entry_or_dependency",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [],
+      "log": null,
+      "scope": "connection_snapshots_unit",
+      "category": "not_run",
+      "dependency": "madraft/proof/snapshots.rs"
+    },
+    "connection_snapshots": {
+      "status": "OPEN",
+      "reason": "missing_entry_or_dependency",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [],
+      "log": null,
+      "scope": "connection_snapshots",
+      "candidate_claim": {
+        "functions": "madraft/src/raft/raft.rs::snapshot, madraft/src/raft/raft.rs::cond_install_snapshot",
+        "entry": "madraft/proof/snapshots.rs",
+        "open_premises": "All snapshot paths, compaction and application decoding remain open."
+      },
+      "claim_status": "UNVERIFIED_DECLARATION",
+      "semantic_coverage": "NOT_AUTOMATICALLY_DECIDED",
+      "obligation": "Actual snapshot creation, installation, decoding and recovery match observations.",
+      "imported_references": [],
+      "open_paths": [
+        "madraft/src/raft/raft.rs::snapshot",
+        "madraft/src/raft/raft.rs::cond_install_snapshot"
+      ],
+      "external_paths": [],
+      "unit_check": "connection_snapshots_unit",
+      "unit_status": "OPEN",
+      "log_reference": null,
+      "checked_entry": "madraft/proof/snapshots.rs",
+      "evidence_kind": "VERUS_UNIT_RESULT_WITH_UNREVIEWED_PATH_CLAIM"
+    },
+    "safety": {
+      "status": "OPEN",
+      "reason": "missing_entry_or_dependency",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [],
+      "log": null,
+      "scope": "safety",
+      "category": "not_run",
+      "dependency": "madraft/proof/implementation.rs"
+    },
+    "proof": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-joint-proof-5",
+      "candidate_revision": "check-3-1793346384651368250",
+      "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/candidate/madraft/proof/progress.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/proof.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 4.204007241001818,
+      "seed": null,
+      "diagnostic": "verification results:: 92 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    }
+  },
+  "required": [
+    "build",
+    "inventory",
+    "tests_seed_1_shardkv_tests",
+    "tests_seed_1_raft_raft_vote_tests",
+    "tests_seed_1_raft_tests_initial_election_2a",
+    "tests_seed_1_raft_tests",
+    "tests_seed_1_test_support",
+    "remaining_functional_coverage",
+    "current_dependency_1",
+    "current_dependency_2",
+    "current_entry",
+    "current_parent",
+    "foundation",
+    "definitions",
+    "execution_link",
+    "election_safety",
+    "leader_append_only",
+    "log_matching",
+    "leader_completeness",
+    "state_machine_safety",
+    "snapshot_observation",
+    "nonempty_execution",
+    "linkage_review",
+    "connection_initialization_unit",
+    "connection_initialization",
+    "connection_transitions_unit",
+    "connection_transitions",
+    "connection_outputs_unit",
+    "connection_outputs",
+    "connection_recovery_unit",
+    "connection_recovery",
+    "connection_snapshots_unit",
+    "connection_snapshots",
+    "safety"
+  ],
+  "input_fingerprint": "f8a9ba5e88f7bb791ecbe7278ec367f2f387196abacc0a8c38d48a15851f05ea",
+  "evidence_mismatches": [],
+  "result_reuse": "No historical PASS reuse; identical units in this invocation share one actual result/log.",
+  "current_obligation": {
+    "plan": {
+      "id": "fresh-state-vote-correspondence",
+      "statement": "The real RPC persistence driver obtains create/write/sync actions from checked code and releases the pending reply only through the completed operation, with an explicit filesystem-effect premise.",
+      "goal": "execution_link",
+      "kind": "caller",
+      "functions": [
+        "madraft/src/raft/storage.rs::new",
+        "madraft/src/raft/storage.rs::action",
+        "madraft/src/raft/storage.rs::complete",
+        "madraft/src/raft/storage.rs::release",
+        "madraft/src/raft/storage.rs::release_reply",
+        "madraft/src/raft/raft.rs::persist",
+        "madraft/src/raft/raft.rs::request_vote"
+      ],
+      "entry": "madraft/proof/storage_correspondence.rs",
+      "parent": "madraft/proof/durable_vote_reply.rs",
+      "dependencies": [
+        "madraft/proof/initialization.rs",
+        "madraft/proof/vote_operation_history.rs"
+      ],
+      "premises": "Actual async dispatch must establish the specified submitted filesystem action and returned result, including exact buffer and handle; serde and pinned filesystem effects are explicit host contracts. Network provenance, group identity, arbitrary crash/restart histories and cluster induction remain open. A receipt alone is not durable evidence.",
+      "tests": [
+        "raft::raft::vote_tests",
+        "raft::tests::initial_election_2a"
+      ],
+      "restore": []
+    },
+    "units": {
+      "current_dependency_1": "madraft/proof/initialization.rs",
+      "current_dependency_2": "madraft/proof/vote_operation_history.rs",
+      "current_entry": "madraft/proof/storage_correspondence.rs",
+      "current_parent": "madraft/proof/durable_vote_reply.rs"
+    },
+    "layer": "PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED",
+    "first_blocker": {
+      "reason": "outer_paths_open",
+      "paths": [
+        "madraft/src/raft/raft.rs::persist",
+        "madraft/src/raft/raft.rs::request_vote"
+      ],
+      "premises": "Actual async dispatch must establish the specified submitted filesystem action and returned result, including exact buffer and handle; serde and pinned filesystem effects are explicit host contracts. Network provenance, group identity, arbitrary crash/restart histories and cluster induction remain open. A receipt alone is not durable evidence."
+    },
+    "imported_references": [
+      "madraft/src/raft/storage.rs::new",
+      "madraft/src/raft/storage.rs::action",
+      "madraft/src/raft/storage.rs::complete",
+      "madraft/src/raft/storage.rs::release",
+      "madraft/src/raft/storage.rs::release_reply"
+    ],
+    "open_paths": [
+      "madraft/src/raft/raft.rs::persist",
+      "madraft/src/raft/raft.rs::request_vote"
+    ],
+    "external_paths": [],
+    "semantic_coverage": "NOT_AUTOMATICALLY_DECIDED",
+    "parent_imports_entry": true,
+    "semantic_review": "NOT_PERFORMED"
+  },
+  "assessments": {
+    "election_safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery"
+      ],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "leader_append_only": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery"
+      ],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "log_matching": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery"
+      ],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "leader_completeness": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery"
+      ],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "state_machine_safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery"
+      ],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "execution_link": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery"
+      ],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "snapshot_observation": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery"
+      ],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "nonempty_execution": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery"
+      ],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery"
+      ],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    }
+  },
+  "functional_plan": [
+    "shardkv::tests::",
+    "raft::raft::vote_tests",
+    "raft::tests::initial_election_2a",
+    "raft::tests::",
+    "test_support::"
+  ],
+  "placeholders": [
+    "madraft/src/kvraft/client.rs::call",
+    "madraft/src/kvraft/server.rs::apply",
+    "madraft/src/raft/raft.rs::apply",
+    "madraft/src/raft/raft.rs::cond_install_snapshot",
+    "madraft/src/raft/raft.rs::send_vote_request",
+    "madraft/src/raft/raft.rs::snapshot",
+    "madraft/src/raft/raft.rs::start",
+    "madraft/src/shard_ctrler/server.rs::apply",
+    "madraft/src/shardkv/client.rs::append",
+    "madraft/src/shardkv/client.rs::get",
+    "madraft/src/shardkv/client.rs::put",
+    "madraft/src/shardkv/server.rs::apply",
+    "madraft/src/shardkv/server.rs::new"
+  ],
+  "semantic_review": "NOT_PERFORMED",
+  "implementation_acceptance": "NOT_ESTABLISHED",
+  "elapsed_seconds": 41.0941145479992,
+  "diagnostics": [
+    {
+      "category": "functional_failure",
+      "message": "test_or_build_failure",
+      "dependency": "tests_seed_1_shardkv_tests",
+      "detail": "this error\n\n---- shardkv::tests::unreliable1_4b stdout ----\n\nthread '<unnamed>' (60081) panicked at src/shardkv/server.rs:19:9:\nnot yet implemented: construct ShardKv\ncontext: node=4 \"0.1.0.0:1\", task=120 (spawned at src/shardkv/tester.rs:150:14)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n---- shardkv::tests::unreliable2_4b stdout ----\n\nthread '<unnamed>' (60083) panicked at src/shardkv/server.rs:19:9:\nnot yet implemented: construct ShardKv\ncontext: node=4 \"0.1.0.0:1\", task=131 (spawned at src/shardkv/tester.rs:150:14)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n\nfailures:\n    shardkv::tests::challenge1_delete_4b\n    shardkv::tests::challenge2_partial_4b\n    shardkv::tests::challenge2_unaffected_4b\n    shardkv::tests::concurrent1_4b\n    shardkv::tests::concurrent2_4b\n    shardkv::tests::concurrent3_4b\n    shardkv::tests::join_leave_4b\n    shardkv::tests::miss_change_4b\n    shardkv::tests::snapshot_4b\n    shardkv::tests::static_shards_4b\n    shardkv::tests::unreliable1_4b\n    shardkv::tests::unreliable2_4b\n\ntest result: FAILED. 0 passed; 12 failed; 1 ignored; 0 measured; 50 filtered out; finished in 0.01s\n\n",
+      "affected": [
+        "tests_seed_1_shardkv_tests"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/tests_seed_1_shardkv_tests.log"
+      ]
+    },
+    {
+      "category": "functional_failure",
+      "message": "test_or_build_failure",
+      "dependency": "tests_seed_1_raft_tests_initial_election_2a",
+      "detail": "eld in this struct\n8 |     inner: Arc<Server<ShardKv>>,\n  |     ^^^^^\n\nwarning: `madraft` (lib test) generated 48 warnings (run `cargo fix --lib -p madraft --tests` to apply 29 suggestions)\n    Finished `release` profile [optimized] target(s) in 0.09s\n     Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/cargo-target/release/deps/madraft-9d1fbd9857b1c1bd)\nerror: test failed, to rerun pass `--lib`\nerror: 1 target failed:\n    `--lib`\n\nrunning 1 test\ntest raft::tests::initial_election_2a ... FAILED\n\nfailures:\n\n---- raft::tests::initial_election_2a stdout ----\n\nthread '<unnamed>' (60103) panicked at src/raft/tester.rs:95:9:\nexpected one leader, got none\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\ncontext: node=0 \"madsim-main\", task=0 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n\nfailures:\n    raft::tests::initial_election_2a\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 62 filtered out; finished in 0.00s\n\n",
+      "affected": [
+        "tests_seed_1_raft_tests_initial_election_2a"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/tests_seed_1_raft_tests_initial_election_2a.log"
+      ]
+    },
+    {
+      "category": "functional_failure",
+      "message": "test_or_build_failure",
+      "dependency": "tests_seed_1_raft_tests",
+      "detail": "reach agreement\ncontext: node=0 \"madsim-main\", task=19899 (spawned at /home/nitro/Desktop/raft_verus/target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:129:19)\nnote: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error\n\n\nfailures:\n    raft::tests::backup_2b\n    raft::tests::basic_agree_2b\n    raft::tests::concurrent_starts_2b\n    raft::tests::count_2b\n    raft::tests::fail_agree_2b\n    raft::tests::fail_no_agree_2b\n    raft::tests::figure_8_2c\n    raft::tests::figure_8_unreliable_2c\n    raft::tests::initial_election_2a\n    raft::tests::many_election_2a\n    raft::tests::persist1_2c\n    raft::tests::persist2_2c\n    raft::tests::persist3_2c\n    raft::tests::reelection_2a\n    raft::tests::rejoin_2b\n    raft::tests::reliable_churn_2c\n    raft::tests::snapshot_basic_2d\n    raft::tests::snapshot_install_2d\n    raft::tests::snapshot_install_crash_2d\n    raft::tests::snapshot_install_unreliable_2d\n    raft::tests::snapshot_install_unreliable_crash_2d\n    raft::tests::unreliable_agree_2c\n    raft::tests::unreliable_churn_2c\n\ntest result: FAILED. 0 passed; 23 failed; 0 ignored; 0 measured; 40 filtered out; finished in 0.16s\n\n",
+      "affected": [
+        "tests_seed_1_raft_tests"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-3-1793346384651368250/tests_seed_1_raft_tests.log"
+      ]
+    },
+    {
+      "category": "not_run",
+      "message": "not_run_in_feedback",
+      "dependency": "remaining_functional_coverage",
+      "detail": "Final must run every retained test family on every configured seed.",
+      "affected": [
+        "remaining_functional_coverage"
+      ],
+      "logs": []
+    },
+    {
+      "category": "not_run",
+      "message": "missing_entry_or_dependency",
+      "dependency": "madraft/proof/implementation.rs",
+      "detail": "",
+      "affected": [
+        "execution_link",
+        "election_safety",
+        "leader_append_only",
+        "log_matching",
+        "leader_completeness",
+        "state_machine_safety",
+        "snapshot_observation",
+        "nonempty_execution",
+        "safety"
+      ],
+      "logs": []
+    },
+    {
+      "category": "missing_implementation_entry",
+      "message": "missing_implementation_entry",
+      "dependency": "linkage_review",
+      "detail": "Create the execution/observation/refinement interface and its real dependencies; do not supply assumed invariants.",
+      "affected": [
+        "linkage_review"
+      ],
+      "logs": []
+    },
+    {
+      "category": "outer_paths_open",
+      "message": "outer_paths_open",
+      "dependency": "connection_initialization",
+      "detail": "",
+      "affected": [
+        "connection_initialization"
+      ],
+      "logs": []
+    },
+    {
+      "category": "outer_paths_open",
+      "message": "outer_paths_open",
+      "dependency": "connection_transitions",
+      "detail": "",
+      "affected": [
+        "connection_transitions"
+      ],
+      "logs": []
+    },
+    {
+      "category": "outer_paths_open",
+      "message": "outer_paths_open",
+      "dependency": "connection_outputs",
+      "detail": "",
+      "affected": [
+        "connection_outputs"
+      ],
+      "logs": []
+    },
+    {
+      "category": "outer_paths_open",
+      "message": "outer_paths_open",
+      "dependency": "connection_recovery",
+      "detail": "",
+      "affected": [
+        "connection_recovery"
+      ],
+      "logs": []
+    },
+    {
+      "category": "not_run",
+      "message": "missing_entry_or_dependency",
+      "dependency": "madraft/proof/snapshots.rs",
+      "detail": "",
+      "affected": [
+        "connection_snapshots_unit"
+      ],
+      "logs": []
+    },
+    {
+      "category": "missing_entry_or_dependency",
+      "message": "missing_entry_or_dependency",
+      "dependency": "connection_snapshots",
+      "detail": "",
+      "affected": [
+        "connection_snapshots"
+      ],
+      "logs": []
+    }
+  ],
+  "changed_standards": [],
+  "concurrent_changes": [],
+  "liveness": "OPEN \u2014 not accepted by safety checks",
+  "semantic_boundary": "Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.",
+  "task_completion": "OPEN",
+  "tool_versions": {
+    "codex": {
+      "command": [
+        "codex",
+        "--version"
+      ],
+      "output": "codex-cli 0.162.0-alpha.17.2",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "codex_help": {
+      "command": [
+        "codex",
+        "--help"
+      ],
+      "output": "Codex CLI\n\nIf no subcommand is specified, options will be forwarded to the interactive CLI.\n\nUsage: codex [OPTIONS] [PROMPT]\n       codex [OPTIONS] <COMMAND> [ARGS]\n\nCommands:\n  agents            Browse all agent sessions on the shared local app-server daemon\n  exec              Run Codex non-interactively [aliases: e]\n  review            Run a code review non-interactively\n  login             Manage login\n  logout            Remove stored authentication credentials\n  mcp               Manage external MCP servers for Codex\n  plugin            Manage Codex plugins\n  app-server        [experimental] Run the app server or related tooling\n  remote-control    [experimental] Manage the app-server daemon with remote control enabled\n  completion        Generate shell completion scripts\n  update            Update Codex to the latest version\n  doctor            Diagnose local Codex installation, config, auth, and runtime health\n  sandbox           Run commands within a Codex-provided sandbox\n  debug             Debugging tools\n  apply             Apply the latest diff produced by Codex agent as a `git apply` to your local\n                    working tree [aliases: a]\n  resume            Resume a previous interactive session (picker by default; use --last to continue\n                    the most recent)\n  queue             Queue a message for an existing session\n  archive           Archive a saved session by id or session name\n  delete            Permanently delete a saved session by id or session name\n  migrate-rollouts  Inspect or migrate legacy local sessions to paginated thread history\n  unarchive         Unarchive a saved session by id or session name\n  fork              Fork a previous interactive session (picker by default; use --last to fork the\n                    most recent)\n  cloud             [EXPERIMENTAL] Browse tasks from Codex Cloud and apply changes locally\n  exec-server       [EXPERIMENTAL] Run the standalone exec-server service\n  features          Inspect feature flags\n  help              Print this message or the help of the given subcommand(s)\n\nArguments:\n  [PROMPT]\n          Optional user prompt to start the session\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n      --remote <ADDR>\n          Connect the TUI to a remote app server endpoint.\n          \n          Accepted forms: `ws://host:port`, `wss://host:port`, `unix://`, or `unix://PATH`.\n\n      --remote-auth-token-env <ENV_VAR>\n          Name of the environment variable containing the bearer token to send to a remote app\n          server websocket\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -i, --image <FILE>...\n          Optional image(s) to attach to the initial prompt\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --oss\n          Use open-source provider\n\n      --local-provider <OSS_PROVIDER>\n          Specify which local provider to use (lmstudio or ollama). If not specified with --oss,\n          will use config default or show selection\n\n  -p, --profile <CONFIG_PROFILE_V2>\n          Layer $CODEX_HOME/<name>.config.toml on top of the base user config\n\n  -s, --sandbox <SANDBOX_MODE>\n          Select the sandbox policy to use when executing model-generated shell commands\n          \n          [possible values: read-only, workspace-write, danger-full-access]\n\n      --approve-for-me\n          Route approval requests through automatic review using the workspace-write sandbox\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n  -C, --cd <DIR>\n          Tell the agent to use the specified directory as its working root\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --add-dir <DIR>\n          Additional directories that should be writable alongside the primary workspace\n\n  -a, --ask-for-approval <APPROVAL_POLICY>\n          Configure when the model requires human approval before executing a command\n\n          Possible values:\n          - on-request: The model decides when to ask the user for approval\n          - never:      Never ask for user approval Execution failures are immediately returned to\n            the model\n\n      --search\n          Enable live web search. When enabled, the native Responses `web_search` tool is available\n          to the model (no per\u2011call approval)\n\n      --no-alt-screen\n          Disable alternate screen mode\n          \n          Runs the TUI in inline mode, preserving terminal scrollback history.\n\n      --no-daemon\n          Run without the shared background server, even if it is already running\n\n  -h, --help\n          Print help (see a summary with '-h')\n\n  -V, --version\n          Print version",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "exec_help": {
+      "command": [
+        "codex",
+        "exec",
+        "--help"
+      ],
+      "output": "Run Codex non-interactively\n\nUsage: codex exec [OPTIONS] [PROMPT]\n       codex exec [OPTIONS] <COMMAND> [ARGS]\n\nCommands:\n  resume  Resume a previous session by id or pick the most recent with --last\n  fork    Fork a previous session by id into a new session\n  review  Run a code review against the current repository\n  help    Print this message or the help of the given subcommand(s)\n\nArguments:\n  [PROMPT]\n          Initial instructions for the agent. If not provided as an argument (or if `-` is used),\n          instructions are read from stdin. If stdin is piped and a prompt is also provided, stdin\n          is appended as a `<stdin>` block\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -i, --image <FILE>...\n          Optional image(s) to attach to the initial prompt\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --oss\n          Use open-source provider\n\n      --local-provider <OSS_PROVIDER>\n          Specify which local provider to use (lmstudio or ollama). If not specified with --oss,\n          will use config default or show selection\n\n  -p, --profile <CONFIG_PROFILE_V2>\n          Layer $CODEX_HOME/<name>.config.toml on top of the base user config\n\n  -s, --sandbox <SANDBOX_MODE>\n          Select the sandbox policy to use when executing model-generated shell commands\n          \n          [possible values: read-only, workspace-write, danger-full-access]\n\n      --approve-for-me\n          Route approval requests through automatic review using the workspace-write sandbox\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n  -C, --cd <DIR>\n          Tell the agent to use the specified directory as its working root\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --add-dir <DIR>\n          Additional directories that should be writable alongside the primary workspace\n\n      --thread-source <SOURCE>\n          Source classification for newly created or forked threads\n\n      --cyber-access-program <PROGRAM>\n          Request an experimental Cyber access program for this turn (OpenAI provider only). Omit to\n          use server defaults. Not supported with review; fork requires a prompt\n          \n          [possible values: standard, daybreak_blue, daybreak_red]\n\n      --skip-git-repo-check\n          Allow running Codex outside a Git repository\n\n      --ephemeral\n          Run without persisting session files to disk\n\n      --ignore-user-config\n          Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`\n\n      --ignore-rules\n          Do not load user or project execpolicy `.rules` files\n\n      --output-schema <FILE>\n          Path to a JSON Schema file describing the model's final response shape\n\n      --color <COLOR>\n          Specifies color settings for use in the output\n          \n          [default: auto]\n          [possible values: always, never, auto]\n\n      --json\n          Print events to stdout as JSONL\n\n  -o, --output-last-message <FILE>\n          Specifies file where the last message from the agent should be written\n\n  -h, --help\n          Print help (see a summary with '-h')\n\n  -V, --version\n          Print version",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "resume_help": {
+      "command": [
+        "codex",
+        "exec",
+        "resume",
+        "--help"
+      ],
+      "output": "Resume a previous session by id or pick the most recent with --last\n\nUsage: codex exec resume [OPTIONS] [SESSION_ID] [PROMPT]\n\nArguments:\n  [SESSION_ID]\n          Conversation/session id (UUID) or thread name. UUIDs take precedence if it parses. If\n          omitted, use --last to pick the most recent recorded session\n\n  [PROMPT]\n          Prompt to send after resuming the session. If `-` is used, read from stdin\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --last\n          Resume the most recent recorded session (newest) without specifying an id\n\n      --all\n          Show all sessions (disables cwd filtering)\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n  -i, --image <FILE>\n          Optional image(s) to attach to the prompt sent after resuming\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --thread-source <SOURCE>\n          Source classification for newly created or forked threads\n\n      --cyber-access-program <PROGRAM>\n          Request an experimental Cyber access program for this turn (OpenAI provider only). Omit to\n          use server defaults. Not supported with review; fork requires a prompt\n          \n          [possible values: standard, daybreak_blue, daybreak_red]\n\n      --skip-git-repo-check\n          Allow running Codex outside a Git repository\n\n      --ephemeral\n          Run without persisting session files to disk\n\n      --ignore-user-config\n          Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`\n\n      --ignore-rules\n          Do not load user or project execpolicy `.rules` files\n\n      --output-schema <FILE>\n          Path to a JSON Schema file describing the model's final response shape\n\n      --json\n          Print events to stdout as JSONL\n\n  -o, --output-last-message <FILE>\n          Specifies file where the last message from the agent should be written\n\n  -h, --help\n          Print help (see a summary with '-h')",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "rustc": {
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--version"
+      ],
+      "output": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "cargo": {
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "--version"
+      ],
+      "output": "cargo 1.92.0 (344c4567c 2025-10-21)",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "verus": {
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "--version"
+      ],
+      "output": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "new_command_help": {
+      "command": [
+        "codex",
+        "--no-daemon",
+        "--ask-for-approval",
+        "never",
+        "-c",
+        "sandbox_mode=\"workspace-write\"",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "exec",
+        "--ignore-user-config",
+        "--skip-git-repo-check",
+        "--json",
+        "--model",
+        "gpt-6-astra",
+        "--output-last-message",
+        "/home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/probe-unused.md",
+        "--help"
+      ],
+      "output": "Run Codex non-interactively\n\nUsage: codex exec [OPTIONS] [PROMPT]\n       codex exec [OPTIONS] <COMMAND> [ARGS]\n\nCommands:\n  resume  Resume a previous session by id or pick the most recent with --last\n  fork    Fork a previous session by id into a new session\n  review  Run a code review against the current repository\n  help    Print this message or the help of the given subcommand(s)\n\nArguments:\n  [PROMPT]\n          Initial instructions for the agent. If not provided as an argument (or if `-` is used),\n          instructions are read from stdin. If stdin is piped and a prompt is also provided, stdin\n          is appended as a `<stdin>` block\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -i, --image <FILE>...\n          Optional image(s) to attach to the initial prompt\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --oss\n          Use open-source provider\n\n      --local-provider <OSS_PROVIDER>\n          Specify which local provider to use (lmstudio or ollama). If not specified with --oss,\n          will use config default or show selection\n\n  -p, --profile <CONFIG_PROFILE_V2>\n          Layer $CODEX_HOME/<name>.config.toml on top of the base user config\n\n  -s, --sandbox <SANDBOX_MODE>\n          Select the sandbox policy to use when executing model-generated shell commands\n          \n          [possible values: read-only, workspace-write, danger-full-access]\n\n      --approve-for-me\n          Route approval requests through automatic review using the workspace-write sandbox\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n  -C, --cd <DIR>\n          Tell the agent to use the specified directory as its working root\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --add-dir <DIR>\n          Additional directories that should be writable alongside the primary workspace\n\n      --thread-source <SOURCE>\n          Source classification for newly created or forked threads\n\n      --cyber-access-program <PROGRAM>\n          Request an experimental Cyber access program for this turn (OpenAI provider only). Omit to\n          use server defaults. Not supported with review; fork requires a prompt\n          \n          [possible values: standard, daybreak_blue, daybreak_red]\n\n      --skip-git-repo-check\n          Allow running Codex outside a Git repository\n\n      --ephemeral\n          Run without persisting session files to disk\n\n      --ignore-user-config\n          Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`\n\n      --ignore-rules\n          Do not load user or project execpolicy `.rules` files\n\n      --output-schema <FILE>\n          Path to a JSON Schema file describing the model's final response shape\n\n      --color <COLOR>\n          Specifies color settings for use in the output\n          \n          [default: auto]\n          [possible values: always, never, auto]\n\n      --json\n          Print events to stdout as JSONL\n\n  -o, --output-last-message <FILE>\n          Specifies file where the last message from the agent should be written\n\n  -h, --help\n          Print help (see a summary with '-h')\n\n  -V, --version\n          Print version",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "resume_command_help": {
+      "command": [
+        "codex",
+        "--no-daemon",
+        "--ask-for-approval",
+        "never",
+        "-c",
+        "sandbox_mode=\"workspace-write\"",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "exec",
+        "resume",
+        "00000000-0000-0000-0000-000000000000",
+        "--ignore-user-config",
+        "--skip-git-repo-check",
+        "--json",
+        "--model",
+        "gpt-6-astra",
+        "--output-last-message",
+        "/home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/probe-unused.md",
+        "--help"
+      ],
+      "output": "Resume a previous session by id or pick the most recent with --last\n\nUsage: codex exec resume [OPTIONS] [SESSION_ID] [PROMPT]\n\nArguments:\n  [SESSION_ID]\n          Conversation/session id (UUID) or thread name. UUIDs take precedence if it parses. If\n          omitted, use --last to pick the most recent recorded session\n\n  [PROMPT]\n          Prompt to send after resuming the session. If `-` is used, read from stdin\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --last\n          Resume the most recent recorded session (newest) without specifying an id\n\n      --all\n          Show all sessions (disables cwd filtering)\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n  -i, --image <FILE>\n          Optional image(s) to attach to the prompt sent after resuming\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --thread-source <SOURCE>\n          Source classification for newly created or forked threads\n\n      --cyber-access-program <PROGRAM>\n          Request an experimental Cyber access program for this turn (OpenAI provider only). Omit to\n          use server defaults. Not supported with review; fork requires a prompt\n          \n          [possible values: standard, daybreak_blue, daybreak_red]\n\n      --skip-git-repo-check\n          Allow running Codex outside a Git repository\n\n      --ephemeral\n          Run without persisting session files to disk\n\n      --ignore-user-config\n          Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`\n\n      --ignore-rules\n          Do not load user or project execpolicy `.rules` files\n\n      --output-schema <FILE>\n          Path to a JSON Schema file describing the model's final response shape\n\n      --json\n          Print events to stdout as JSONL\n\n  -o, --output-last-message <FILE>\n          Specifies file where the last message from the agent should be written\n\n  -h, --help\n          Print help (see a summary with '-h')",
+      "exit": 0,
+      "process": "COMPLETED"
+    }
+  }
+}

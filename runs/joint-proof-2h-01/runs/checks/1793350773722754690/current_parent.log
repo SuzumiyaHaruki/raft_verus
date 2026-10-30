@@ -1,0 +1,28 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350773722754690/candidate/madraft/proof/execution_connection.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 110 verified, 1 errors
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350773722754690/candidate/madraft/proof/implementation.rs:218:1
+    |
+218 | / pub proof fn prove_runtime_step(s: RuntimeState, i: Input, t: RuntimeState, o: Output,
+219 | |     a: Seq<segment_support::Envelope<Message>>, b: Seq<segment_support::Envelope<Message>>)
+    | |___________________________________________________________________________________________^
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350773722754690/candidate/madraft/proof/implementation.rs:222:13
+    |
+222 |     ensures runtime_invariant(t,b), step(view(s),i,view(t),o),
+    |             ^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+236 |     assert forall|j: int| 0 <= j < t.received.len() implies exists|n: int| 0 <= n < b.len()
+    |     ------ at the end of the function body
+
+error: assertion failed
+   --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350773722754690/candidate/madraft/proof/implementation.rs:239:20
+    |
+239 |             assert(exists|n: int| 0 <= n < a.len() && a[n] == s.received[j]);
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed
+
+error: aborting due to 2 previous errors
+
+
+process=COMPLETED exit=1

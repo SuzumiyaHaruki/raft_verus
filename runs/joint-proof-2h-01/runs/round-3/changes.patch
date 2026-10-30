@@ -1,0 +1,341 @@
+--- before/madraft/proof/durable_vote_reply.rs
++++ after/madraft/proof/durable_vote_reply.rs
+@@ -0,0 +1,64 @@
++//! Necessary parent: checked operation release + concrete host filesystem effects.
++//! This conditional result does not discharge actual async dispatch adequacy.
++#[path = "storage_correspondence.rs"]
++pub mod storage_correspondence;
++use storage_correspondence::{protocol as p, state, storage as io, Disk};
++use vstd::prelude::*;
++verus! {
++pub proof fn durable_reply(before: p::OperationView, after: p::OperationView,
++    id: u64, saved: p::VoteImage, disk: Disk, reply: state::VoteReply)
++    requires p::view_invariant(before),
++        storage_correspondence::disk_invariant(io::Phase::Ready, saved, disk),
++        p::complete_step(before, id, saved, after, Some(reply)),
++    ensures disk == Disk::Image(p::image(after.state)),
++        state::vote_step(before.pending.unwrap().4, before.pending.unwrap().2, after.state, reply),
++        reply.granted ==> saved.term == before.pending.unwrap().2.term
++            && saved.voted_for == Some(before.pending.unwrap().2.candidate),
++{
++    storage_correspondence::release_has_image(io::Phase::Ready, saved, disk);
++    storage_correspondence::vote_operation_history::released_reply(before, id, saved, after, reply);
++}
++
++// Every intermediate storage boundary is represented, including the incomplete
++// create/write gap. A crash can observe any boundary; no sync atomicity is added.
++pub struct StorageHistory {
++    pub image: p::VoteImage,
++    pub phases: Seq<io::Phase>,
++    pub disks: Seq<Disk>,
++    pub completions: Seq<io::Completion>,
++}
++pub open spec fn storage_execution(h: StorageHistory) -> bool {
++    h.phases.len() == h.completions.len() + 1 && h.disks.len() == h.phases.len()
++    && h.phases[0] == io::Phase::Create
++    && forall|k: int| 0 <= k < h.completions.len() ==>
++        h.phases[k+1] == io::next_phase(h.phases[k], #[trigger] h.completions[k])
++        && storage_correspondence::filesystem(io::action_for(h.phases[k], h.image),
++            h.completions[k], h.disks[k], h.disks[k+1])
++}
++pub proof fn disk_at(h: StorageHistory, k: int)
++    requires storage_execution(h), 0 <= k < h.phases.len(),
++    ensures storage_correspondence::disk_invariant(h.phases[k], h.image, h.disks[k]),
++    decreases k,
++{
++    if k == 0 { storage_correspondence::storage_initial(h.image, h.disks[0]); }
++    else {
++        disk_at(h, k-1);
++        assert(h.phases[k] == io::next_phase(h.phases[k-1], h.completions[k-1]));
++        storage_correspondence::storage_preserves(h.phases[k-1], h.image, h.completions[k-1],
++            h.disks[k-1], h.disks[k]);
++    }
++}
++
++// The actual recover constructor establishes image equality and the invariant.
++// A subsequent admitted begin step therefore cannot change that saved vote.
++pub proof fn restored_vote_conflict(saved: p::VoteImage, recovered: p::OperationView,
++    request: state::VoteRequest, after: p::OperationView, submitted: Option<(u64, p::VoteImage)>)
++    requires p::view_invariant(recovered), p::image(recovered.state) == saved,
++        saved.voted_for.is_some(), request.term == saved.term,
++        Some(request.candidate) != saved.voted_for,
++        p::begin_step(recovered, request, after, submitted), submitted.is_some(),
++    ensures after.pending.is_some(), !after.pending.unwrap().3.granted,
++        after.state.voted_for == saved.voted_for,
++{}
++
++}
+--- before/madraft/proof/progress.rs
++++ after/madraft/proof/progress.rs
+@@ -5,3 +5,5 @@
+ mod recovery;
+ #[path = "vote_operation_history.rs"]
+ mod vote_operation_history;
++#[path = "durable_vote_reply.rs"]
++mod durable_vote_reply;
+--- before/madraft/proof/storage_correspondence.rs
++++ after/madraft/proof/storage_correspondence.rs
+@@ -0,0 +1,45 @@
++//! Primitive filesystem effects are the disclosed pinned MadSim contract.
++//! Async call correspondence remains an explicit outer obligation.
++#[path = "vote_operation_history.rs"]
++pub mod vote_operation_history;
++pub use vote_operation_history::vote_operation::{protocol, state};
++#[path = "../src/raft/storage.rs"]
++pub mod storage;
++use storage::{Phase, Action, Completion};
++use vstd::prelude::*;
++verus! {
++// Incomplete includes the create/write crash gap; recovery must stop on it.
++pub enum Disk { Missing, Incomplete, Image(protocol::VoteImage) }
++// This relation describes the *actual submitted host call*, not a free success
++// input. Serialization fidelity and write_all_at's single inode update are
++// trusted filesystem/encoding contracts, disclosed separately from protocol.
++pub open spec fn filesystem(action: Action, result: Completion, s: Disk, t: Disk) -> bool {
++    match (action, result) {
++        (Action::Create, Completion::Created) => t == Disk::Incomplete,
++        (Action::Write(image), Completion::Written) => t == Disk::Image(image),
++        (Action::Sync, Completion::Synced) => t == s,
++        // Failure may leave a partial image; it cannot authorize a release.
++        (_, Completion::Failed) => true,
++        _ => false,
++    }
++}
++pub open spec fn disk_invariant(phase: Phase, image: protocol::VoteImage, disk: Disk) -> bool {
++    (phase == Phase::Sync || phase == Phase::Ready) ==> disk == Disk::Image(image)
++}
++
++pub proof fn storage_initial(image: protocol::VoteImage, disk: Disk)
++    ensures disk_invariant(Phase::Create, image, disk),
++{}
++
++pub proof fn storage_preserves(phase: Phase, image: protocol::VoteImage,
++    completion: Completion, before: Disk, after: Disk)
++    requires disk_invariant(phase, image, before),
++        filesystem(storage::action_for(phase, image), completion, before, after),
++    ensures disk_invariant(storage::next_phase(phase, completion), image, after),
++{}
++
++pub proof fn release_has_image(phase: Phase, image: protocol::VoteImage, disk: Disk)
++    requires disk_invariant(phase, image, disk), phase == Phase::Ready,
++    ensures disk == Disk::Image(image),
++{}
++}
+--- before/madraft/src/raft/protocol.rs
++++ after/madraft/src/raft/protocol.rs
+@@ -136,7 +136,8 @@
+         ensures r.is_some() ==> r.unwrap().invariant() && r.unwrap().idle()
+             && r.unwrap().state().me == me && r.unwrap().state().members == members
+             && r.unwrap().state().term == saved.term
+-            && r.unwrap().state().voted_for == saved.voted_for,
++            && r.unwrap().state().voted_for == saved.voted_for
++            && image(r.unwrap().state()) == saved,
+     {
+         if saved.version != 1 || saved.me != me || saved.members != members { return None; }
+         match State::restore_vote(me, members, saved.term, saved.voted_for) {
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -72,6 +72,8 @@
+ mod state;
+ #[path = "protocol.rs"]
+ mod protocol;
++#[path = "storage.rs"]
++mod storage;
+ use state::{VoteRequest as RequestVoteArgs, VoteReply as RequestVoteReply};
+ 
+ use protocol::{Machine, VoteImage as Persist, WriteVote};
+@@ -154,16 +156,35 @@
+     /// see paper's Figure 2 for a description of what should be persistent.
+     // Caller holds storage_gate from decision through reply release.
+     // Until log/snapshot support is implemented this image contains votes only.
+-    async fn persist(&self, operation: &WriteVote) -> io::Result<()> {
+-        let persist = operation.image();
+-        let bytes = bincode::serialize(&persist)
+-            .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+-        // A crash after truncation leaves a non-decodable image and recovery
+-        // stops. It must never turn that image into permission to vote again.
+-        let file = fs::File::create("state").await?;
+-        file.write_all_at(&bytes, 0).await?;
+-        file.sync_all().await?;
+-        Ok(())
++    async fn persist(&self, operation: WriteVote) -> io::Result<storage::WrittenVote> {
++        use storage::{Action, Completion, VoteWrite};
++        let mut flow = VoteWrite::new(operation);
++        let mut file = None;
++        loop {
++            match flow.action() {
++                Action::Create => match fs::File::create("state").await {
++                    Ok(created) => { file = Some(created); flow.complete(Completion::Created); }
++                    Err(e) => { flow.complete(Completion::Failed); return Err(e); }
++                },
++                Action::Write(image) => {
++                    let bytes = bincode::serialize(&image)
++                        .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
++                    // The actual submitted buffer comes from the checked action.
++                    let result = file.as_ref().expect("created state file").write_all_at(&bytes, 0).await;
++                    match result {
++                        Ok(()) => flow.complete(Completion::Written),
++                        Err(e) => { flow.complete(Completion::Failed); return Err(e); }
++                    }
++                }
++                Action::Sync => match file.as_ref().expect("written state file").sync_all().await {
++                    Ok(()) => flow.complete(Completion::Synced),
++                    Err(e) => { flow.complete(Completion::Failed); return Err(e); }
++                },
++                Action::Release => return flow.release()
++                    .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "invalid release phase")),
++                Action::Stop => return Err(io::Error::new(io::ErrorKind::Other, "storage flow stopped")),
++            }
++        }
+     }
+ 
+     async fn restore(&self) -> io::Result<()> {
+@@ -207,10 +228,10 @@
+             let mut this = self.inner.lock().unwrap();
+             this.request_vote(args).ok_or_else(|| io::Error::new(io::ErrorKind::Other, "vote operation busy or exhausted"))?
+         };
+-        // The borrowed operation cannot change while these exact bytes are written.
++        // The owned operation drives create/write/sync; only its completed flow releases it.
+         // On failure the pending operation remains blocked and no reply is released.
+-        self.persist(&operation).await?;
+-        let reply = self.inner.lock().unwrap().machine.complete_vote(operation)
++        let written = self.persist(operation).await?;
++        let reply = written.release_reply(&mut self.inner.lock().unwrap().machine)
+             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "mismatched vote completion"))?;
+         Ok(reply)
+     }
+@@ -303,6 +324,40 @@
+         // Recovery checks identity in the verified core before permitting calls.
+         let wrong_identity = Persist { version: 1, me: 1, members: 2, term: 4, voted_for: Some(1) };
+         assert!(Machine::recover(0, 2, wrong_identity).is_none());
++    }
++
++    #[test]
++    fn storage_receipt_requires_the_whole_sequence() {
++        use storage::{Completion, VoteWrite, Action};
++        let q = RequestVoteArgs { term: 8, candidate: 1, last_index: 0, last_term: 0 };
++        let mut node = Machine::new(0, 2).unwrap();
++        let issued = node.begin_vote(q).unwrap();
++        let flow = VoteWrite::new(issued);
++        assert!(flow.release().is_none());
++
++        let mut node = Machine::new(0, 2).unwrap();
++        let mut flow = VoteWrite::new(node.begin_vote(q).unwrap());
++        flow.complete(Completion::Written); // a write completion before create
++        assert!(matches!(flow.action(), Action::Stop));
++        assert!(flow.release().is_none());
++
++        let mut node = Machine::new(0, 2).unwrap();
++        let mut flow = VoteWrite::new(node.begin_vote(q).unwrap());
++        flow.complete(Completion::Created);
++        flow.complete(Completion::Failed);
++        flow.complete(Completion::Synced); // failure cannot be repaired by a late success
++        assert!(flow.release().is_none());
++
++        let mut node = Machine::new(0, 2).unwrap();
++        let mut flow = VoteWrite::new(node.begin_vote(q).unwrap());
++        flow.complete(Completion::Created);
++        match flow.action() {
++            Action::Write(image) => { assert_eq!(image.term, 8); assert_eq!(image.voted_for, Some(1)); }
++            _ => panic!("expected submitted image"),
++        }
++        flow.complete(Completion::Written);
++        flow.complete(Completion::Synced);
++        assert!(flow.release().unwrap().release_reply(&mut node).unwrap().granted);
+     }
+ 
+     // Exercises the actual RPC-facing wrapper, storage and recovery path.
+--- before/madraft/src/raft/storage.rs
++++ after/madraft/src/raft/storage.rs
+@@ -0,0 +1,91 @@
++//! Checked storage sequencing. I/O events are supplied only by the real driver.
++//! The filesystem effect of each successful host operation is an explicit
++//! environment contract in the parent proof, not inferred from a token.
++use super::protocol::{self, WriteVote, VoteImage, Machine};
++use super::state::VoteReply;
++use vstd::prelude::*;
++verus! {
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum Phase { Create, Write, Sync, Ready, Failed }
++#[derive(Clone, Copy, Debug)]
++pub enum Action { Create, Write(VoteImage), Sync, Release, Stop }
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum Completion { Created, Written, Synced, Failed }
++
++pub struct VoteWrite {
++    operation: WriteVote,
++    phase: Phase,
++}
++// No public constructor: only the completed checked flow can produce a receipt.
++pub struct WrittenVote { operation: WriteVote }
++
++pub open spec fn next_phase(p: Phase, c: Completion) -> Phase {
++    match (p, c) {
++        (_, Completion::Failed) => Phase::Failed,
++        (Phase::Create, Completion::Created) => Phase::Write,
++        (Phase::Write, Completion::Written) => Phase::Sync,
++        (Phase::Sync, Completion::Synced) => Phase::Ready,
++        _ => Phase::Failed,
++    }
++}
++pub open spec fn action_for(p: Phase, image: VoteImage) -> Action {
++    match p {
++        Phase::Create => Action::Create,
++        Phase::Write => Action::Write(image),
++        Phase::Sync => Action::Sync,
++        Phase::Ready => Action::Release,
++        Phase::Failed => Action::Stop,
++    }
++}
++impl VoteWrite {
++    pub closed spec fn phase(&self) -> Phase { self.phase }
++    pub closed spec fn id(&self) -> u64 { self.operation.number() }
++    pub closed spec fn image(&self) -> VoteImage { self.operation.contents() }
++    pub fn new(operation: WriteVote) -> (r: Self)
++        ensures r.phase() == Phase::Create, r.id() == operation.number(),
++            r.image() == operation.contents(),
++    { Self { operation, phase: Phase::Create } }
++
++    pub fn action(&self) -> (r: Action)
++        ensures r == action_for(self.phase(), self.image()),
++    {
++        match self.phase {
++            Phase::Create => Action::Create,
++            Phase::Write => Action::Write(self.operation.image()),
++            Phase::Sync => Action::Sync,
++            Phase::Ready => Action::Release,
++            Phase::Failed => Action::Stop,
++        }
++    }
++    pub fn complete(&mut self, event: Completion)
++        ensures self.id() == old(self).id(), self.image() == old(self).image(),
++            self.phase() == next_phase(old(self).phase(), event),
++    {
++        self.phase = match (self.phase, event) {
++            (_, Completion::Failed) => Phase::Failed,
++            (Phase::Create, Completion::Created) => Phase::Write,
++            (Phase::Write, Completion::Written) => Phase::Sync,
++            (Phase::Sync, Completion::Synced) => Phase::Ready,
++            _ => Phase::Failed,
++        };
++    }
++    pub fn release(self) -> (r: Option<WrittenVote>)
++        ensures r.is_some() == (self.phase() == Phase::Ready),
++            r.is_some() ==> r.unwrap().id() == self.id() && r.unwrap().image() == self.image(),
++    {
++        if matches!(self.phase, Phase::Ready) { Some(WrittenVote { operation: self.operation }) }
++        else { None }
++    }
++}
++impl WrittenVote {
++    pub closed spec fn id(&self) -> u64 { self.operation.number() }
++    pub closed spec fn image(&self) -> VoteImage { self.operation.contents() }
++    pub fn release_reply(self, machine: &mut Machine) -> (r: Option<VoteReply>)
++        requires old(machine).invariant(),
++        ensures machine.invariant(), machine.state() == old(machine).state(),
++            protocol::complete_step(old(machine).view(), self.id(), self.image(), machine.view(), r),
++            r.is_some() ==> self.image() == protocol::image(machine.state()),
++    { machine.complete_vote(self.operation) }
++
++}
++}

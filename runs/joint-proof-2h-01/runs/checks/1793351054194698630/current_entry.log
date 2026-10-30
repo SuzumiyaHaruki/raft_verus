@@ -1,0 +1,24 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793351054194698630/candidate/madraft/proof/adapter.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 101 verified, 1 errors
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793351054194698630/candidate/madraft/proof/../src/raft/execution.rs:281:13
+    |
+281 | /             r.is_some() ==> r.unwrap().view().sender == context.inbound().recipient
+282 | |                 && r.unwrap().view().recipient == context.inbound().sender
+283 | |                 && r.unwrap().view().request == context.request()
+284 | |                 && written.id() == context.id() && written.image() == context.image()
+285 | |                 && p::image(self.view().state) == context.image()
+286 | |                 && (r.unwrap().view().reply.granted ==> self.view().state.voted_for == Some(context.inbound().sender)
+287 | |                     && r.unwrap().view().reply.term == context.request().term),
+    | |______________________________________________________________________________^ failed this postcondition
+...
+291 | /         match self.finish_rpc(context.reply, written) {
+292 | |             None => None,
+293 | |             Some(reply) => Some(wire::ResponseSend::new(delivered.recipient(), delivered.sender(), q, reply)),
+294 | |         }
+    | |_________- at the end of the function body
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

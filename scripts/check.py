@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Independent real checks with per-obligation diagnostics and bounded wall time."""
 import argparse
+import configparser
 import json
 import math
 from pathlib import Path
@@ -54,6 +55,8 @@ def feedback_families(changed, history, rotation=1):
 def connection_claims(workspace):
     """One candidate-authored table in PROGRESS.md; these are claims, not proofs."""
     path = Path(workspace) / 'PROGRESS.md'
+    if not path.resolve().is_relative_to(Path(workspace).resolve()):
+        return {'error': 'progress_outside_workspace'}
     text = path.read_text() if path.is_file() else ''
     block = re.search(r'<!-- connections -->(.*?)<!-- /connections -->', text, re.S)
     claims = {}
@@ -65,6 +68,66 @@ def connection_claims(workspace):
             else:
                 claims[cells[0]] = dict(functions=cells[1], entry=cells[2], open_premises=cells[3])
     return claims
+
+
+def current_obligation(workspace):
+    """One flat INI block in the existing progress note; never executable shell."""
+    path = Path(workspace) / 'PROGRESS.md'
+    if not path.resolve().is_relative_to(Path(workspace).resolve()):
+        return {'error': 'progress_outside_workspace'}
+    text = path.read_text() if path.is_file() else ''
+    blocks = re.findall(r'<!-- obligation -->\s*```ini\s*\n(.*?)```\s*<!-- /obligation -->', text, re.S)
+    if not blocks:
+        return {'error': 'missing_current_obligation'}
+    try:
+        if len(blocks) != 1:
+            raise ValueError('Keep exactly one current obligation block')
+        cfg = configparser.ConfigParser(interpolation=None)
+        cfg.read_string(blocks[0])
+        if cfg.sections() != ['obligation'] or cfg.defaults():
+            raise ValueError('Only the obligation section is allowed')
+        plan = dict(cfg['obligation'])
+        required = {'id', 'statement', 'goal', 'kind', 'functions', 'entry', 'premises'}
+        if not required <= plan.keys() or any(not plan[k] for k in required):
+            raise ValueError('Required fields: ' + ', '.join(sorted(required)))
+        if plan.keys() - required - {'parent', 'dependencies', 'tests', 'rollback', 'restore'}:
+            raise ValueError('Unknown obligation fields')
+        if not re.fullmatch(r'[A-Za-z0-9_-]{1,80}', plan['id']):
+            raise ValueError('Use a short stable obligation id')
+        if plan['goal'] not in OBLIGATIONS or plan['kind'] not in ('local', 'caller', 'initialization', 'step', 'composition'):
+            raise ValueError('Unknown goal or increment kind')
+        for key in ('functions', 'dependencies', 'tests', 'restore'):
+            plan[key] = [p.strip() for p in plan.get(key, '').split(',') if p.strip()]
+        if not plan['functions'] or len(plan['dependencies']) > 8 or len(plan['tests']) > 5:
+            raise ValueError('Name actual functions and keep the increment bounded')
+        for name in [plan['entry'], *plan['dependencies'], *([plan['parent']] if plan.get('parent') else [])]:
+            p = Path(name)
+            if p.is_absolute() or '..' in p.parts or p.parts[:2] not in (('madraft', 'src'), ('madraft', 'proof')) or p.suffix != '.rs':
+                raise ValueError('Proof entries must be candidate madraft/src or madraft/proof .rs paths')
+        if any(not re.fullmatch(r'(?:raft|kvraft|shard_ctrler|shardkv|test_support)::[A-Za-z0-9_:]*', s) for s in plan['tests']):
+            raise ValueError('Tests must be Rust test filters, not commands')
+        if plan.get('rollback') and not re.fullmatch(r'cp-[0-9]+', plan['rollback']):
+            raise ValueError('Rollback must name a checkpoint of this experiment')
+        return plan
+    except (ValueError, configparser.Error) as exc:
+        return {'error': 'invalid_current_obligation', 'diagnostic': str(exc)}
+
+
+def reference_evidence(snapshot, entry, refs):
+    """Import/name hints only; Verus results below remain separate from coverage."""
+    linked, outside = source_links(entry, snapshot) if entry.is_file() else ([], [])
+    imported, gaps = [], []
+    for ref in refs:
+        filename, _, function = ref.partition('::')
+        path = (snapshot / filename).resolve()
+        if not function or not path.is_relative_to(snapshot / 'madraft/src') or not path.is_file():
+            gaps.append(ref)
+        elif filename not in linked or not re.search(r'\bfn\s+' + re.escape(function) + r'\b', path.read_text()):
+            gaps.append(ref)
+        else:
+            imported.append(ref)
+    return dict(imported_references=imported, open_paths=gaps, external_paths=outside,
+                semantic_coverage='NOT_AUTOMATICALLY_DECIDED')
 
 
 def placeholder_findings(snapshot):
@@ -85,7 +148,7 @@ def assessments(checks):
     return {name: dict(formula_status=checks.get(name, {}).get('status', 'OPEN'),
         formula_scope='Candidate-defined relations and observations; not automatic runtime coverage.',
         connection_status='OPEN' if gaps else 'SEMANTIC_REVIEW_REQUIRED',
-        checked_connection_units=[n for n, i in connections.items() if i.get('status') == 'PASS'],
+        checked_connection_units=[n for n, i in connections.items() if i.get('unit_status', i.get('status')) == 'PASS'],
         open_connections=gaps,
         implementation_task='OPEN' if gaps or checks.get(name, {}).get('status') != 'PASS' else 'SEMANTIC_REVIEW_REQUIRED')
         for name in (*OBLIGATIONS, 'safety')}
@@ -115,7 +178,7 @@ def classify(result, proof=False):
             return 'OPEN', 'verification_failure'
         if re.search(r'error\[E\d+\]|error:.*(?:expected|cannot|could not|couldn.t|unresolved|aborting)', text):
             return 'OPEN', 'compilation_error'
-        return 'OPEN', 'verification_failure' if proof else 'test_or_build_failure'
+        return 'OPEN', 'verifier_error' if proof else 'test_or_build_failure'
     if proof and not re.search(r'verification results:: [1-9][0-9]* verified, 0 errors', text):
         return 'OPEN', 'no_verified_obligation'
     return 'PASS', 'checked'
@@ -136,7 +199,7 @@ def caller_text(authority, entry, obligation=None):
         '"../madraft/proof/implementation.rs"', json.dumps(str(entry)))
 
 
-def source_links(entry, candidate):
+def module_paths(entry, candidate):
     """Conservative literal-module inspection, not a semantic refinement proof."""
     pending, visited, outside = [entry], set(), []
     pattern = r'(?:#\[path\s*=\s*"([^"]+)"\]\s*)?(?:pub(?:\([^)]*\))?\s+)?mod\s+(\w+)\s*;'
@@ -155,8 +218,13 @@ def source_links(entry, candidate):
                 pending.extend(p for p in (path.parent / (name + '.rs'), path.parent / name / 'mod.rs',
                                             path.parent / path.stem / (name + '.rs')) if p.exists())
         pending.extend(path.parent / name for name in re.findall(r'include!\(\s*"([^"]+)"\s*\)', text))
-    linked = sorted(str(p.relative_to(candidate)) for p in visited if p.is_relative_to(candidate / 'madraft/src'))
-    return linked, sorted(outside)
+    return visited | {Path(p) for p in outside}
+
+
+def source_links(entry, candidate):
+    paths = module_paths(entry, candidate)
+    linked = sorted(str(p.relative_to(candidate)) for p in paths if p.is_relative_to(candidate / 'madraft/src'))
+    return linked, sorted(str(p) for p in paths if not p.is_relative_to(candidate.resolve()))
 
 
 def vacuity_findings(source):
@@ -227,6 +295,8 @@ class Checks:
         if any(not math.isfinite(value) or value <= 0 for value in self.limits.values()):
             raise ValueError('Check call limits must be finite and positive')
         self.shared_failures = {}
+        self.unit_checks = {}
+        self.current = {}
         self.unavailable_tools = {}
         self.revision = revision
         self.cfg, self.env = environment(tool_root)
@@ -262,6 +332,8 @@ class Checks:
         self.protected_before = {n: (self.workspace / n).read_bytes() for n in protected if (self.workspace / n).is_file()}
         self.requirements_before = {n: p.read_bytes() for n, p in files_under(self.snapshot / 'requirements').items()}
         progress = self.workspace / 'PROGRESS.md'
+        if not progress.resolve().is_relative_to(self.workspace):
+            raise ValueError('Progress note outside the candidate workspace')
         self.progress_before = progress.read_bytes() if progress.is_file() else None
         if self.progress_before is not None:
             (self.snapshot / 'PROGRESS.md').write_bytes(self.progress_before)
@@ -375,6 +447,62 @@ class Checks:
             self.shared_failures[str(implementation)] = name
         return item
 
+    def unit(self, name, entry):
+        path = (self.snapshot / entry).resolve()
+        if not path.is_relative_to(self.snapshot / 'madraft') or path.suffix != '.rs':
+            return self.record(name, 'NEEDS_REVIEW', 'proof_entry_outside_candidate')
+        if not path.is_file():
+            return self.record(name, 'OPEN', 'missing_entry_or_dependency', category='not_run', dependency=entry)
+        _, outside = source_links(path, self.snapshot)
+        if outside:
+            return self.record(name, 'NEEDS_REVIEW', 'external_source_import', external_paths=outside)
+        if entry in self.unit_checks:
+            first = self.unit_checks[entry]
+            self.results[name] = dict(self.results[first], reused_from=self.results[first].get('log'))
+            return self.results[name]
+        item = self.verus(name, entry=entry)
+        item['checked_entry'] = entry
+        self.unit_checks[entry] = name
+        return item
+
+    def obligation(self):
+        plan = current_obligation(self.snapshot)
+        self.current = dict(plan=plan, units={}, layer='PREPARATION', first_blocker=None)
+        if plan.get('error'):
+            self.record('current_entry', 'OPEN', plan['error'], diagnostic=plan.get('diagnostic', ''), category='not_run')
+            self.current['first_blocker'] = dict(reason=plan['error'], action='Select one concrete obligation and its check entry in PROGRESS.md')
+            return self.current
+        units = [('current_dependency_' + str(i + 1), p) for i, p in enumerate(plan['dependencies'])]
+        units += [('current_entry', plan['entry'])]
+        if plan.get('parent'):
+            units.append(('current_parent', plan['parent']))
+        for name, entry in units:
+            self.unit(name, entry)
+            self.current['units'][name] = entry
+        hints = reference_evidence(self.snapshot, self.snapshot / plan['entry'], plan['functions'])
+        self.current.update(hints)
+        for name, entry in units:
+            item = self.results[name]
+            if item['status'] != 'PASS':
+                self.current['first_blocker'] = dict(check=name, entry=entry, reason=item['reason'], log=item.get('log'))
+                break
+        local = self.results['current_entry']['status'] == 'PASS'
+        parent = self.results.get('current_parent', {})
+        # The full module graph (not just executable files) is used as a hint.
+        parent_uses = bool(plan.get('parent') and plan['parent'] != plan['entry'] and
+                           (self.snapshot / plan['entry']).resolve() in module_paths(self.snapshot / plan['parent'], self.snapshot))
+        self.current['parent_imports_entry'] = parent_uses
+        if local:
+            self.current['layer'] = 'LOCAL_UNIT_CHECKED'
+            if parent.get('status') == 'PASS' and parent_uses:
+                self.current['layer'] = 'PARENT_UNIT_CHECKED_PREMISES_UNREVIEWED'
+        if not self.current['first_blocker']:
+            self.current['first_blocker'] = dict(reason='outer_paths_open' if hints['open_paths'] else
+                'parent_connection_open' if not parent_uses else 'premises_and_execution_coverage_need_review',
+                paths=hints['open_paths'], premises=plan['premises'])
+        self.current['semantic_review'] = 'NOT_PERFORMED'
+        return self.current
+
     def linkage(self):
         entry = self.snapshot / 'madraft/proof/implementation.rs'
         if not entry.exists():
@@ -401,35 +529,14 @@ class Checks:
                 self.record(name, 'OPEN', 'missing_connection_evidence', **meta)
                 continue
             refs = [s.strip().strip('`') for s in claim['functions'].split(',')]
-            errors = []
-            for ref in refs:
-                path, separator, function = ref.partition('::')
-                target = (self.snapshot / path).resolve()
-                if not separator or not target.is_relative_to(self.snapshot / 'madraft/src') or not target.is_file():
-                    errors.append('Actual function reference must be madraft/src/file.rs::function: ' + ref)
-                elif not re.search(r'\bfn\s+' + re.escape(function) + r'\b', target.read_text()):
-                    errors.append('Function reference not found: ' + ref)
-            entry = (self.snapshot / claim['entry']).resolve()
-            if not entry.is_relative_to(self.snapshot / 'madraft') or not entry.is_file() or entry.suffix != '.rs':
-                errors.append('Missing candidate proof entry: ' + claim['entry'])
-            if errors:
-                self.record(name, 'OPEN', 'invalid_connection_reference', diagnostic='\n'.join(errors), **meta)
-                continue
-            linked, outside = source_links(entry, self.snapshot)
-            if outside:
-                self.record(name, 'NEEDS_REVIEW', 'external_source_import', external_paths=outside, **meta)
-                continue
-            if any(ref.partition('::')[0] not in linked for ref in refs):
-                self.record(name, 'OPEN', 'connection_source_not_imported', **meta)
-                continue
-            item = self.run(name, [self.cfg['verus'], str(entry), '--crate-type', 'lib',
-                            '--no-cheating', '--triggers-mode', 'silent'], proof=True,
-                            scope='Candidate-nominated entire unit; function reference/import is not a caller proof')
-            item.update(meta)
-            item['checked_entry'] = claim['entry']
-            # Even PASS verifies this unit's statements only. Never promote the
-            # author's table into an exhaustive path-coverage conclusion.
-            item['evidence_kind'] = 'VERUS_UNIT_RESULT_WITH_UNREVIEWED_PATH_CLAIM'
+            unit = self.unit(name + '_unit', claim['entry'])
+            hints = reference_evidence(self.snapshot, self.snapshot / claim['entry'], refs)
+            status, reason = unit['status'], unit['reason']
+            if status == 'PASS' and hints['open_paths']:
+                status, reason = 'OPEN', 'outer_paths_open'
+            self.record(name, status, reason, **(meta | hints),
+                unit_check=name + '_unit', unit_status=unit['status'], log_reference=unit.get('log'),
+                checked_entry=claim['entry'], evidence_kind='VERUS_UNIT_RESULT_WITH_UNREVIEWED_PATH_CLAIM')
 
     def finish(self, mode, required):
         self.changed_standards += [n for n, body in self.protected_before.items()
@@ -467,7 +574,8 @@ class Checks:
                       checker_authority=str(self.authority), snapshot=str(self.snapshot),
                       source_files=sorted(self.before), checks=self.results, required=required,
                       input_fingerprint=self.input_fingerprint, evidence_mismatches=mismatched,
-                      result_reuse='No historical PASS reuse; only same-invocation shared compile failures may refer to an earlier log.',
+                      result_reuse='No historical PASS reuse; identical units in this invocation share one actual result/log.',
+                      current_obligation=self.current,
                       assessments=assessments(self.results), functional_plan=self.test_plan,
                       placeholders=placeholder_findings(self.snapshot),
                       semantic_review='NOT_PERFORMED', implementation_acceptance='NOT_ESTABLISHED',
@@ -488,6 +596,10 @@ class Checks:
         for name, obligation in CONNECTIONS.items():
             item = self.results.get('connection_' + name, {})
             lines.append(f'- {name}: {item.get("status", "OPEN")} / {item.get("reason", "not checked")}. {obligation}')
+            if item.get('unit_check'):
+                lines.append(f'  Local unit: {item["unit_status"]}; unconnected paths: {", ".join(item["open_paths"]) or "semantic review required"}.')
+        if self.current:
+            lines += ['', 'Current increment: ' + self.current['layer'] + '; first obstacle: ' + json.dumps(self.current['first_blocker']), '']
         lines += ['', 'Placeholder source diagnostics (not a semantic completeness check): ' + ', '.join(report['placeholders']), '', SEMANTIC_BOUNDARY, '']
         (self.output / 'results.md').write_text('\n'.join(lines))
         return report
@@ -500,6 +612,7 @@ def evaluate(workspace, *, authority=ROOT, tool_root=ROOT, output=None, timeout=
     mode = 'initial' if initial else mode
     checks = Checks(workspace, authority, tool_root, output, timeout, revision)
     cfg = settings(tool_root)
+    plan = current_obligation(checks.snapshot)
     if mode != 'safety':
         fraction = cfg.getfloat('checks', 'functional_fraction', fallback=0.4)
         if not 0 < fraction < 1:
@@ -509,6 +622,12 @@ def evaluate(workspace, *, authority=ROOT, tool_root=ROOT, output=None, timeout=
         checks.cargo('inventory')
         selected = list(FAMILIES) if mode == 'final' else ([selection] if selection else feedback_families(
             changed_files, test_history or {}, cfg.getint('checks', 'feedback_rotation', fallback=1)))
+        if mode != 'final' and not plan.get('error'):
+            # Keep the oldest families first: repeatedly selecting a slow local
+            # test must not starve the existing functional rotation.
+            rotation = 0 if selection else cfg.getint('checks', 'feedback_rotation', fallback=1)
+            selected = list(dict.fromkeys(selected[:rotation] + plan['tests'] + selected))
+        if mode == 'obligation': selected = plan.get('tests', [])
         if mode == 'initial': selected = ['raft::tests::initial_election_2a']
         checks.test_plan = selected
         for seed in seeds or configured_seeds(tool_root):
@@ -521,6 +640,9 @@ def evaluate(workspace, *, authority=ROOT, tool_root=ROOT, output=None, timeout=
                           diagnostic='Final must run every retained test family on every configured seed.')
     # Functional work cannot cross this reserved proof boundary.
     checks.phase_deadline = checks.deadline
+    checks.obligation()
+    if mode == 'obligation':
+        return checks.finish(mode, [n for n in checks.results if n != 'remaining_functional_coverage'])
     for kind in ('foundation', 'definitions'):
         checks.verus(kind)
     for obligation in PROOF_ORDER:
@@ -547,7 +669,7 @@ def parse_seeds(text):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('kind', choices=['build', 'inventory', 'test', 'definitions', 'proof', 'top', 'foundation', 'feedback', 'safety', 'final'])
+    parser.add_argument('kind', choices=['build', 'inventory', 'test', 'definitions', 'proof', 'top', 'foundation', 'obligation', 'feedback', 'safety', 'final'])
     parser.add_argument('selection', nargs='?', help='Test filter, proof file, or top-level obligation')
     parser.add_argument('--workspace', type=Path, default=ROOT)
     parser.add_argument('--seed', type=int, default=1, help='Single-test seed; final uses --seeds or tools.ini')
@@ -558,7 +680,7 @@ def main():
     if not math.isfinite(args.timeout) or args.timeout <= 0:
         parser.error('Timeout must be finite and positive')
     output = ROOT / 'runs/checks' / str(time.time_ns())
-    if args.kind in ('final', 'safety', 'feedback'):
+    if args.kind in ('final', 'safety', 'feedback', 'obligation'):
         report = evaluate(args.workspace, output=output, timeout=args.timeout,
                           seeds=parse_seeds(args.seeds) if args.seeds else None, mode=args.kind, selection=args.selection)
     else:

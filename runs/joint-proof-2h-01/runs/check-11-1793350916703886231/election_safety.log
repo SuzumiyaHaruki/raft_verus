@@ -1,0 +1,18 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-11-1793350916703886231/election_safety-caller.rs --crate-type lib --no-cheating --triggers-mode silent
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-11-1793350916703886231/election_safety-caller.rs:21:41
+   |
+21 |     ensures targets::election_safety(c::observe(run)),
+   |                                         ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `prove_election_safety` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-11-1793350916703886231/election_safety-caller.rs:22:6
+   |
+22 | { c::prove_election_safety(run); }
+   |      ^^^^^^^^^^^^^^^^^^^^^ not found in `c`
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0425`.
+
+process=COMPLETED exit=1

@@ -1,0 +1,79 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350205604991178/candidate/madraft/proof/execution_connection.rs --crate-type lib --no-cheating --triggers-mode silent
+error: struct literals are not allowed here; try surrounding the struct literal with parentheses
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350205604991178/candidate/madraft/proof/../src/raft/wire.rs:46:41
+   |
+46 |                 && r.unwrap().view() == InboundView { sender, recipient, members, request },
+   |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0412]: cannot find type `InboundView` in module `wire`
+ --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350205604991178/candidate/madraft/proof/../src/raft/execution.rs:8:33
+  |
+8 | pub enum Input { Received(wire::InboundView), Request(state::VoteRequest), SelfVote(state::VoteRequest), Campaign(u64), Elect(election::T...
+  |                                 ^^^^^^^^^^^ not found in `wire`
+
+error[E0425]: cannot find function `inbound_valid` in module `wire`
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350205604991178/candidate/madraft/proof/../src/raft/execution.rs:25:63
+   |
+25 |         (Input::Received(v), Output::Submission(op)) => wire::inbound_valid(v) && p::begin_step(s, v.request, t, op),
+   |                                                               ^^^^^^^^^^^^^ not found in `wire`
+
+error[E0412]: cannot find type `InboundVote` in module `wire`
+   --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350205604991178/candidate/madraft/proof/../src/raft/execution.rs:213:55
+    |
+213 |     pub fn begin_received(&mut self, delivered: wire::InboundVote) -> (r: Option<(p::WriteVote, ReplyContext)>)
+    |                                                       ^^^^^^^^^^^ not found in `wire`
+
+error[E0412]: cannot find type `RequestView` in module `wire`
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350205604991178/candidate/madraft/proof/implementation.rs:43:38
+   |
+43 |     RequestSubmission(NodeKey, wire::RequestView),
+   |                                      ^^^^^^^^^^^ not found in `wire`
+
+error[E0412]: cannot find type `ResponseView` in module `wire`
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350205604991178/candidate/madraft/proof/implementation.rs:44:39
+   |
+44 |     ResponseSubmission(NodeKey, wire::ResponseView),
+   |                                       ^^^^^^^^^^^^ not found in `wire`
+
+error[E0412]: cannot find type `RequestView` in module `wire`
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350205604991178/candidate/madraft/proof/implementation.rs:50:38
+   |
+50 |     RequestSubmission(NodeKey, wire::RequestView),
+   |                                      ^^^^^^^^^^^ not found in `wire`
+
+error[E0412]: cannot find type `ResponseView` in module `wire`
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350205604991178/candidate/madraft/proof/implementation.rs:51:39
+   |
+51 |     ResponseSubmission(NodeKey, wire::ResponseView),
+   |                                       ^^^^^^^^^^^^ not found in `wire`
+
+error[E0412]: cannot find type `RequestView` in module `wire`
+   --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350205604991178/candidate/madraft/proof/implementation.rs:103:56
+    |
+103 | pub open spec fn request_envelope(k: NodeKey, q: wire::RequestView) -> segment_support::Envelope<Message> {
+    |                                                        ^^^^^^^^^^^ not found in `wire`
+
+error[E0412]: cannot find type `ResponseView` in module `wire`
+   --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350205604991178/candidate/madraft/proof/implementation.rs:107:57
+    |
+107 | pub open spec fn response_envelope(k: NodeKey, q: wire::ResponseView) -> segment_support::Envelope<Message> {
+    |                                                         ^^^^^^^^^^^^ not found in `wire`
+
+error[E0412]: cannot find type `RequestSend` in module `wire`
+   --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350205604991178/candidate/madraft/proof/implementation.rs:139:82
+    |
+139 | pub proof fn request_descriptor_connection(call: election::VoteCall, sent: wire::RequestSend,
+    |                                                                                  ^^^^^^^^^^^ not found in `wire`
+
+error[E0412]: cannot find type `RequestSend` in module `implementation::wire`
+   --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350205604991178/candidate/madraft/proof/execution_connection.rs:129:33
+    |
+129 |     sent: implementation::wire::RequestSend, k: implementation::NodeKey, s: implementation::State)
+    |                                 ^^^^^^^^^^^ not found in `implementation::wire`
+
+error: aborting due to 12 previous errors
+
+Some errors have detailed explanations: E0412, E0425.
+For more information about an error, try `rustc --explain E0412`.
+
+process=COMPLETED exit=1

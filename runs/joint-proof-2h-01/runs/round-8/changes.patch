@@ -1,0 +1,370 @@
+--- before/madraft/proof/execution_connection.rs
++++ after/madraft/proof/execution_connection.rs
+@@ -97,4 +97,34 @@
+                 && implementation::election::granted(t.view(), t.view().voters[i], t.view().replies[j].1),
+ { t.evidence(); }
+ 
++pub proof fn actual_leader_requires_majority(r: e::Runtime, k: int, votes: implementation::election::TallyView)
++    requires r.invariant(), 0 <= k < r.history().inputs.len(),
++        r.history().inputs[k] == e::Input::Elect(votes), r.history().outputs[k] == e::Output::Elected(true),
++    ensures implementation::election::valid(votes), votes.voters.len() > votes.members / 2,
++        votes.request.term == r.history().states[k+1].state.term,
++        votes.request.candidate == r.history().states[k+1].state.me,
++        votes.members == r.history().states[k+1].state.members,
++        r.history().states[k+1].state.role == state::Role::Leader,
++{
++    implementation::actual_runtime_is_connected(r);
++    let h = r.history();
++    assert(e::step(h.states[k], h.inputs[k], h.states[k+1], h.outputs[k]));
+ }
++
++pub proof fn actual_higher_term_steps_down(r: e::Runtime, k: int, peer: usize, reply: state::VoteReply, c: p::TermView)
++    requires r.invariant(), 0 <= k < r.history().inputs.len(),
++        r.history().inputs[k] == e::Input::HigherReply(peer, reply),
++        r.history().outputs[k] == e::Output::TermOp(Some(c)),
++    ensures r.history().states[k+1].state.term == reply.term,
++        reply.term > r.history().states[k].state.term,
++        r.history().states[k+1].state.role == state::Role::Follower,
++        r.history().states[k+1].state.voted_for.is_none(),
++        p::image(r.history().states[k+1].state) == p::term_image(c),
++{
++    implementation::actual_runtime_is_connected(r);
++    let h = r.history();
++    state_at(h, k);
++    assert(e::step(h.states[k], h.inputs[k], h.states[k+1], h.outputs[k]));
++}
++
++}
+--- before/madraft/proof/implementation.rs
++++ after/madraft/proof/implementation.rs
+@@ -3,11 +3,9 @@
+ //! No global theorem or crash-history completeness is claimed by this entry.
+ #[path = "durable_vote_reply.rs"]
+ pub mod durable_vote_reply;
+-pub use durable_vote_reply::storage_correspondence::{protocol, state, storage};
++pub use durable_vote_reply::storage_correspondence::{protocol, state, storage, election};
+ #[path = "../src/raft/execution.rs"]
+ pub mod executable;
+-#[path = "../src/raft/election.rs"]
+-pub mod election;
+ use vstd::prelude::*;
+ verus! {
+ pub proof fn actual_runtime_is_connected(r: executable::Runtime)
+--- before/madraft/proof/storage_correspondence.rs
++++ after/madraft/proof/storage_correspondence.rs
+@@ -2,7 +2,7 @@
+ //! Async call correspondence remains an explicit outer obligation.
+ #[path = "vote_operation_history.rs"]
+ pub mod vote_operation_history;
+-pub use vote_operation_history::vote_operation::{protocol, state};
++pub use vote_operation_history::vote_operation::{protocol, state, election};
+ #[path = "../src/raft/storage.rs"]
+ pub mod storage;
+ use storage::{Phase, Action, Completion};
+--- before/madraft/proof/vote_operation.rs
++++ after/madraft/proof/vote_operation.rs
+@@ -2,6 +2,8 @@
+ #[path = "initialization.rs"]
+ pub mod initialization;
+ pub use initialization::state;
++#[path = "../src/raft/election.rs"]
++pub mod election;
+ #[path = "../src/raft/protocol.rs"]
+ pub mod protocol;
+ use vstd::prelude::*;
+--- before/madraft/src/raft/election.rs
++++ after/madraft/src/raft/election.rs
+@@ -116,6 +116,8 @@
+             || q.last_index != self.request.last_index || q.last_term != self.request.last_term { return; }
+         self.record(call.peer, reply);
+     }
++    pub fn request(&self) -> (r: VoteRequest) ensures r == self.view().request, { self.request }
++    pub fn members(&self) -> (r: usize) ensures r == self.view().members, { self.members }
+     pub fn has_quorum(&self) -> (r: bool)
+         requires self.invariant(),
+         ensures r == (self.view().voters.len() > self.view().members / 2),
+--- before/madraft/src/raft/execution.rs
++++ after/madraft/src/raft/execution.rs
+@@ -1,12 +1,12 @@
+ //! Per-incarnation execution journal of the real vote runtime.
+ //! Ghost history is updated by actual constructors and handlers; it is not a
+ //! replacement for cluster provenance or durable cross-crash history.
+-use super::{protocol as p, state, storage};
++use super::{protocol as p, state, storage, election};
+ use vstd::prelude::*;
+ verus! {
+ pub enum Origin { Fresh(usize, usize), Recovered(p::VoteImage) }
+-pub enum Input { Request(state::VoteRequest), SelfVote(state::VoteRequest), Campaign(u64), Release(u64, p::VoteImage) }
+-pub enum Output { Submission(Option<(u64, p::VoteImage)>), Campaign(bool), Reply(Option<state::VoteReply>) }
++pub enum Input { Request(state::VoteRequest), SelfVote(state::VoteRequest), Campaign(u64), Elect(election::TallyView), HigherReply(usize, state::VoteReply), TermComplete(p::TermView, u64, p::VoteImage), Release(u64, p::VoteImage) }
++pub enum Output { Submission(Option<(u64, p::VoteImage)>), Campaign(bool), Elected(bool), TermOp(Option<p::TermView>), TermApplied(bool), Reply(Option<state::VoteReply>) }
+ pub struct History {
+     pub origin: Origin,
+     pub states: Seq<p::OperationView>,
+@@ -28,6 +28,9 @@
+             && q.last_index == s.state.last_index && q.last_term == s.state.last_term
+             && p::begin_step(s, q, t, op),
+         (Input::Campaign(term), Output::Campaign(ok)) => p::campaign_step(s, term, t, ok),
++        (Input::HigherReply(peer, reply), Output::TermOp(c)) => p::term_begin(s, peer, reply, t, c),
++        (Input::TermComplete(c, id, saved), Output::TermApplied(ok)) => p::term_end(s, c, id, saved, t, ok),
++        (Input::Elect(v), Output::Elected(ok)) => p::elect_step(s, v, t, ok),
+         (Input::Release(id, image), Output::Reply(reply)) => p::complete_step(s, id, image, t, reply),
+         _ => false,
+     }
+@@ -174,6 +177,35 @@
+         ok
+     }
+ 
++    pub fn elect(&mut self, votes: &election::Tally) -> (r: bool)
++        requires old(self).invariant(), votes.invariant(),
++        ensures self.invariant(), p::elect_step(old(self).view(), votes.view(), self.view(), r),
++            self.history().inputs == old(self).history().inputs.push(Input::Elect(votes.view())),
++    {
++        let ok = self.core.elect(votes);
++        self.journal = Ghost(extend(self.journal@, Input::Elect(votes.view()), self.core.view(), Output::Elected(ok)));
++        ok
++    }
++
++    pub fn prepare_term(&mut self, peer: usize, reply: state::VoteReply) -> (r: Option<(p::WriteVote, p::TermContext)>)
++        requires old(self).invariant(),
++        ensures self.invariant(),
++    {
++        let result = self.core.prepare_term(peer, reply);
++        let ghost out = Output::TermOp(match result { None => None, Some((_, ref c)) => Some(c.view()) });
++        self.journal = Ghost(extend(self.journal@, Input::HigherReply(peer, reply), self.core.view(), out));
++        result
++    }
++    pub fn finish_term(&mut self, context: p::TermContext, written: storage::WrittenVote) -> (r: bool)
++        requires old(self).invariant(),
++        ensures self.invariant(), p::term_end(old(self).view(), context.view(), written.id(), written.image(), self.view(), r),
++    {
++        let ghost input = Input::TermComplete(context.view(), written.id(), written.image());
++        let ok = written.release_term(&mut self.core, context);
++        self.journal = Ghost(extend(self.journal@, input, self.core.view(), Output::TermApplied(ok)));
++        ok
++    }
++
+     pub fn begin_rpc(&mut self, request: state::VoteRequest)
+         -> (r: Option<(p::WriteVote, ReplyContext)>)
+         requires old(self).invariant(),
+--- before/madraft/src/raft/protocol.rs
++++ after/madraft/src/raft/protocol.rs
+@@ -1,5 +1,6 @@
+ //! Verified request/storage/reply phases used by the asynchronous Raft host.
+ use super::state::{self, State, VoteRequest, VoteReply};
++use super::election;
+ use vstd::prelude::*;
+ 
+ verus! {
+@@ -13,7 +14,7 @@
+     pub members: usize,
+ }
+ 
+-// Only begin_vote constructs this operation. The host borrows its image while
++// Only checked vote/term preparation constructs this operation. The host borrows its image while
+ // writing, then returns the owned operation after successful I/O completion.
+ pub struct WriteVote { id: u64, image: VoteImage }
+ 
+@@ -81,6 +82,37 @@
+     ok == (s.pending.is_none() && s.state.term == term && s.state.voted_for == Some(s.state.me))
+     && t.serial == s.serial && t.pending == s.pending
+     && t.state == state::State { role: if ok { state::Role::Candidate } else { s.state.role }, ..s.state }
++}
++
++pub open spec fn elect_step(s: OperationView, votes: election::TallyView, t: OperationView, ok: bool) -> bool {
++    election::valid(votes)
++    && ok == (s.pending.is_none() && s.state.role == state::Role::Candidate
++        && s.state.term == votes.request.term && s.state.me == votes.request.candidate
++        && s.state.members == votes.members && s.state.voted_for == Some(s.state.me)
++        && votes.voters.len() > votes.members / 2)
++    && t.serial == s.serial && t.pending == s.pending
++    && t.state == State { role: if ok { state::Role::Leader } else { s.state.role }, ..s.state }
++}
++
++pub struct TermContext { id: u64, previous: VoteImage, peer: usize, reply: VoteReply }
++pub struct TermView { pub id: u64, pub previous: VoteImage, pub peer: usize, pub reply: VoteReply }
++pub open spec fn term_image(c: TermView) -> VoteImage {
++    VoteImage { term: c.reply.term, voted_for: None, ..c.previous }
++}
++pub open spec fn term_begin(s: OperationView, peer: usize, reply: VoteReply, t: OperationView, c: Option<TermView>) -> bool {
++    if s.pending.is_none() && s.serial < u64::MAX && peer < s.state.members && reply.term > s.state.term {
++        t.state == State { term: reply.term, voted_for: None, role: state::Role::Follower, ..s.state }
++        && t.pending == s.pending && t.serial == s.serial + 1
++        && c == Some(TermView { id: t.serial, previous: image(s.state), peer, reply })
++    } else { t == s && c.is_none() }
++}
++pub open spec fn term_end(s: OperationView, c: TermView, id: u64, saved: VoteImage, t: OperationView, ok: bool) -> bool {
++    ok == (s.pending.is_none() && s.serial == c.id && id == c.id && saved == term_image(c)
++        && image(s.state) == term_image(c) && c.peer < s.state.members && c.reply.term > c.previous.term)
++    && t == s
++}
++impl TermContext {
++    pub closed spec fn view(&self) -> TermView { TermView { id: self.id, previous: self.previous, peer: self.peer, reply: self.reply } }
+ }
+ 
+ impl WriteVote {
+@@ -176,6 +208,50 @@
+         self.state.campaign(term)
+     }
+ 
++    pub fn elect(&mut self, votes: &election::Tally) -> (r: bool)
++        requires old(self).invariant(), votes.invariant(),
++        ensures self.invariant(), elect_step(old(self).view(), votes.view(), self.view(), r),
++    {
++        proof { votes.evidence(); }
++        let q = votes.request();
++        let ok = self.pending.is_none() && matches!(self.state.role, state::Role::Candidate)
++            && self.state.term == q.term && self.state.me == q.candidate
++            && self.state.members == votes.members() && self.state.voted_for == Some(self.state.me)
++            && votes.has_quorum();
++        if ok { self.state.role = state::Role::Leader; }
++        ok
++    }
++
++    pub fn prepare_term(&mut self, peer: usize, reply: VoteReply) -> (r: Option<(WriteVote, TermContext)>)
++        requires old(self).invariant(),
++        ensures self.invariant(), term_begin(old(self).view(), peer, reply, self.view(),
++            match r { None => None, Some((_, c)) => Some(c.view()) }),
++            r.is_some() ==> r.unwrap().0.number() == r.unwrap().1.view().id
++                && r.unwrap().0.contents() == term_image(r.unwrap().1.view()),
++    {
++        if self.pending.is_some() || self.serial == u64::MAX || peer >= self.state.members || reply.term <= self.state.term { return None; }
++        self.serial = self.serial + 1;
++        let previous = VoteImage { version: 1, term: self.state.term, voted_for: self.state.voted_for,
++            me: self.state.me, members: self.state.members };
++        let saved = VoteImage { term: reply.term, voted_for: None, ..previous };
++        self.state.term = reply.term;
++        self.state.voted_for = None;
++        self.state.role = state::Role::Follower;
++        Some((WriteVote { id: self.serial, image: saved }, TermContext { id: self.serial, previous, peer, reply }))
++    }
++    pub fn complete_term(&mut self, c: TermContext, op: WriteVote) -> (ok: bool)
++        requires old(self).invariant(),
++        ensures self.invariant(), term_end(old(self).view(), c.view(), op.number(), op.contents(), self.view(), ok),
++    {
++        let yes = self.pending.is_none() && self.serial == c.id && op.id == c.id
++            && op.image.version == c.previous.version && op.image.term == c.reply.term
++            && op.image.voted_for.is_none() && op.image.me == c.previous.me && op.image.members == c.previous.members
++            && c.previous.version == 1 && c.reply.term == self.state.term && self.state.voted_for.is_none()
++            && c.previous.me == self.state.me && c.previous.members == self.state.members
++            && c.peer < self.state.members && c.reply.term > c.previous.term;
++        yes
++    }
++
+     pub fn pending_matches(&self, request: state::VoteRequest) -> (r: bool)
+         ensures r == (self.pending_request() == Some(request)),
+             r ==> self.view().pending.is_some() && self.view().pending.unwrap().2 == request,
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -244,20 +244,35 @@
+                 || !raft.machine.campaign(args.term) { return Ok(()); }
+             let mut tally = election::Tally::new(args, raft.peers.len()).expect("valid election membership");
+             tally.record(raft.me, reply);
++            raft.machine.elect(&tally);
+             (raft.endpoint.clone(), raft.peers.clone(), raft.me, Arc::new(Mutex::new(tally)))
+         };
+         drop(guard);
+         // Each real send uses the exact checked request authorized above.
+         // Each RPC owns its request/peer context; all results reach the checked tally.
+-        // Leader authorization and higher-term step-down remain OPEN.
++        // Checked collection, higher-term persistence and current-candidate promotion follow below.
+         for (peer_id, peer) in peers.into_iter().enumerate() {
+             if peer_id == me { continue; }
+             let net = net.clone();
+             let tally = tally.clone();
+             let call = tally.lock().unwrap().outbound(peer_id).expect("valid peer");
++            let this = self.clone();
+             task::spawn(async move {
+                 let reply = net.call_timeout::<RequestVoteArgs>(peer, call.args(), Duration::from_millis(150)).await;
+-                tally.lock().unwrap().complete_call(call, reply.ok());
++                let _gate = this.storage_gate.lock().await;
++                let reply = reply.ok();
++                let peer_id = call.destination();
++                tally.lock().unwrap().complete_call(call, reply);
++                if let Some(reply) = reply {
++                    let term_write = this.inner.lock().unwrap().machine.prepare_term(peer_id, reply);
++                    if let Some((operation, context)) = term_write {
++                        match this.persist(operation).await {
++                            Ok(written) => { if !this.inner.lock().unwrap().machine.finish_term(context, written) { return; } }
++                            Err(error) => { warn!("term persistence failed: {}", error); return; }
++                        }
++                    }
++                }
++                this.inner.lock().unwrap().machine.elect(&tally.lock().unwrap());
+             });
+         }
+         Ok(())
+@@ -329,6 +344,49 @@
+ #[cfg(test)]
+ mod vote_tests {
+     use super::*;
++
++    fn finish_write(op: WriteVote) -> storage::WrittenVote {
++        let mut flow = storage::VoteWrite::new(op);
++        flow.complete(storage::Completion::Created);
++        flow.complete(storage::Completion::Written);
++        flow.complete(storage::Completion::Synced);
++        flow.release().unwrap()
++    }
++
++    #[test]
++    fn obsolete_quorum_cannot_elect_after_higher_reply() {
++        let mut r = Runtime::new(0, 3).unwrap();
++        let (q, op, context) = r.begin_election().unwrap();
++        let self_reply = r.finish_rpc(context, finish_write(op));
++        assert!(r.campaign(q.term));
++        let mut votes = election::Tally::new(q, 3).unwrap();
++        votes.record(0, self_reply);
++        votes.complete_call(votes.outbound(1).unwrap(), Some(RequestVoteReply { term: q.term, granted: true }));
++        assert!(r.elect(&votes));
++        let (op, context) = r.prepare_term(1, RequestVoteReply { term: 9, granted: false }).unwrap();
++        assert_eq!(r.term(), 9);
++        assert!(!r.is_leader());
++        assert!(!r.elect(&votes));
++        assert!(r.finish_term(context, finish_write(op)));
++        assert!(!r.elect(&votes));
++    }
++
++    #[madsim::test]
++    async fn actual_higher_reply_persists_and_steps_down() {
++        let peers: Vec<SocketAddr> = vec!["127.0.0.1:20901".parse().unwrap(), "127.0.0.1:20902".parse().unwrap()];
++        let receiver = net::Endpoint::bind(peers[1]).await.unwrap();
++        receiver.add_rpc_handler(|_: RequestVoteArgs| async { RequestVoteReply { term: 50, granted: false } });
++        let (raft, _) = RaftHandle::new(peers, 0).await;
++        raft.send_vote_request().await.unwrap();
++        timeout(Duration::from_secs(1), async {
++            while raft.term() < 50 { sleep(Duration::from_millis(1)).await; }
++        }).await.unwrap();
++        let _gate = raft.storage_gate.lock().await;
++        assert!(!raft.is_leader());
++        let saved: Persist = bincode::deserialize(&fs::read("state").await.unwrap()).unwrap();
++        assert_eq!(saved.term, 50);
++        assert_eq!(saved.voted_for, None);
++    }
+ 
+     #[test]
+     fn collection_rejects_duplicates_obsolete_and_wrong_context() {
+@@ -447,7 +505,9 @@
+         assert_eq!((q.last_index, q.last_term), (0, 0));
+         assert!(saved.term >= q.term);
+         assert_eq!(saved.voted_for, Some(0));
+-        assert!(!raft.is_leader()); // a received grant is not yet a quorum transition
++        // Completion may still be queued when the peer reports delivery.
++        sleep(Duration::from_millis(20)).await;
++        assert!(raft.is_leader());
+     }
+ 
+     // Exercises the actual RPC-facing wrapper, storage and recovery path.
+--- before/madraft/src/raft/storage.rs
++++ after/madraft/src/raft/storage.rs
+@@ -88,6 +88,10 @@
+             && actual.term == image.term && actual.voted_for == image.voted_for
+             && actual.me == image.me && actual.members == image.members
+     }
++    pub fn release_term(self, machine: &mut Machine, context: protocol::TermContext) -> (r: bool)
++        requires old(machine).invariant(),
++        ensures machine.invariant(), protocol::term_end(old(machine).view(), context.view(), self.id(), self.image(), machine.view(), r),
++    { machine.complete_term(context, self.operation) }
+     pub fn release_reply(self, machine: &mut Machine) -> (r: Option<VoteReply>)
+         requires old(machine).invariant(),
+         ensures machine.invariant(), machine.state() == old(machine).state(),

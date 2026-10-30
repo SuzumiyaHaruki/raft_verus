@@ -1,0 +1,4 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793350773722754690/candidate/madraft/proof/initialization.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 13 verified, 0 errors
+
+process=COMPLETED exit=0

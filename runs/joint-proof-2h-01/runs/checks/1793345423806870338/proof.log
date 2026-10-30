@@ -1,0 +1,11 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793345423806870338/candidate/madraft/proof/vote_operation.rs --crate-type lib --no-cheating --triggers-mode silent
+error: reveal/fuel statement is not allowed here because the function `vote_operation::protocol::Machine::invariant` is marked 'closed' and thus its body is not visible here. (Note: 'reveal' statements are intended for functions that are opaque, not functions that are closed)
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793345423806870338/candidate/madraft/proof/vote_operation.rs:15:5
+   |
+15 |     reveal(protocol::Machine::invariant);
+   |     ^^^^^^
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

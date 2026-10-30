@@ -1,0 +1,15 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793348523324547267/candidate/madraft/proof/implementation.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 72 verified, 1 errors
+error: assertion failed
+   --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793348523324547267/candidate/madraft/proof/../src/raft/election.rs:107:73
+    |
+107 |           assert forall|i: int| 0 <= i < self.view().voters.len() implies #[trigger] self.view().voters[i] < self.view().members
+    |  _________________________________________________________________________^
+108 | |             && exists|j: int| 0 <= j < self.view().replies.len() && self.view().replies[j].0 == self.view().voters[i]
+109 | |                 && granted(self.view(), self.view().voters[i], self.view().replies[j].1) by {
+    | |________________________________________________________________________________________^ assertion failed
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

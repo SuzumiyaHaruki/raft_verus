@@ -1,0 +1,106 @@
+--- before/madraft/proof/execution_connection.rs
++++ after/madraft/proof/execution_connection.rs
+@@ -138,4 +138,22 @@
+     implementation::request_descriptor_connection(call, sent, k, s);
+ }
+ 
++// The running begin_received contract supplies the history-extension premises.
++// Host delivery-to-envelope correspondence is deliberately still conditional.
++pub proof fn actual_received_registry(r: e::Runtime, s: implementation::RuntimeState,
++    k: implementation::NodeKey, v: implementation::wire::InboundView, output: e::Output)
++    requires r.invariant(), s.nodes.contains_key(k),
++        implementation::delivered_request(implementation::view(s),k,v),
++        r.history().origin == s.nodes[k].origin,
++        r.history().inputs == s.nodes[k].inputs.push(e::Input::Received(v)),
++        r.history().outputs == s.nodes[k].outputs.push(output),
++        r.history().states == s.nodes[k].states.push(r.view()),
++    ensures implementation::runtime_step(s, implementation::Input::Local(k,e::Input::Received(v)),
++        implementation::RuntimeState { nodes: s.nodes.insert(k,r.history()), ..s },
++        implementation::Output::Local(k,output)),
++{
++    implementation::actual_runtime_is_connected(r);
++    implementation::received_journal_enters_registry(s,k,r.history(),v,output);
+ }
++
++}
+--- before/madraft/proof/implementation.rs
++++ after/madraft/proof/implementation.rs
+@@ -202,3 +202,50 @@
+ }
+ 
+ }
++
++verus! {
++// This invariant is for the partial registry segments, not full Raft safety.
++pub open spec fn seen(sent: Seq<segment_support::Envelope<Message>>, message: segment_support::Envelope<Message>) -> bool {
++    exists|n: int| 0 <= n < sent.len() && sent[n] == message
++}
++pub open spec fn runtime_invariant(s: RuntimeState, sent: Seq<segment_support::Envelope<Message>>) -> bool {
++    (forall|k: NodeKey| s.nodes.contains_key(k) ==> executable::valid(#[trigger] s.nodes[k]))
++    && (forall|j: int| 0 <= j < s.received.len() ==> #[trigger] seen(sent,s.received[j]))
++}
++pub proof fn prove_runtime_initial(s: RuntimeState)
++    requires runtime_initial(s),
++    ensures runtime_invariant(s,Seq::empty()), initial(view(s)),
++{ initial_registry_projection(s); }
++
++pub proof fn prove_runtime_step(s: RuntimeState, i: Input, t: RuntimeState, o: Output,
++    a: Seq<segment_support::Envelope<Message>>, b: Seq<segment_support::Envelope<Message>>)
++    requires runtime_invariant(s,a), runtime_step(s,i,t,o),
++        segment_support::exchange(a,receive(i),emit(o),b),
++    ensures runtime_invariant(t,b), step(view(s),i,view(t),o),
++{
++    match (i,o) {
++        (Input::Local(k,call), Output::Local(_,result)) => {
++            let h = executable::extend(s.nodes[k],call,t.nodes[k].states.last(),result);
++            assert(h == t.nodes[k]);
++            assert forall|j: NodeKey| t.nodes.contains_key(j) implies executable::valid(#[trigger] t.nodes[j]) by {
++                if j != k { assert(t.nodes[j] == s.nodes[j]); }
++            }
++            assert(view(t).nodes =~= view(s).nodes.insert(k,view(t).nodes[k]));
++        },
++        _ => { assert(view(t).nodes =~= view(s).nodes); },
++    }
++    assert(forall|k: NodeKey| t.nodes.contains_key(k) ==> executable::valid(#[trigger] t.nodes[k]));
++    assert forall|j: int| 0 <= j < t.received.len() implies #[trigger] seen(b,t.received[j]) by {
++        if j < s.received.len() {
++            assert(seen(a,s.received[j]));
++            let n = choose|n: int| 0 <= n < a.len() && a[n] == s.received[j];
++            assert(b[n] == a[n]);
++        } else {
++            match i {
++                Input::Delivery(_,d) => { assert(b[d.send as int] == d.message); },
++                _ => {},
++            }
++        }
++    }
++}
++}
+--- before/madraft/src/raft/raft.rs
++++ after/madraft/src/raft/raft.rs
+@@ -552,6 +552,25 @@
+         assert!(raft.is_leader());
+     }
+ 
++    #[madsim::test]
++    async fn receiver_rejects_mismatched_transport_candidate() {
++        let peers = vec!["127.0.0.1:20801".parse().unwrap(), "127.0.0.1:20802".parse().unwrap()];
++        let (raft, _) = RaftHandle::new(peers, 0).await;
++        let sender = net::Endpoint::bind("127.0.0.1:20802".parse::<SocketAddr>().unwrap()).await.unwrap();
++        let q = RequestVoteArgs { term: 7, candidate: 0, last_index: 0, last_term: 0 };
++        let rejected = sender.call_timeout::<RequestVoteArgs>(
++            "127.0.0.1:20801".parse().unwrap(), q, Duration::from_millis(30)).await;
++        assert!(rejected.is_err());
++        assert_eq!(raft.inner.lock().unwrap().machine.term(), 0);
++        assert!(fs::read("state").await.is_err());
++        let reply = sender.call_timeout::<RequestVoteArgs>(
++            "127.0.0.1:20801".parse().unwrap(), RequestVoteArgs { candidate: 1, ..q },
++            Duration::from_secs(1)).await.unwrap();
++        assert!(reply.granted);
++        let saved: Persist = bincode::deserialize(&fs::read("state").await.unwrap()).unwrap();
++        assert_eq!((saved.term, saved.voted_for), (7, Some(1)));
++    }
++
+     // Exercises the actual RPC-facing wrapper, storage and recovery path.
+     #[madsim::test]
+     async fn vote_persists_before_reply_and_restores() {

@@ -1,0 +1,48 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-7-1793348726919647224/election_safety-caller.rs --crate-type lib --no-cheating --triggers-mode silent
+error[E0425]: cannot find function `step` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-7-1793348726919647224/election_safety-caller.rs:15:55
+   |
+15 |     support::valid(h, |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                                                       ^^^^ not found in `c`
+   |
+help: consider importing one of these functions
+   |
+ 9 + use crate::implementation::durable_vote_reply::storage_correspondence::vote_operation_history::step;
+   |
+ 9 + use crate::implementation::executable::step;
+   |
+help: if you import `step`, refer to it directly
+   |
+15 -     support::valid(h, |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+15 +     support::valid(h, |s| c::initial(s), |s,i,t,o| step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |
+
+error[E0425]: cannot find function `receive` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-7-1793348726919647224/election_safety-caller.rs:15:77
+   |
+15 |     support::valid(h, |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                                                                             ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `emit` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-7-1793348726919647224/election_safety-caller.rs:15:96
+   |
+15 |     support::valid(h, |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                                                                                                ^^^^ not found in `c`
+
+error[E0425]: cannot find function `observe` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-7-1793348726919647224/election_safety-caller.rs:21:41
+   |
+21 |     ensures targets::election_safety(c::observe(run)),
+   |                                         ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `prove_election_safety` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-7-1793348726919647224/election_safety-caller.rs:22:6
+   |
+22 | { c::prove_election_safety(run); }
+   |      ^^^^^^^^^^^^^^^^^^^^^ not found in `c`
+
+error: aborting due to 5 previous errors
+
+For more information about this error, try `rustc --explain E0425`.
+
+process=COMPLETED exit=1

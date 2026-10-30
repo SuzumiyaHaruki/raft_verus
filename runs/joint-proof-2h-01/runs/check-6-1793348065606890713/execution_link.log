@@ -1,0 +1,187 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs --crate-type lib --no-cheating --triggers-mode silent
+error[E0425]: cannot find function `step` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:15:55
+   |
+15 |     support::valid(h, |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                                                       ^^^^ not found in `c`
+   |
+help: consider importing one of these functions
+   |
+ 9 + use crate::implementation::durable_vote_reply::storage_correspondence::vote_operation_history::step;
+   |
+ 9 + use crate::implementation::executable::step;
+   |
+help: if you import `step`, refer to it directly
+   |
+15 -     support::valid(h, |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+15 +     support::valid(h, |s| c::initial(s), |s,i,t,o| step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |
+
+error[E0425]: cannot find function `receive` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:15:77
+   |
+15 |     support::valid(h, |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                                                                             ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `emit` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:15:96
+   |
+15 |     support::valid(h, |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                                                                                                ^^^^ not found in `c`
+
+error[E0425]: cannot find function `runtime_step` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:20:63
+   |
+20 |     support::valid(h, |s| c::runtime_initial(s), |s,i,t,o| c::runtime_step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                                                               ^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `receive` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:20:93
+   |
+20 |     support::valid(h, |s| c::runtime_initial(s), |s,i,t,o| c::runtime_step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                                                                                             ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `emit` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:20:112
+   |
+20 |     support::valid(h, |s| c::runtime_initial(s), |s,i,t,o| c::runtime_step(s,i,t,o), |i| c::receive(i), |o| c::emit(o))
+   |                                                                                                                ^^^^ not found in `c`
+
+error[E0425]: cannot find function `runtime_invariant` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:35:23
+   |
+35 |         #[trigger] c::runtime_invariant(s, Seq::empty()) && c::initial(c::view(s)) by {
+   |                       ^^^^^^^^^^^^^^^^^ help: a function with a similar name exists: `runtime_initial`
+   |
+  ::: /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/candidate/madraft/proof/implementation.rs:43:1
+   |
+43 | pub open spec fn runtime_initial(s: RuntimeState) -> bool {
+   | --------------------------------------------------------- similarly named function `runtime_initial` defined here
+
+error[E0425]: cannot find function `prove_runtime_initial` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:36:12
+   |
+36 |         c::prove_runtime_initial(s);
+   |            ^^^^^^^^^^^^^^^^^^^^^ help: a function with a similar name exists: `runtime_initial`
+   |
+  ::: /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/candidate/madraft/proof/implementation.rs:43:1
+   |
+43 | pub open spec fn runtime_initial(s: RuntimeState) -> bool {
+   | --------------------------------------------------------- similarly named function `runtime_initial` defined here
+
+error[E0425]: cannot find function `runtime_invariant` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:40:23
+   |
+40 |         #[trigger] c::runtime_invariant(s,a) && #[trigger] c::runtime_step(s,i,t,o)
+   |                       ^^^^^^^^^^^^^^^^^ help: a function with a similar name exists: `runtime_initial`
+   |
+  ::: /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/candidate/madraft/proof/implementation.rs:43:1
+   |
+43 | pub open spec fn runtime_initial(s: RuntimeState) -> bool {
+   | --------------------------------------------------------- similarly named function `runtime_initial` defined here
+
+error[E0425]: cannot find function `runtime_step` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:40:63
+   |
+40 |         #[trigger] c::runtime_invariant(s,a) && #[trigger] c::runtime_step(s,i,t,o)
+   |                                                               ^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `receive` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:41:46
+   |
+41 |         && #[trigger] support::exchange(a,c::receive(i),c::emit(o),b)
+   |                                              ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `emit` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:41:60
+   |
+41 |         && #[trigger] support::exchange(a,c::receive(i),c::emit(o),b)
+   |                                                            ^^^^ not found in `c`
+
+error[E0425]: cannot find function `runtime_invariant` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:42:20
+   |
+42 |         implies c::runtime_invariant(t,b) && c::step(c::view(s),i,c::view(t),o) by {
+   |                    ^^^^^^^^^^^^^^^^^ help: a function with a similar name exists: `runtime_initial`
+   |
+  ::: /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/candidate/madraft/proof/implementation.rs:43:1
+   |
+43 | pub open spec fn runtime_initial(s: RuntimeState) -> bool {
+   | --------------------------------------------------------- similarly named function `runtime_initial` defined here
+
+error[E0425]: cannot find function `step` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:42:49
+   |
+42 |         implies c::runtime_invariant(t,b) && c::step(c::view(s),i,c::view(t),o) by {
+   |                                                 ^^^^ not found in `c`
+   |
+help: consider importing one of these functions
+   |
+ 9 + use crate::implementation::durable_vote_reply::storage_correspondence::vote_operation_history::step;
+   |
+ 9 + use crate::implementation::executable::step;
+   |
+help: if you import `step`, refer to it directly
+   |
+42 -         implies c::runtime_invariant(t,b) && c::step(c::view(s),i,c::view(t),o) by {
+42 +         implies c::runtime_invariant(t,b) && step(c::view(s),i,c::view(t),o) by {
+   |
+
+error[E0425]: cannot find function `prove_runtime_step` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:43:12
+   |
+43 |         c::prove_runtime_step(s,i,t,o,a,b);
+   |            ^^^^^^^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `runtime_step` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:45:68
+   |
+45 |     support::simulate(run, |s| c::runtime_initial(s), |s,i,t,o| c::runtime_step(s,i,t,o),
+   |                                                                    ^^^^^^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `step` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:46:41
+   |
+46 |         |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o),
+   |                                         ^^^^ not found in `c`
+   |
+help: consider importing one of these functions
+   |
+ 9 + use crate::implementation::durable_vote_reply::storage_correspondence::vote_operation_history::step;
+   |
+ 9 + use crate::implementation::executable::step;
+   |
+help: if you import `step`, refer to it directly
+   |
+46 -         |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o),
+46 +         |s| c::initial(s), |s,i,t,o| step(s,i,t,o), |i| c::receive(i), |o| c::emit(o),
+   |
+
+error[E0425]: cannot find function `receive` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:46:63
+   |
+46 |         |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o),
+   |                                                               ^^^^^^^ not found in `c`
+
+error[E0425]: cannot find function `emit` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:46:82
+   |
+46 |         |s| c::initial(s), |s,i,t,o| c::step(s,i,t,o), |i| c::receive(i), |o| c::emit(o),
+   |                                                                                  ^^^^ not found in `c`
+
+error[E0425]: cannot find function `runtime_invariant` in module `c`
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/execution_link-caller.rs:47:37
+   |
+47 |         |s| c::view(s), |s,sent| c::runtime_invariant(s,sent));
+   |                                     ^^^^^^^^^^^^^^^^^ help: a function with a similar name exists: `runtime_initial`
+   |
+  ::: /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-6-1793348065606890713/candidate/madraft/proof/implementation.rs:43:1
+   |
+43 | pub open spec fn runtime_initial(s: RuntimeState) -> bool {
+   | --------------------------------------------------------- similarly named function `runtime_initial` defined here
+
+error: aborting due to 20 previous errors
+
+For more information about this error, try `rustc --explain E0425`.
+
+process=COMPLETED exit=1

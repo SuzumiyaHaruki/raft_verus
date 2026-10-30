@@ -91,6 +91,31 @@ pub fn actual_call_chain() -> (value: u64)
     two
 }
 
+// A second toy distinguishes a real request context from an arbitrary local
+// state change. Outputs describe what this handler really emits, not what an
+// application might wish it emitted.
+pub open spec fn requested_step(s: u64, request: Option<u64>, t: u64, output: Option<u64>) -> bool {
+    match request {
+        None => t == s && output == None::<u64>,
+        Some(value) => t == (if s < 100 { s + 1 } else { s as int }) && output == Some(value),
+    }
+}
+pub fn handle_request(s: u64, request: Option<u64>) -> (r: (u64, Option<u64>))
+    ensures requested_step(s, request, r.0, r.1),
+{
+    match request {
+        None => (s, None), // no request authorizes no internal modification
+        Some(value) => (if s < 100 { s + 1 } else { s }, Some(value)),
+    }
+}
+pub fn actual_request_path() {
+    let (unchanged, absent) = handle_request(0, None);
+    let (changed, output) = handle_request(unchanged, Some(9));
+    assert(unchanged == 0 && absent == None::<u64>);
+    assert(changed == 1 && output == Some(9u64));
+    assert(!requested_step(0, None, 1, None));
+}
+
 // A memory-sized persistence example. Saved represents a completed checkpoint;
 // its ghost witness records the established relation, not bytes on disk.
 pub struct Counter { pub value: u64, pub recorded: Ghost<nat> }

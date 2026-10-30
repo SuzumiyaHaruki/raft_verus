@@ -1,0 +1,54 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793348221748430167/candidate/madraft/proof/execution_connection.rs --crate-type lib --no-cheating --triggers-mode silent
+error[E0599]: no method named `view` found for struct `std::vec::Vec<usize>` in the current scope
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793348221748430167/candidate/madraft/proof/../src/raft/election.rs:42:81
+   |
+42 |         View { request: self.request, members: self.members, voters: self.voters@, replies: self.replies@ }
+   |                                                                                 ^ method not found in `std::vec::Vec<usize>`
+   |
+  --> /home/runner/work/verus/verus/source/vstd/view.rs:13:13
+   |
+   = note: the method is available for `std::vec::Vec<usize>` here
+   |
+   = help: items from traits can only be used if the trait is in scope
+help: trait `View` which provides `view` is implemented but not in scope; perhaps you want to import it
+   |
+ 3 + use vstd::string::View;
+   |
+
+error[E0599]: no method named `view` found for struct `std::vec::Vec<usize>` in the current scope
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793348221748430167/candidate/madraft/proof/../src/raft/election.rs:71:62
+   |
+71 |                 invariant i <= self.voters.len(), self.voters@ == before.voters,
+   |                                                              ^ method not found in `std::vec::Vec<usize>`
+   |
+  --> /home/runner/work/verus/verus/source/vstd/view.rs:13:13
+   |
+   = note: the method is available for `std::vec::Vec<usize>` here
+   |
+   = help: items from traits can only be used if the trait is in scope
+help: trait `View` which provides `view` is implemented but not in scope; perhaps you want to import it
+   |
+ 3 + use vstd::string::View;
+   |
+
+error[E0599]: no method named `view` found for struct `std::vec::Vec<usize>` in the current scope
+  --> /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793348221748430167/candidate/madraft/proof/../src/raft/election.rs:79:31
+   |
+79 |             assert(self.voters@.no_duplicates());
+   |                               ^ method not found in `std::vec::Vec<usize>`
+   |
+  --> /home/runner/work/verus/verus/source/vstd/view.rs:13:13
+   |
+   = note: the method is available for `std::vec::Vec<usize>` here
+   |
+   = help: items from traits can only be used if the trait is in scope
+help: trait `View` which provides `view` is implemented but not in scope; perhaps you want to import it
+   |
+ 3 + use vstd::string::View;
+   |
+
+error: aborting due to 3 previous errors
+
+For more information about this error, try `rustc --explain E0599`.
+
+process=COMPLETED exit=1

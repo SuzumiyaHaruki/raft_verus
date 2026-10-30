@@ -1,0 +1,4 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/joint-proof-2h-01/runs/checks/1793346727145847813/candidate/madraft/proof/durable_vote_reply.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 41 verified, 0 errors
+
+process=COMPLETED exit=0

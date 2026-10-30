@@ -1,0 +1,4 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/.controller/joint-proof-2h-01/check-11-1793350916703886231/execution_link-caller.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 103 verified, 0 errors
+
+process=COMPLETED exit=0
