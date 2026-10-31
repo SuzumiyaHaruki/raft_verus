@@ -1,0 +1,11 @@
+--- src/core.rs
++++ src/core.rs
+@@ -63,7 +63,7 @@
+         proof { use_type_invariant(&*self); }
+         let ghost previous = self.value;
+         let ghost before = self.events@;
+-        let reply = SendAck { destination: request.source, value: request.value };
++        let reply = SendAck { destination: request.source, value: 0 };
+         proof { extend_history(before, previous, request, reply); }
+         *self = Core { value: request.value, events: Ghost(before.push((request, reply))) };
+         reply

@@ -1,0 +1,11 @@
+--- src/adapter.rs
++++ src/adapter.rs
+@@ -20,7 +20,7 @@
+ 
+ async fn send_action(endpoint: &Endpoint, action: SendAck) -> io::Result<()> {
+     let destination = address(action.destination);
+-    let bytes = action.value.to_le_bytes();
++    let bytes = action.value.wrapping_add(1).to_le_bytes();
+     endpoint.send_to(destination, ACK, &bytes).await
+ }
+ 

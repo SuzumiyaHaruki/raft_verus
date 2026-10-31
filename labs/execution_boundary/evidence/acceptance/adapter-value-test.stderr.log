@@ -1,0 +1,24 @@
+   Compiling execution-boundary v0.1.0 (/tmp/execution-boundary-adapter-value-swn7yxgt)
+warning: field `events` is never read
+  --> src/core.rs:39:5
+   |
+37 | pub struct Core {
+   |            ---- field in this struct
+38 |     value: u64,
+39 |     events: Ghost<Seq<(ReceivedPut, SendAck)>>,
+   |     ^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `execution-boundary` (lib) generated 1 warning
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.45s
+     Running tests/service.rs (/home/nitro/Desktop/raft_verus/labs/execution_boundary/target/debug/deps/service-60fb329baa65f330)
+
+thread '<unnamed>' (969) panicked at tests/service.rs:26:5:
+assertion `left == right` failed: Ack payload must match this client's Put
+  left: 8
+ right: 7
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+context: node=2 "<unnamed>", task=5 (spawned at tests/service.rs:57:19)
+note: run with `MADSIM_TEST_SEED=1` environment variable to reproduce this error
+error: test failed, to rerun pass `--test service`

@@ -1,0 +1,23 @@
+verification results:: 9 verified, 2 errors
+error: constructed value may fail to meet its declared type invariant
+  --> /home/nitro/Desktop/raft_verus/labs/execution_boundary/src/core.rs:66:9
+   |
+44 |     closed spec fn well_formed(self) -> bool {
+   |                 ---------------------------- type invariant declared here
+...
+66 |         self.value = request.value;
+   |         ^^^^
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/labs/execution_boundary/proof.rs:25:9
+   |
+25 | /         forall|i: int| 0 <= i < requests.len() ==>
+26 | |             (#[trigger] result.1@[i]).value == requests@[i].value
+27 | |             && result.1@[i].destination == requests@[i].source,
+   | |______________________________________________________________^ failed this postcondition
+...
+44 |       (server.value(), replies)
+   |       ------------------------- at the end of the function body
+
+error: aborting due to 2 previous errors
+

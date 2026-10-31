@@ -1,0 +1,8 @@
+error: expression has mode spec, expected mode proof
+  --> /home/nitro/Desktop/raft_verus/labs/execution_boundary/src/core.rs:79:26
+   |
+79 |     { use_type_invariant(self); }
+   |                          ^^^^
+
+error: aborting due to 1 previous error
+

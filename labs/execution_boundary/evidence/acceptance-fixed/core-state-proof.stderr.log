@@ -1,0 +1,11 @@
+error: constructed value may fail to meet its declared type invariant
+  --> /tmp/execution-boundary-core-state-dibdg_1w/src/core.rs:68:17
+   |
+44 |     closed spec fn well_formed(self) -> bool {
+   |                 ---------------------------- type invariant declared here
+...
+68 |         *self = Core { value: 0, events: Ghost(before.push((request, reply))) };
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 1 previous error
+

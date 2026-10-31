@@ -1,0 +1,11 @@
+--- src/core.rs
++++ src/core.rs
+@@ -65,7 +65,7 @@
+         let ghost before = self.events@;
+         let reply = SendAck { destination: request.source, value: request.value };
+         proof { extend_history(before, previous, request, reply); }
+-        *self = Core { value: request.value, events: Ghost(before.push((request, reply))) };
++        *self = Core { value: 0, events: Ghost(before.push((request, reply))) };
+         reply
+     }
+ 

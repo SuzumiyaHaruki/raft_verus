@@ -1,0 +1,11 @@
+--- src/adapter.rs
++++ src/adapter.rs
+@@ -19,7 +19,7 @@
+ }
+ 
+ async fn send_action(endpoint: &Endpoint, action: SendAck) -> io::Result<()> {
+-    let destination = address(action.destination);
++    let destination = SocketAddr::from(([10, 0, 0, 3], 9000));
+     let bytes = action.value.to_le_bytes();
+     endpoint.send_to(destination, ACK, &bytes).await
+ }

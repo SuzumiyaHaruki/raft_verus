@@ -1,0 +1,11 @@
+error: precondition not satisfied
+  --> /tmp/execution-boundary-core-reply-djm0xvmb/src/core.rs:67:17
+   |
+24 |         reply.destination == request.source, reply.value == request.value,
+   |                                              ---------------------------- failed precondition
+...
+67 |         proof { extend_history(before, previous, request, reply); }
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 1 previous error
+

@@ -1,0 +1,8 @@
+Compared scopes: madraft, requirements, scripts, docs, AGENTS.md, README.md, RESULT.md, tools.ini, .gitignore
+Byte differences (excluding caches/build artifacts): []
+New lab included in experiment inputs: False
+Experiment input files: 48
+git rev-parse HEAD exit: 128
+git stdout: 
+git stderr: fatal: not a git repository (or any of the parent directories): .git
+Reference revision (not a verified checkout): 0d84789e234206f9ca1b276f7d665eb6995a09f5

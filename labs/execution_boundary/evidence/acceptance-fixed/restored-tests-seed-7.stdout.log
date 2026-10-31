@@ -1,0 +1,10 @@
+
+running 3 tests
+A received Ack(7); B received Ack(9); final state=9; delayed=true
+A received Ack(7); B received Ack(9); final state=9; delayed=false
+test direct_core_updates_and_constructs_exact_actions ... ok
+test delayed_old_ack_is_independent_of_new_server_value ... ok
+test two_clients_receive_own_ack ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
