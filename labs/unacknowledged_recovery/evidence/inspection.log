@@ -1,0 +1,8 @@
+Actual workspace Git metadata: unavailable (empty exposed .git; git status exit 128).
+Read-only reference checkout: 6afbd1f0104fa8e9926034dbb5f2843c55d1b13c
+Tracked source differences from reference: []
+Pre-edit byte copy: /tmp/unacknowledged-recovery-before-g7707nmp
+Preserved files: 5079
+Locked MadSim 0.2.34 revision 519950efb4711464f300ed7edf2967ed62d5f502: 174 excerpt lines rechecked against actual cached source.
+Excerpt: ../../quiescent_recovery/evidence/madsim-api.txt
+kill cancels tasks and clears network endpoints; same-node filesystem survives because power_fail is TODO. create truncates existing content. No physical durability proof.

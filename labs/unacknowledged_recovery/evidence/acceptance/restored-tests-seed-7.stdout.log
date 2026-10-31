@@ -1,0 +1,12 @@
+
+running 4 tests
+test recovered_core_preserves_rules_and_rejects_old_notifications ... ok
+test recovery_id_boundaries_are_checked_without_fake_history ... ok
+Before kill: independent file op1/9; old value=7,next=2,Pending=op1; B observes no Ack; barrier remains held
+test recovery_mode_rejects_missing_bad_length_and_illegal_id ... ok
+After same-node restart and real file read: value=9,next=2,Pending=None; no recovery Ack
+New Put(11): Ack received by A; independent file op2/11; B still observes no Ack(9)
+test written_but_uncompleted_kill_restart_and_continue ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

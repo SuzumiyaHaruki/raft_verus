@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+    "/home/nitro/Desktop/raft_verus/labs/unacknowledged_recovery/proof.rs",
+    "--crate-type",
+    "lib",
+    "--no-cheating",
+    "--triggers-mode",
+    "silent"
+  ],
+  "status": "COMPLETED",
+  "exit_code": 0,
+  "elapsed_seconds": 1.960685083999124
+}

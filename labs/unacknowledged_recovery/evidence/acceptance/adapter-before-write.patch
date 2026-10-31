@@ -1,0 +1,12 @@
+--- src/adapter.rs
++++ src/adapter.rs
+@@ -84,8 +84,8 @@
+             Begin::Busy => return Err(io::Error::other("unexpected Busy in sequential adapter")),
+             Begin::Exhausted => return Err(io::Error::other("operation IDs exhausted")),
+         };
++        checkpoint(control.as_ref(), write, &core).await?;
+         let result = write_record(path, write).await;
+-        if result.is_ok() { checkpoint(control.as_ref(), write, &core).await?; }
+         let reply = core.complete(Completion { id: write.id, success: result.is_ok() });
+         if let Some(ack) = reply { send_ack(&endpoint, ack).await?; }
+         result?; // Failed-operation recovery is outside this experiment's scope.

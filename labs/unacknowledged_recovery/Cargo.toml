@@ -1,0 +1,12 @@
+[package]
+name = "unacknowledged-recovery"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+madsim = { git = "https://github.com/madsim-rs/madsim", rev = "519950efb4711464f300ed7edf2967ed62d5f502", features = ["macros"] }
+async-channel = "=2.5.0"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(madsim)', 'cfg(verus_keep_ghost)'] }

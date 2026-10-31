@@ -1,0 +1,11 @@
+--- src/adapter.rs
++++ src/adapter.rs
+@@ -30,7 +30,7 @@
+ 
+ pub async fn load_core(path: &str, mode: Mode) -> io::Result<Core> {
+     match mode {
+-        Mode::Recover => recover_file(path).await,
++        Mode::Recover => Ok(Core::new()),
+         Mode::Fresh => match fs::read(path).await {
+             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(Core::new()),
+             Err(e) => Err(e),

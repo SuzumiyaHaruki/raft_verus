@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--test",
+    "service",
+    "--",
+    "--nocapture"
+  ],
+  "status": "COMPLETED",
+  "exit_code": 0,
+  "elapsed_seconds": 14.026677967998694,
+  "seed": 1
+}

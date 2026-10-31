@@ -1,0 +1,11 @@
+--- src/core.rs
++++ src/core.rs
+@@ -145,7 +145,7 @@
+             },
+     {
+         if record.id == u64::MAX { return None; }
+-        Some(Self { completed: record.value, next: record.id + 1, pending: None,
++        Some(Self { completed: record.value, next: record.id, pending: None,
+             history: Ghost(History { origin: Origin::Recovered(record),
+                 accepted: Seq::empty(), finished: Seq::empty(), calls: 0, last_ack: -1 }) })
+     }

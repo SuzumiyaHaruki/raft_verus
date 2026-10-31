@@ -1,0 +1,21 @@
+Pre-edit byte comparison; excludes build caches, never modifies the compared files.
+Pre-edit copy: /tmp/unacknowledged-recovery-before-g7707nmp
+madraft: 31 files; changed=[]
+requirements: 10 files; changed=[]
+scripts: 13 files; changed=[]
+docs: 1 files; changed=[]
+labs/execution_boundary: 95 files; changed=[]
+labs/async_completion: 56 files; changed=[]
+labs/quiescent_recovery: 57 files; changed=[]
+All 5079 preserved files, including tracked old runs: changed=[]
+Core copy: executable code, contracts and history representation unchanged; only provenance comment differs.
+Cargo.lock: dependency versions unchanged; only the lab package name differs.
+Experiment input list unchanged; new lab is not an experiment input.
+Actual workspace: git rev-parse HEAD; exit=128
+
+fatal: not a git repository (or any of the parent directories): .git
+Read-only reference checkout: git rev-parse HEAD; exit=0
+6afbd1f0104fa8e9926034dbb5f2843c55d1b13c
+
+Root Git metadata is unavailable; no claim to have verified its HEAD or index.
+No agent calls, tool upgrades, old candidate edits, commit, push, merge or global configuration changes in this task.
