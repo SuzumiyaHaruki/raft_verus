@@ -1,0 +1,12 @@
+verification results:: 25 verified, 1 errors
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/labs/quiescent_recovery/proof.rs:121:13
+    |
+121 |     ensures after.trace().calls == suffix.len(),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+145 |     after
+    |     ----- at the end of the function body
+
+error: aborting due to 1 previous error
+

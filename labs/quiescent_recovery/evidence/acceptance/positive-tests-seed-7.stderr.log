@@ -1,0 +1,14 @@
+warning: field `history` is never read
+   --> src/core.rs:109:5
+    |
+105 | pub struct Core {
+    |            ---- field in this struct
+...
+109 |     history: Ghost<History>,
+    |     ^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `quiescent-recovery` (lib) generated 1 warning
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+     Running tests/service.rs (target/correct/debug/deps/service-18a49da25aebc813)

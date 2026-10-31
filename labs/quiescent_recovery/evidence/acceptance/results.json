@@ -1,0 +1,339 @@
+{
+  "status": "PASS",
+  "input_version": "quiescent-recovery-0.1.0",
+  "checks": [
+    {
+      "name": "rust-version",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--version"
+      ],
+      "cwd": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery",
+      "seed": 1,
+      "target_dir": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery/target/correct",
+      "expected": "EXIT_ZERO",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.03961470099966391,
+      "stdout": "rust-version.stdout.log",
+      "stderr": "rust-version.stderr.log"
+    },
+    {
+      "name": "cargo-version",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "--version"
+      ],
+      "cwd": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery",
+      "seed": 1,
+      "target_dir": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery/target/correct",
+      "expected": "EXIT_ZERO",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.015999434999685036,
+      "stdout": "cargo-version.stdout.log",
+      "stderr": "cargo-version.stderr.log"
+    },
+    {
+      "name": "verus-version",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "--version"
+      ],
+      "cwd": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery",
+      "seed": 1,
+      "target_dir": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery/target/correct",
+      "expected": "EXIT_ZERO",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.04514662200017483,
+      "stdout": "verus-version.stdout.log",
+      "stderr": "verus-version.stderr.log"
+    },
+    {
+      "name": "positive-proof",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery/proof.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "cwd": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery",
+      "seed": 1,
+      "target_dir": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery/target/correct",
+      "expected": "VERIFIED",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 1.6149003619993891,
+      "stdout": "positive-proof.stdout.log",
+      "stderr": "positive-proof.stderr.log"
+    },
+    {
+      "name": "positive-tests-seed-1",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "service",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery",
+      "seed": 1,
+      "target_dir": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery/target/correct",
+      "expected": "FOUR_TESTS_PASS",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.10720908700022846,
+      "stdout": "positive-tests-seed-1.stdout.log",
+      "stderr": "positive-tests-seed-1.stderr.log"
+    },
+    {
+      "name": "positive-tests-seed-7",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "service",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery",
+      "seed": 7,
+      "target_dir": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery/target/correct",
+      "expected": "FOUR_TESTS_PASS",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.1091125099992496,
+      "stdout": "positive-tests-seed-7.stdout.log",
+      "stderr": "positive-tests-seed-7.stderr.log"
+    },
+    {
+      "name": "core-recovered-value-build",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--no-run"
+      ],
+      "cwd": "/tmp/quiescent-recovery-core-recovered-value-58a1l3lr",
+      "seed": 1,
+      "target_dir": "/tmp/quiescent-recovery-core-recovered-value-58a1l3lr/target",
+      "expected": "COMPILES",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 14.927046463999432,
+      "stdout": "core-recovered-value-build.stdout.log",
+      "stderr": "core-recovered-value-build.stderr.log"
+    },
+    {
+      "name": "core-recovered-value-proof",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/tmp/quiescent-recovery-core-recovered-value-58a1l3lr/proof.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "cwd": "/tmp/quiescent-recovery-core-recovered-value-58a1l3lr",
+      "seed": 1,
+      "target_dir": "/tmp/quiescent-recovery-core-recovered-value-58a1l3lr/target",
+      "expected": "VERIFICATION_FAILURE",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 1.4710133720000158,
+      "stdout": "core-recovered-value-proof.stdout.log",
+      "stderr": "core-recovered-value-proof.stderr.log"
+    },
+    {
+      "name": "core-recovered-next-build",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--no-run"
+      ],
+      "cwd": "/tmp/quiescent-recovery-core-recovered-next-8df1kzu6",
+      "seed": 1,
+      "target_dir": "/tmp/quiescent-recovery-core-recovered-next-8df1kzu6/target",
+      "expected": "COMPILES",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 14.397070719998737,
+      "stdout": "core-recovered-next-build.stdout.log",
+      "stderr": "core-recovered-next-build.stderr.log"
+    },
+    {
+      "name": "core-recovered-next-proof",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/tmp/quiescent-recovery-core-recovered-next-8df1kzu6/proof.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "cwd": "/tmp/quiescent-recovery-core-recovered-next-8df1kzu6",
+      "seed": 1,
+      "target_dir": "/tmp/quiescent-recovery-core-recovered-next-8df1kzu6/target",
+      "expected": "VERIFICATION_FAILURE",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 1.5746850359992095,
+      "stdout": "core-recovered-next-proof.stdout.log",
+      "stderr": "core-recovered-next-proof.stderr.log"
+    },
+    {
+      "name": "adapter-ignore-file-proof",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/tmp/quiescent-recovery-adapter-ignore-file-wb8ctizs/proof.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "cwd": "/tmp/quiescent-recovery-adapter-ignore-file-wb8ctizs",
+      "seed": 1,
+      "target_dir": "/tmp/quiescent-recovery-adapter-ignore-file-wb8ctizs/target",
+      "expected": "VERIFIED",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 1.5059803240001202,
+      "stdout": "adapter-ignore-file-proof.stdout.log",
+      "stderr": "adapter-ignore-file-proof.stderr.log"
+    },
+    {
+      "name": "adapter-ignore-file-test",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "service",
+        "confirmed_writes_kill_restart_and_continue_from_real_file",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "cwd": "/tmp/quiescent-recovery-adapter-ignore-file-wb8ctizs",
+      "seed": 1,
+      "target_dir": "/tmp/quiescent-recovery-adapter-ignore-file-wb8ctizs/target",
+      "expected": "RECOVERED_VALUE_ASSERTION_FAILURE",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 101,
+      "elapsed_seconds": 14.54207566399964,
+      "stdout": "adapter-ignore-file-test.stdout.log",
+      "stderr": "adapter-ignore-file-test.stderr.log"
+    },
+    {
+      "name": "restored-proof",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery/proof.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "cwd": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery",
+      "seed": 1,
+      "target_dir": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery/target/correct",
+      "expected": "VERIFIED",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 1.8177959620006732,
+      "stdout": "restored-proof.stdout.log",
+      "stderr": "restored-proof.stderr.log"
+    },
+    {
+      "name": "restored-tests-seed-1",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "service",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery",
+      "seed": 1,
+      "target_dir": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery/target/correct",
+      "expected": "FOUR_TESTS_PASS",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.130550989000767,
+      "stdout": "restored-tests-seed-1.stdout.log",
+      "stderr": "restored-tests-seed-1.stderr.log"
+    },
+    {
+      "name": "restored-tests-seed-7",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "service",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery",
+      "seed": 7,
+      "target_dir": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery/target/correct",
+      "expected": "FOUR_TESTS_PASS",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.16151917500064883,
+      "stdout": "restored-tests-seed-7.stdout.log",
+      "stderr": "restored-tests-seed-7.stderr.log"
+    }
+  ],
+  "not_run": [],
+  "madsim": {
+    "name": "madsim",
+    "version": "0.2.34",
+    "source": "git+https://github.com/madsim-rs/madsim?rev=519950efb4711464f300ed7edf2967ed62d5f502#519950efb4711464f300ed7edf2967ed62d5f502"
+  },
+  "environment": {
+    "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+    "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+    "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+    "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+    "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/labs/quiescent_recovery/target/correct",
+    "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+  },
+  "original_inputs_unchanged": true
+}

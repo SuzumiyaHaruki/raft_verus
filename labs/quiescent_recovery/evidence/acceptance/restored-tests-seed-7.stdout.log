@@ -1,0 +1,10 @@
+
+running 4 tests
+test recovery_id_boundaries_are_checked_without_fake_history ... ok
+test recovered_core_preserves_rules_and_rejects_old_notifications ... ok
+test recovery_mode_rejects_missing_bad_length_and_illegal_id ... ok
+Ack(7)/op0 -> Ack(9)/op1 -> parked -> kill/drop -> same-node restart -> file op1/9 -> recover 9,next2 -> controlled op2 -> Ack(11),file op2/11
+test confirmed_writes_kill_restart_and_continue_from_real_file ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

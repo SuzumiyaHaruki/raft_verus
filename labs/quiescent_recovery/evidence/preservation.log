@@ -1,0 +1,20 @@
+Byte comparison with the pre-edit copy (build/cache files excluded).
+Before copy: /tmp/quiescent-recovery-before-8tfz2v7s
+Python: 3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]
+madraft: 31 files, changed=[]
+requirements: 10 files, changed=[]
+scripts: 13 files, changed=[]
+docs: 1 files, changed=[]
+labs/execution_boundary: 95 files, changed=[]
+labs/async_completion: 56 files, changed=[]
+Root files ['AGENTS.md', 'README.md', 'RESULT.md', 'tools.ini', '.gitignore']: changed=[]
+Experiment input manifest: unchanged; no labs/ inputs.
+Cargo.lock dependencies: identical to async_completion; only lab package renamed.
+Actual workspace: cwd=/home/nitro/Desktop/raft_verus; command=git rev-parse HEAD; exit=128
+
+fatal: not a git repository (or any of the parent directories): .git
+Existing temporary publication checkout (read-only inspection): cwd=/tmp/raft-verus-publish-labs; command=git rev-parse HEAD; exit=0
+517e3f4eede9d77d2090a2d2734f64efcca385ad
+
+The actual workspace .git is exposed as an empty directory; HEAD and staged/unstaged status cannot be obtained here.
+No reset, commit, push, merge, global tool changes or old runs edits were performed.

@@ -1,0 +1,14 @@
+error: constructed value may fail to meet its declared type invariant
+   --> /tmp/quiescent-recovery-core-recovered-value-58a1l3lr/src/core.rs:148:14
+    |
+114 |       closed spec fn well_formed(self) -> bool {
+    |                   ---------------------------- type invariant declared here
+...
+148 |           Some(Self { completed: 0, next: record.id + 1, pending: None,
+    |  ______________^
+149 | |             history: Ghost(History { origin: Origin::Recovered(record),
+150 | |                 accepted: Seq::empty(), finished: Seq::empty(), calls: 0, last_ack: -1 }) })
+    | |___________________________________________________________________________________________^
+
+error: aborting due to 1 previous error
+

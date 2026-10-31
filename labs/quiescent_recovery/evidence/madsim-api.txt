@@ -1,0 +1,193 @@
+MadSim 0.2.34, revision 519950efb4711464f300ed7edf2967ed62d5f502
+Inspected local locked source; these are NOT formal proofs of the host.
+
+
+target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:271-283
+271: 
+272:     /// Kill a node.
+273:     ///
+274:     /// - All tasks spawned on this node will be killed immediately.
+275:     /// - All data that has not been flushed to the disk will be lost.
+276:     pub fn kill(&self, id: impl ToNodeId) {
+277:         self.task.kill(&id);
+278:     }
+279: 
+280:     /// Restart a node。
+281:     pub fn restart(&self, id: impl ToNodeId) {
+282:         self.task.restart(&id);
+283:     }
+
+target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/runtime/mod.rs:310-315
+310:     /// Return a handle of the specified node.
+311:     pub fn get_node(&self, id: impl ToNodeId) -> Option<NodeHandle> {
+312:         self.task.get_node(id).map(|task| NodeHandle { task })
+313:     }
+314: 
+315:     /// Returns a view that lets you get information about how the runtime is
+
+target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/task/mod.rs:356-406
+356:     pub fn kill(&self, id: impl ToNodeId) {
+357:         debug!(node = %id, "kill");
+358:         let id = id.to_node_id(self);
+359:         self.kill_id(id);
+360:     }
+361: 
+362:     fn kill_id(&self, id: NodeId) {
+363:         let mut nodes = self.nodes.lock();
+364:         let node = nodes.get_mut(&id).expect("node not found");
+365:         node.paused.clear();
+366:         node.info.kill();
+367: 
+368:         for sim in self.sims.lock().values() {
+369:             sim.reset_node(id);
+370:         }
+371:     }
+372: 
+373:     /// Kill all tasks of the node and restart the initial task.
+374:     pub fn restart(&self, id: impl ToNodeId) {
+375:         debug!(node = %id, "restart");
+376:         let id = id.to_node_id(self);
+377:         let mut nodes = self.nodes.lock();
+378:         let node = nodes.get_mut(&id).expect("node not found");
+379:         let new_info = Arc::new(NodeInfo {
+380:             id,
+381:             name: node.info.name.clone(),
+382:             cores: node.info.cores,
+383:             restart_on_panic: node.info.restart_on_panic,
+384:             restart_on_panic_matching: node.info.restart_on_panic_matching.clone(),
+385:             paused: AtomicBool::new(false),
+386:             killed: AtomicBool::new(false),
+387:             span: error_span!(parent: None, "node", %id, name = &node.info.name),
+388:             tasks: Mutex::new(vec![]),
+389:             ctrl_c: Mutex::new(None),
+390:         });
+391:         let old_info = std::mem::replace(&mut node.info, new_info);
+392:         node.paused.clear();
+393:         old_info.kill();
+394: 
+395:         if let Some(init) = &node.init {
+396:             init(&Spawner {
+397:                 sender: self.sender.clone(),
+398:                 info: node.info.clone(),
+399:             });
+400:         }
+401:     }
+402: 
+403:     /// Pause all tasks of the node.
+404:     pub fn pause(&self, id: impl ToNodeId) {
+405:         debug!(node = %id, "pause");
+406:         let id = id.to_node_id(self);
+
+target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/task/mod.rs:1113-1135
+1113:     fn kill_drop_futures() {
+1114:         let runtime = Runtime::new();
+1115:         let node = runtime.create_node().build();
+1116: 
+1117:         let flag = Arc::new(());
+1118:         let flag_ = flag.clone();
+1119:         node.spawn(async move {
+1120:             std::future::pending::<()>().await;
+1121:             drop(flag_);
+1122:         });
+1123: 
+1124:         runtime.block_on(async move {
+1125:             time::sleep(Duration::from_secs(1)).await;
+1126:             // make sure the future is pending
+1127: 
+1128:             Handle::current().kill(node.id());
+1129:             assert_eq!(Arc::strong_count(&flag), 2);
+1130: 
+1131:             // future will be dropped after a while
+1132:             time::sleep(Duration::from_secs(1)).await;
+1133:             assert_eq!(Arc::strong_count(&flag), 1);
+1134:         });
+1135:     }
+
+target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/fs.rs:33-53
+33:     fn create_node(&self, id: NodeId) {
+34:         let mut handles = self.handles.lock();
+35:         handles.insert(id, FsNodeHandle::new());
+36:     }
+37: 
+38:     fn reset_node(&self, id: NodeId) {
+39:         self.power_fail(id);
+40:     }
+41: }
+42: 
+43: impl FsSim {
+44:     /// Return a handle of the specified node.
+45:     fn get_node(&self, id: NodeId) -> FsNodeHandle {
+46:         let handles = self.handles.lock();
+47:         handles[&id].clone()
+48:     }
+49: 
+50:     /// Simulate a power failure. All data that does not reach the disk will be lost.
+51:     pub fn power_fail(&self, _id: NodeId) {
+52:         // TODO
+53:     }
+
+target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/fs.rs:98-114
+98:     async fn create(&self, path: impl AsRef<Path>) -> Result<File> {
+99:         let path = path.as_ref();
+100:         trace!(?path, "create file");
+101:         let mut fs = self.fs.lock();
+102:         let inode = fs
+103:             .entry(path.into())
+104:             .and_modify(|inode| inode.truncate())
+105:             .or_insert_with(|| Arc::new(INode::new(path)))
+106:             .clone();
+107:         Ok(File {
+108:             inode,
+109:             can_write: true,
+110:         })
+111:     }
+112: 
+113:     async fn metadata(&self, path: impl AsRef<Path>) -> Result<Metadata> {
+114:         let path = path.as_ref();
+
+target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/fs.rs:189-224
+189:     pub async fn write_all_at(&self, buf: &[u8], offset: u64) -> Result<()> {
+190:         if !self.can_write {
+191:             return Err(Error::new(
+192:                 ErrorKind::PermissionDenied,
+193:                 "the file is read only",
+194:             ));
+195:         }
+196:         let mut data = self.inode.data.write();
+197:         let end = data.len().min(offset as usize + buf.len());
+198:         let len = end - offset as usize;
+199:         data[offset as usize..end].copy_from_slice(&buf[..len]);
+200:         if len < buf.len() {
+201:             data.extend_from_slice(&buf[len..]);
+202:         }
+203:         // TODO: random delay
+204:         // TODO: simulate buffer, write will not take effect until flush or close
+205:         Ok(())
+206:     }
+207: 
+208:     /// Truncates or extends the underlying file, updating the size of this file to become `size`.
+209:     #[instrument]
+210:     pub async fn set_len(&self, size: u64) -> Result<()> {
+211:         let mut data = self.inode.data.write();
+212:         data.resize(size as usize, 0);
+213:         // TODO: random delay
+214:         Ok(())
+215:     }
+216: 
+217:     /// Attempts to sync all OS-internal metadata to disk.
+218:     #[instrument]
+219:     pub async fn sync_all(&self) -> Result<()> {
+220:         // TODO: random delay
+221:         Ok(())
+222:     }
+223: 
+224:     /// Queries metadata about the underlying file.
+
+target/madraft-cargo/git/checkouts/madsim-42d1abda922981f9/519950e/madsim/src/sim/net/network.rs:142-148
+142:     pub fn reset_node(&mut self, id: NodeId) {
+143:         debug!(%id, "reset_node");
+144:         let node = self.nodes.get_mut(&id).expect("node not found");
+145:         // close all sockets
+146:         node.sockets.clear();
+147:     }
+148: 
