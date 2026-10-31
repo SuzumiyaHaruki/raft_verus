@@ -1,0 +1,11 @@
+error: constructed value may fail to meet its declared type invariant
+   --> /tmp/async-completion-core-failed-result-78c9530p/src/core.rs:164:17
+    |
+ 99 |     closed spec fn well_formed(self) -> bool {
+    |                 ---------------------------- type invariant declared here
+...
+164 |         *self = Core { completed, next: self.next, pending, history: Ghost(h) };
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 1 previous error
+

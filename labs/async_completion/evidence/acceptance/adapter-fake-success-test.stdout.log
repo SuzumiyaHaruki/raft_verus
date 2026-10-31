@@ -1,0 +1,11 @@
+
+running 1 test
+test two_clients_write_and_read_actual_records ... FAILED
+
+failures:
+
+failures:
+    two_clients_write_and_read_actual_records
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+

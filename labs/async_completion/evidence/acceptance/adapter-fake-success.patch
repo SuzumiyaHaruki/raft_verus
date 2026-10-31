@@ -1,0 +1,11 @@
+--- src/adapter.rs
++++ src/adapter.rs
+@@ -55,7 +55,7 @@
+             Begin::Busy => return Err(io::Error::other("unexpected Busy in sequential adapter")),
+             Begin::Exhausted => return Err(io::Error::other("operation IDs exhausted")),
+         };
+-        let result = write_record(path, write, control.as_ref()).await;
++        let result: io::Result<()> = Ok(());
+         let reply = core.complete(Completion { id: write.id, success: result.is_ok() });
+         if let Some(ack) = reply { send_ack(&endpoint, ack).await?; }
+         if let Err(error) = result { return Ok(Exit { core, write_error: Some(error) }); }

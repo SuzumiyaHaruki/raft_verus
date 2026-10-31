@@ -1,0 +1,7 @@
+Compared scopes: madraft, requirements, scripts, docs, labs/execution_boundary, AGENTS.md, README.md, RESULT.md, tools.ini, .gitignore
+Byte differences, excluding caches/build outputs: []
+First lab source/spec/proof/test/evidence comparison: included above
+Any labs file included in experiment inputs: False
+git status exit: 128
+fatal: not a git repository (or any of the parent directories): .git
+Provided reference (not asserted as checked-out HEAD): e85739c418ba2af29374ec8fa03652657b3711f7

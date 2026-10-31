@@ -1,0 +1,11 @@
+--- src/core.rs
++++ src/core.rs
+@@ -152,7 +152,7 @@
+         let mut pending = self.pending;
+         let mut completed = self.completed;
+         if let Some(p) = pending {
+-            if notice.id == p.id {
++            if true {
+                 pending = None;
+                 if notice.success {
+                     completed = p.request.value;

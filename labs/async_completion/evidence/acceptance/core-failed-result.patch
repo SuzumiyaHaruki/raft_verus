@@ -1,0 +1,11 @@
+--- src/core.rs
++++ src/core.rs
+@@ -154,7 +154,7 @@
+         if let Some(p) = pending {
+             if notice.id == p.id {
+                 pending = None;
+-                if notice.success {
++                if true {
+                     completed = p.request.value;
+                     reply = Some(Ack { id: p.id, destination: p.request.source, value: p.request.value });
+                 }

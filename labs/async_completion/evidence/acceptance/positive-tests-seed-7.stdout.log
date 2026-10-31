@@ -1,0 +1,18 @@
+
+running 1 test
+test core::boundary::identifier_boundary_does_not_wrap ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 4 tests
+test core_rejects_busy_mismatched_stale_and_duplicate_completions ... ok
+Gate entered -> no Ack/no file -> release -> real write -> Ack(7)
+Actual files checked after Ack(7)/op0 and Ack(9)/op1; completed=9
+test controlled_wait_emits_no_ack_before_actual_write ... Real op0 wrote 7; injected Err for op1 -> no Ack; completed remains 7
+ok
+test two_clients_write_and_read_actual_records ... ok
+test injected_failure_does_not_ack_or_change_completed_value ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

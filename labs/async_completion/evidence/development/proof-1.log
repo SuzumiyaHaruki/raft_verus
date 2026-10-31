@@ -1,0 +1,12 @@
+error[E0308]: `match` arms have incompatible types
+   --> /home/nitro/Desktop/raft_verus/labs/async_completion/src/core.rs:121:95
+    |
+121 |             self.counter() == match result { Begin::Write(_) => old(self).counter() + 1, _ => old(self).counter() },
+    |                               ------------                      -----------------------       ^^^^^^^^^^^^^^^^^^^ expected `int`, found `u64`
+    |                               |                                 |
+    |                               |                                 this is found to be of type `vstd::prelude::int`
+    |                               `match` arms have incompatible types
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0308`.

@@ -1,0 +1,343 @@
+{
+  "status": "PASS",
+  "input_version": "async-completion-0.1.0",
+  "checks": [
+    {
+      "name": "rust-version",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--version"
+      ],
+      "cwd": "/home/nitro/Desktop/raft_verus/labs/async_completion",
+      "seed": 1,
+      "target_dir": "/home/nitro/Desktop/raft_verus/labs/async_completion/target/correct",
+      "expected": "EXIT_ZERO",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.03604456600078265,
+      "stdout": "rust-version.stdout.log",
+      "stderr": "rust-version.stderr.log"
+    },
+    {
+      "name": "cargo-version",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "--version"
+      ],
+      "cwd": "/home/nitro/Desktop/raft_verus/labs/async_completion",
+      "seed": 1,
+      "target_dir": "/home/nitro/Desktop/raft_verus/labs/async_completion/target/correct",
+      "expected": "EXIT_ZERO",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.01577341600022919,
+      "stdout": "cargo-version.stdout.log",
+      "stderr": "cargo-version.stderr.log"
+    },
+    {
+      "name": "verus-version",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "--version"
+      ],
+      "cwd": "/home/nitro/Desktop/raft_verus/labs/async_completion",
+      "seed": 1,
+      "target_dir": "/home/nitro/Desktop/raft_verus/labs/async_completion/target/correct",
+      "expected": "EXIT_ZERO",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.07531569399907312,
+      "stdout": "verus-version.stdout.log",
+      "stderr": "verus-version.stderr.log"
+    },
+    {
+      "name": "positive-proof",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/labs/async_completion/proof.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "cwd": "/home/nitro/Desktop/raft_verus/labs/async_completion",
+      "seed": 1,
+      "target_dir": "/home/nitro/Desktop/raft_verus/labs/async_completion/target/correct",
+      "expected": "VERIFIED",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.8282457440000144,
+      "stdout": "positive-proof.stdout.log",
+      "stderr": "positive-proof.stderr.log"
+    },
+    {
+      "name": "positive-tests-seed-1",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "service",
+        "--lib",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/home/nitro/Desktop/raft_verus/labs/async_completion",
+      "seed": 1,
+      "target_dir": "/home/nitro/Desktop/raft_verus/labs/async_completion/target/correct",
+      "expected": "FIVE_TESTS_PASS",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 1.2139935469986085,
+      "stdout": "positive-tests-seed-1.stdout.log",
+      "stderr": "positive-tests-seed-1.stderr.log"
+    },
+    {
+      "name": "positive-tests-seed-7",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "service",
+        "--lib",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/home/nitro/Desktop/raft_verus/labs/async_completion",
+      "seed": 7,
+      "target_dir": "/home/nitro/Desktop/raft_verus/labs/async_completion/target/correct",
+      "expected": "FIVE_TESTS_PASS",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.08386512499964738,
+      "stdout": "positive-tests-seed-7.stdout.log",
+      "stderr": "positive-tests-seed-7.stderr.log"
+    },
+    {
+      "name": "core-failed-result-build",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--no-run"
+      ],
+      "cwd": "/tmp/async-completion-core-failed-result-78c9530p",
+      "seed": 1,
+      "target_dir": "/tmp/async-completion-core-failed-result-78c9530p/target",
+      "expected": "COMPILES",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 15.166173258001436,
+      "stdout": "core-failed-result-build.stdout.log",
+      "stderr": "core-failed-result-build.stderr.log"
+    },
+    {
+      "name": "core-failed-result-proof",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/tmp/async-completion-core-failed-result-78c9530p/proof.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "cwd": "/tmp/async-completion-core-failed-result-78c9530p",
+      "seed": 1,
+      "target_dir": "/tmp/async-completion-core-failed-result-78c9530p/target",
+      "expected": "VERIFICATION_FAILURE",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 0.6128141809986118,
+      "stdout": "core-failed-result-proof.stdout.log",
+      "stderr": "core-failed-result-proof.stderr.log"
+    },
+    {
+      "name": "core-wrong-id-build",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--no-run"
+      ],
+      "cwd": "/tmp/async-completion-core-wrong-id-b_13jt1g",
+      "seed": 1,
+      "target_dir": "/tmp/async-completion-core-wrong-id-b_13jt1g/target",
+      "expected": "COMPILES",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 13.5887929670007,
+      "stdout": "core-wrong-id-build.stdout.log",
+      "stderr": "core-wrong-id-build.stderr.log"
+    },
+    {
+      "name": "core-wrong-id-proof",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/tmp/async-completion-core-wrong-id-b_13jt1g/proof.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "cwd": "/tmp/async-completion-core-wrong-id-b_13jt1g",
+      "seed": 1,
+      "target_dir": "/tmp/async-completion-core-wrong-id-b_13jt1g/target",
+      "expected": "VERIFICATION_FAILURE",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 0.6082968999999139,
+      "stdout": "core-wrong-id-proof.stdout.log",
+      "stderr": "core-wrong-id-proof.stderr.log"
+    },
+    {
+      "name": "adapter-fake-success-proof",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/tmp/async-completion-adapter-fake-success-ee72t3l6/proof.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "cwd": "/tmp/async-completion-adapter-fake-success-ee72t3l6",
+      "seed": 1,
+      "target_dir": "/tmp/async-completion-adapter-fake-success-ee72t3l6/target",
+      "expected": "VERIFIED",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.682236422000642,
+      "stdout": "adapter-fake-success-proof.stdout.log",
+      "stderr": "adapter-fake-success-proof.stderr.log"
+    },
+    {
+      "name": "adapter-fake-success-test",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "service",
+        "two_clients_write_and_read_actual_records",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "cwd": "/tmp/async-completion-adapter-fake-success-ee72t3l6",
+      "seed": 1,
+      "target_dir": "/tmp/async-completion-adapter-fake-success-ee72t3l6/target",
+      "expected": "ACTUAL_FILE_ASSERTION_FAILURE",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 101,
+      "elapsed_seconds": 12.908441847001086,
+      "stdout": "adapter-fake-success-test.stdout.log",
+      "stderr": "adapter-fake-success-test.stderr.log"
+    },
+    {
+      "name": "restored-proof",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/labs/async_completion/proof.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "cwd": "/home/nitro/Desktop/raft_verus/labs/async_completion",
+      "seed": 1,
+      "target_dir": "/home/nitro/Desktop/raft_verus/labs/async_completion/target/correct",
+      "expected": "VERIFIED",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.7249380840003141,
+      "stdout": "restored-proof.stdout.log",
+      "stderr": "restored-proof.stderr.log"
+    },
+    {
+      "name": "restored-tests-seed-1",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "service",
+        "--lib",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/home/nitro/Desktop/raft_verus/labs/async_completion",
+      "seed": 1,
+      "target_dir": "/home/nitro/Desktop/raft_verus/labs/async_completion/target/correct",
+      "expected": "FIVE_TESTS_PASS",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.08382092600004398,
+      "stdout": "restored-tests-seed-1.stdout.log",
+      "stderr": "restored-tests-seed-1.stderr.log"
+    },
+    {
+      "name": "restored-tests-seed-7",
+      "argv": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "service",
+        "--lib",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/home/nitro/Desktop/raft_verus/labs/async_completion",
+      "seed": 7,
+      "target_dir": "/home/nitro/Desktop/raft_verus/labs/async_completion/target/correct",
+      "expected": "FIVE_TESTS_PASS",
+      "matches": true,
+      "process_status": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.07387780300086888,
+      "stdout": "restored-tests-seed-7.stdout.log",
+      "stderr": "restored-tests-seed-7.stderr.log"
+    }
+  ],
+  "not_run": [],
+  "madsim": {
+    "name": "madsim",
+    "version": "0.2.34",
+    "source": "git+https://github.com/madsim-rs/madsim?rev=519950efb4711464f300ed7edf2967ed62d5f502#519950efb4711464f300ed7edf2967ed62d5f502"
+  },
+  "environment": {
+    "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+    "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+    "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+    "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+    "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/labs/async_completion/target/correct",
+    "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+  },
+  "original_inputs_unchanged": true
+}

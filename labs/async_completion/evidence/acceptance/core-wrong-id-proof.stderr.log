@@ -1,0 +1,26 @@
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /tmp/async-completion-core-wrong-id-b_13jt1g/src/core.rs:143:5
+    |
+143 |     pub fn complete(&mut self, notice: Completion) -> (reply: Option<Ack>)
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+   --> /tmp/async-completion-core-wrong-id-b_13jt1g/src/core.rs:146:13
+    |
+146 |             self.waiting() == if matches(old(self).waiting(), notice) { None } else { old(self).waiting() },
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+165 |         reply
+    |         ----- at the end of the function body
+
+error: constructed value may fail to meet its declared type invariant
+   --> /tmp/async-completion-core-wrong-id-b_13jt1g/src/core.rs:164:17
+    |
+ 99 |     closed spec fn well_formed(self) -> bool {
+    |                 ---------------------------- type invariant declared here
+...
+164 |         *self = Core { completed, next: self.next, pending, history: Ghost(h) };
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 2 previous errors
+
