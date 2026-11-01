@@ -2,6 +2,7 @@
 from pathlib import Path
 import json
 import hashlib
+import importlib
 import os
 import shutil
 import subprocess
@@ -38,8 +39,15 @@ def files_under(directory):
     return result
 
 
+def scoped_task(task):
+    if task == 'full': return None
+    if task not in ('request-vote', 'election-start'): raise ValueError('Unknown task: ' + task)
+    return importlib.import_module(task.replace('-', '_'))
+
+
 def input_version(task='full'):
-    return 'madraft-request-vote-1' if task == 'request-vote' else INPUT_VERSION
+    module = scoped_task(task)
+    return module.VERSION if module else INPUT_VERSION
 
 
 def input_files(root, task='full'):
@@ -51,9 +59,9 @@ def input_files(root, task='full'):
     names += [f'madraft/src/{name}' for name in files_under(root / 'madraft/src') if name.endswith('.rs')]
     names += [f'requirements/{p.name}' for p in sorted((root / 'requirements').iterdir())
               if p.is_file() and p.suffix in ('.md', '.rs')]
-    if task == 'request-vote':
-        from request_vote import INPUTS
-        names += ['scripts/request_vote.py'] + ['tasks/request_vote/' + n for n in INPUTS]
+    module = scoped_task(task)
+    if module:
+        names += module.HELPERS + [module.DIRECTORY + '/' + n for n in module.INPUTS]
     for name in names:
         path = root / name
         if path.is_symlink() or any(p.is_symlink() for p in path.parents if p != root and root in p.parents) or not path.is_file():
@@ -86,10 +94,13 @@ def protected_files(authority):
     names += ['AGENTS.md', 'tools.ini', 'madraft/Cargo.toml', 'madraft/Cargo.lock', 'madraft/LICENSE']
     names += [f'madraft/src/{name}' for name in files_under(Path(authority) / 'madraft/src')
               if Path(name).name in ('tests.rs', 'tester.rs', 'test_support.rs')]
-    if (Path(authority) / 'madraft/src/raft/vote_core.rs').is_file() and (Path(authority) / 'tasks/request_vote/TASK.md').is_file():
-        from request_vote import INPUTS
-        names += ['scripts/request_vote.py', 'madraft/src/raft/raft.rs']
-        names += ['tasks/request_vote/' + n for n in INPUTS]
+    if (Path(authority) / 'madraft/src/raft/vote_core.rs').is_file():
+        for task in ('request-vote', 'election-start'):
+            directory = 'tasks/' + task.replace('-', '_')
+            if (Path(authority) / directory / 'TASK.md').is_file():
+                module = scoped_task(task)
+                names += module.HELPERS + ['madraft/src/raft/raft.rs']
+                names += [directory + '/' + n for n in module.INPUTS]
     return names
 
 

@@ -1,1 +1,1 @@
-继续同一次 RequestVote 实验、同一工作区和会话。根据以下独立检查的实际失败修复当前代码与证明。保留已验证局部结果，优先闭合首个未完成依赖；不要通过改目标、漏记回复、增加可信协议逻辑或导入旧实验答案消除错误。可以修改自己的表示、不变量和证明分解。
+Continue this RequestVote experiment in the same workspace and conversation. Repair current code and proof using the independent failures below. Retain valid local evidence and prioritize the first unfinished dependency. Do not weaken targets, omit replies, add trusted protocol bodies or import earlier solutions. You may revise your representation, invariants and proof decomposition.

@@ -1,0 +1,5 @@
+Check-55 confirms the same blocker: build and all eight proof entries pass; all five seeds pass 15/16 tests. The protected recovery test expects a timeout after closing its channel, which instead returns immediately. This is an assertion failure, not compilation, proof failure or tool timeout.
+
+Rechecked the actual Core and mutation audit; all 30 source/proof/Cargo files match the checked candidate. No permitted candidate repair resolves the test contradiction.
+
+Saved [RESULT.md](/home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/RESULT.md) and progress notes. Acceptance remains **INCOMPLETE / BLOCKED_FIXED_TEST**. Failures and cumulative spending are preserved. Serialization, faithful I/O/readback, file retention and unchanged forwarding remain host premises; all five global safety properties remain OPEN.

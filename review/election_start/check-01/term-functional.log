@@ -1,0 +1,20 @@
+$ /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/wrong-term --nocapture
+
+running 1 test
+test tests::semantic_rejection ... FAILED
+
+failures:
+
+failures:
+    tests::semantic_rejection
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+thread 'tests::semantic_rejection' (3966) panicked at /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:70:30:
+assertion `left == right` failed: must enter next term
+  left: 3
+ right: 4
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+process=COMPLETED exit=101

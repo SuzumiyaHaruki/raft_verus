@@ -1,0 +1,69 @@
+{
+  "root_git": "UNAVAILABLE: .git metadata is empty/read-only; git status exits 128",
+  "reference_checkout": "/tmp/raft-verus-publish-request-vote",
+  "reference_revision": "623219a314cd59b85d3a81ae97079a8b665228f3",
+  "before_authored_files": 453,
+  "before_vs_reference": [],
+  "preserved": {
+    "madraft": {
+      "file_count": 31,
+      "changed": []
+    },
+    "requirements": {
+      "file_count": 10,
+      "changed": []
+    },
+    "labs": {
+      "file_count": 267,
+      "changed": []
+    }
+  },
+  "tools_changed": false,
+  "old_receiver_code_changes": [],
+  "old_runs": {
+    "files_checked": 35931,
+    "method": "size and mtime_ns of pre-existing files; no old source used as experiment input",
+    "changed": []
+  },
+  "changed_existing": [
+    ".gitignore",
+    "README.md",
+    "RESULT.md",
+    "scripts/check.py",
+    "scripts/inputs.py",
+    "scripts/request_vote.py",
+    "scripts/run.py",
+    "scripts/tests/test_request_vote.py",
+    "tasks/request_vote/AGENTS.md",
+    "tasks/request_vote/TASK.md",
+    "tasks/request_vote/continue.md",
+    "tasks/request_vote/redesign.md",
+    "tasks/request_vote/start.md"
+  ],
+  "new_code_and_input_files": [
+    "scripts/election_start.py",
+    "scripts/tests/test_election_start.py",
+    "tasks/election_start/AGENTS.md",
+    "tasks/election_start/TASK.md",
+    "tasks/election_start/api.rs",
+    "tasks/election_start/bad_core.rs",
+    "tasks/election_start/caller.rs",
+    "tasks/election_start/continue.md",
+    "tasks/election_start/core.rs",
+    "tasks/election_start/driver.rs",
+    "tasks/election_start/election_tests.rs",
+    "tasks/election_start/fixtures.rs",
+    "tasks/election_start/host.rs",
+    "tasks/election_start/lemmas.rs",
+    "tasks/election_start/maintain.py",
+    "tasks/election_start/prepare.py",
+    "tasks/election_start/redesign.md",
+    "tasks/election_start/rpc_tests.rs",
+    "tasks/election_start/start.md"
+  ],
+  "new_experiment_directory_exists": false,
+  "git_index": "Unavailable; target ignore updated, no claim to have untracked already indexed files",
+  "unchanged_reference_files_outside_initial_snapshot": [
+    "docs/provenance.md"
+  ]
+}

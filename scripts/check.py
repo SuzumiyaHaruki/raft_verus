@@ -10,7 +10,7 @@ import shlex
 import sys
 import time
 
-from inputs import INPUT_VERSION, input_version, copy_files, differences, files_under, fingerprint, protected_files, save_json
+from inputs import scoped_task, INPUT_VERSION, input_version, copy_files, differences, files_under, fingerprint, protected_files, save_json
 from process import run_process
 from tools import ROOT, environment, settings
 
@@ -313,9 +313,9 @@ class Checks:
         self.before = {name: path.read_bytes() for name, path in source.items()}
         copy_files(self.workspace / 'madraft', self.snapshot / 'madraft', source)
         copy_files(self.authority, self.snapshot, [f'requirements/{n}' for n in files_under(self.authority / 'requirements')])
-        if task == 'request-vote':
-            from request_vote import INPUTS
-            copy_files(self.authority,self.snapshot,['tasks/request_vote/' + n for n in INPUTS])
+        module = scoped_task(task)
+        if module:
+            copy_files(self.authority,self.snapshot,[module.DIRECTORY + '/' + n for n in module.INPUTS])
         protected = protected_files(self.authority)
         self.changed_standards = differences(self.authority, self.workspace, [n for n in protected if n != 'tools.ini'])
         expected_config = settings(self.authority)
@@ -543,9 +543,10 @@ class Checks:
                 checked_entry=claim['entry'], evidence_kind='VERUS_UNIT_RESULT_WITH_UNREVIEWED_PATH_CLAIM')
 
     def finish(self, mode, required):
-        if self.task == 'request-vote':
-            self.changed_standards += ['checked tasks/request_vote/' + n for n in differences(
-                self.authority / 'tasks/request_vote',self.snapshot / 'tasks/request_vote')]
+        module = scoped_task(self.task)
+        if module:
+            self.changed_standards += ['checked ' + module.DIRECTORY + '/' + n for n in differences(
+                self.authority / module.DIRECTORY,self.snapshot / module.DIRECTORY)]
         self.changed_standards += [n for n, body in self.protected_before.items()
             if not (self.workspace / n).is_file() or (self.workspace / n).read_bytes() != body]
         self.changed_standards += ['checked requirements/' + n for n, body in self.requirements_before.items()
@@ -573,7 +574,7 @@ class Checks:
         elif changed or snapshot_changed or mismatched or any(s != 'PASS' for s in statuses):
             status = 'INCOMPLETE'
         else:
-            status = ('REQUEST_VOTE_CHECKS_PASSED' if self.task == 'request-vote' else 'MACHINE_CHECKS_PASSED') if mode == 'final' else 'PASS'
+            status = (module.LABEL if module else 'MACHINE_CHECKS_PASSED') if mode == 'final' else 'PASS'
         if mode == 'initial' and status == 'PASS':
             status = 'NEEDS_REVIEW'  # A working solution is not the expected starting scaffold.
         report = dict(status=status, mode=mode, input_version=input_version(self.task),
@@ -618,9 +619,8 @@ def evaluate(workspace, *, authority=ROOT, tool_root=ROOT, output=None, timeout=
     output = output or ROOT / 'runs/checks' / str(time.time_ns())
     mode = 'initial' if initial else mode
     checks = Checks(workspace, authority, tool_root, output, timeout, revision,task)
-    if task == 'request-vote':
-        from request_vote import evaluate as receiver_checks
-        return receiver_checks(checks,mode,seeds or configured_seeds(tool_root))
+    if scoped_task(task):
+        return scoped_task(task).evaluate(checks,mode,seeds or configured_seeds(tool_root))
     cfg = settings(tool_root)
     plan = current_obligation(checks.snapshot)
     if mode != 'safety':
@@ -682,7 +682,7 @@ def main():
     parser.add_argument('kind', choices=['build', 'inventory', 'test', 'definitions', 'proof', 'top', 'foundation', 'obligation', 'feedback', 'safety', 'final'])
     parser.add_argument('selection', nargs='?', help='Test filter, proof file, or top-level obligation')
     parser.add_argument('--workspace', type=Path, default=ROOT)
-    parser.add_argument('--task', choices=['full','request-vote'], default='full')
+    parser.add_argument('--task', choices=['full','request-vote','election-start'], default='full')
     parser.add_argument('--seed', type=int, default=1, help='Single-test seed; final uses --seeds or tools.ini')
     parser.add_argument('--seeds', help='Explicit complete final seed set, e.g. 1,2,3,4,5')
     parser.add_argument('--timeout', type=float, default=600, help='Wall time for this entire check invocation')
@@ -713,7 +713,7 @@ def main():
                 print('  ' + result['log'])
         print(report['status'] + ': ' + str(output / 'results.json'))
         print(SEMANTIC_BOUNDARY)
-    return 0 if report['status'] in ('PASS', 'MACHINE_CHECKS_PASSED','REQUEST_VOTE_CHECKS_PASSED') else 2 if report['status'] in ('BLOCKED', 'NEEDS_REVIEW') else 1
+    return 0 if report['status'] in ('PASS', 'MACHINE_CHECKS_PASSED','REQUEST_VOTE_CHECKS_PASSED','ELECTION_START_CHECKS_PASSED') else 2 if report['status'] in ('BLOCKED', 'NEEDS_REVIEW') else 1
 
 
 if __name__ == '__main__':

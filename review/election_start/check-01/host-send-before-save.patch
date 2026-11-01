@@ -1,0 +1,11 @@
+--- host/raft.rs
++++ bad-host/raft.rs
+@@ -129,6 +129,8 @@
+             vote_api::Campaign::Reject(f) => return Err(io::Error::other(format!("campaign: {f:?}")).into()),
+         };
+         let hooks = self.vote_hooks.lock().unwrap().clone();
++        // DEFECT: use prepared data before persistence/authorization.
++        if let vote_api::Action::Send(send) = write.action { self.send_vote_request(send).await?; }
+         let saved = vote_host::save(write, &hooks).await;
+         let action = self.inner.lock().unwrap().vote.complete(vote_api::Completion{
+             op:write.record.op,success:saved.is_ok()});

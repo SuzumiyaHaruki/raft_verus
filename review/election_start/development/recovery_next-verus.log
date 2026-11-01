@@ -1,0 +1,14 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus tasks/election_start/fixtures.rs --crate-type lib --cfg bad_recovery_next --no-cheating
+verification results:: 19 verified, 1 errors
+error: postcondition not satisfied
+  --> tasks/election_start/fixtures.rs:53:13
+   |
+53 |       ensures out == recovered_view(c,r),
+   |               ^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+57 | /     View{config:c,state:Persistent{term:r.state.term,voted_for:vote,log:r.state.log},role:Role::Follower,
+58 | |         next,pending:None,halted:false}
+   | |_______________________________________- at the end of the function body
+
+error: aborting due to 1 previous error
+

@@ -1,0 +1,355 @@
+--- before/madraft/PROGRESS.md
++++ after/madraft/PROGRESS.md
+@@ -0,0 +1,37 @@
++# Receiver and campaign progress
++
++Implemented checked construction/recovery, receiver decisions, campaign self-choice, shared operation allocation and matching-completion authorization in one authoritative Core. The inductive type invariant connects actual state, pending action, actual choice history and recovery base. The fixed caller observes actual calls; no tally, promotion or new trusted protocol body was added.
++
++Checks: `python3 scripts/check.py obligation --task election-start --timeout 180` passed all eight formal goals and 15/16 tests on seed 1. `python3 scripts/check.py final --task election-start --timeout 600` passed build, inventory, source boundary and all eight formal goals; each seed 1–5 passed 15/16 tests. Final report: `runs/checks/1793500403902337952/results.json`, status INCOMPLETE. The original scaffold's unimplemented bodies and failed proof assertions are replaced; no generated proof attempt failed and no rollback occurred.
++
++Failed acceptance attempt / next obstacle: protected `restart_written_pending` aborts and joins the only task owning the observation sender, then requires the receiver to time out. Cancellation drops that sender, so the empty channel is closed and receive completes immediately with an error. This is not a synthesized reply. The final test fails at fixed `tasks/election_start/rpc_tests.rs:213` on all five seeds. `python3 madraft/repro/run_closed_observer.py` independently reproduces Ready(Err) using the pinned async_channel dependency. Fixed tests and host wiring were preserved; no permissible Core change can keep a sender that the Core never receives alive. Local acceptance remains OPEN pending an upstream correction of that assertion.
++
++<!-- obligation -->
++```ini
++[obligation]
++id = election-start-rules
++statement = Actual construction and receive/start/complete preserve vote history and save authorization; fixed proof callers now pass.
++goal = election-start-rules
++kind = composition
++functions = madraft/src/raft/vote_core.rs::new, madraft/src/raft/vote_core.rs::receive, madraft/src/raft/vote_core.rs::start_election, madraft/src/raft/vote_core.rs::complete
++entry = madraft/src/raft/vote_core.rs
++parent = madraft/proof/vote_lemmas.rs
++dependencies =
++premises = Host serialization, truthful completion, faithful readback and unchanged forwarding; protected closed-channel test contradiction blocks acceptance.
++tests = raft::raft::vote_tests::
++```
++<!-- /obligation -->
++
++<!-- connections -->
++| Behavior | Actual functions | Proof entry | Open premises / next step |
++| --- | --- | --- | --- |
++| initialization | madraft/src/raft/vote_core.rs::new | madraft/src/raft/vote_core.rs | PASS: fixed constructors and nonempty receiver/campaign callers; deployed membership remains trusted. |
++| transitions | madraft/src/raft/vote_core.rs::receive, madraft/src/raft/vote_core.rs::start_election | madraft/proof/vote_lemmas.rs | PASS: fixed mixed_calls/from_constructor observe actual choices; host serialization remains trusted. |
++| outputs | madraft/src/raft/vote_core.rs::complete | madraft/src/raft/vote_core.rs | PASS: exact return and matching successful Pending; actual I/O truth and unchanged forwarding remain host premises. |
++| recovery | madraft/src/raft/vote_core.rs::recover | madraft/proof/vote_lemmas.rs | PASS: fixed restart_window and four recovery callers; faithful readback is a premise, interrupted writes and repeated crashes remain OPEN. |
++| snapshots | madraft/src/raft/raft.rs::snapshot | — | OPEN, unchanged scaffold and outside this bounded task; no snapshot proof nominated. |
++<!-- /connections -->
++
++Connection contracts: Core::new/recover return Some exactly for valid inputs and establish fresh/recovered views; Core::receive/start_election/complete implement the fixed result and after-state specifications and exact choice updates; inspect returns the actual view. Core::facts derives the maintained type invariant without caller preconditions. vote_lemmas::uniqueness and restart_composition are invoked by the fixed executable mixed-history/recovery callers. Runtime host paths are RaftHandle::new_receiver → vote_host::load → Core::new/recover; RaftHandle::request_vote → Raft::request_vote → Core::receive → vote_host::save → Core::complete; RaftHandle::start_election → Core::start_election → vote_host::save → Core::complete → RaftHandle::send_vote_request. Host code is unchanged and unverified; exact boundary details are in RESULT.md.
++
++All five global Raft properties, full labs, snapshots, applications and conditional liveness remain OPEN.
+--- before/madraft/RESULT.md
++++ after/madraft/RESULT.md
+@@ -0,0 +1,50 @@
++# Receiver-plus-campaign result
++
++The actual shared Core and its invariant proofs are implemented. Full local acceptance is INCOMPLETE because one protected test has a reproducible closed-channel contradiction; ELECTION_START_CHECKS_PASSED was not achieved. No fixed specification, caller, test, host wiring or global tool was changed.
++
++| Local obligation | Outcome |
++| --- | --- |
++| Receiver rules and real constructors | PASS |
++| Campaign guards, self-choice, checked increment and immutable payload | PASS |
++| Matching-success reply/Send authorization | PASS |
++| Arbitrary finite mixed actual-call histories | PASS |
++| Receiver recovery, confirmed and written-pending windows | PASS / PASS |
++| Self-vote recovery, confirmed and written-pending windows | PASS / PASS |
++| Cargo build, inventory and same-candidate imports | PASS |
++| RPC/file/core tests on seeds 1, 2, 3, 4, 5 | 15 passed, 1 failed per seed |
++
++Evidence: obligation report `runs/checks/1793500312489856031/results.json`; final report `runs/checks/1793500403902337952/results.json`. Every formal configuration uses the fixed caller, actual Cargo source and all imported bodies under --no-cheating. These passes establish the bounded local contracts; they do not establish global implementation acceptance or replace semantic review.
++
++The invariant requires valid persistent state, pending actions consistent with that state, uniqueness of the recorded choices, and bounds relating every choice to the current term/vote. Recovery also establishes a lower bound at the retained term and preserves its chosen candidate at that term. Real operations preserve these facts. The fixed observer records accepted campaign self-choices before completion and affirmative replies from actual completion results. The composition proof combines arbitrary actual prefixes and suffixes across both specified successful-write windows without inventing an old completion. A self-choice is neither durable I/O evidence nor a counted vote.
++
++Passing tests cover receiver rejection priority and log freshness, repeated same-candidate votes, higher-term denials, shared campaign/receiver state, exhaustion, wrong/duplicate completion, halting on failed save, real candidate-to-two-receiver RPCs, delayed save, file byte contents, malformed storage, confirmed receiver recovery, both self-vote recovery windows and no single-member promotion. The written-pending receiver test reaches and passes retained-file/recovered-state assertions before failing on its observer check; its later post-recovery RPC assertions are not reached. Formal receiver pending recovery nevertheless passes.
++
++Protected-test contradiction: `tasks/election_start/rpc_tests.rs:188` creates the observation channel; the task receives its sole sender. At line 203 the test aborts and awaits that task, dropping the sender without sending a reply. At line 213 it asserts that `timeout(..., observed.recv()).await.is_err()`. Empty closed-channel receive returns Err immediately, so timeout returns Ok(Err), making this assertion false even with no old reply. The same failure occurs on all five seeds. The independent diagnostic `madraft/repro/closed_observer.rs` polls the actual pinned channel after dropping a future owning its only sender and observes Ready(Err). Its output is retained in `madraft/repro/closed_observer.log`. A correct no-message observer must distinguish channel closure from a delivered value; the protected test has been left intact. The Core neither owns nor receives this channel, so repairing its lifetime would require changing protected test/host behavior or an unrelated workaround.
++
++Unverified host premises: serialized receive/save/complete and campaign/save/complete calls; actual write results reported truthfully; retained bytes read back equal to the emitted Record in the bounded recovery windows; encoding/decoding preserve values; configured membership/address mapping and requester identity are correct; authorized replies and immutable requests are forwarded unchanged; cancellation releases the old Core before recovery. Exact functions are vote_host::{encode,decode,load,checkpoint,save}, RaftHandle::{new_receiver,start_rpc_server,request_vote,start_election,send_vote_request}, and the mutex/task/network/filesystem operations they call. Core validation discharges domain checks without assuming valid external data; protocol decisions and authorization remain in the verified Core. The async host itself is not formally verified. MadSim completed-write retention and sync_all do not prove real-disk power-loss durability. The Rust/Verus/vstd/SMT toolchain and ghost erasure remain trusted.
++
++| Global target / lab | Outcome |
++| --- | --- |
++| Election Safety | OPEN |
++| Leader Append-Only | OPEN |
++| Log Matching | OPEN |
++| Leader Completeness | OPEN |
++| State Machine Safety | OPEN |
++| Raft 2A | INCOMPLETE: bounded receiver/campaign subset only |
++| Raft 2B, 2C, 2D | OPEN: no full replication, crash protocol or snapshots |
++| KV 3A/3B | OPEN |
++| Shard controller 4A | OPEN |
++| Sharded KV 4B | OPEN |
++| Application correctness and conditional liveness | OPEN |
++
++Additional open coverage includes arbitrary interrupted writes, recovery after failed writes, induction over repeated crashes, actual replicated-log-to-summary correspondence, reply provenance/higher reply terms, tallying, majority reasoning, leader promotion, heartbeats, snapshot creation/installation/decoding and application observations. No such functionality was added or claimed.
++
++Reproduce from the workspace root:
++
++```bash
++python3 scripts/check.py obligation --task election-start --timeout 180
++python3 scripts/check.py final --task election-start --timeout 600
++python3 madraft/repro/run_closed_observer.py
++```
++
++The first two commands preserve the failing test and reproduce INCOMPLETE with all eight formal goals PASS. The final command prints READY_CLOSED without sending any value.
+--- before/madraft/proof/vote_lemmas.rs
++++ after/madraft/proof/vote_lemmas.rs
+@@ -1,15 +1,29 @@
+-//! Student proof entry. No implementation-specific invariant is supplied.
+-use crate::{vote_api::*, vote_core::Core};
++//! Consequences of the invariant maintained by the actual executable Core.
++use crate::{vote_api::*, vote_core::{Core,bounded,above}};
+ use vstd::prelude::*;
+ verus! {
+-pub proof fn uniqueness(tracked c: &Core) ensures unique(c.choices()) {
+-    assert(false); // OPEN: generate an invariant of the actual executable core.
+-}
++pub proof fn uniqueness(tracked c: &Core) ensures unique(c.choices()) { c.facts(); }
+ pub proof fn restart_composition(tracked before: &Core, tracked after: &Core, record: Record)
+     requires before.view().state == record.state, before.view().next == record.op + 1,
+         after.base() == Some(record), before.view().config == after.view().config,
+     ensures unique(before.choices() + after.choices()),
+ {
+-    assert(false); // OPEN: preserved vote constrains every subsequent actual output.
++    before.facts(); after.facts();
++    let a = before.choices(); let b = after.choices();
++    assert forall|i:int,j:int| 0 <= i < (a+b).len() && 0 <= j < (a+b).len()
++        && (#[trigger] (a+b)[i]).node == (#[trigger] (a+b)[j]).node && (a+b)[i].term == (a+b)[j].term
++        implies (a+b)[i].candidate == (a+b)[j].candidate by {
++        if i < a.len() && j < a.len() { assert(a[i].candidate == a[j].candidate); }
++        else if i >= a.len() && j >= a.len() { assert(b[i-a.len()].candidate == b[j-a.len()].candidate); }
++        else if i < a.len() {
++            assert(a[i].term <= record.state.term);
++            assert(b[j-a.len()].term >= record.state.term);
++            assert(record.state.voted_for == Some(a[i].candidate));
++        } else {
++            assert(a[j].term <= record.state.term);
++            assert(b[i-a.len()].term >= record.state.term);
++            assert(record.state.voted_for == Some(a[j].candidate));
++        }
++    }
+ }
+ }
+--- before/madraft/repro/closed_observer.log
++++ after/madraft/repro/closed_observer.log
+@@ -0,0 +1 @@
++READY_CLOSED: no message was sent; recv completes with Err, so timeout returns Ok(Err), not Err(elapsed)
+--- before/madraft/repro/closed_observer.rs
++++ after/madraft/repro/closed_observer.rs
+@@ -0,0 +1,15 @@
++//! Reproduce the protected restart observer's closed-channel outcome.
++//! This is diagnostic code only; it is not imported by Cargo or the core proof.
++use std::{future::Future, pin::pin, task::{Context, Poll, Waker}};
++fn main() {
++    let (done, observed) = async_channel::bounded::<()>(1);
++    // The protected test moves its sole sender into the task it aborts and joins.
++    let cancelled_task = async move { done.send(()).await.unwrap(); };
++    drop(cancelled_task);
++    let mut receive = pin!(observed.recv());
++    let mut cx = Context::from_waker(Waker::noop());
++    match receive.as_mut().poll(&mut cx) {
++        Poll::Ready(Err(_)) => println!("READY_CLOSED: no message was sent; recv completes with Err, so timeout returns Ok(Err), not Err(elapsed)"),
++        _ => panic!("expected the cancelled sole sender to close the empty channel"),
++    }
++}
+--- before/madraft/repro/run_closed_observer.py
++++ after/madraft/repro/run_closed_observer.py
+@@ -0,0 +1,22 @@
++"""Compile the channel diagnostic using this workspace's offline toolchain."""
++from pathlib import Path
++import configparser
++import subprocess
++import tempfile
++
++root = Path(__file__).resolve().parents[2]
++config = configparser.ConfigParser()
++config.read(root / "tools.ini")
++deps = root / "runs/checks/cargo-target/release/deps"
++libraries = sorted(deps.glob("libasync_channel-*.rlib"))
++if not libraries:
++    raise SystemExit("First run the election-start obligation or final check to build offline dependencies.")
++with tempfile.TemporaryDirectory(prefix="election-observer-") as temporary:
++    binary = Path(temporary) / "closed_observer"
++    subprocess.run([
++        str(Path(config["tools"]["rust_bin"]) / "rustc"), "--edition=2021",
++        str(root / "madraft/repro/closed_observer.rs"),
++        "--extern", f"async_channel={libraries[0]}", "-L", f"dependency={deps}",
++        "-o", str(binary),
++    ], check=True)
++    subprocess.run([str(binary)], check=True)
+--- before/madraft/src/raft/vote_core.rs
++++ after/madraft/src/raft/vote_core.rs
+@@ -1,53 +1,152 @@
+-//! UNIMPLEMENTED student input. Cargo and Verus import this exact file.
++//! Shared executable receiver and campaign state, verified with the fixed caller.
+ use super::vote_api::*;
+ use super::vote_api::View;
+ use vstd::prelude::*;
+ verus! {
+-// These fields are a starting declaration, NOT an invariant or solution.
+-// You may redesign private representation and add auxiliary ghost state.
++pub open spec fn bounded(h: Seq<Choice>, v: View) -> bool {
++    forall|i:int| 0 <= i < h.len() ==> (#[trigger] h[i]).node == v.config.node
++        && h[i].term <= v.state.term
++        && (h[i].term == v.state.term ==> v.state.voted_for == Some(h[i].candidate))
++}
++pub open spec fn above(h: Seq<Choice>, b: Option<Record>) -> bool {
++    b.is_some() ==> forall|i:int| 0 <= i < h.len() ==> (#[trigger] h[i]).term >= b.unwrap().state.term
++        && (h[i].term == b.unwrap().state.term ==> b.unwrap().state.voted_for.is_none()
++            || b.unwrap().state.voted_for == Some(h[i].candidate))
++}
++pub open spec fn state_above(v: View, b: Option<Record>) -> bool {
++    b.is_some() ==> v.state.term >= b.unwrap().state.term
++        && (v.state.term == b.unwrap().state.term && b.unwrap().state.voted_for.is_some()
++            ==> v.state.voted_for == b.unwrap().state.voted_for)
++}
++pub open spec fn pending_ok(v: View) -> bool {
++    v.pending.is_some() ==> {
++        let w = v.pending.unwrap();
++        w.record.state == v.state && w.record.op < v.next && !v.halted
++        && match w.action {
++            Action::Reply(r) => r.node == v.config.node && r.term == v.state.term
++                && (r.granted ==> v.state.voted_for == Some(r.candidate)),
++            Action::Send(s) => s.config == v.config && s.request.term == v.state.term
++                && s.request.candidate == v.config.node && s.request.log == v.state.log
++                && v.state.voted_for == Some(v.config.node),
++        }
++    }
++}
+ pub struct Core { state: View, outputs: Ghost<Seq<Choice>>, origin: Ghost<Option<Record>> }
+ impl Core {
+     pub closed spec fn view(&self) -> View { self.state }
+     pub closed spec fn choices(&self) -> Seq<Choice> { self.outputs@ }
+     pub closed spec fn base(&self) -> Option<Record> { self.origin@ }
+-
+-    // Public domain fact, not a supplied inductive Raft invariant. Establish it
+-    // with your own representation and invariant, including after recovery.
++    #[verifier::type_invariant]
++    closed spec fn inv(&self) -> bool {
++        valid_state(self.state.config,self.state.state) && pending_ok(self.state)
++        && unique(self.outputs@) && bounded(self.outputs@, self.state)
++        && above(self.outputs@,self.origin@) && state_above(self.state,self.origin@)
++    }
++    pub proof fn facts(tracked &self)
++        ensures valid_state(self.view().config,self.view().state), pending_ok(self.view()),
++            unique(self.choices()), bounded(self.choices(),self.view()),
++            above(self.choices(),self.base()), state_above(self.view(),self.base()),
++    { use_type_invariant(self); }
+     pub proof fn domain(tracked &self)
+         ensures valid_state(self.view().config,self.view().state),
+-    { assert(false); } // OPEN
++    { self.facts(); }
+ 
+     pub fn new(c: Config, initial: Initial) -> (out: Option<Self>)
+         ensures out.is_some() <==> valid_initial(c,initial),
+             out.is_some() ==> out.unwrap().view() == fresh_view(c,initial)
+                 && out.unwrap().choices() == Seq::<Choice>::empty() && out.unwrap().base().is_none(),
+-    { unreached() } // TODO: implement checked initialization
+-
++    {
++        if !check_state(c,initial.state) || (initial.state.term == 0 && !matches!(initial.role,Role::Follower)) { return None; }
++        Some(Core { state: View{config:c,state:initial.state,role:initial.role,next:0,pending:None,halted:false}, outputs:Ghost(Seq::empty()),origin:Ghost(None) })
++    }
+     pub fn recover(c: Config, record: Record) -> (out: Option<Self>)
+         ensures out.is_some() <==> valid_record(c,record),
+             out.is_some() ==> out.unwrap().view() == recovered_view(c,record)
+                 && out.unwrap().choices() == Seq::<Choice>::empty() && out.unwrap().base() == Some(record),
+-    { unreached() } // TODO: implement actual recovery and establish your invariant
+-
+-    pub fn inspect(&self) -> (out: View) ensures out == self.view()
+-    { unreached() } // TODO: return the actual state
++    {
++        if !check_state(c,record.state) || record.op == u64::MAX { return None; }
++        Some(Core { state:View{config:c,state:record.state,role:Role::Follower,next:record.op+1,pending:None,halted:false},outputs:Ghost(Seq::empty()),origin:Ghost(Some(record)) })
++    }
++    pub fn inspect(&self) -> (out: View) ensures out == self.view() { self.state }
+ 
+     pub fn receive(&mut self, request: Request) -> (out: Receive)
+         ensures out == receive_result(old(self).view(), request),
+             self.view() == receive_after(old(self).view(),request,out),
+             self.choices() == old(self).choices(), self.base() == old(self).base(),
+-    { unreached() } // TODO: implement actual receiver and choose useful invariants
+-
++    {
++        proof { use_type_invariant(&*self); }
++        let v = self.state;
++        if v.halted { return Receive::Reject(Fault::Halted); }
++        if v.pending.is_some() { return Receive::Reject(Fault::Busy); }
++        if request.term == 0 || request.candidate >= v.config.members
++            || ((request.log.index == 0) != (request.log.term == 0)) || request.log.term > request.term {
++            return Receive::Reject(Fault::Invalid);
++        }
++        if v.next == u64::MAX { return Receive::Reject(Fault::Exhausted); }
++        let eligible = request.term >= v.state.term
++            && (request.log.term > v.state.log.term || (request.log.term == v.state.log.term && request.log.index >= v.state.log.index))
++            && (request.term > v.state.term || v.state.voted_for.is_none() || v.state.voted_for == Some(request.candidate));
++        let state = Persistent {term:if request.term > v.state.term {request.term} else {v.state.term},
++            voted_for:if eligible {Some(request.candidate)} else if request.term > v.state.term {None} else {v.state.voted_for},log:v.state.log};
++        let w = Write{record:Record{op:v.next,state},request,action:Action::Reply(Reply{node:v.config.node,term:state.term,candidate:request.candidate,granted:eligible})};
++        self.state = View{config:v.config,state,role:if request.term > v.state.term {Role::Follower} else {v.role},next:v.next+1,pending:Some(w),halted:false};
++        Receive::Save(w)
++    }
+     pub fn start_election(&mut self) -> (out: Campaign)
+         ensures out == start_result(old(self).view()), self.view() == start_after(old(self).view(),out),
+-            self.choices() == start_choices(old(self).choices(),old(self).view(),out),
+-            self.base() == old(self).base(),
+-    { unreached() } // TODO: actual checked increment/self-choice/save, no send authorization here
+-
++            self.choices() == start_choices(old(self).choices(),old(self).view(),out), self.base() == old(self).base(),
++    {
++        proof { use_type_invariant(&*self); }
++        let v = self.state;
++        if v.halted { return Campaign::Reject(Fault::Halted); }
++        if v.pending.is_some() { return Campaign::Reject(Fault::Busy); }
++        if matches!(v.role,Role::Leader) { return Campaign::Reject(Fault::Leader); }
++        if v.state.term == u64::MAX { return Campaign::Reject(Fault::TermExhausted); }
++        if v.next == u64::MAX { return Campaign::Reject(Fault::Exhausted); }
++        let state = Persistent{term:v.state.term+1,voted_for:Some(v.config.node),log:v.state.log};
++        let request = Request{term:state.term,candidate:v.config.node,log:state.log};
++        let w = Write{record:Record{op:v.next,state},request,action:Action::Send(Send{config:v.config,request})};
++        self.state = View{config:v.config,state,role:Role::Candidate,next:v.next+1,pending:Some(w),halted:false};
++        proof { append_choice(self.outputs@, self.state, self.origin@, choice(self.state)); }
++        self.outputs = Ghost(self.outputs@.push(choice(self.state)));
++        Campaign::Save(w)
++    }
+     pub fn complete(&mut self, notice: Completion) -> (out: Option<Action>)
+-        ensures out == complete_result(old(self).view(),notice),
+-            self.view() == complete_after(old(self).view(),notice),
++        ensures out == complete_result(old(self).view(),notice), self.view() == complete_after(old(self).view(),notice),
+             self.choices() == append_action(old(self).choices(),out), self.base() == old(self).base(),
+-    { unreached() } // TODO: authorize only the matching saved reply OR campaign send
++    {
++        proof { use_type_invariant(&*self); }
++        if let Some(w) = self.state.pending {
++            if w.record.op == notice.op {
++                self.state.pending = None;
++                if !notice.success { self.state.halted = true; return None; }
++                if let Action::Reply(r) = w.action {
++                    if r.granted {
++                        proof { append_choice(self.outputs@,self.state,self.origin@,Choice{node:r.node,term:r.term,candidate:r.candidate}); }
++                        self.outputs = Ghost(self.outputs@.push(Choice{node:r.node,term:r.term,candidate:r.candidate}));
++                    }
++                }
++                return Some(w.action);
++            }
++        }
++        None
++    }
++}
++fn check_state(c: Config, s: Persistent) -> (out: bool)
++    ensures out == valid_state(c,s),
++{
++    c.members > 0 && c.node < c.members && ((s.log.index == 0) == (s.log.term == 0))
++        && s.log.term <= s.term && match s.voted_for {None => true, Some(n) => s.term > 0 && n < c.members}
++}
++proof fn append_choice(h: Seq<Choice>, v: View, b: Option<Record>, x: Choice)
++    requires unique(h), bounded(h,v), above(h,b), state_above(v,b),
++        x.node == v.config.node, x.term == v.state.term, v.state.voted_for == Some(x.candidate),
++    ensures unique(h.push(x)), bounded(h.push(x),v), above(h.push(x),b),
++{
++    assert forall|i:int,j:int| 0 <= i < h.push(x).len() && 0 <= j < h.push(x).len()
++        && (#[trigger] h.push(x)[i]).node == (#[trigger] h.push(x)[j]).node && h.push(x)[i].term == h.push(x)[j].term
++        implies h.push(x)[i].candidate == h.push(x)[j].candidate by {
++        if i < h.len() && j < h.len() { assert(h[i].candidate == h[j].candidate); }
++    }
+ }
+ }

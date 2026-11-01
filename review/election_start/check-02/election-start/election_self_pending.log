@@ -1,0 +1,214 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/caller.rs --crate-type lib --cfg madsim --no-cheating --triggers-mode silent --cfg es_self_pending
+verification results:: 26 verified, 9 errors
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:18:14
+   |
+18 |     { assert(false); } // OPEN
+   |              ^^^^^ assertion failed
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:20:5
+   |
+20 |     pub fn new(c: Config, initial: Initial) -> (out: Option<Self>)
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:21:17
+   |
+21 |         ensures out.is_some() <==> valid_initial(c,initial),
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+24 |     { unreached() } // TODO: implement checked initialization
+   |       ----------- at the end of the function body
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:22:13
+   |
+22 | /             out.is_some() ==> out.unwrap().view() == fresh_view(c,initial)
+23 | |                 && out.unwrap().choices() == Seq::<Choice>::empty() && out.unwrap().base().is_none(),
+   | |____________________________________________________________________________________________________^ failed this postcondition
+24 |       { unreached() } // TODO: implement checked initialization
+   |         ----------- at the end of the function body
+
+error: precondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:24:7
+    |
+ 24 |     { unreached() } // TODO: implement checked initialization
+    |       ^^^^^^^^^^^
+    |
+   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/pervasive.rs:192:9
+    |
+192 |         false,
+    |         ----- failed precondition
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:26:5
+   |
+26 |     pub fn recover(c: Config, record: Record) -> (out: Option<Self>)
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:27:17
+   |
+27 |         ensures out.is_some() <==> valid_record(c,record),
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+30 |     { unreached() } // TODO: implement actual recovery and establish your invariant
+   |       ----------- at the end of the function body
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:28:13
+   |
+28 | /             out.is_some() ==> out.unwrap().view() == recovered_view(c,record)
+29 | |                 && out.unwrap().choices() == Seq::<Choice>::empty() && out.unwrap().base() == Some(record),
+   | |__________________________________________________________________________________________________________^ failed this postcondition
+30 |       { unreached() } // TODO: implement actual recovery and establish your invariant
+   |         ----------- at the end of the function body
+
+error: precondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:30:7
+    |
+ 30 |     { unreached() } // TODO: implement actual recovery and establish your invariant
+    |       ^^^^^^^^^^^
+    |
+   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/pervasive.rs:192:9
+    |
+192 |         false,
+    |         ----- failed precondition
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:32:5
+   |
+32 |     pub fn inspect(&self) -> (out: View) ensures out == self.view()
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:32:50
+   |
+32 |     pub fn inspect(&self) -> (out: View) ensures out == self.view()
+   |                                                  ^^^^^^^^^^^^^^^^^^ failed this postcondition
+33 |     { unreached() } // TODO: return the actual state
+   |       ----------- at the end of the function body
+
+error: precondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:33:7
+    |
+ 33 |     { unreached() } // TODO: return the actual state
+    |       ^^^^^^^^^^^
+    |
+   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/pervasive.rs:192:9
+    |
+192 |         false,
+    |         ----- failed precondition
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:35:5
+   |
+35 |     pub fn receive(&mut self, request: Request) -> (out: Receive)
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:36:17
+   |
+36 |         ensures out == receive_result(old(self).view(), request),
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+39 |     { unreached() } // TODO: implement actual receiver and choose useful invariants
+   |       ----------- at the end of the function body
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:37:13
+   |
+37 |             self.view() == receive_after(old(self).view(),request,out),
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+38 |             self.choices() == old(self).choices(), self.base() == old(self).base(),
+39 |     { unreached() } // TODO: implement actual receiver and choose useful invariants
+   |       ----------- at the end of the function body
+
+error: precondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:39:7
+    |
+ 39 |     { unreached() } // TODO: implement actual receiver and choose useful invariants
+    |       ^^^^^^^^^^^
+    |
+   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/pervasive.rs:192:9
+    |
+192 |         false,
+    |         ----- failed precondition
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:41:5
+   |
+41 |     pub fn start_election(&mut self) -> (out: Campaign)
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:42:17
+   |
+42 |         ensures out == start_result(old(self).view()), self.view() == start_after(old(self).view(),out),
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+45 |     { unreached() } // TODO: actual checked increment/self-choice/save, no send authorization here
+   |       ----------- at the end of the function body
+
+error: precondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:45:7
+    |
+ 45 |     { unreached() } // TODO: actual checked increment/self-choice/save, no send authorization here
+    |       ^^^^^^^^^^^
+    |
+   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/pervasive.rs:192:9
+    |
+192 |         false,
+    |         ----- failed precondition
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:47:5
+   |
+47 |     pub fn complete(&mut self, notice: Completion) -> (out: Option<Action>)
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:48:17
+   |
+48 |         ensures out == complete_result(old(self).view(),notice),
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+51 |     { unreached() } // TODO: authorize only the matching saved reply OR campaign send
+   |       ----------- at the end of the function body
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:50:13
+   |
+50 |             self.choices() == append_action(old(self).choices(),out), self.base() == old(self).base(),
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+51 |     { unreached() } // TODO: authorize only the matching saved reply OR campaign send
+   |       ----------- at the end of the function body
+
+error: precondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/src/raft/vote_core.rs:51:7
+    |
+ 51 |     { unreached() } // TODO: authorize only the matching saved reply OR campaign send
+    |       ^^^^^^^^^^^
+    |
+   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/pervasive.rs:192:9
+    |
+192 |         false,
+    |         ----- failed precondition
+
+error: assertion failed
+ --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/proof/vote_lemmas.rs:6:12
+  |
+6 |     assert(false); // OPEN: generate an invariant of the actual executable core.
+  |            ^^^^^ assertion failed
+
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-02/election-start/independent/candidate/tasks/election_start/../../madraft/proof/vote_lemmas.rs:13:12
+   |
+13 |     assert(false); // OPEN: preserved vote constrains every subsequent actual output.
+   |            ^^^^^ assertion failed
+
+error: aborting due to 19 previous errors
+
+
+process=COMPLETED exit=1

@@ -1,0 +1,293 @@
+$ /home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs --edition 2021 --test --cfg bad_log --cfg madsim --extern vstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib -L dependency=/home/nitro/.local/share/raft-verus/verus-x86-linux --check-cfg 'cfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)' -o /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/wrong-log
+warning: unexpected `cfg` condition name: `test`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:61:7
+   |
+61 | #[cfg(test)]
+   |       ^^^^
+   |
+   = help: expected names are: `verus_keep_ghost`, `verus_keep_ghost_body`, `verus_no_vstd`, and `verus_verify_core` and 31 more
+   = help: to expect this configuration use `--check-cfg=cfg(test)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition name: `bad_term`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:11:11
+   |
+11 | #[cfg(any(bad_term,bad_candidate,bad_request_term,bad_log))]
+   |           ^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_term)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_candidate`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:11:20
+   |
+11 | #[cfg(any(bad_term,bad_candidate,bad_request_term,bad_log))]
+   |                    ^^^^^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_candidate)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_request_term`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:11:34
+   |
+11 | #[cfg(any(bad_term,bad_candidate,bad_request_term,bad_log))]
+   |                                  ^^^^^^^^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_request_term)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_log`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:11:51
+   |
+11 | #[cfg(any(bad_term,bad_candidate,bad_request_term,bad_log))]
+   |                                                   ^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_log)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_split`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:25:7
+   |
+25 | #[cfg(bad_split)]
+   |       ^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_split)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_split`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:30:7
+   |
+30 | #[cfg(bad_split)]
+   |       ^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_split)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_split`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:35:7
+   |
+35 | #[cfg(bad_split)]
+   |       ^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_split)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_early`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:43:7
+   |
+43 | #[cfg(bad_early)]
+   |       ^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_early)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_recovery_vote`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:50:11
+   |
+50 | #[cfg(any(bad_recovery_vote,bad_recovery_next))]
+   |           ^^^^^^^^^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_recovery_vote)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_recovery_next`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:50:29
+   |
+50 | #[cfg(any(bad_recovery_vote,bad_recovery_next))]
+   |                             ^^^^^^^^^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_recovery_next)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_term`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:17:24
+   |
+17 |     let term = if cfg!(bad_term) { 3 } else { 4 };
+   |                        ^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_term)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_candidate`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:18:29
+   |
+18 |     let candidate = if cfg!(bad_candidate) { 1 } else { 0 };
+   |                             ^^^^^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_candidate)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_request_term`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:19:32
+   |
+19 |     let request_term = if cfg!(bad_request_term) { 9 } else { term };
+   |                                ^^^^^^^^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_request_term)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_log`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:20:23
+   |
+20 |     let log = if cfg!(bad_log) { Log{term:0,index:0} } else { v.state.log };
+   |                       ^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_log)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `test`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:66:5
+   |
+66 |     #[test] fn semantic_rejection() {
+   |     ^^^^^^^
+   |
+   = note: using a cfg inside a attribute macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `test` crate for guidance on how handle this unexpected cfg
+   = help: to expect this configuration use `--check-cfg=cfg(test)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_term`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:68:19
+   |
+68 |         #[cfg(any(bad_term,bad_candidate,bad_request_term,bad_log))] {
+   |                   ^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_term)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_candidate`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:68:28
+   |
+68 |         #[cfg(any(bad_term,bad_candidate,bad_request_term,bad_log))] {
+   |                            ^^^^^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_candidate)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_request_term`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:68:42
+   |
+68 |         #[cfg(any(bad_term,bad_candidate,bad_request_term,bad_log))] {
+   |                                          ^^^^^^^^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_request_term)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_log`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:68:59
+   |
+68 |         #[cfg(any(bad_term,bad_candidate,bad_request_term,bad_log))] {
+   |                                                           ^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_log)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_split`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:75:15
+   |
+75 |         #[cfg(bad_split)] {
+   |               ^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_split)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_early`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:79:15
+   |
+79 |         #[cfg(bad_early)] assert_eq!(send_without_completion(v,Completion{op:9,success:false}),None,"no unmatched send authorization");
+   |               ^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_early)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_recovery_vote`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:80:19
+   |
+80 |         #[cfg(any(bad_recovery_vote,bad_recovery_next))] {
+   |                   ^^^^^^^^^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_recovery_vote)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_recovery_next`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:80:37
+   |
+80 |         #[cfg(any(bad_recovery_vote,bad_recovery_next))] {
+   |                                     ^^^^^^^^^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_recovery_next)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_term`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:70:19
+   |
+70 |             #[cfg(bad_term)] assert_eq!(w.record.state.term,4,"must enter next term");
+   |                   ^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_term)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_candidate`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:71:19
+   |
+71 |             #[cfg(bad_candidate)] assert_eq!(w.record.state.voted_for,Some(0),"must choose self");
+   |                   ^^^^^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_candidate)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_request_term`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:72:19
+   |
+72 |             #[cfg(bad_request_term)] assert_eq!(w.request.term,4,"request must belong to new round");
+   |                   ^^^^^^^^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_request_term)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_log`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/fixtures.rs:73:19
+   |
+73 |             #[cfg(bad_log)] assert_eq!(w.request.log,v.state.log,"request must keep actual log");
+   |                   ^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_log)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: struct `Initial` is never constructed
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/api.rs:13:12
+   |
+13 | pub struct Initial { pub state: Persistent, pub role: Role }
+   |            ^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `Completion` is never constructed
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/api.rs:27:12
+   |
+27 | pub struct Completion { pub op: u64, pub success: bool }
+   |            ^^^^^^^^^^
+
+warning: enum `Receive` is never used
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/api.rs:31:10
+   |
+31 | pub enum Receive { Save(Write), Reject(Fault) }
+   |          ^^^^^^^
+
+warning: struct `Choice` is never constructed
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/api.rs:35:12
+   |
+35 | pub struct Choice { pub node: u64, pub term: u64, pub candidate: u64 }
+   |            ^^^^^^
+
+warning: enum `Event` is never used
+  --> /home/nitro/Desktop/raft_verus/tasks/election_start/api.rs:40:10
+   |
+40 | pub enum Event { Start, Receive(Request), Complete(Completion) }
+   |          ^^^^^
+
+warning: 33 warnings emitted
+
+
+process=COMPLETED exit=0

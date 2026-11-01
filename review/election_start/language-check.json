@@ -1,0 +1,15 @@
+{
+  "full": {
+    "input_files": 48,
+    "han_characters_in_inputs": []
+  },
+  "request-vote": {
+    "input_files": 61,
+    "han_characters_in_inputs": []
+  },
+  "election-start": {
+    "input_files": 64,
+    "han_characters_in_inputs": []
+  },
+  "wrapped_task_prose": []
+}

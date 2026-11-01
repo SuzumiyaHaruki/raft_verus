@@ -1,0 +1,585 @@
+--- before/.gitignore
++++ after/.gitignore
+@@ -7,5 +7,5 @@
+ .verus-log/
+ *.rlib
+ *.rmeta
+-!/target/**
++/target/
+ codex-home/
+--- before/README.md
++++ after/README.md
+@@ -1,6 +1,6 @@
+ # Joint MadRaft implementation and proof experiment — DRAFT
+ 
+-The experimental Codex starts from the unfinished MadRaft labs and generates executable implementation and Verus proofs together. Maintenance changes the controller, inputs and generic examples; it does not supply a Raft solution. Current maintenance results and limitations are in [RESULT.md](RESULT.md).
++The experimental Codex starts from the unfinished MadRaft labs and generates executable implementation and Verus proofs together. Maintenance changes the controller, inputs and generic examples; it does not supply a Raft solution. Current maintenance results and limitations are in [the election-start maintenance report](review/ELECTION_START_MAINTENANCE.md); [RESULT.md](RESULT.md) retains earlier controller results.
+ 
+ | Path | Purpose |
+ | --- | --- |
+@@ -10,14 +10,16 @@
+ | `scripts/check.py` | Real Cargo/Verus checks of copied candidates; current-obligation, connection and final diagnostics. |
+ | `scripts/prompts/` | Short start/continue/redesign instructions and concrete actual-behavior guidance. |
+ | `scripts/tests/` | SIMULATED controller regressions and separately reported real Rust/Verus toy checks. Never experiment input. |
+-| `tasks/request_vote/` | Optional receiver assignment: Chinese instructions, fixed specifications/callers/tests, unfinished candidate preparation and maintenance-only bad fixtures. |
++| `tasks/request_vote/` | Optional receiver assignment: English instructions, fixed specifications/callers/tests, unfinished candidate preparation and maintenance-only bad fixtures. |
++| `tasks/election_start/` | Optional receiver plus campaign assignment: English inputs, one authoritative core, fixed mixed-history/recovery callers and real RPC tests; actual algorithm and proofs remain unfinished. |
+ | `review/request_vote/` | Actual receiver-task maintenance results and reproduction evidence; never experiment input. |
++| `review/election_start/` | Readable maintenance logs, source inputs and negative-case patches; never experiment input. |
+ | `docs/` | Operator provenance. |
+ | `runs/<name>/` | One experiment's own source, progress and evidence; its private Codex home is excluded from Git. |
+ | `runs/.controller/<name>/` | This experiment's authority inputs, state, checked snapshots, attempt journal and failed rollback versions. |
+-| `target/` | Shared dependency/build cache. |
++| `target/` | Local dependency/build cache and temporary maintenance builds; ignored for new files, not proof evidence. |
+ 
+-The run selected for Git tracking is `runs/joint-proof-2h-01`; other experiments remain local. Recorded candidates, prompts, sessions and patches are never fresh-run inputs. The current input/controller versions are `madraft-joint-proof-5` and `madraft-generate-check-5`. Existing v4 experiments remain unchanged and are not warm-start inputs to this revision.
++The run selected for Git tracking is `runs/request-vote-01`; other experiments remain local. Recorded candidates, prompts, sessions and patches are never fresh-run inputs. The full input/controller versions remain `madraft-joint-proof-5` and `madraft-generate-check-5`; scoped input versions are `madraft-request-vote-1` and `madraft-election-start-1`. Existing experiments remain unchanged and are not warm-start inputs to a new experiment.
+ 
+ A fresh workspace receives only the allowlisted initial MadRaft source, AGENTS, tool configuration, four local check helpers and fixed requirements. It does not receive root README/RESULT, maintenance tests, old results or controller prompt templates. The private CODEX_HOME shares existing authentication/security rules, without loading personal configuration/instructions/sessions. This is input isolation, not a claim of OS-level read isolation from every accessible sibling path.
+ 
+@@ -26,29 +28,42 @@
+ ```bash
+ cd /home/nitro/Desktop/raft_verus
+ # Preview only: no workspace, tool invocation or model call.
+-python3 scripts/run.py new runs/joint-proof-2h-01 --total-seconds 7200
++python3 scripts/run.py new runs/full-next-01 --total-seconds 7200
+ # The operator separately starts this one fresh experiment.
+-python3 scripts/run.py new runs/joint-proof-2h-01 --total-seconds 7200 --execute
++python3 scripts/run.py new runs/full-next-01 --total-seconds 7200 --execute
+ ```
+ 
+-`tools.ini` retains model `gpt-6-astra`, reasoning `high` and existing local tools. The default total is 7,200 seconds, with 600-second work slices, 300-second feedback caps, 600-second final reserve, 120-second minimum work, 60-second soft-handoff grace and 64 maximum rounds. The round limit is a guard, not a target. Agent work (including its tools), independent microcheck replays, feedback/final checks and controller overhead all consume the same wall-clock budget. Resume of this same v5 run uses `python3 scripts/run.py resume runs/joint-proof-2h-01 --execute`; it retains spending, failures, checkpoints and session identity. No time is restored by source rollback. The existing optional A/B flag remains compatible, but no comparison campaign is required; default guidance B uses the improved workflow.
++`tools.ini` retains model `gpt-6-astra`, reasoning `high` and existing local tools. The default total is 7,200 seconds, with 600-second work slices, 300-second feedback caps, 600-second final reserve, 120-second minimum work, 60-second soft-handoff grace and 64 maximum rounds. The round limit is a guard, not a target. Agent work (including its tools), independent microcheck replays, feedback/final checks and controller overhead all consume the same wall-clock budget. Resume uses the same run path, for example `python3 scripts/run.py resume runs/full-next-01 --execute`; it retains spending, failures, checkpoints and session identity. No time is restored by source rollback. The existing optional A/B flag remains compatible, but no comparison campaign is required; default guidance B uses the improved workflow.
+ 
+-An optional `--task request-vote` selects a bounded generation assignment, described in [TASK.md](tasks/request_vote/TASK.md). Preparation copies the untouched root scaffold and applies only declarations, unfinished Core/proof entries and thin wiring to the original MadRaft RequestVote handler. The local agent receives the Chinese task instructions; it must generate the voting algorithm and proofs. Default `full` mode, its inputs and acceptance goals remain unchanged. Task scope and input version are recorded at creation; resume cannot switch between full and local acceptance. The task uses the configured model/effort and the same 7,200-second cumulative budget. No previous run or maintenance fixture is input.
++An optional `--task request-vote` selects a bounded generation assignment, described in [TASK.md](tasks/request_vote/TASK.md). Preparation copies the untouched root scaffold and applies only declarations, unfinished Core/proof entries and thin wiring to the original MadRaft RequestVote handler. The local agent receives English task instructions; it must generate the voting algorithm and proofs. Default `full` mode and its acceptance goals remain unchanged. Task scope and input version are recorded at creation; resume cannot switch between full and local acceptance. The task uses the configured model/effort and the same 7,200-second cumulative budget. No previous run or maintenance fixture is input.
+ 
+-The receiver-task maintenance delivery, actual checks and remaining boundaries are recorded in [the maintenance report](review/REQUEST_VOTE_MAINTENANCE.md). No receiver generation experiment has been started by this maintenance work.
++The earlier receiver-task maintenance delivery, actual checks and remaining boundaries are recorded in [the maintenance report](review/REQUEST_VOTE_MAINTENANCE.md). The existing `runs/request-vote-01` is preserved; use a new directory for another experiment.
+ 
+ ```bash
+ # Preview; no tools, candidate or agent are started.
+-python3 scripts/run.py new runs/request-vote-01 --task request-vote
++python3 scripts/run.py new runs/request-vote-next-01 --task request-vote
+ # After reviewing the maintenance delivery, the operator can start one new run.
+-python3 scripts/run.py new runs/request-vote-01 --task request-vote --execute
++python3 scripts/run.py new runs/request-vote-next-01 --task request-vote --execute
+ # Continue only this same run and conversation.
+-python3 scripts/run.py resume runs/request-vote-01 --execute
++python3 scripts/run.py resume runs/request-vote-next-01 --execute
+ # Maintenance only: real tools and deliberately bad fixtures, never an agent.
+ python3 tasks/request_vote/maintain.py
+ ```
+ 
+-The receiver checker separately reports rules, finite output history, confirmed-save recovery, written-but-uncompleted recovery and actual MadRaft RPC/file tests. Its final runs all task tests on all configured seeds and every local proof entry on one candidate. `REQUEST_VOTE_CHECKS_PASSED` is a local result; full MadRaft stays INCOMPLETE, all five global safety properties and conditional liveness stay OPEN. This task retains explicitly unverified serialization, I/O and RPC host assumptions; it does not claim arbitrary crash recovery. The following per-obligation/block and full-acceptance discussion applies to default full mode.
++The receiver checker separately reports rules, finite output history, confirmed-save recovery, written-but-uncompleted recovery and actual MadRaft RPC/file tests. Its final runs all task tests on all configured seeds and every local proof entry on one candidate. `REQUEST_VOTE_CHECKS_PASSED` is a local result; full MadRaft stays INCOMPLETE, all five global safety properties and conditional liveness stay OPEN. This task retains explicitly unverified serialization, I/O and RPC host assumptions; it does not claim arbitrary crash recovery.
++
++The new `--task election-start` assignment regenerates the receiver and adds active campaign start/self-vote in one shared Core; see [its task](tasks/election_start/TASK.md). Only matching successful save completion may authorize real RequestVote RPCs. Independent observations combine actual self-choices with actual affirmative replies across mixed finite calls and the two bounded recovery windows. No vote counting or leader promotion is supplied. Eight formal groups and sixteen required tests on seeds 1–5 must pass on one candidate for `ELECTION_START_CHECKS_PASSED`; that label still leaves all global properties OPEN and semantic review outstanding. Formal acceptance verifies candidate bodies and lemmas, without `--verify-root` or `--no-verify`. All supplied prompts and generated feedback are English.
++
++```bash
++# Preview this one new experiment; no agent is invoked.
++python3 scripts/run.py new runs/election-start-01 --task election-start
++# Start only after reviewing the maintenance delivery.
++python3 scripts/run.py new runs/election-start-01 --task election-start --execute
++# Reproduce maintenance with real tools and explicitly wrong fixtures, no agent.
++python3 tasks/election_start/maintain.py
++```
++
++The following per-obligation/block and full-acceptance discussion applies to default full mode.
+ 
+ Each work slice selects one obligation in a small flat INI block inside `PROGRESS.md`; see [the format and coverage rules](requirements/coverage.md). It names actual functions, a conclusion, its upper purpose, open premises, ordered proof dependencies, an entry/parent unit and Rust test filters. The controller constructs commands from those fields and never executes arbitrary candidate shell text. A single CLI slice can contain several small `check.py obligation` calls. Local attempt snapshots are replayed independently (up to three per handoff, budget permitting); unreplayed candidate results remain untrusted. The stopped current candidate is always independently checked as well.
+ 
+--- before/RESULT.md
++++ after/RESULT.md
+@@ -1,4 +1,6 @@
+ # P0/P1/P2 experiment-system maintenance — DRAFT
++
++The current scoped task preparation is documented in [review/ELECTION_START_MAINTENANCE.md](review/ELECTION_START_MAINTENANCE.md); the historical controller results below are unchanged.
+ 
+ Delivered `madraft-joint-proof-5` / `madraft-generate-check-5` on 2026-10-30. This changes the experiment system and generic examples, not a MadRaft answer. No paid experiment, other agent, merge, push, publication or global tool/configuration change was performed.
+ 
+--- before/scripts/check.py
++++ after/scripts/check.py
+@@ -10,7 +10,7 @@
+ import sys
+ import time
+ 
+-from inputs import INPUT_VERSION, input_version, copy_files, differences, files_under, fingerprint, protected_files, save_json
++from inputs import scoped_task, INPUT_VERSION, input_version, copy_files, differences, files_under, fingerprint, protected_files, save_json
+ from process import run_process
+ from tools import ROOT, environment, settings
+ 
+@@ -313,9 +313,9 @@
+         self.before = {name: path.read_bytes() for name, path in source.items()}
+         copy_files(self.workspace / 'madraft', self.snapshot / 'madraft', source)
+         copy_files(self.authority, self.snapshot, [f'requirements/{n}' for n in files_under(self.authority / 'requirements')])
+-        if task == 'request-vote':
+-            from request_vote import INPUTS
+-            copy_files(self.authority,self.snapshot,['tasks/request_vote/' + n for n in INPUTS])
++        module = scoped_task(task)
++        if module:
++            copy_files(self.authority,self.snapshot,[module.DIRECTORY + '/' + n for n in module.INPUTS])
+         protected = protected_files(self.authority)
+         self.changed_standards = differences(self.authority, self.workspace, [n for n in protected if n != 'tools.ini'])
+         expected_config = settings(self.authority)
+@@ -543,9 +543,10 @@
+                 checked_entry=claim['entry'], evidence_kind='VERUS_UNIT_RESULT_WITH_UNREVIEWED_PATH_CLAIM')
+ 
+     def finish(self, mode, required):
+-        if self.task == 'request-vote':
+-            self.changed_standards += ['checked tasks/request_vote/' + n for n in differences(
+-                self.authority / 'tasks/request_vote',self.snapshot / 'tasks/request_vote')]
++        module = scoped_task(self.task)
++        if module:
++            self.changed_standards += ['checked ' + module.DIRECTORY + '/' + n for n in differences(
++                self.authority / module.DIRECTORY,self.snapshot / module.DIRECTORY)]
+         self.changed_standards += [n for n, body in self.protected_before.items()
+             if not (self.workspace / n).is_file() or (self.workspace / n).read_bytes() != body]
+         self.changed_standards += ['checked requirements/' + n for n, body in self.requirements_before.items()
+@@ -573,7 +574,7 @@
+         elif changed or snapshot_changed or mismatched or any(s != 'PASS' for s in statuses):
+             status = 'INCOMPLETE'
+         else:
+-            status = ('REQUEST_VOTE_CHECKS_PASSED' if self.task == 'request-vote' else 'MACHINE_CHECKS_PASSED') if mode == 'final' else 'PASS'
++            status = (module.LABEL if module else 'MACHINE_CHECKS_PASSED') if mode == 'final' else 'PASS'
+         if mode == 'initial' and status == 'PASS':
+             status = 'NEEDS_REVIEW'  # A working solution is not the expected starting scaffold.
+         report = dict(status=status, mode=mode, input_version=input_version(self.task),
+@@ -618,9 +619,8 @@
+     output = output or ROOT / 'runs/checks' / str(time.time_ns())
+     mode = 'initial' if initial else mode
+     checks = Checks(workspace, authority, tool_root, output, timeout, revision,task)
+-    if task == 'request-vote':
+-        from request_vote import evaluate as receiver_checks
+-        return receiver_checks(checks,mode,seeds or configured_seeds(tool_root))
++    if scoped_task(task):
++        return scoped_task(task).evaluate(checks,mode,seeds or configured_seeds(tool_root))
+     cfg = settings(tool_root)
+     plan = current_obligation(checks.snapshot)
+     if mode != 'safety':
+@@ -682,7 +682,7 @@
+     parser.add_argument('kind', choices=['build', 'inventory', 'test', 'definitions', 'proof', 'top', 'foundation', 'obligation', 'feedback', 'safety', 'final'])
+     parser.add_argument('selection', nargs='?', help='Test filter, proof file, or top-level obligation')
+     parser.add_argument('--workspace', type=Path, default=ROOT)
+-    parser.add_argument('--task', choices=['full','request-vote'], default='full')
++    parser.add_argument('--task', choices=['full','request-vote','election-start'], default='full')
+     parser.add_argument('--seed', type=int, default=1, help='Single-test seed; final uses --seeds or tools.ini')
+     parser.add_argument('--seeds', help='Explicit complete final seed set, e.g. 1,2,3,4,5')
+     parser.add_argument('--timeout', type=float, default=600, help='Wall time for this entire check invocation')
+@@ -713,7 +713,7 @@
+                 print('  ' + result['log'])
+         print(report['status'] + ': ' + str(output / 'results.json'))
+         print(SEMANTIC_BOUNDARY)
+-    return 0 if report['status'] in ('PASS', 'MACHINE_CHECKS_PASSED','REQUEST_VOTE_CHECKS_PASSED') else 2 if report['status'] in ('BLOCKED', 'NEEDS_REVIEW') else 1
++    return 0 if report['status'] in ('PASS', 'MACHINE_CHECKS_PASSED','REQUEST_VOTE_CHECKS_PASSED','ELECTION_START_CHECKS_PASSED') else 2 if report['status'] in ('BLOCKED', 'NEEDS_REVIEW') else 1
+ 
+ 
+ if __name__ == '__main__':
+--- before/scripts/inputs.py
++++ after/scripts/inputs.py
+@@ -2,6 +2,7 @@
+ from pathlib import Path
+ import json
+ import hashlib
++import importlib
+ import os
+ import shutil
+ import subprocess
+@@ -38,8 +39,15 @@
+     return result
+ 
+ 
++def scoped_task(task):
++    if task == 'full': return None
++    if task not in ('request-vote', 'election-start'): raise ValueError('Unknown task: ' + task)
++    return importlib.import_module(task.replace('-', '_'))
++
++
+ def input_version(task='full'):
+-    return 'madraft-request-vote-1' if task == 'request-vote' else INPUT_VERSION
++    module = scoped_task(task)
++    return module.VERSION if module else INPUT_VERSION
+ 
+ 
+ def input_files(root, task='full'):
+@@ -51,9 +59,9 @@
+     names += [f'madraft/src/{name}' for name in files_under(root / 'madraft/src') if name.endswith('.rs')]
+     names += [f'requirements/{p.name}' for p in sorted((root / 'requirements').iterdir())
+               if p.is_file() and p.suffix in ('.md', '.rs')]
+-    if task == 'request-vote':
+-        from request_vote import INPUTS
+-        names += ['scripts/request_vote.py'] + ['tasks/request_vote/' + n for n in INPUTS]
++    module = scoped_task(task)
++    if module:
++        names += module.HELPERS + [module.DIRECTORY + '/' + n for n in module.INPUTS]
+     for name in names:
+         path = root / name
+         if path.is_symlink() or any(p.is_symlink() for p in path.parents if p != root and root in p.parents) or not path.is_file():
+@@ -86,10 +94,13 @@
+     names += ['AGENTS.md', 'tools.ini', 'madraft/Cargo.toml', 'madraft/Cargo.lock', 'madraft/LICENSE']
+     names += [f'madraft/src/{name}' for name in files_under(Path(authority) / 'madraft/src')
+               if Path(name).name in ('tests.rs', 'tester.rs', 'test_support.rs')]
+-    if (Path(authority) / 'madraft/src/raft/vote_core.rs').is_file() and (Path(authority) / 'tasks/request_vote/TASK.md').is_file():
+-        from request_vote import INPUTS
+-        names += ['scripts/request_vote.py', 'madraft/src/raft/raft.rs']
+-        names += ['tasks/request_vote/' + n for n in INPUTS]
++    if (Path(authority) / 'madraft/src/raft/vote_core.rs').is_file():
++        for task in ('request-vote', 'election-start'):
++            directory = 'tasks/' + task.replace('-', '_')
++            if (Path(authority) / directory / 'TASK.md').is_file():
++                module = scoped_task(task)
++                names += module.HELPERS + ['madraft/src/raft/raft.rs']
++                names += [directory + '/' + n for n in module.INPUTS]
+     return names
+ 
+ 
+--- before/scripts/request_vote.py
++++ after/scripts/request_vote.py
+@@ -4,18 +4,29 @@
+ import json
+ import re
+ import time
++from inputs import scoped_task
+ 
+ INPUTS = ('AGENTS.md', 'TASK.md', 'start.md', 'continue.md', 'redesign.md',
+           'api.rs', 'caller.rs', 'core.rs', 'lemmas.rs', 'host.rs', 'rpc_tests.rs', 'prepare.py')
++VERSION = 'madraft-request-vote-1'
++DIRECTORY = 'tasks/request_vote'
++HELPERS = ['scripts/request_vote.py']
++TEST_FILES = ('rpc_tests.rs',)
++PREFIX = 'vote_'
++CFG = 'rv_'
++SCOPE = 'request-vote-receiver'
++FUNCTIONS = ['receive','complete']
++UNCOVERED = ['arbitrary crashes','failed-write recovery','other term/vote updates','real log-to-summary correspondence','candidate tally and majority']
+ GOALS = ('rules', 'history', 'confirmed', 'pending')
+ LABEL = 'REQUEST_VOTE_CHECKS_PASSED'
+-BOUNDARY = ('局部接收端检查不等于全局 Election Safety。宿主串行化、实际 I/O、编码、文件保留、'
+-            '通知真实性及向原 RPC 请求者转发仍未验证；只覆盖两种指定恢复窗口。')
++BOUNDARY = ('Local receiver checks do not establish cluster Election Safety. Host serialization, real I/O, '
++            'encoding, file retention, truthful completion and forwarding to the original requester remain unverified. '
++            'Only the two specified recovery windows are covered.')
+ TEST_FILTER = 'raft::raft::vote_tests::'
+ 
+ 
+-def prepare(authority):
+-    spec = importlib.util.spec_from_file_location('vote_prepare', Path(authority) / 'tasks/request_vote/prepare.py')
++def prepare(authority, directory=DIRECTORY):
++    spec = importlib.util.spec_from_file_location('vote_prepare', Path(authority) / directory / 'prepare.py')
+     module = importlib.util.module_from_spec(spec)
+     spec.loader.exec_module(module)
+     return module.prepare(authority)
+@@ -25,49 +36,49 @@
+     """All required results bind to the existing stopped-source snapshot."""
+     from check import SAFETY, source_links
+     from inputs import save_json
+-    text = (checks.authority / 'tasks/request_vote/rpc_tests.rs').read_text()
+-    checks.expected = {TEST_FILTER + n for n in re.findall(r'#\[(?:madsim::)?test\]\s*(?:async\s+)?fn\s+(\w+)', text)}
++    spec = scoped_task(checks.task)
++    text = '\n'.join((checks.authority / spec.DIRECTORY / f).read_text() for f in spec.TEST_FILES)
++    checks.expected = {spec.TEST_FILTER + n for n in re.findall(r'#\[(?:madsim::)?test\]\s*(?:async\s+)?fn\s+(\w+)', text)}
+     if mode != 'safety':
+         checks.phase_deadline = min(checks.deadline, time.monotonic() + (checks.deadline - time.monotonic()) * 0.4)
+         checks.cargo('build')
+         checks.cargo('inventory')
+-        checks.test_plan = [TEST_FILTER]
++        checks.test_plan = [spec.TEST_FILTER]
+         for seed in seeds if mode == 'final' else seeds[:1]:
+-            checks.cargo('test',seed,TEST_FILTER)
++            checks.cargo('test',seed,spec.TEST_FILTER)
+     checks.phase_deadline = checks.deadline
+-    caller = checks.snapshot / 'tasks/request_vote/caller.rs'
++    caller = checks.snapshot / spec.DIRECTORY / 'caller.rs'
+     _, outside = source_links(caller,checks.snapshot)
+     checks.record('source_boundary','NEEDS_REVIEW' if outside else 'PASS',
+         'external_source_import' if outside else 'same_candidate_imports', external_paths=outside)
+-    for goal in GOALS:
++    for goal in spec.GOALS:
+         argv = [checks.cfg['verus'],str(caller),'--crate-type','lib','--cfg','madsim','--no-cheating','--triggers-mode','silent']
+-        if goal != 'rules': argv += ['--cfg','rv_' + goal]
+-        checks.run('vote_' + goal,argv,proof=True)
+-    first = next((g for g in GOALS if checks.results['vote_' + g]['status'] != 'PASS'), None)
++        if goal != 'rules': argv += ['--cfg',spec.CFG + goal]
++        checks.run(spec.PREFIX + goal,argv,proof=True)
++    first = next((g for g in spec.GOALS if checks.results[spec.PREFIX + g]['status'] != 'PASS'), None)
+     # This small fixed dependency chain is metadata for existing failure history,
+     # not a candidate-selected proof target or another task scheduler.
+     goal = first or 'rules'
+-    entry = 'madraft/src/raft/vote_core.rs' if goal == 'rules' else 'madraft/proof/vote_lemmas.rs'
+-    item = checks.results['vote_' + goal]
+-    checks.current = dict(plan=dict(id='request-vote-' + goal,goal='request-vote-' + goal,
+-        statement='Close the fixed receiver ' + goal + ' caller',kind='composition',entry=entry,
+-        functions=['madraft/src/raft/vote_core.rs::receive','madraft/src/raft/vote_core.rs::complete'],
+-        dependencies=[],premises=BOUNDARY),units={'vote_' + goal:entry},
++    entry = 'madraft/src/raft/vote_core.rs' if goal in ('rules','campaign','authorization') else 'madraft/proof/vote_lemmas.rs'
++    item = checks.results[spec.PREFIX + goal]
++    checks.current = dict(plan=dict(id=checks.task + '-' + goal,goal=checks.task + '-' + goal,
++        statement='Close the fixed ' + checks.task + ' ' + goal + ' caller',kind='composition',entry=entry,
++        functions=['madraft/src/raft/vote_core.rs::' + f for f in spec.FUNCTIONS],
++        dependencies=[],premises=spec.BOUNDARY),units={spec.PREFIX + goal:entry},
+         layer='LOCAL_UNIT_CHECKED' if not first else 'PREPARATION',
+-        first_blocker=dict(check='vote_' + goal,entry=entry,reason=item['reason'],log=item.get('log')) if first else
++        first_blocker=dict(check=spec.PREFIX + goal,entry=entry,reason=item['reason'],log=item.get('log')) if first else
+             dict(reason='run_all_local_tests_and_seeds'), imported_references=['madraft/src/raft/vote_core.rs'])
+     required = list(checks.results)
+     report = checks.finish(mode,required)
+-    report.update(task_scope='request-vote-receiver', full_madraft='INCOMPLETE',
+-        global_safety={p:'OPEN' for p in SAFETY},semantic_boundary=BOUNDARY,
+-        local_goals={g:checks.results['vote_' + g]['status'] for g in GOALS},
+-        host_verification='UNVERIFIED', uncovered=['arbitrary crashes','failed-write recovery',
+-            'other term/vote updates','real log-to-summary correspondence','candidate tally and majority'],
+-        task_completion='LOCAL_CHECKS_PASSED_REVIEW_REQUIRED' if report['status'] == LABEL else 'OPEN')
++    report.update(task_scope=spec.SCOPE, full_madraft='INCOMPLETE',
++        global_safety={p:'OPEN' for p in SAFETY},semantic_boundary=spec.BOUNDARY,
++        local_goals={g:checks.results[spec.PREFIX + g]['status'] for g in spec.GOALS},
++        host_verification='UNVERIFIED', uncovered=spec.UNCOVERED,
++        task_completion='LOCAL_CHECKS_PASSED_REVIEW_REQUIRED' if report['status'] == spec.LABEL else 'OPEN')
+     save_json(checks.output / 'results.json',report)
+-    lines=['# RequestVote 局部检查','',report['status'],'',BOUNDARY,'',
+-        '| 项目 | 结果 |','| --- | --- |']
++    lines=['# ' + checks.task + ' scoped checks','',report['status'],'',spec.BOUNDARY,'',
++        '| Check | Result |','| --- | --- |']
+     lines += [f'| {n} | {i["status"]}: {i["reason"]} |' for n,i in checks.results.items()]
+-    lines += ['', '五项全局安全性全部 OPEN；完整 MadRaft INCOMPLETE；条件性活性 OPEN。', '']
++    lines += ['', 'All five global safety properties OPEN; full MadRaft INCOMPLETE; conditional liveness OPEN.', '']
+     (checks.output / 'results.md').write_text('\n'.join(lines))
+     return report
+--- before/scripts/run.py
++++ after/scripts/run.py
+@@ -18,7 +18,7 @@
+ import uuid
+ 
+ from check import CONNECTIONS, FAMILIES, OBLIGATIONS, SEMANTIC_BOUNDARY, configured_seeds, current_obligation, evaluate, group_diagnostics, module_paths, Checks
+-from inputs import INPUT_VERSION, input_version, copy_files, differences, files_under, fingerprint, git_revision, input_files, protected_files, save_json
++from inputs import scoped_task, INPUT_VERSION, input_version, copy_files, differences, files_under, fingerprint, git_revision, input_files, protected_files, save_json
+ from process import run_process
+ from tools import ROOT, environment, settings
+ 
+@@ -27,12 +27,14 @@
+ 
+ 
+ def success_label(state):
+-    return 'REQUEST_VOTE_CHECKS_PASSED' if state.get('task') == 'request-vote' else 'MACHINE_CHECKS_PASSED'
++    module = scoped_task(state.get('task','full'))
++    return module.LABEL if module else 'MACHINE_CHECKS_PASSED'
+ 
+ 
+ def ready_for_final(state, report):
+-    names = (['vote_' + n for n in ('rules','history','confirmed','pending')]
+-        if state.get('task') == 'request-vote' else
++    module = scoped_task(state.get('task','full'))
++    names = ([module.PREFIX + n for n in module.GOALS]
++        if module else
+         [*OBLIGATIONS,'safety','linkage_review',*('connection_' + a for a in CONNECTIONS)])
+     return all(report['checks'].get(n,{}).get('status') == 'PASS' for n in names)
+ 
+@@ -62,8 +64,8 @@
+     copy_files(root, authority, names)
+     system = ['scripts/run.py'] + [f'scripts/prompts/{name}.md' for name in PROMPTS]
+     copy_files(root, authority, system)
+-    if task == 'request-vote':
+-        from request_vote import prepare as prepare_receiver
++    if scoped_task(task):
++        prepare_receiver = scoped_task(task).prepare
+         copy_files(root,control / 'source-inputs',names + system)
+         names = sorted(names + prepare_receiver(authority))
+     raw_tools = (root / 'tools.ini').read_text()
+@@ -99,7 +101,7 @@
+ def origin_changes(root, control, state):
+     source_names = state.get('source_input_files',state['input_files'])
+     names = source_names + state['system_files']
+-    origin = control / ('source-inputs' if state.get('task') == 'request-vote' else 'inputs')
++    origin = control / ('source-inputs' if state.get('task','full') in ('request-vote','election-start') else 'inputs')
+     changed = differences(root, origin, [n for n in names if n != 'tools.ini'])
+     if (root / 'tools.ini').read_text() != state['original_tools']:
+         changed.append('tools.ini')
+@@ -183,16 +185,16 @@
+ def feedback(authority, state, report, mode, workspace, seconds):
+     soft = max(0, seconds - state['handoff_seconds'])
+     deadline = datetime.fromtimestamp(time.time() + soft, timezone.utc).isoformat(timespec='seconds')
+-    if state.get('task') == 'request-vote':
+-        parts = [(authority / f'tasks/request_vote/{mode}.md').read_text().strip(),
+-            f'当前工作区：{workspace}。请在 {deadline} 前保存并正常返回（约 {soft:.1f} 秒）；硬限制 {seconds:.1f} 秒。',
+-            f'累计剩余预算 {state["total_seconds"] - state["seconds_spent"]:.1f} 秒，包含生成和独立检查。',
+-            '编辑当前 madraft/，不要编辑检查快照。只闭合本任务有限目标，宿主边界保持公开。']
++    if state.get('task','full') in ('request-vote','election-start'):
++        parts = [(authority / f'tasks/{state["task"].replace("-","_")}/{mode}.md').read_text().strip(),
++            f'Workspace: {workspace}. Save and return normally by {deadline} (about {soft:.1f}s); hard limit {seconds:.1f}s.',
++            f'Cumulative budget remaining: {state["total_seconds"] - state["seconds_spent"]:.1f}s, including generation and independent checks.',
++            'Edit this workspace’s madraft/, not check snapshots. Close this bounded task and disclose host premises.']
+         if report:
+-            parts += ['首个未完成依赖：' + json.dumps(report.get('current_obligation',{}).get('first_blocker'),ensure_ascii=False),
+-                '分项结果：' + json.dumps({n:{k:i.get(k) for k in ('status','reason','log','errors','diagnostic')}
++            parts += ['First unfinished dependency: ' + json.dumps(report.get('current_obligation',{}).get('first_blocker'),ensure_ascii=False),
++                'Per-check results: ' + json.dumps({n:{k:i.get(k) for k in ('status','reason','log','errors','diagnostic')}
+                     for n,i in report['checks'].items()},ensure_ascii=False),
+-                '已有同次实验检查点（不是旧实验答案）：' + json.dumps(state.get('checkpoints',[])[-5:],ensure_ascii=False)]
++                'Available checkpoints from this experiment (not earlier solutions): ' + json.dumps(state.get('checkpoints',[])[-5:],ensure_ascii=False)]
+         return '\n\n'.join(parts) + '\n'
+     parts = [(authority / f'scripts/prompts/{mode}.md').read_text().strip(),
+              f'Workspace: {workspace}. Soft handoff deadline: {deadline} ({soft:.1f} seconds from now). '
+@@ -245,7 +247,7 @@
+     functions = set(plan['functions'])
+     records = state.setdefault('obligations', {})
+     for key, record in records.items():
+-        if plan['goal'].startswith('request-vote-') and record['goal'] != plan['goal']:
++        if plan['goal'].startswith(('request-vote-','election-start-')) and record['goal'] != plan['goal']:
+             continue
+         if plan['id'] in record['aliases'] or plan['entry'] in record['roots'] or (record['goal'] == plan['goal'] and functions.intersection(record['functions'])):
+             break
+@@ -483,9 +485,9 @@
+                 note = candidate / 'PROGRESS.md'
+                 if note.is_symlink(): raise ValueError('Microcheck progress must not be an external link')
+                 if note.is_file(): shutil.copy2(note, target / 'PROGRESS.md')
+-                if self.state.get('task') == 'request-vote':
++                if self.state.get('task','full') in ('request-vote','election-start'):
+                     return evaluate(target,authority=self.authority,tool_root=self.root,output=self.control/tag/'checked',
+-                        timeout=seconds,revision=tag,mode='obligation',task='request-vote',seeds=self.state['seeds'])
++                        timeout=seconds,revision=tag,mode='obligation',task=self.state['task'],seeds=self.state['seeds'])
+                 checks = Checks(target, self.authority, self.root, self.control / tag / 'checked', seconds, tag)
+                 checks.obligation()
+                 return checks.finish('obligation-replay', list(checks.results))
+@@ -623,10 +625,10 @@
+         summary['last_check'] = self.state.get('last_check')
+         summary['semantic_boundary'] = SEMANTIC_BOUNDARY
+         summary['liveness'] = 'OPEN'
+-        if self.state.get('task') == 'request-vote':
+-            from request_vote import BOUNDARY
+-            summary.update(task_scope='request-vote-receiver',full_madraft='INCOMPLETE',
+-                global_safety={p:'OPEN' for p in OBLIGATIONS[:5]},semantic_boundary=BOUNDARY,
++        if self.state.get('task','full') in ('request-vote','election-start'):
++            module = scoped_task(self.state['task'])
++            summary.update(task_scope=module.SCOPE,full_madraft='INCOMPLETE',
++                global_safety={p:'OPEN' for p in OBLIGATIONS[:5]},semantic_boundary=module.BOUNDARY,
+                 local_goals=(report or {}).get('local_goals',{}),host_verification='UNVERIFIED')
+         summary.update(guidance=self.state.get('guidance', 'B'), system_version=FORMAT,
+             input_fingerprint=self.state.get('input_fingerprint'), prompt_version=self.state.get('prompt_version'),
+@@ -655,8 +657,8 @@
+             item = (report or {}).get('checks', {}).get(name, {})
+             lines.append(f'| {name} | {item.get("status", "OPEN")}: {item.get("reason", "not checked")} |')
+         lines += ['', summary['semantic_boundary'], '', 'Fixed environment/host assumptions: requirements/environment.md; coverage responsibilities: requirements/coverage.md. Candidate dependency notes in PROGRESS.md and RESULT.md remain unverified until actual callers discharge them. Agent RESULT.md does not override the independent results.', '']
+-        if self.state.get('task') == 'request-vote':
+-            lines += ['task_scope=request-vote-receiver; full MadRaft INCOMPLETE; five global safety properties OPEN. Local host boundary: tasks/request_vote/TASK.md.', '']
++        if self.state.get('task','full') in ('request-vote','election-start'):
++            lines += [f'task_scope={module.SCOPE}; full MadRaft INCOMPLETE; five global safety properties OPEN. Local host boundary: {module.DIRECTORY}/TASK.md.', '']
+         lines += [f'Guidance: {summary["guidance"]}; unused budget: {summary["unused_seconds"]:.1f}s. Semantic review: NOT_PERFORMED; implementation acceptance: NOT_ESTABLISHED.', '',
+                   '| Goal | Formula | Actual connection | Implementation task |', '| --- | --- | --- | --- |']
+         for name, item in summary['assessments'].items():
+@@ -814,7 +816,7 @@
+     parser.add_argument('action', choices=['new', 'resume'])
+     parser.add_argument('directory', type=Path)
+     parser.add_argument('--execute', action='store_true')
+-    parser.add_argument('--task',choices=['full','request-vote'],help='Default: full; resume retains its original task')
++    parser.add_argument('--task',choices=['full','request-vote','election-start'],help='Default: full; resume retains its original task')
+     parser.add_argument('--model')
+     parser.add_argument('--effort', choices=['low', 'medium', 'high', 'xhigh'])
+     parser.add_argument('--codex')
+--- before/scripts/tests/test_request_vote.py
++++ after/scripts/tests/test_request_vote.py
+@@ -96,10 +96,10 @@
+         self.assertEqual(report['status'],'NEEDS_REVIEW')
+         self.assertIn('tasks/request_vote/rpc_tests.rs',report['changed_standards'])
+ 
+-    def test_feedback_is_narrow_chinese_and_local_history_has_distinct_goals(self):
++    def test_feedback_is_narrow_english_and_local_history_has_distinct_goals(self):
+         report=self.simulated_check(fail='vote_history')
+         text=run.feedback(self.authority,self.state,report,'start',self.workspace,600)
+-        self.assertIn('累计剩余预算',text)
++        self.assertIn('Cumulative budget remaining',text)
+         self.assertNotIn('ESTABLISH_EXECUTION_CONNECTION',text)
+         self.assertNotIn('connection_snapshots',text)
+         a=report['current_obligation']['plan']
+--- before/tasks/request_vote/AGENTS.md
++++ after/tasks/request_vote/AGENTS.md
+@@ -1,12 +1,12 @@
+-# MadRaft RequestVote 接收端生成任务 — DRAFT
++# MadRaft RequestVote receiver generation — DRAFT
+ 
+-阅读 `tasks/request_vote/TASK.md`、固定 `api.rs`、`caller.rs` 与 `rpc_tests.rs`。补全候选 `madraft/src/raft/vote_core.rs` 和 `madraft/proof/vote_lemmas.rs`，可以增加自己的内部表示、辅助规格、不变量和引理。实现与证明一起生成，根据真实检查修复；不要导入其他实验的代码、补丁或会话。
++Read `tasks/request_vote/TASK.md`, the fixed `api.rs`, `caller.rs` and `rpc_tests.rs`. Complete `madraft/src/raft/vote_core.rs` and `madraft/proof/vote_lemmas.rs`; choose your own private representation, auxiliary specifications, invariants and lemmas. Generate code and proof together and repair using real diagnostics. Never import another experiment's code, patches or session.
+ 
+-实际调用路径为 `RaftHandle::new → start_rpc_server → RaftHandle::request_vote → Raft::request_vote → Core`。不要另建服务，不把协议判断移进未验证宿主，不改固定目标、测试或检查器。不得用 assume、admit、external_body、跳过验证或不终止实现代替证明。不要证明 RPC 内部或异步执行器；公开的宿主前提保留。
++Use the actual path `RaftHandle::new → start_rpc_server → RaftHandle::request_vote → Raft::request_vote → Core`. Do not create another service, move protocol decisions into the unverified host or change fixed targets, tests or checker. Do not use assume, admit, external_body, skipped verification or nontermination as a proof. Keep the disclosed host premises; proving RPC internals or the async executor is outside this task.
+ 
+-先实现一个实际行为及其前置条件、输出和证明，再逐步闭合固定的接收规则、一般有限历史和两个恢复入口。局部通过不等于 Election Safety；五项全局性质、全量功能及条件性活性仍 OPEN。其他学生 TODO 保留。
++Build one actual behavior with its call premises, outputs and proof, then close receiver rules, arbitrary finite history and the two recovery entries. Local completion is not Election Safety: all five global properties, full functionality and conditional liveness remain OPEN. Preserve other student TODOs.
+ 
+-用简短 `PROGRESS.md` 记录当前失败、尝试、检查和下一步；用 `RESULT.md` 分开写四项局部证明、RPC/文件测试、宿主边界和全量 OPEN。遵守本次提示的软交接期限，正常返回后控制器会独立检查同一候选并反馈。不要改全局工具或认证配置，不提交或发布。Markdown 段落不要段内换行。
++Keep a short `PROGRESS.md` with failures, attempts, checks and next obstacle; use `RESULT.md` to separate four local proofs, RPC/file tests, host premises and global OPEN goals. Follow the prompt's soft handoff deadline and return normally; the controller independently checks the stopped candidate. Do not change global tools or authentication, commit or publish. All authored LLM-facing material must be English. Keep Markdown prose paragraphs on one physical line.
+ 
+ ```bash
+ python3 scripts/check.py obligation --task request-vote --timeout 120
+--- before/tasks/request_vote/TASK.md
++++ after/tasks/request_vote/TASK.md
+@@ -1,36 +1,36 @@
+-# RequestVote 接收端 — DRAFT
++# RequestVote receiver — DRAFT
+ 
+-最终研究目标仍是生成完整 MadRaft 并证明五项安全性。本次只生成真实接收端代码及局部证明，不完成候选者计票、多数派或 Leader 晋升。单节点同任期不改投不是整个集群 Election Safety。
++The eventual research objective is to generate complete MadRaft and prove its five safety properties. This task generates only the real receiver and local proofs, not candidate tallying, majorities or leader promotion. A node not changing its vote within a term is not cluster Election Safety.
+ 
+-## 固定行为
++## Fixed behavior
+ 
+-规则依据 [Raft Figure 2 与 §5.4.1](https://raft.github.io/raft.pdf)。低任期请求拒绝并返回当前任期。高任期先更新任期、清除旧投票、转 Follower，即使日志过旧而拒绝也必须保存新任期。同任期只可投给尚未投票的候选者或已经投过的同一候选者；后者可重复获票。日志新旧先比最后任期，再比最后索引。合法、空闲、操作 ID 可用时必须形成规定决定；匹配的成功保存必须返回规定回复，不能总拒绝或不返回。
++The rules follow [Raft Figure 2 and section 5.4.1](https://raft.github.io/raft.pdf). Reject lower-term requests and return the current term. For a higher term, update the term, clear the old vote and become Follower; persist this change even when rejecting an outdated log. Within the same term, grant only when no vote exists or the candidate matches the existing vote; repeated grants to that candidate are allowed. Compare last log term before last log index. A valid idle request with an available operation ID must produce the prescribed decision, and matching successful persistence must produce its reply. Always rejecting or never returning is not acceptable.
+ 
+-`api.rs` 是固定观察接口和纯规格，不是执行算法。`Core::receive` 决定状态、保存记录及待授权回复，`Core::complete` 检查操作身份和真实完成通知后授权输出；真实 MadRaft handler 只转接这两个函数。候选自由选择内部表示和证明，但独立 caller 会重新断言固定规格，不以候选自报的覆盖表验收。
++`api.rs` fixes observations and pure specifications, not the executable algorithm. `Core::receive` decides state, the record to save and the pending reply; `Core::complete` checks operation identity and the reported result before authorizing output. The actual MadRaft handler connects these functions. You choose the representation and proof; the independent caller reasserts the fixed relations instead of accepting self-reported coverage.
+ 
+-本次采用简单的保存策略：每个被接受的合法请求都发出一次 Save，包括状态未变的拒绝；这会增加 I/O，但保证所有依赖状态的回复在相应保存成功后释放。Save 不等于已经返回回复。Busy 保留 Pending；不匹配或重复完成不释放回复；匹配失败停止接收端，不发协议回复。操作 ID 单调分配，合法范围 `0..u64::MAX` 不含 MAX；恢复 MAX−1 后 next=MAX，拒绝后续请求。Raft term 与操作 ID 无关，任期与索引允许 MAX。
++Every accepted valid request produces Save, including unchanged denials. This increases I/O but makes each state-dependent reply wait for its corresponding successful save. Save is not a reply. Busy preserves Pending; mismatched or duplicate completions cannot release replies. Matching failure halts the receiver without a protocol reply. Operation IDs increase without reuse in `[0,u64::MAX)`; recovering MAX-1 sets next=MAX and rejects further requests. Raft term and log index may equal MAX.
+ 
+-成员固定为 `[0,members)`；配置须非空且包含本节点。请求 term=0、非法成员、末条 term/index 中仅一个为零、末条任期大于请求任期均显式 Invalid。持久状态同样检查日志组合、日志任期不超过当前任期、投票成员合法且投票任期非零。优先次序 Halted、Busy、Invalid、Exhausted，错误不改状态。本任务不处理拜占庭伪造或证明成员认证；RPC 请求者身份与 candidate_id 一致属于非拜占庭宿主约定，重复投票回复返回原 RPC 请求者。文件编码长度/标签错误是 I/O 错误，绝不能隐式初始化。
++Membership is fixed to `[0,members)` and must include this node in a nonempty configuration. Requests with term=0, an invalid candidate, exactly one zero log term/index, or lastLogTerm greater than request term are Invalid. Persistent state also validates this log shape, log term not exceeding current term, and any vote naming a member in a nonzero term. Rejection priority is Halted, Busy, Invalid, Exhausted; rejection preserves state. Byzantine forgery and member authentication are outside this task: requester identity matching candidate_id is a disclosed non-Byzantine host premise, and replies return to the original RPC caller. Invalid file length/tags are I/O errors and must not silently initialize a fresh node.
+ 
+-非空日志由明确的合法初始化/保留记录 fixture 提供，接收端不得永久假设空日志。真实复制日志到该摘要的对应仍 OPEN；没有完成 AppendEntries。
++Legal nonempty log summaries may come from explicit initialization/retained-record fixtures. Do not assume logs are always empty. Actual replicated-log-to-summary correspondence remains OPEN; AppendEntries is not implemented here.
+ 
+-## 四项独立证明
++## Four independent proof groups
+ 
+-1. `rules`：实际构造、恢复、receive、complete、inspect 的前后状态和输出符合固定关系；无需调用者预先保证请求合法。`nonempty` 必须实际构造并获得一个有效赞成回复。
+-2. `history`：固定 caller 从实际构造函数开始遍历任意有限 Receive/Complete 序列，按每次实际返回记录全部回复。对其中任何两条同节点、同任期的赞成回复，candidate 必须相同。`replies` 是不可漏记的观察接口，其连接由固定 caller 检查；具体归纳不变量由你实现。
+-3. `confirmed`：实际 receive 产生记录，成功 complete 产生赞成回复且宿主已送达，之后无新接受操作；从同一记录恢复，运行一般有限后续调用，前后赞成历史合并仍唯一。
+-4. `pending`：实际 receive 产生记录，宿主已写成功，尚未 complete、尚未回复且无新接受操作；从同一记录恢复，继续一般有限调用。不得虚构旧 complete 或旧回复。恢复本身建立空本次输出历史、Follower、保留 term/vote/log、next=op+1、无 Pending；同任期 B 不能获票，A 可合法重试。
++1. `rules`: actual new/recover/receive/complete/inspect states and outputs satisfy fixed relations, with no request-validity precondition. The nonempty caller constructs a real core and obtains an affirmative reply.
++2. `history`: the fixed caller starts with actual construction and executes arbitrary finite Receive/Complete sequences, observing every actual reply. Affirmative replies with the same node and term must name the same candidate. The fixed caller checks the replies observation; you supply the inductive invariant.
++3. `confirmed`: actual receive emits the record, successful complete emits an affirmative reply delivered by the host, and no later operation is accepted. Recover the same record and execute any finite suffix; combined affirmative outputs remain unique.
++4. `pending`: receive emits the record, the host finishes writing, but complete/reply have not occurred and no later operation is accepted. Recover that record and execute any finite suffix without inventing an old completion or reply. Recovery establishes an empty new observation, Follower, retained term/vote/log, next=op+1 and no Pending. Same-term B cannot receive a grant; A may retry.
+ 
+-独立恢复入口的 readback 与实际 Write 相同，是公开的真实 I/O/文件保留/解码前提。Verus 验证的是在该前提下实际 recover 及后续调用，不是把成功标志变成外部 I/O 的证明。前缀状态由同一个实际 Core 及其不变量约束，`history` 另外证明它可由构造及任意有限前缀调用产生。
++Readback equality to the actual Write is a public faithful-I/O/file-retention/decoding premise. Verus checks actual recovery and later calls under that premise; a success boolean does not prove external I/O. The prefix state belongs to the same actual Core and its invariant; history separately connects construction to arbitrary finite prefixes.
+ 
+-## 宿主与验收
++## Host and acceptance
+ 
+-候选准备只新增未实现 Core/lemma 入口，接到原 `RaftHandle` 和注册的 RequestVote RPC；协议之外的学生 TODO、原始测试、全量性质均保留。`host.rs` 与少量 handler 接线未验证：负责操作串行化、真实 MadSim 文件操作、真实结果回传、编码及原样转发授权回复。测试屏障只控制时序/观察；失败注入使用真实只读文件写错误。固定测试使用实际 RPC、独立文件字节断言、同节点 kill/restart 和全新 Core/端点。
++Preparation adds unfinished core/lemma entries to the original RaftHandle and registered RequestVote RPC. Other student TODOs, original tests and full targets remain. `host.rs` and thin handler wiring are unverified: they serialize operations, perform actual MadSim file I/O, report actual results, encode records and forward authorized replies unchanged. Test barriers control timing/observation only; failure injection writes through an actual read-only file. Fixed tests use real RPC, independent file-byte assertions, same-node kill/restart and fresh Core/endpoints.
+ 
+-`safety` 只运行局部 Verus；`feedback`/`obligation` 为局部功能和证明保留各自时间；`final` 对同一停止候选运行所有局部测试、全部配置种子和四个独立入口。仅全部通过才能标记 `REQUEST_VOTE_CHECKS_PASSED`，报告仍保留五项全局安全性 OPEN、完整 MadRaft INCOMPLETE、条件性活性 OPEN。测试通过、局部 verified 或 agent exit=0 均不单独结束成功。
++`safety` runs only local Verus. `feedback`/`obligation` reserve time separately for functional and proof checks. `final` checks all local tests, all configured seeds and four proof entries against one stopped candidate. Only all required checks passing yields REQUEST_VOTE_CHECKS_PASSED; all five global safety properties remain OPEN, full MadRaft INCOMPLETE and conditional liveness OPEN. Tests, a local verified count or agent exit=0 alone cannot finish the task successfully.
+ 
+-本次不证明 create/write 中断、写失败后重启、任意崩溃历史、其他修改 term/vote 的路径、完整日志对应或异步宿主。这些限制只属于本任务，不修改主环境要求。不要消除公开宿主边界来无限扩展任务。
++Interrupted create/write, failed-write recovery, arbitrary crashes, other term/vote-changing paths, complete log correspondence and the async host remain unproved. These are local scope limits, not changes to the main environment. Do not expand indefinitely to eliminate disclosed host premises.
+ 
+-## 输入来源
++## Inputs
+ 
+-本任务从根 MadRaft 学生骨架和固定 requirements 新建，不读取旧 runs。四个 `labs` 的方法只用于维护设计：同源核心、Pending/完成、已确认和已写未确认的有限恢复；本次不复制其证据、会话或 Raft 解法，也不要求阅读论文寻找实现方案。代码与证明留给本次实验自行生成。
++Start from the original root student scaffold and fixed requirements, with no old runs. The four calibration labs informed the same-source core, Pending/completion and bounded confirmed/unconfirmed recovery method; their evidence, sessions and any Raft solution are not inputs. Generate implementation and proofs within this experiment.
+--- before/tasks/request_vote/continue.md
++++ after/tasks/request_vote/continue.md
+@@ -1 +1 @@
+-继续同一次 RequestVote 实验、同一工作区和会话。根据以下独立检查的实际失败修复当前代码与证明。保留已验证局部结果，优先闭合首个未完成依赖；不要通过改目标、漏记回复、增加可信协议逻辑或导入旧实验答案消除错误。可以修改自己的表示、不变量和证明分解。
++Continue this RequestVote experiment in the same workspace and conversation. Repair current code and proof using the independent failures below. Retain valid local evidence and prioritize the first unfinished dependency. Do not weaken targets, omit replies, add trusted protocol bodies or import earlier solutions. You may revise your representation, invariants and proof decomposition.
+--- before/tasks/request_vote/redesign.md
++++ after/tasks/request_vote/redesign.md
+@@ -1 +1 @@
+-本次 RequestVote 实验在当前依赖上停滞。先在 PROGRESS.md 记录具体失败及原方案不能闭合的原因，再针对该依赖调整自己的表示、局部规格或不变量。保留固定规则、真实调用路径和已有失败记录；同一累计预算继续计费，不从旧实验热启动。使用同一次实验已有检查点时仍须独立重检。
++This RequestVote experiment has stalled on the current dependency. Record the concrete failure and why the current approach cannot close it in PROGRESS.md, then revise the relevant representation, local contracts or invariants. Preserve fixed rules, actual call paths and failure history. Cumulative spending continues; no earlier experiment is a warm start. Independently recheck any scoped restoration from this experiment's listed checkpoints.
+--- before/tasks/request_vote/start.md
++++ after/tasks/request_vote/start.md
+@@ -1 +1 @@
+-在当前全新候选工作区开始 RequestVote 接收端任务。阅读 AGENTS.md 和 tasks/request_vote/TASK.md。补全原 MadRaft RPC 真正调用的同步核心及对应 Verus 证明，不另建协议服务。先使一个真实合法请求的决定、保存前后授权及独立规则检查成立，再构造一般有限历史不变量和两种恢复组合。实现与证明共同推进；所有具体算法和辅助不变量由你选择。根学生的其他任务本轮不要求完成，五项全局性质保持 OPEN。
++Start the RequestVote receiver task in this fresh workspace. Read AGENTS.md and tasks/request_vote/TASK.md. Implement and prove the synchronous core actually called by the original MadRaft RPC; do not create another protocol service. First connect one valid request, its decision and save-before-reply authorization to the fixed rule checks, then construct arbitrary finite-history invariants and both recovery compositions. Choose the implementation and auxiliary invariants yourself. Other student tasks are outside this local assignment; all five global properties remain OPEN.

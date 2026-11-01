@@ -1,5 +1,5 @@
 /runs/*
-!/runs/request-vote-01/
+!/runs/election-start-01/
 cargo-target/
 /madraft/target/
 __pycache__/
@@ -7,5 +7,5 @@ __pycache__/
 .verus-log/
 *.rlib
 *.rmeta
-!/target/**
+/target/
 codex-home/

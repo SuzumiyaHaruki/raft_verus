@@ -1,0 +1,135 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/host-fixture/tasks/election_start/caller.rs --crate-type lib --cfg madsim --no-cheating --cfg es_campaign
+verification results:: 25 verified, 8 errors
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/host-fixture/tasks/election_start/../../madraft/src/raft/vote_core.rs:19:14
+   |
+19 |     { assert(false); } // OPEN
+   |              ^^^^^ assertion failed
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/host-fixture/tasks/election_start/../../madraft/src/raft/vote_core.rs:22:17
+   |
+22 |           ensures out.is_some() <==> valid_initial(c,initial),
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+25 |       { Some(Core{state:View{config:c,state:initial.state,role:initial.role,next:0,pending:None,halted:false},
+   |  _______-
+26 | |         outputs:Ghost(Seq::empty()),origin:Ghost(None)}) }
+   | |________________________________________________________- at the end of the function body
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/host-fixture/tasks/election_start/../../madraft/src/raft/vote_core.rs:28:5
+   |
+28 |     pub fn recover(c: Config, record: Record) -> (out: Option<Self>)
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/host-fixture/tasks/election_start/../../madraft/src/raft/vote_core.rs:29:17
+   |
+29 |           ensures out.is_some() <==> valid_record(c,record),
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+32 |       { Some(Core{state:View{config:c,state:record.state,role:Role::Follower,next:0,pending:None,halted:false},
+   |  _______-
+33 | |         outputs:Ghost(Seq::empty()),origin:Ghost(Some(record))}) } // DEFECT: resets operation IDs
+   | |________________________________________________________________- at the end of the function body
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/host-fixture/tasks/election_start/../../madraft/src/raft/vote_core.rs:30:13
+   |
+30 | /             out.is_some() ==> out.unwrap().view() == recovered_view(c,record)
+31 | |                 && out.unwrap().choices() == Seq::<Choice>::empty() && out.unwrap().base() == Some(record),
+   | |__________________________________________________________________________________________________________^ failed this postcondition
+32 |       { Some(Core{state:View{config:c,state:record.state,role:Role::Follower,next:0,pending:None,halted:false},
+   |  _______-
+33 | |         outputs:Ghost(Seq::empty()),origin:Ghost(Some(record))}) } // DEFECT: resets operation IDs
+   | |________________________________________________________________- at the end of the function body
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/host-fixture/tasks/election_start/../../madraft/src/raft/vote_core.rs:38:5
+   |
+38 |     pub fn receive(&mut self, request: Request) -> (out: Receive)
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/host-fixture/tasks/election_start/../../madraft/src/raft/vote_core.rs:39:17
+   |
+39 |         ensures out == receive_result(old(self).view(), request),
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+46 |         self.state.pending=Some(w);Receive::Save(w)
+   |                                    ---------------- at the end of the function body
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/host-fixture/tasks/election_start/../../madraft/src/raft/vote_core.rs:40:13
+   |
+40 |             self.view() == receive_after(old(self).view(),request,out),
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+46 |         self.state.pending=Some(w);Receive::Save(w)
+   |                                    ---------------- at the end of the function body
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/host-fixture/tasks/election_start/../../madraft/src/raft/vote_core.rs:49:5
+   |
+49 |     pub fn start_election(&mut self) -> (out: Campaign)
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/host-fixture/tasks/election_start/../../madraft/src/raft/vote_core.rs:50:17
+   |
+50 |         ensures out == start_result(old(self).view()), self.view() == start_after(old(self).view(),out),
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+59 |         self.state.pending=Some(w);Campaign::Save(w)
+   |                                    ----------------- at the end of the function body
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/host-fixture/tasks/election_start/../../madraft/src/raft/vote_core.rs:50:56
+   |
+50 |         ensures out == start_result(old(self).view()), self.view() == start_after(old(self).view(),out),
+   |                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+59 |         self.state.pending=Some(w);Campaign::Save(w)
+   |                                    ----------------- at the end of the function body
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/host-fixture/tasks/election_start/../../madraft/src/raft/vote_core.rs:62:5
+   |
+62 |     pub fn complete(&mut self, notice: Completion) -> (out: Option<Action>)
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/host-fixture/tasks/election_start/../../madraft/src/raft/vote_core.rs:63:17
+   |
+63 |         ensures out == complete_result(old(self).view(),notice),
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+68 |         self.state.pending=None;out
+   |                                 --- at the end of the function body
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/host-fixture/tasks/election_start/../../madraft/src/raft/vote_core.rs:64:13
+   |
+64 |             self.view() == complete_after(old(self).view(),notice),
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+68 |         self.state.pending=None;out
+   |                                 --- at the end of the function body
+
+error: assertion failed
+ --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/host-fixture/tasks/election_start/../../madraft/proof/vote_lemmas.rs:6:12
+  |
+6 |     assert(false); // OPEN: generate an invariant of the actual executable core.
+  |            ^^^^^ assertion failed
+
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/check-01/host-fixture/tasks/election_start/../../madraft/proof/vote_lemmas.rs:13:12
+   |
+13 |     assert(false); // OPEN: preserved vote constrains every subsequent actual output.
+   |            ^^^^^ assertion failed
+
+error: aborting due to 12 previous errors
+
+
+process=COMPLETED exit=1

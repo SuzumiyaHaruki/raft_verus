@@ -1,0 +1,8 @@
+error: cannot call function `caller::vote_core::Core::complete` with mode exec
+   --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/dev/tasks/election_start/caller.rs:178:12
+    |
+178 |     assert(after.complete(Completion{op:w.record.op,success:true}).is_none());
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 1 previous error
+

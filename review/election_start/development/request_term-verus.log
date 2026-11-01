@@ -1,0 +1,14 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus tasks/election_start/fixtures.rs --crate-type lib --cfg bad_request_term --no-cheating
+verification results:: 19 verified, 1 errors
+error: postcondition not satisfied
+  --> tasks/election_start/fixtures.rs:14:13
+   |
+14 |       ensures out == start_result(v),
+   |               ^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+22 | /     Campaign::Save(Write{record:Record{op:0,state:Persistent{term,voted_for:Some(candidate),log:v.state.log}},
+23 | |         request,action:Action::Send(Send{config:v.config,request})})
+   | |____________________________________________________________________- at the end of the function body
+
+error: aborting due to 1 previous error
+

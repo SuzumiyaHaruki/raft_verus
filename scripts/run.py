@@ -18,7 +18,7 @@ import time
 import uuid
 
 from check import CONNECTIONS, FAMILIES, OBLIGATIONS, SEMANTIC_BOUNDARY, configured_seeds, current_obligation, evaluate, group_diagnostics, module_paths, Checks
-from inputs import INPUT_VERSION, input_version, copy_files, differences, files_under, fingerprint, git_revision, input_files, protected_files, save_json
+from inputs import scoped_task, INPUT_VERSION, input_version, copy_files, differences, files_under, fingerprint, git_revision, input_files, protected_files, save_json
 from process import run_process
 from tools import ROOT, environment, settings
 
@@ -27,12 +27,14 @@ FORMAT = 'madraft-generate-check-5'
 
 
 def success_label(state):
-    return 'REQUEST_VOTE_CHECKS_PASSED' if state.get('task') == 'request-vote' else 'MACHINE_CHECKS_PASSED'
+    module = scoped_task(state.get('task','full'))
+    return module.LABEL if module else 'MACHINE_CHECKS_PASSED'
 
 
 def ready_for_final(state, report):
-    names = (['vote_' + n for n in ('rules','history','confirmed','pending')]
-        if state.get('task') == 'request-vote' else
+    module = scoped_task(state.get('task','full'))
+    names = ([module.PREFIX + n for n in module.GOALS]
+        if module else
         [*OBLIGATIONS,'safety','linkage_review',*('connection_' + a for a in CONNECTIONS)])
     return all(report['checks'].get(n,{}).get('status') == 'PASS' for n in names)
 
@@ -62,8 +64,8 @@ def prepare(root, workspace, state):
     copy_files(root, authority, names)
     system = ['scripts/run.py'] + [f'scripts/prompts/{name}.md' for name in PROMPTS]
     copy_files(root, authority, system)
-    if task == 'request-vote':
-        from request_vote import prepare as prepare_receiver
+    if scoped_task(task):
+        prepare_receiver = scoped_task(task).prepare
         copy_files(root,control / 'source-inputs',names + system)
         names = sorted(names + prepare_receiver(authority))
     raw_tools = (root / 'tools.ini').read_text()
@@ -99,7 +101,7 @@ def prepare(root, workspace, state):
 def origin_changes(root, control, state):
     source_names = state.get('source_input_files',state['input_files'])
     names = source_names + state['system_files']
-    origin = control / ('source-inputs' if state.get('task') == 'request-vote' else 'inputs')
+    origin = control / ('source-inputs' if state.get('task','full') in ('request-vote','election-start') else 'inputs')
     changed = differences(root, origin, [n for n in names if n != 'tools.ini'])
     if (root / 'tools.ini').read_text() != state['original_tools']:
         changed.append('tools.ini')
@@ -183,16 +185,16 @@ def token_usage(log):
 def feedback(authority, state, report, mode, workspace, seconds):
     soft = max(0, seconds - state['handoff_seconds'])
     deadline = datetime.fromtimestamp(time.time() + soft, timezone.utc).isoformat(timespec='seconds')
-    if state.get('task') == 'request-vote':
-        parts = [(authority / f'tasks/request_vote/{mode}.md').read_text().strip(),
-            f'当前工作区：{workspace}。请在 {deadline} 前保存并正常返回（约 {soft:.1f} 秒）；硬限制 {seconds:.1f} 秒。',
-            f'累计剩余预算 {state["total_seconds"] - state["seconds_spent"]:.1f} 秒，包含生成和独立检查。',
-            '编辑当前 madraft/，不要编辑检查快照。只闭合本任务有限目标，宿主边界保持公开。']
+    if state.get('task','full') in ('request-vote','election-start'):
+        parts = [(authority / f'tasks/{state["task"].replace("-","_")}/{mode}.md').read_text().strip(),
+            f'Workspace: {workspace}. Save and return normally by {deadline} (about {soft:.1f}s); hard limit {seconds:.1f}s.',
+            f'Cumulative budget remaining: {state["total_seconds"] - state["seconds_spent"]:.1f}s, including generation and independent checks.',
+            'Edit this workspace’s madraft/, not check snapshots. Close this bounded task and disclose host premises.']
         if report:
-            parts += ['首个未完成依赖：' + json.dumps(report.get('current_obligation',{}).get('first_blocker'),ensure_ascii=False),
-                '分项结果：' + json.dumps({n:{k:i.get(k) for k in ('status','reason','log','errors','diagnostic')}
+            parts += ['First unfinished dependency: ' + json.dumps(report.get('current_obligation',{}).get('first_blocker'),ensure_ascii=False),
+                'Per-check results: ' + json.dumps({n:{k:i.get(k) for k in ('status','reason','log','errors','diagnostic')}
                     for n,i in report['checks'].items()},ensure_ascii=False),
-                '已有同次实验检查点（不是旧实验答案）：' + json.dumps(state.get('checkpoints',[])[-5:],ensure_ascii=False)]
+                'Available checkpoints from this experiment (not earlier solutions): ' + json.dumps(state.get('checkpoints',[])[-5:],ensure_ascii=False)]
         return '\n\n'.join(parts) + '\n'
     parts = [(authority / f'scripts/prompts/{mode}.md').read_text().strip(),
              f'Workspace: {workspace}. Soft handoff deadline: {deadline} ({soft:.1f} seconds from now). '
@@ -245,7 +247,7 @@ def obligation_key(state, plan):
     functions = set(plan['functions'])
     records = state.setdefault('obligations', {})
     for key, record in records.items():
-        if plan['goal'].startswith('request-vote-') and record['goal'] != plan['goal']:
+        if plan['goal'].startswith(('request-vote-','election-start-')) and record['goal'] != plan['goal']:
             continue
         if plan['id'] in record['aliases'] or plan['entry'] in record['roots'] or (record['goal'] == plan['goal'] and functions.intersection(record['functions'])):
             break
@@ -483,9 +485,9 @@ class Loop:
                 note = candidate / 'PROGRESS.md'
                 if note.is_symlink(): raise ValueError('Microcheck progress must not be an external link')
                 if note.is_file(): shutil.copy2(note, target / 'PROGRESS.md')
-                if self.state.get('task') == 'request-vote':
+                if self.state.get('task','full') in ('request-vote','election-start'):
                     return evaluate(target,authority=self.authority,tool_root=self.root,output=self.control/tag/'checked',
-                        timeout=seconds,revision=tag,mode='obligation',task='request-vote',seeds=self.state['seeds'])
+                        timeout=seconds,revision=tag,mode='obligation',task=self.state['task'],seeds=self.state['seeds'])
                 checks = Checks(target, self.authority, self.root, self.control / tag / 'checked', seconds, tag)
                 checks.obligation()
                 return checks.finish('obligation-replay', list(checks.results))
@@ -623,10 +625,10 @@ class Loop:
         summary['last_check'] = self.state.get('last_check')
         summary['semantic_boundary'] = SEMANTIC_BOUNDARY
         summary['liveness'] = 'OPEN'
-        if self.state.get('task') == 'request-vote':
-            from request_vote import BOUNDARY
-            summary.update(task_scope='request-vote-receiver',full_madraft='INCOMPLETE',
-                global_safety={p:'OPEN' for p in OBLIGATIONS[:5]},semantic_boundary=BOUNDARY,
+        if self.state.get('task','full') in ('request-vote','election-start'):
+            module = scoped_task(self.state['task'])
+            summary.update(task_scope=module.SCOPE,full_madraft='INCOMPLETE',
+                global_safety={p:'OPEN' for p in OBLIGATIONS[:5]},semantic_boundary=module.BOUNDARY,
                 local_goals=(report or {}).get('local_goals',{}),host_verification='UNVERIFIED')
         summary.update(guidance=self.state.get('guidance', 'B'), system_version=FORMAT,
             input_fingerprint=self.state.get('input_fingerprint'), prompt_version=self.state.get('prompt_version'),
@@ -655,8 +657,8 @@ class Loop:
             item = (report or {}).get('checks', {}).get(name, {})
             lines.append(f'| {name} | {item.get("status", "OPEN")}: {item.get("reason", "not checked")} |')
         lines += ['', summary['semantic_boundary'], '', 'Fixed environment/host assumptions: requirements/environment.md; coverage responsibilities: requirements/coverage.md. Candidate dependency notes in PROGRESS.md and RESULT.md remain unverified until actual callers discharge them. Agent RESULT.md does not override the independent results.', '']
-        if self.state.get('task') == 'request-vote':
-            lines += ['task_scope=request-vote-receiver; full MadRaft INCOMPLETE; five global safety properties OPEN. Local host boundary: tasks/request_vote/TASK.md.', '']
+        if self.state.get('task','full') in ('request-vote','election-start'):
+            lines += [f'task_scope={module.SCOPE}; full MadRaft INCOMPLETE; five global safety properties OPEN. Local host boundary: {module.DIRECTORY}/TASK.md.', '']
         lines += [f'Guidance: {summary["guidance"]}; unused budget: {summary["unused_seconds"]:.1f}s. Semantic review: NOT_PERFORMED; implementation acceptance: NOT_ESTABLISHED.', '',
                   '| Goal | Formula | Actual connection | Implementation task |', '| --- | --- | --- | --- |']
         for name, item in summary['assessments'].items():
@@ -814,7 +816,7 @@ def main():
     parser.add_argument('action', choices=['new', 'resume'])
     parser.add_argument('directory', type=Path)
     parser.add_argument('--execute', action='store_true')
-    parser.add_argument('--task',choices=['full','request-vote'],help='Default: full; resume retains its original task')
+    parser.add_argument('--task',choices=['full','request-vote','election-start'],help='Default: full; resume retains its original task')
     parser.add_argument('--model')
     parser.add_argument('--effort', choices=['low', 'medium', 'high', 'xhigh'])
     parser.add_argument('--codex')

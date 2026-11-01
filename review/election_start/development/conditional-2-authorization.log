@@ -1,0 +1,9 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/target/election-start-maintenance/dev/tasks/election_start/caller.rs --crate-type lib --cfg madsim --cfg es_authorization --verify-root
+error: cannot call function `caller::vote_api::matches` with mode spec
+  --> /home/nitro/Desktop/raft_verus/target/election-start-maintenance/dev/tasks/election_start/caller.rs:91:16
+   |
+91 |     } else if !matches(v,n) { assert(c.view() == v); }
+   |                ^^^^^^^^^^^^
+
+error: aborting due to 1 previous error
+

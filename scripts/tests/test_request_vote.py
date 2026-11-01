@@ -96,10 +96,10 @@ class RequestVoteTests(unittest.TestCase):
         self.assertEqual(report['status'],'NEEDS_REVIEW')
         self.assertIn('tasks/request_vote/rpc_tests.rs',report['changed_standards'])
 
-    def test_feedback_is_narrow_chinese_and_local_history_has_distinct_goals(self):
+    def test_feedback_is_narrow_english_and_local_history_has_distinct_goals(self):
         report=self.simulated_check(fail='vote_history')
         text=run.feedback(self.authority,self.state,report,'start',self.workspace,600)
-        self.assertIn('累计剩余预算',text)
+        self.assertIn('Cumulative budget remaining',text)
         self.assertNotIn('ESTABLISH_EXECUTION_CONNECTION',text)
         self.assertNotIn('connection_snapshots',text)
         a=report['current_obligation']['plan']

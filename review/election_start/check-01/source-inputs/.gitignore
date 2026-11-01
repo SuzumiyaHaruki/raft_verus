@@ -1,0 +1,11 @@
+/runs/*
+!/runs/request-vote-01/
+cargo-target/
+/madraft/target/
+__pycache__/
+*.pyc
+.verus-log/
+*.rlib
+*.rmeta
+/target/
+codex-home/

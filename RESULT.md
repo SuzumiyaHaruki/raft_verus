@@ -1,5 +1,7 @@
 # P0/P1/P2 experiment-system maintenance — DRAFT
 
+The current scoped task preparation is documented in [review/ELECTION_START_MAINTENANCE.md](review/ELECTION_START_MAINTENANCE.md); the historical controller results below are unchanged.
+
 Delivered `madraft-joint-proof-5` / `madraft-generate-check-5` on 2026-10-30. This changes the experiment system and generic examples, not a MadRaft answer. No paid experiment, other agent, merge, push, publication or global tool/configuration change was performed.
 
 Root Git metadata is not exposed: `.git` is empty/read-only, so root HEAD/dirty status cannot be queried. The available publication checkout `/tmp/raft-verus-publish-ab` is at `a402bd5e2ce26350f1b05feb98f1a97c437f2cba`; all its tracked working-file bytes matched the root at the start. No reset occurred. Final comparisons preserve all 31 scaffold files, all 11,042 tracked files in the two old A/B candidates, fixed safety/environment/scope and independent final callers. [Preservation evidence](runs/maintenance-p012/preservation.json).
