@@ -1,0 +1,85 @@
+{
+  "kind": "REAL_VERUS_COMMAND_SMOKE_ONLY",
+  "checks": {
+    "election_rules": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-election-start-2",
+      "candidate_revision": "dispatch-smoke",
+      "input_fingerprint": "6c23d30c0fd2281ef8a44170de717afab971bf39e964578a5ede977d67dd0de8",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/tmp/raft-check-dispatch-bzntxsin/check/candidate/tasks/election_start/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/review/election_start_test_fix/simplification/rules-verus.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 1.3924564119988645,
+      "seed": null,
+      "diagnostic": "verification results:: 36 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/tmp/raft-check-dispatch-bzntxsin/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "election_campaign": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-election-start-2",
+      "candidate_revision": "dispatch-smoke",
+      "input_fingerprint": "6c23d30c0fd2281ef8a44170de717afab971bf39e964578a5ede977d67dd0de8",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/tmp/raft-check-dispatch-bzntxsin/check/candidate/tasks/election_start/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_campaign"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/review/election_start_test_fix/simplification/campaign-verus.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 1.482417652001459,
+      "seed": null,
+      "diagnostic": "verification results:: 38 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/tmp/raft-check-dispatch-bzntxsin/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    }
+  },
+  "retained_candidate": "/home/nitro/Desktop/raft_verus/review/election_start_test_fix/recheck-01/workspace/madraft",
+  "retained_fixed_task": "/home/nitro/Desktop/raft_verus/review/election_start_test_fix/recheck-01/authority/tasks/election_start",
+  "source_bytes_equal": true,
+  "temporary_snapshot_removed": true,
+  "generation_performed": false,
+  "note": "Two dispatch branches only; this does not rerun or replace historical task acceptance."
+}

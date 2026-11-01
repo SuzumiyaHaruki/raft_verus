@@ -61,6 +61,7 @@ prompt=sys.stdin.read()
 print(json.dumps({'type':'thread.started','thread_id':'SIMULATED-session'}), flush=True)
 with pathlib.Path('SIMULATED-calls.jsonl').open('a') as f: f.write(json.dumps(sys.argv[1:])+'\\n')
 pathlib.Path('madraft/SIMULATED-edit.txt').write_text('SIMULATED generation; no protocol implementation')
+with pathlib.Path('madraft/src/lib.rs').open('a') as f: f.write('// SIMULATED checked-source edit '+str(time.time_ns())+'\\n')
 pathlib.Path('PROGRESS.md').write_text('SIMULATED approach: tried a toy decomposition; actual global dependencies remain open.')
 if pathlib.Path('SIMULATED-sleep').exists(): time.sleep(5)
 pathlib.Path(sys.argv[sys.argv.index('--output-last-message')+1]).write_text('SIMULATED claim: all proved')
@@ -189,7 +190,7 @@ pathlib.Path(sys.argv[sys.argv.index('--output-last-message')+1]).write_text('SI
     def test_previous_pass_is_invalidated_on_resume(self):
         self.plan=[{}, {'final':True}, {'final':True}]
         self.invoke('new','--execute','--max-rounds','1')
-        (self.workspace/'madraft/SIMULATED-edit.txt').write_text('SIMULATED regression')
+        (self.workspace/'madraft/src/lib.rs').write_text('// SIMULATED regression')
         self.plan=[{}]
         self.assertEqual(self.invoke('resume','--execute'),1)
         self.assertEqual(self.state()['status'],'INCOMPLETE')
@@ -336,15 +337,17 @@ pathlib.Path(sys.argv[sys.argv.index('--output-last-message')+1]).write_text('SI
         self.assertLess(state['seconds_spent'],state['total_seconds'])
 
     def test_unchanged_candidate_after_final_does_not_repeat_identical_checks(self):
+        text=self.fake.read_text().replace("with pathlib.Path('madraft/src/lib.rs').open('a') as f:","if not pathlib.Path('once').exists():\n pathlib.Path('once').touch()\n with pathlib.Path('madraft/src/lib.rs').open('a') as f:")
+        self.fake.write_text(text)
         cfg=controller.settings(self.root)
         cfg['agent'].update(check_seconds='10',final_seconds='1',total_seconds='3')
         with (self.root/'tools.ini').open('w') as f:cfg.write(f)
         self.invoke('new','--execute','--max-rounds','3')
         state=self.state()
-        self.assertEqual(state['attempts'],2)
+        self.assertEqual(state['attempts'],3)
         self.assertEqual(len(self.calls),2)
-        self.assertIn('unchanged candidate',state['reason'])
-        self.assertIn('unchanged_final_evidence',state['history'][-1])
+        self.assertIn('no_progress',state['reason'])
+        self.assertIn('reused_evidence',state['history'][-1])
 
     def test_ab_inputs_and_acceptance_are_identical_only_guidance_differs(self):
         self.invoke('new','--guidance','A','--execute','--max-rounds','1')

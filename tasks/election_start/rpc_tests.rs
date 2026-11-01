@@ -5,6 +5,7 @@ use vote_core::Core;
 use vote_api::Action;
 use madsim::{runtime::{Handle, NodeHandle}, net::{Endpoint, NetSim}, time::{timeout, Duration}};
 use std::future::Future;
+include!("observer_tests.rs");
 
 fn initial(term: u64, vote: Option<u64>, log: Log) -> Initial {
     Initial { state:Persistent{term,voted_for:vote,log},role:vote_api::Role::Follower }
@@ -179,6 +180,13 @@ async fn restart_case(uncompleted: bool) {
     let (server,client,ep,h)=network().await;
     let (other,other_ep)=second_client().await;
     let rt=Handle::current(); let id=server.id();
+    // Passive delivery observation belongs to the surviving client, not the old
+    // Core or RPC task. Always forward the original packet unchanged.
+    let replies=Arc::new(Mutex::new(Vec::new()));
+    let record=replies.clone();
+    NetSim::current().hook_rpc_rsp::<std::result::Result<RequestVoteReply,String>>(client.id(),move |r| {
+        record.lock().unwrap().push(r.as_ref().map(|r|(r.term,r.vote_granted)).map_err(Clone::clone)); true
+    });
     let (entered,waiting)=async_channel::bounded(1);
     let (release,released)=async_channel::bounded(1);
     if uncompleted {
@@ -187,20 +195,29 @@ async fn restart_case(uncompleted: bool) {
     }
     let (done,observed)=async_channel::bounded(1);
     let c=client.clone(); let e=ep.clone();
-    let mut running=Some(task::spawn(async move {done.send(call(&c,&e,request(1,1,0,0)).await).await.unwrap();}));
+    let mut running=Some(c.spawn(async move {
+        // Retain transport errors separately from the protocol Result. An RPC
+        // error or task panic cannot count as a live no-output observation.
+        let result=e.call_timeout::<RequestVoteArgs>(peers()[0],RequestVoteArgs{term:1,candidate_id:1,
+            last_log_term:0,last_log_index:0},Duration::from_secs(2)).await;
+        done.send(result).await.unwrap();
+    }));
     if uncompleted {
         let w=bounded(waiting.recv()).await.unwrap();
         assert_eq!(h.inner.lock().unwrap().vote.inspect().pending,Some(w));
-        assert!(timeout(Duration::from_millis(30),observed.recv()).await.is_err(),"no reply at post-write barrier");
+        assert_quiet(observe(&observed).await,"no reply at post-write barrier");
     } else {
-        assert!(bounded(observed.recv()).await.unwrap().unwrap().vote_granted);
+        assert!(bounded(observed.recv()).await.unwrap().unwrap().unwrap().vote_granted);
         running.take().unwrap().await.unwrap();
+        assert_eq!(*replies.lock().unwrap(),vec![Ok((1,true))],"live network observer sees confirmed reply");
+        replies.lock().unwrap().clear();
     }
     file(&server,[0,1,1,1,0,0],"pre-kill actual saved vote").await;
     // No release and no new accepted operation. Discard ALL old core handles.
     let old = Arc::downgrade(&h.inner);
     rt.kill(id);
-    if let Some(running) = running { running.abort(); assert!(bounded(running).await.is_err()); }
+    // The client is a different node. Keep its observer alive until the restart
+    // window ends, while requiring every old server Core reference to disappear.
     drop(h); drop(server); drop(release);
     bounded(async { while old.upgrade().is_some() { task::yield_now().await; } }).await;
     rt.restart(id);
@@ -209,11 +226,22 @@ async fn restart_case(uncompleted: bool) {
     let fresh=start(&restarted,true).await;
     let v=fresh.inner.lock().unwrap().vote.inspect();
     assert_eq!((v.state.term,v.state.voted_for,v.next,v.pending),(1,Some(1),1,None),"restore vote from file");
+    assert_eq!(v.role,vote_api::Role::Follower,"recovery starts as Follower");
     if uncompleted {
-        assert!(timeout(Duration::from_millis(30),observed.recv()).await.is_err(),"restart must not synthesize old reply");
+        assert_quiet(observe(&observed).await,"restart must not synthesize old reply");
+    } else {
+        // Give actual network deliveries the same bounded observation window.
+        madsim::time::sleep(Duration::from_millis(30)).await;
+    }
+    assert!(replies.lock().unwrap().is_empty(),"recovery emitted an unsolicited RequestVote reply");
+    if let Some(running) = running {
+        running.abort();
+        assert!(bounded(running).await.unwrap_err().is_cancelled(),"observer cleanup must be cancellation");
+        assert!(matches!(observe(&observed).await,Observation::Closed),"closed empty observer is cleanup only");
     }
     assert!(!call(&other,&other_ep,request(1,2,0,0)).await.unwrap().vote_granted,"recovery must not forget vote");
     assert!(call(&client,&ep,request(1,1,0,0)).await.unwrap().vote_granted);
+    assert_eq!(*replies.lock().unwrap(),vec![Ok((1,true))],"network observer must remain effective after restart");
     file(&restarted,[2,1,1,1,0,0],"new requests use fresh operation IDs").await;
     rt.kill(id);
 }

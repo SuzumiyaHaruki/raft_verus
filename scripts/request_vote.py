@@ -1,7 +1,6 @@
 """One bounded receiver task, using the existing snapshot/check/controller machinery."""
 from pathlib import Path
 import importlib.util
-import json
 import re
 import time
 from inputs import scoped_task
@@ -52,21 +51,22 @@ def evaluate(checks, mode, seeds):
     checks.record('source_boundary','NEEDS_REVIEW' if outside else 'PASS',
         'external_source_import' if outside else 'same_candidate_imports', external_paths=outside)
     for goal in spec.GOALS:
-        argv = [checks.cfg['verus'],str(caller),'--crate-type','lib','--cfg','madsim','--no-cheating','--triggers-mode','silent']
-        if goal != 'rules': argv += ['--cfg',spec.CFG + goal]
-        checks.run(spec.PREFIX + goal,argv,proof=True)
+        checks.verus('scoped',obligation=goal)
     first = next((g for g in spec.GOALS if checks.results[spec.PREFIX + g]['status'] != 'PASS'), None)
+    # Order is build/inventory/tests/boundary/proofs. Report an actual failure,
+    # including its exact tests and seeds, even when every theorem passes.
+    blocker = next(((n,i) for n,i in checks.results.items() if i['status'] != 'PASS'), None)
     # This small fixed dependency chain is metadata for existing failure history,
     # not a candidate-selected proof target or another task scheduler.
     goal = first or 'rules'
     entry = 'madraft/src/raft/vote_core.rs' if goal in ('rules','campaign','authorization') else 'madraft/proof/vote_lemmas.rs'
-    item = checks.results[spec.PREFIX + goal]
     checks.current = dict(plan=dict(id=checks.task + '-' + goal,goal=checks.task + '-' + goal,
         statement='Close the fixed ' + checks.task + ' ' + goal + ' caller',kind='composition',entry=entry,
         functions=['madraft/src/raft/vote_core.rs::' + f for f in spec.FUNCTIONS],
         dependencies=[],premises=spec.BOUNDARY),units={spec.PREFIX + goal:entry},
         layer='LOCAL_UNIT_CHECKED' if not first else 'PREPARATION',
-        first_blocker=dict(check=spec.PREFIX + goal,entry=entry,reason=item['reason'],log=item.get('log')) if first else
+        first_blocker=dict(check=blocker[0],entry=entry,**{k:blocker[1].get(k) for k in
+            ('reason','category','log','diagnostic','failed_tests','seed')}) if blocker else
             dict(reason='run_all_local_tests_and_seeds'), imported_references=['madraft/src/raft/vote_core.rs'])
     required = list(checks.results)
     report = checks.finish(mode,required)

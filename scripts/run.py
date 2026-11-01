@@ -18,12 +18,86 @@ import time
 import uuid
 
 from check import CONNECTIONS, FAMILIES, OBLIGATIONS, SEMANTIC_BOUNDARY, configured_seeds, current_obligation, evaluate, group_diagnostics, module_paths, Checks
-from inputs import scoped_task, INPUT_VERSION, input_version, copy_files, differences, files_under, fingerprint, git_revision, input_files, protected_files, save_json
+from inputs import scoped_task, input_version, copy_files, differences, files_under, fingerprint, git_revision, input_files, protected_files, save_json
 from process import run_process
 from tools import ROOT, environment, settings
 
 PROMPTS = ('start', 'continue', 'redesign', 'behavior')
 FORMAT = 'madraft-generate-check-5'
+DIAGNOSTIC_SECONDS = 60
+
+
+def progress_path(workspace, state):
+    return workspace / ('madraft/PROGRESS.md' if scoped_task(state.get('task','full')) else 'PROGRESS.md')
+
+
+def relevant_identity(workspace, authority, state, report):
+    """Bind checked dependencies and parameters; prose updates are not progress."""
+    workspace = workspace.resolve()
+    module = scoped_task(state.get('task','full'))
+    entries = ['madraft/src/lib.rs', 'madraft/proof/progress.rs']
+    if module:
+        entries += [module.DIRECTORY + '/caller.rs']
+    else:
+        entries += ['madraft/proof/implementation.rs'] + ['madraft/proof/' + n + '.rs' for n in OBLIGATIONS]
+        plan = (report or {}).get('current_obligation',{}).get('plan',{})
+        entries += [plan.get('entry',''), *plan.get('dependencies',[])]
+    paths = module_paths([workspace / n for n in entries if n],workspace,conservative=True)
+    paths.update(workspace / n for n in protected_files(authority))
+    for n,p in files_under(workspace / 'madraft').items():
+        if Path(n).name in ('Cargo.toml','Cargo.lock','build.rs') or '.cargo' in Path(n).parts or n.startswith('rust-toolchain'):
+            paths.add(p)
+    files = {str(p.relative_to(workspace)):p for p in paths if p.is_relative_to(workspace) and p.is_file()}
+    # Full-mode nomination affects which units get checked; prose does not.
+    note = progress_path(workspace,state)
+    text = note.read_text() if note.is_file() else ''
+    nomination = re.findall(r'<!-- (?:obligation|connections) -->.*?<!-- /(?:obligation|connections) -->',text,re.S) if not module else []
+    return dict(sources=fingerprint(files), parameters=dict(task=state.get('task','full'),seeds=state['seeds'],
+        tools=state.get('tools'),input=state.get('input_fingerprint'),nomination=nomination))
+
+
+def failure_signature(report):
+    """Retain seeds and assertion text; discard paths, counters and timing noise."""
+    failures = []
+    for name,item in report['checks'].items():
+        if item['status'] == 'PASS': continue
+        diagnostic = item.get('diagnostic','')
+        raw = diagnostic.splitlines()
+        selected = set()
+        for i,line in enumerate(raw):
+            if any(x in line for x in ('assertion','panicked at','postcondition','precondition','left:','right:','error:')):
+                selected.update(range(i,min(len(raw),i+3)))
+        lines = [raw[i].strip() for i in sorted(selected) if raw[i].strip()]
+        text = '\n'.join(lines)
+        text = re.sub(r'/(?:[^\s:\'"()]+/)+[^\s:\'"()]+', '<path>',text)
+        text = re.sub(r':\d+:\d+', ':<location>',text)
+        text = re.sub(r'\b(?:check|round|replay)-[\d-]+', '<check>',text)
+        failures.append(dict(check=name,tests=item.get('failed_tests',[]),seed=item.get('seed'),
+            category=item.get('category',item.get('reason')),assertion=text))
+    return failures
+
+
+def fixed_objection(workspace, authority, state, report):
+    note = progress_path(workspace,state)
+    text = note.read_text() if note.is_file() else ''
+    match = re.search(r'<!-- fixed-input-objection -->\s*(.*?)\s*<!-- /fixed-input-objection -->',text,re.S)
+    if not match: return None, []
+    try:
+        value = json.loads(match[1]); assert isinstance(value,dict)
+    except (ValueError,AssertionError): return {}, ['Use one JSON object in the fixed-input-objection block.']
+    gaps = [k for k in ('file','test','conflict','candidate_revision','unresolved','recommendation') if not isinstance(value.get(k),str) or not value[k].strip()]
+    if value.get('file') not in protected_files(authority): gaps.append('file must name a protected input')
+    if value.get('needs_fixed_change') is not True: gaps.append('needs_fixed_change must be true; suggestions remain unapplied')
+    if value.get('candidate_revision') != report['candidate_revision']: gaps.append('candidate_revision must identify the current independent check')
+    tests = {t for n,i in report['checks'].items() if i['status'] != 'PASS' for t in [n,*i.get('failed_tests',[])]}
+    if value.get('test') not in tests: gaps.append('test must identify an actually failing check or test')
+    # Evidence is descriptive input; NEVER execute a candidate's command string.
+    evidence = value.get('evidence','')
+    p = (workspace / evidence).resolve() if isinstance(evidence,str) and evidence else None
+    independent = any(p == Path(i['log']).resolve() for i in report['checks'].values() if i.get('log'))
+    repro = p and p.is_relative_to(workspace / 'madraft') and p.is_file() and not (workspace / evidence).is_symlink() and value.get('reproduce')
+    if not independent and not repro: gaps.append('provide the current independent log or a local reproducer and command')
+    return value, gaps
 
 
 def success_label(state):
@@ -36,7 +110,14 @@ def ready_for_final(state, report):
     names = ([module.PREFIX + n for n in module.GOALS]
         if module else
         [*OBLIGATIONS,'safety','linkage_review',*('connection_' + a for a in CONNECTIONS)])
-    return all(report['checks'].get(n,{}).get('status') == 'PASS' for n in names)
+    return (all(report['checks'].get(n,{}).get('status') == 'PASS' for n in names)
+            and not known_functional_failure(report)
+            and report['checks'].get('source_boundary',{}).get('status','PASS') == 'PASS'
+            and not report.get('changed_standards') and not report.get('concurrent_changes'))
+
+
+def known_functional_failure(report):
+    return any(i['status'] != 'PASS' for n,i in report['checks'].items() if n.startswith(('build','inventory','tests')))
 
 
 def command(state, workspace, output):
@@ -185,32 +266,32 @@ def token_usage(log):
 def feedback(authority, state, report, mode, workspace, seconds):
     soft = max(0, seconds - state['handoff_seconds'])
     deadline = datetime.fromtimestamp(time.time() + soft, timezone.utc).isoformat(timespec='seconds')
-    if state.get('task','full') in ('request-vote','election-start'):
-        parts = [(authority / f'tasks/{state["task"].replace("-","_")}/{mode}.md').read_text().strip(),
-            f'Workspace: {workspace}. Save and return normally by {deadline} (about {soft:.1f}s); hard limit {seconds:.1f}s.',
-            f'Cumulative budget remaining: {state["total_seconds"] - state["seconds_spent"]:.1f}s, including generation and independent checks.',
-            'Edit this workspace’s madraft/, not check snapshots. Close this bounded task and disclose host premises.']
+    module = scoped_task(state.get('task','full'))
+    prompt_dir = module.DIRECTORY if module else 'scripts/prompts'
+    parts = [(authority / prompt_dir / (mode + '.md')).read_text().strip(),
+        f'Workspace: {workspace}. Soft handoff deadline: {deadline} ({soft:.1f} seconds from now). '
+        f'Save code and {progress_path(workspace,state).relative_to(workspace)}, then return normally. '
+        f'The hard watchdog is {seconds:.1f} seconds; it is a last resort, not a planned handoff. '
+        'There is no CLI pause signal. Stop starting long checks near handoff.',
+        f'Cumulative budget remaining: {state["total_seconds"] - state["seconds_spent"]:.1f}s, including generation and independent checks. '
+        f'Round: {state["attempts"] + 1}/{state["max_rounds"]}.',
+        'Diagnostics refer to the stopped candidate. Edit this workspace’s madraft/ files, not check snapshots.']
+    if state.get('review_feedback'): parts.append(state['review_feedback'])
+    if report:
+        current = report.get('current_obligation', {})
+        parts += ['Independent candidate revision: ' + report['candidate_revision'],
+            'First unfinished dependency: ' + json.dumps(current.get('first_blocker'),ensure_ascii=False)]
+    if module:
+        parts.append('Close this bounded task and disclose host premises.')
         if report:
-            parts += ['First unfinished dependency: ' + json.dumps(report.get('current_obligation',{}).get('first_blocker'),ensure_ascii=False),
-                'Per-check results: ' + json.dumps({n:{k:i.get(k) for k in ('status','reason','log','errors','diagnostic')}
+            parts += ['Per-check results: ' + json.dumps({n:{k:i.get(k) for k in ('status','reason','log','errors','diagnostic')}
                     for n,i in report['checks'].items()},ensure_ascii=False),
                 'Available checkpoints from this experiment (not earlier solutions): ' + json.dumps(state.get('checkpoints',[])[-5:],ensure_ascii=False)]
         return '\n\n'.join(parts) + '\n'
-    parts = [(authority / f'scripts/prompts/{mode}.md').read_text().strip(),
-             f'Workspace: {workspace}. Soft handoff deadline: {deadline} ({soft:.1f} seconds from now). '
-             f'Save code and PROGRESS.md, then return normally by this deadline. '
-             f'The hard watchdog is {seconds:.1f} seconds; it is a last resort, not a planned handoff. '
-             'There is no CLI pause signal. Stop starting long checks near handoff.',
-             f'Cumulative budget remaining: {state["total_seconds"] - state["seconds_spent"]:.1f} seconds. '
-             f'Round: {state["attempts"] + 1}/{state["max_rounds"]}.',
-             'Diagnostics refer to the stopped candidate. Edit this workspace’s madraft/ files, not check snapshots.']
     if state.get('guidance', 'B') == 'B':
         parts.append((authority / 'scripts/prompts/behavior.md').read_text().strip())
     if report:
-        parts.append('Independent candidate revision: ' + report['candidate_revision'])
-        current = report.get('current_obligation', {})
         parts.append('Selected increment (candidate plan, not proof): ' + json.dumps(current.get('plan', {})))
-        parts.append('First unfinished dependency: ' + json.dumps(current.get('first_blocker')))
         parts.append('Checked layer: ' + current.get('layer', 'PREPARATION'))
         parts.append('Next obligation: ' + next_obligation(state, report))
         groups = report.get('diagnostics', group_diagnostics(report['checks']))
@@ -571,10 +652,53 @@ class Loop:
         self.save()
         return True
 
-    def inspect(self, initial=False, final=False, advance=True):
+    def review_objection(self, report):
+        value, gaps = fixed_objection(self.workspace,self.authority,self.state,report)
+        if value is None: return None
+        if gaps:
+            self.state['review_feedback'] = 'Fixed-input objection evidence gaps: ' + '; '.join(gaps) + '. Acceptance is unchanged. One further handoff is available; unchanged checked inputs/failure then stop for review.'
+            self.save()
+            return None
+        # Once per experiment, persisted BEFORE running. Rewording the objection
+        # or resuming cannot renew the allowance. Never execute its shell command.
+        if self.state.get('fixed_input_diagnostic'):
+            return self.stop('NEEDS_REVIEW','fixed_input_diagnostic_already_used',report)
+        self.state['fixed_input_diagnostic'] = dict(objection=value,limit_seconds=DIAGNOSTIC_SECONDS,
+            status='RESERVED',source_report=self.state.get('last_check'))
+        self.save()
+        name,item = next((n,i) for n,i in report['checks'].items()
+            if i['status'] != 'PASS' and value['test'] in [n,*i.get('failed_tests',[])])
+        tag = 'fixed-input-diagnostic'
+        def diagnostic(seconds, started):
+            c = Checks(self.workspace,self.authority,self.root,self.control/tag,seconds,tag,task=self.state.get('task','full'))
+            module = scoped_task(self.state.get('task','full'))
+            if name.startswith('tests') and item.get('failed_tests'):
+                selection = value['test'] if value['test'] in item['failed_tests'] else item['failed_tests'][0]
+                c.expected = {selection}
+                c.cargo('build'); result = c.cargo('test',item.get('seed') or 1,selection)
+                confirmed = selection in result.get('failed_tests',[]) and result.get('process') == 'COMPLETED'
+            elif name in ('build','inventory'):
+                result = c.cargo(name); confirmed = result.get('reason') == item.get('reason') and result.get('process') == 'COMPLETED' and result['status'] != 'PASS'
+            elif module and name in [module.PREFIX + g for g in module.GOALS]:
+                result = c.verus('scoped',obligation=name.removeprefix(module.PREFIX))
+                confirmed = result['reason'] == item['reason'] == 'verification_failure'
+            else:
+                c.record('diagnostic','OPEN','no_safe_fixed_diagnostic_for_check')
+                confirmed = False
+            result = c.finish('fixed-input-diagnostic',list(c.results))
+            result['original_failure_reproduced'] = confirmed and not result['changed_standards'] and not result['concurrent_changes']
+            save_json(c.output/'results.json',result)
+            return result
+        result = self.charge('fixed-input-diagnostic',DIAGNOSTIC_SECONDS,diagnostic)
+        self.state['fixed_input_diagnostic'].update(status='FINISHED' if result else 'NOT_RUN_BUDGET_EXHAUSTED',
+            result=str(self.control/tag/'results.json') if result else None)
+        return self.stop('NEEDS_REVIEW','suspected_fixed_input_defect' if result and result['original_failure_reproduced']
+            else 'fixed_input_diagnostic_inconclusive',report)
+
+    def inspect(self, initial=False, final=False, advance=True, use_reserve=False):
         tag = f'check-{self.state["attempts"]}-{time.time_ns()}'
         limit = self.state['final_seconds'] if final else min(self.state['check_seconds'],
-            max(0, self.state['total_seconds'] - self.state['seconds_spent'] - self.state['final_seconds']))
+            max(0, self.state['total_seconds'] - self.state['seconds_spent'] - (0 if use_reserve else self.state['final_seconds'])))
         report = self.charge('final' if final else 'check', limit, lambda seconds, started:
             evaluate(self.workspace, authority=self.authority, tool_root=self.root,
                      output=self.control / tag, timeout=seconds, seeds=self.state['seeds'],
@@ -595,6 +719,9 @@ class Loop:
                     record.update(candidate_revision=report['candidate_revision'], log=item.get('log'),
                                   uncovered_tests=item.get('uncovered_tests', []))
             self.state['last_check'] = str(self.control / tag / 'results.json')
+            self.state['last_checked_identity'] = (None if any(report.get(k) for k in
+                ('changed_standards','concurrent_changes','evidence_mismatches')) else
+                relevant_identity(self.workspace,self.authority,self.state,report))
             visible = self.workspace / 'runs' / tag
             visible.mkdir(parents=True)
             for path in (self.control / tag).glob('*.log'):
@@ -642,6 +769,9 @@ class Loop:
         summary.update(current_obligation=(report or {}).get('current_obligation'),
                        obligations=self.state.get('obligations', {}), checkpoints=self.state.get('checkpoints', []),
                        rollbacks=self.state.get('rollbacks', []), pending_local_attempts=self.state.get('pending_local_attempts', 0))
+        summary.update(fixed_input_diagnostic=self.state.get('fixed_input_diagnostic'),
+            evidence_reuse=self.state.get('evidence_reuse',[]),no_progress=self.state.get('no_progress'),
+            review_feedback=self.state.get('review_feedback'))
         summary['unchanged_source_agent_seconds'] = sum(h.get('process_seconds', 0) for h in self.state['history'] if h.get('no_source_change'))
         summary['idle_or_wasted_seconds'] = None  # No-source-change time need not be wasted reasoning.
         summary['interrupted_budget_seconds'] = self.state.get('interrupted_budget_seconds', 0)
@@ -651,8 +781,12 @@ class Loop:
         lines = ['# Experiment status', '', f'{status}: {reason}', '',
                  f'Input: {self.state["input_version"]}; origin: {self.state["run_id"]}; source revision: {self.state["git_revision"]}.', '',
                  f'Model: {self.state["model"]}; effort: {self.state["effort"]}; rounds: {self.state["attempts"]}; cumulative seconds: {self.state["seconds_spent"]:.1f}/{self.state["total_seconds"]:.1f}.', '',
-                 f'Latest independent evidence: {self.state.get("last_check", "not run")}. Historical results are not reused after changes.', '',
+                 f'Latest independent evidence: {self.state.get("last_check", "not run")}. Evidence is invalidated by changes to checked inputs, tool versions or parameters.', '',
                  '| Check or obligation | Independent result |', '| --- | --- |']
+        if self.state.get('evidence_reuse'):
+            lines[7:7] = ['Existing independent checks reused with unchanged checked inputs; these are not new executions: ' + json.dumps(self.state['evidence_reuse']), '']
+        if self.state.get('fixed_input_diagnostic'):
+            lines[7:7] = ['Fixed-input diagnostic (a review request, not an acceptance change): ' + json.dumps(self.state['fixed_input_diagnostic']), '']
         for name in dict.fromkeys([*(report or {}).get('checks', {}), *OBLIGATIONS]):
             item = (report or {}).get('checks', {}).get(name, {})
             lines.append(f'| {name} | {item.get("status", "OPEN")}: {item.get("reason", "not checked")} |')
@@ -688,7 +822,7 @@ class Loop:
             directory = self.workspace / f'runs/round-{state["attempts"]}'
             state['thread_id'] = session_id(directory / 'agent.jsonl', state['thread_id'])
             if state['history'] and state['history'][-1]['process'] == 'INTERRUPTED':
-                progress = self.workspace / 'PROGRESS.md'
+                progress = progress_path(self.workspace,state)
                 state['history'][-1]['progress'] = progress.read_text() if progress.exists() else '(No candidate progress note)'
             self.save()
         if state['attempts'] and not state['thread_id']:
@@ -706,20 +840,34 @@ class Loop:
             return self.stop('NEEDS_REVIEW', 'Tool versions/capabilities changed since this experiment started')
         state['tools'] = capability['evidence']
         self.save()
-        # Resume always refreshes checks; no historical PASS is reusable after edits.
-        report = self.inspect(initial=state['attempts'] == 0, advance=False)
+        previous = Path(state['last_check']) if state.get('last_check') else None
+        report = json.loads(previous.read_text()) if previous and previous.is_file() else None
+        if report and state.get('last_checked_identity') == relevant_identity(self.workspace,self.authority,state,report):
+            state.setdefault('evidence_reuse',[]).append(dict(report=str(previous),reason='resume: checked dependencies and parameters unchanged; no new check'))
+            if (state['status'] == 'NEEDS_REVIEW' or state.get('fixed_input_diagnostic')
+                    or (state.get('no_progress') or {}).get('count',0) >= 2):
+                return self.stop('NEEDS_REVIEW','unchanged_candidate_waiting_for_review',report)
+        else:
+            state['no_progress'] = None
+            report = self.inspect(initial=state['attempts'] == 0, advance=False)
         reason = 'Insufficient budget for useful work and final checks'
         while report:
             if report['status'] in ('BLOCKED', 'NEEDS_REVIEW'):
                 return self.stop(report['status'], 'Independent check cannot proceed under the fixed inputs', report)
+            if report.get('concurrent_changes') or report.get('evidence_mismatches'):
+                return self.stop('NEEDS_REVIEW','Independent evidence does not match a stopped candidate',report)
             if report['status'] == success_label(state) and report.get('mode') == 'final':
-                return self.stop(success_label(state), 'Scoped checks passed; semantic review remains outstanding', report)
+                break
+            review = self.review_objection(report)
+            if review is not None: return review
+            stalled = state.get('no_progress') or {}
+            if stalled.get('count',0) >= 2:
+                return self.stop('NEEDS_REVIEW','no_progress: unchanged checked inputs and failures after two handoffs',report)
             if report.get('mode') != 'final' and ready_for_final(state, report):
-                report = self.inspect(final=True) or report
-                if report and report['status'] == success_label(state) and report.get('mode') == 'final':
-                    return self.stop(success_label(state), 'Scoped checks passed; semantic review remains outstanding', report)
-            if report['status'] in ('BLOCKED', 'NEEDS_REVIEW'):
-                return self.stop(report['status'], 'Final check cannot proceed under the fixed inputs', report)
+                checked = self.inspect(final=True)
+                if not checked: break
+                report = checked
+                continue
             self.elapsed()
             allowance, next_check = round_plan(state)
             if not allowance or state['attempts'] >= state['max_rounds']:
@@ -738,7 +886,7 @@ class Loop:
             directory.mkdir(exist_ok=True)
             (directory / 'prompt.md').write_text(prompt)
             before = {n: p.read_bytes() for n, p in files_under(self.workspace / 'madraft').items()}
-            claim_before = (self.workspace / 'PROGRESS.md').read_bytes() if (self.workspace / 'PROGRESS.md').is_file() else None
+            relevant_before = relevant_identity(self.workspace,self.authority,state,report)
             argv = command(state, self.workspace, directory / 'agent.md')
             record = dict(round=number, mode=mode, process='INTERRUPTED', exit=None,
                           soft_seconds=allowance - state['handoff_seconds'], hard_seconds=allowance,
@@ -757,7 +905,7 @@ class Loop:
                 break
             state['thread_id'] = session_id(directory / 'agent.jsonl', state['thread_id'])
             state['last_process'], state['last_exit'] = result.status, result.exit_code
-            progress = self.workspace / 'PROGRESS.md'
+            progress = progress_path(self.workspace,state)
             record.update(process=result.status, exit=result.exit_code,
                           process_seconds=result.elapsed_seconds, token_usage=token_usage(directory / 'agent.jsonl'),
                           handoff='normal' if result.status == 'COMPLETED' and result.exit_code == 0 else 'hard_timeout' if result.status == 'TIMEOUT' else 'failed',
@@ -772,20 +920,30 @@ class Loop:
                 patch.extend(difflib.unified_diff(old, new, 'before/madraft/' + name, 'after/madraft/' + name))
             (directory / 'changes.patch').write_text(''.join(patch))
             record.update(changed_files=changed, patch=str(directory / 'changes.patch'))
-            record['no_source_change'] = not changed
+            substantive = relevant_before != relevant_identity(self.workspace,self.authority,state,report)
+            record.update(no_source_change=not substantive,changed_checked_inputs=substantive)
             self.save()
             if result.status == 'CANCELLED':
                 return self.stop('INCOMPLETE', 'Controller interrupted; candidate and charged budget retained')
-            if not changed and report.get('mode') == 'final' and claim_before == (
-                    progress.read_bytes() if progress.is_file() else None) and not differences(
-                        self.authority, self.workspace, protected_files(self.authority)):
-                # No new check is represented as run. A stopped, unchanged
-                # candidate already has a final result; do not burn another final.
+            if result.status == 'BLOCKED' or (result.status == 'COMPLETED' and result.exit_code != 0) or not state['thread_id']:
+                return self.stop('BLOCKED', 'Agent execution/authentication failed or no session ID was produced', report)
+            if differences(self.authority,self.workspace,protected_files(self.authority)):
+                return self.stop('NEEDS_REVIEW','Protected inputs changed during generation',report)
+            if not substantive:
                 record.update(checks=state.get('last_check'), check_status=report['status'],
-                              unchanged_final_evidence=state.get('last_check'))
-                return self.stop('INCOMPLETE', 'Agent returned an unchanged candidate after final checks; no duplicate final invocation', report)
+                              reused_evidence=state.get('last_check'),evidence_kind='REUSED: checked inputs unchanged; no new check')
+                state.setdefault('evidence_reuse',[]).append(dict(round=number,report=state.get('last_check'),reason=record['evidence_kind']))
+                signature = dict(inputs=relevant_before,failures=failure_signature(report))
+                prior = state.get('no_progress') or {}
+                state['no_progress'] = dict(signature=signature,count=prior.get('count',0)+1 if prior.get('signature') == signature else 1)
+                state['review_feedback'] = state.get('review_feedback') or 'No checked implementation/proof/configuration changed. Existing independent evidence is reused, not rerun. Reports and unreferenced repro files are not protocol progress. Repair the actual blocker or supply a fixed-input-objection with evidence; another unchanged handoff stops for review.'
+                self.save()
+                continue
+            state['no_progress'] = None
+            state.pop('review_feedback',None)
             self.replay_attempts()
-            report = self.inspect(final=next_check == 'final')
+            report = self.inspect(final=next_check == 'final' and not known_functional_failure(report),
+                use_reserve=next_check == 'final')
             if report and self.rollback(report):
                 self.elapsed()  # Restoration is charged wall time, never refunded.
                 report = self.inspect(final=next_check == 'final')
@@ -798,12 +956,10 @@ class Loop:
                 current_record = state.get('obligations', {}).get(state.get('current_key'), {})
                 record['newly_checked_dependencies'] = current_record.get('newly_checked', [])
             self.save()
-            if result.status == 'BLOCKED' or (result.status == 'COMPLETED' and result.exit_code != 0) or not state['thread_id']:
-                return self.stop('BLOCKED', 'Agent execution/authentication failed or no session ID was produced', report)
             # TIMEOUT/LOG_LIMIT are bounded failed slices, not success. A captured
             # thread may continue with actual diagnostics while budgets permit.
         # The final reserve belongs to checks of the current stopped candidate.
-        final_report = report if report and report.get('mode') == 'final' else self.inspect(final=True)
+        final_report = report if report and (report.get('mode') == 'final' or known_functional_failure(report)) else self.inspect(final=True)
         if final_report:
             report = final_report
         if report and report['status'] == success_label(state) and report.get('mode') == 'final':

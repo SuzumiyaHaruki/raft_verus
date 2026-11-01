@@ -1,0 +1,13 @@
+{
+  "root_git": "UNAVAILABLE: empty .git",
+  "reference_checkout": "/tmp/raft-verus-publish-election-start",
+  "reference_head": "490f1a0971851da53ca044e2a0a0fc6b3938d9ab",
+  "differences_from_reference": [],
+  "protected": {
+    "madraft": "ab123399f7f2690a665d58d86e476e964b9778be1a0c61b83662af08482177b3",
+    "requirements": "3ca84e3a57717158c85b7f678495a8e85372179e06e6223e6c7d9eb8e7df2286",
+    "labs": "41e68313e8544d8c550ad5fdc59e5b5e6b0e276a6e18c42113fef0c1ea590227",
+    "runs/election-start-01": "2e303cc78c66230d74bf44c32dbda2f885d943ccc6792b2c94bc1c1bc84f578e",
+    "tools.ini": "0f65b7a69d87aae8ca19a548084e0809cd0e7ac2058b3ac127db02f969a3252a"
+  }
+}

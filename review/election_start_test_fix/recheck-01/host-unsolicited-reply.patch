@@ -1,0 +1,39 @@
+--- correct/src/raft/raft.rs
++++ host-defect/src/raft/raft.rs
+@@ -115,6 +115,16 @@
+         // initialize from state persisted before a crash
+         // Receiver recovery already called the actual Core above. Other labs remain TODO.
+         handle.start_rpc_server();
++        if recovery_only {
++            // DEFECT: emit an unsolicited old vote reply solely from recovered state.
++            let v=handle.inner.lock().unwrap().vote.inspect();
++            if let Some(client)=v.state.voted_for {
++                let dst=handle.inner.lock().unwrap().peers[client as usize];
++                let reply=Ok::<RequestVoteReply,String>(RequestVoteReply{term:v.state.term,vote_granted:true});
++                handle.endpoint.send_to_raw(dst,0,Box::new((reply,bytes::Bytes::new()))).await.unwrap();
++            }
++        }
++
+ 
+         (handle, recver)
+     }
+--- correct/Cargo.toml
++++ host-defect/Cargo.toml
+@@ -8,6 +8,7 @@
+ # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+ 
+ [dependencies]
++bytes = "1"
+ madsim = { git = "https://github.com/madsim-rs/madsim", rev = "519950efb4711464f300ed7edf2967ed62d5f502", features = ["rpc", "macros"] }
+ log = "0.4"
+ rand = "0.8"
+--- correct/Cargo.lock
++++ host-defect/Cargo.lock
+@@ -338,6 +338,7 @@
+ name = "madraft"
+ version = "0.1.0"
+ dependencies = [
++ "bytes",
+  "async-channel",
+  "bincode",
+  "futures",

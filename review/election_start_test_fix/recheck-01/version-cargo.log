@@ -1,0 +1,4 @@
+$ /home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo --version
+cargo 1.92.0 (344c4567c 2025-10-21)
+
+process=COMPLETED exit=0

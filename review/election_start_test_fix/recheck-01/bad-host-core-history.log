@@ -1,0 +1,4 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/target/election-start-test-fix/recheck-01/bad-host/tasks/election_start/caller.rs --crate-type lib --cfg madsim --cfg es_history --no-cheating
+verification results:: 39 verified, 0 errors
+
+process=COMPLETED exit=0

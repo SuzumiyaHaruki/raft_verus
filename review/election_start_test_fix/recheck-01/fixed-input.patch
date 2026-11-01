@@ -1,0 +1,161 @@
+--- old/AGENTS.md
++++ revised/AGENTS.md
+@@ -15,3 +15,5 @@
+ python3 scripts/check.py safety --task election-start --timeout 240
+ python3 scripts/check.py final --task election-start --timeout 600
+ ```
++
++A suspected fixed-input defect is not permission to edit acceptance. In PROGRESS.md (madraft/PROGRESS.md for scoped tasks), use one `<!-- fixed-input-objection -->` JSON object followed by `<!-- /fixed-input-objection -->` with `file`, `test` (exact failing test or check), `conflict`, `evidence` (current independent log or local minimal reproducer), `reproduce` (command for human review only), `needs_fixed_change: true`, `recommendation` (unapplied), `candidate_revision` (from feedback) and `unresolved`. The controller may rerun the fixed failing item once, capped at 60 seconds charged to the cumulative budget, then stop NEEDS_REVIEW. It never executes your proposed shell command or adopts your suggested test change. Insufficient evidence gets one clarification opportunity; repeated unchanged checked inputs/failures stop for review. Report edits and unreferenced reproducer files are retained but are not implementation/proof progress.
+--- old/rpc_tests.rs
++++ revised/rpc_tests.rs
+@@ -5,6 +5,7 @@
+ use vote_api::Action;
+ use madsim::{runtime::{Handle, NodeHandle}, net::{Endpoint, NetSim}, time::{timeout, Duration}};
+ use std::future::Future;
++include!("observer_tests.rs");
+ 
+ fn initial(term: u64, vote: Option<u64>, log: Log) -> Initial {
+     Initial { state:Persistent{term,voted_for:vote,log},role:vote_api::Role::Follower }
+@@ -179,6 +180,13 @@
+     let (server,client,ep,h)=network().await;
+     let (other,other_ep)=second_client().await;
+     let rt=Handle::current(); let id=server.id();
++    // Passive delivery observation belongs to the surviving client, not the old
++    // Core or RPC task. Always forward the original packet unchanged.
++    let replies=Arc::new(Mutex::new(Vec::new()));
++    let record=replies.clone();
++    NetSim::current().hook_rpc_rsp::<std::result::Result<RequestVoteReply,String>>(client.id(),move |r| {
++        record.lock().unwrap().push(r.as_ref().map(|r|(r.term,r.vote_granted)).map_err(Clone::clone)); true
++    });
+     let (entered,waiting)=async_channel::bounded(1);
+     let (release,released)=async_channel::bounded(1);
+     if uncompleted {
+@@ -187,20 +195,29 @@
+     }
+     let (done,observed)=async_channel::bounded(1);
+     let c=client.clone(); let e=ep.clone();
+-    let mut running=Some(task::spawn(async move {done.send(call(&c,&e,request(1,1,0,0)).await).await.unwrap();}));
++    let mut running=Some(c.spawn(async move {
++        // Retain transport errors separately from the protocol Result. An RPC
++        // error or task panic cannot count as a live no-output observation.
++        let result=e.call_timeout::<RequestVoteArgs>(peers()[0],RequestVoteArgs{term:1,candidate_id:1,
++            last_log_term:0,last_log_index:0},Duration::from_secs(2)).await;
++        done.send(result).await.unwrap();
++    }));
+     if uncompleted {
+         let w=bounded(waiting.recv()).await.unwrap();
+         assert_eq!(h.inner.lock().unwrap().vote.inspect().pending,Some(w));
+-        assert!(timeout(Duration::from_millis(30),observed.recv()).await.is_err(),"no reply at post-write barrier");
++        assert_quiet(observe(&observed).await,"no reply at post-write barrier");
+     } else {
+-        assert!(bounded(observed.recv()).await.unwrap().unwrap().vote_granted);
++        assert!(bounded(observed.recv()).await.unwrap().unwrap().unwrap().vote_granted);
+         running.take().unwrap().await.unwrap();
++        assert_eq!(*replies.lock().unwrap(),vec![Ok((1,true))],"live network observer sees confirmed reply");
++        replies.lock().unwrap().clear();
+     }
+     file(&server,[0,1,1,1,0,0],"pre-kill actual saved vote").await;
+     // No release and no new accepted operation. Discard ALL old core handles.
+     let old = Arc::downgrade(&h.inner);
+     rt.kill(id);
+-    if let Some(running) = running { running.abort(); assert!(bounded(running).await.is_err()); }
++    // The client is a different node. Keep its observer alive until the restart
++    // window ends, while requiring every old server Core reference to disappear.
+     drop(h); drop(server); drop(release);
+     bounded(async { while old.upgrade().is_some() { task::yield_now().await; } }).await;
+     rt.restart(id);
+@@ -209,11 +226,22 @@
+     let fresh=start(&restarted,true).await;
+     let v=fresh.inner.lock().unwrap().vote.inspect();
+     assert_eq!((v.state.term,v.state.voted_for,v.next,v.pending),(1,Some(1),1,None),"restore vote from file");
++    assert_eq!(v.role,vote_api::Role::Follower,"recovery starts as Follower");
+     if uncompleted {
+-        assert!(timeout(Duration::from_millis(30),observed.recv()).await.is_err(),"restart must not synthesize old reply");
++        assert_quiet(observe(&observed).await,"restart must not synthesize old reply");
++    } else {
++        // Give actual network deliveries the same bounded observation window.
++        madsim::time::sleep(Duration::from_millis(30)).await;
++    }
++    assert!(replies.lock().unwrap().is_empty(),"recovery emitted an unsolicited RequestVote reply");
++    if let Some(running) = running {
++        running.abort();
++        assert!(bounded(running).await.unwrap_err().is_cancelled(),"observer cleanup must be cancellation");
++        assert!(matches!(observe(&observed).await,Observation::Closed),"closed empty observer is cleanup only");
+     }
+     assert!(!call(&other,&other_ep,request(1,2,0,0)).await.unwrap().vote_granted,"recovery must not forget vote");
+     assert!(call(&client,&ep,request(1,1,0,0)).await.unwrap().vote_granted);
++    assert_eq!(*replies.lock().unwrap(),vec![Ok((1,true))],"network observer must remain effective after restart");
+     file(&restarted,[2,1,1,1,0,0],"new requests use fresh operation IDs").await;
+     rt.kill(id);
+ }
+--- old/observer_tests.rs
++++ revised/observer_tests.rs
+@@ -0,0 +1,68 @@
++// Test-only observation. Quiet requires an actual live producer; Closed is
++// cleanup, and every received value (including an error) ends observation.
++#[derive(Debug)]
++enum Observation<T> { Quiet, Closed, Received(T) }
++async fn observe<T>(receiver: &async_channel::Receiver<T>) -> Observation<T> {
++    match timeout(Duration::from_millis(30),receiver.recv()).await {
++        Err(_) => Observation::Quiet,
++        Ok(Err(_)) => Observation::Closed,
++        Ok(Ok(value)) => Observation::Received(value),
++    }
++}
++fn assert_quiet<T: std::fmt::Debug>(result: Observation<T>, label: &str) {
++    assert!(matches!(result,Observation::Quiet),"{}: observation ended or received output: {:?}",label,result);
++}
++#[madsim::test]
++async fn observer_live_then_cancelled() {
++    let (send,recv)=async_channel::bounded::<()>(1);
++    let (entered,ready)=async_channel::bounded(1);
++    let worker=task::spawn(async move {
++        entered.send(()).await.unwrap();
++        std::future::pending::<()>().await;
++        send.send(()).await.unwrap();
++    });
++    bounded(ready.recv()).await.unwrap();
++    assert_quiet(observe(&recv).await,"live worker has no output in window");
++    worker.abort();
++    assert!(bounded(worker).await.unwrap_err().is_cancelled());
++    assert!(matches!(observe(&recv).await,Observation::Closed));
++    println!("abort/join sole sender: Ok(Err(RecvError)), not Err(Elapsed); cleanup only");
++}
++#[madsim::test]
++async fn observer_queued_reply_then_closed() {
++    let (send,recv)=async_channel::bounded(1);
++    send.send(Ok::<_,String>((1u64,true))).await.unwrap(); drop(send);
++    let result=observe(&recv).await;
++    assert!(matches!(result,Observation::Received(Ok((1,true)))));
++    assert!(std::panic::catch_unwind(|| assert_quiet(result,"queued protocol reply")).is_err());
++    assert!(matches!(observe(&recv).await,Observation::Closed));
++}
++#[madsim::test]
++async fn observer_transport_error() {
++    let node=Handle::current().create_node().ip(peers()[1].ip()).build();
++    let (send,recv)=async_channel::bounded(1);
++    let worker=node.spawn(async move {
++        let ep=Endpoint::bind(peers()[1]).await.unwrap();
++        let result=ep.call_timeout::<RequestVoteArgs>(peers()[0],RequestVoteArgs{
++            term:1,candidate_id:1,last_log_term:0,last_log_index:0},Duration::from_millis(1)).await;
++        send.send(result.map_err(|e|e.kind())).await.unwrap();
++    });
++    bounded(worker).await.unwrap();
++    let result=observe(&recv).await;
++    assert!(matches!(result,Observation::Received(Err(_))),"real RPC error must remain distinct");
++    assert!(std::panic::catch_unwind(|| assert_quiet(result,"transport failure")).is_err());
++}
++#[madsim::test]
++async fn observer_panicked_producer() {
++    use futures::FutureExt;
++    let (send,recv)=async_channel::bounded::<()>(1);
++    // Catch at the task boundary so the runtime can inspect the closed channel.
++    let worker=task::spawn(std::panic::AssertUnwindSafe(async move {
++        let _owner=send;
++        panic!("controlled observer panic");
++    }).catch_unwind());
++    assert!(bounded(worker).await.unwrap().is_err());
++    let result=observe(&recv).await;
++    assert!(matches!(result,Observation::Closed));
++    assert!(std::panic::catch_unwind(|| assert_quiet(result,"observer died")).is_err());
++}

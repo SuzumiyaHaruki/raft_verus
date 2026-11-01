@@ -1,0 +1,164 @@
+warning: unreachable statement
+   --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/raft.rs:225:9
+    |
+224 |         let persist: Persist = todo!("persist state");
+    |                                ---------------------- any code following this expression is unreachable
+225 |         let snapshot: Vec<u8> = todo!("persist snapshot");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unreachable statement
+    |
+    = note: `#[warn(unreachable_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: unreachable expression
+   --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/raft.rs:312:20
+    |
+311 |             data: todo!("apply msg"),
+    |                   ------------------ any code following this expression is unreachable
+312 |             index: todo!("apply msg"),
+    |                    ^^^^^^^^^^^^^^^^^^ unreachable expression
+    |
+    = note: this warning originates in the macro `$crate::panic::panic_2021` which comes from the expansion of the macro `todo` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: unused variable: `last_included_term`
+   --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/raft.rs:205:9
+    |
+205 |         last_included_term: u64,
+    |         ^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_term`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `last_included_index`
+   --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/raft.rs:206:9
+    |
+206 |         last_included_index: u64,
+    |         ^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_index`
+
+warning: unused variable: `snapshot`
+   --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/raft.rs:207:9
+    |
+207 |         snapshot: &[u8],
+    |         ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`
+
+warning: unused variable: `index`
+   --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/raft.rs:216:34
+    |
+216 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {
+    |                                  ^^^^^ help: if this is intentional, prefix it with an underscore: `_index`
+
+warning: unused variable: `snapshot`
+   --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/raft.rs:216:46
+    |
+216 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {
+    |                                              ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`
+
+warning: unused variable: `persist`
+   --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/raft.rs:224:13
+    |
+224 |         let persist: Persist = todo!("persist state");
+    |             ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_persist`
+
+warning: unused variable: `snapshot`
+   --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/raft.rs:246:16
+    |
+246 |             Ok(snapshot) => {
+    |                ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`
+
+warning: unused variable: `persist`
+   --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/raft.rs:254:21
+    |
+254 |                 let persist: Persist = bincode::deserialize(&state).unwrap();
+    |                     ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_persist`
+
+warning: unused variable: `data`
+   --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/raft.rs:300:25
+    |
+300 |     fn start(&mut self, data: &[u8]) -> Result<Start> {
+    |                         ^^^^ help: if this is intentional, prefix it with an underscore: `_data`
+
+warning: unused variable: `msg`
+   --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/raft.rs:310:13
+    |
+310 |         let msg = ApplyMsg::Command {
+    |             ^^^ help: if this is intentional, prefix it with an underscore: `_msg`
+
+warning: fields `endpoint` and `apply_ch` are never read
+  --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/raft.rs:61:5
+   |
+60 | struct Raft {
+   |        ---- fields in this struct
+61 |     endpoint: net::Endpoint,
+   |     ^^^^^^^^
+...
+64 |     apply_ch: MsgSender,
+   |     ^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `Persist` is never constructed
+  --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/raft.rs:83:8
+   |
+83 | struct Persist {
+   |        ^^^^^^^
+
+warning: methods `persist` and `restore` are never used
+   --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/raft.rs:223:14
+    |
+ 94 | impl RaftHandle {
+    | --------------- methods in this implementation
+...
+223 |     async fn persist(&self) -> io::Result<()> {
+    |              ^^^^^^^
+...
+244 |     async fn restore(&self) -> io::Result<()> {
+    |              ^^^^^^^
+
+warning: associated items `apply` and `generate_election_timeout` are never used
+   --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/raft.rs:309:8
+    |
+299 | impl Raft {
+    | --------- associated items in this implementation
+...
+309 |     fn apply(&self) {
+    |        ^^^^^
+...
+323 |     fn generate_election_timeout() -> Duration {
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `State` is never constructed
+ --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/state.rs:7:19
+  |
+7 | pub(super) struct State {
+  |                   ^^^^^
+
+warning: enum `Role` is never used
+  --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/state.rs:13:17
+   |
+13 | pub(super) enum Role {
+   |                 ^^^^
+
+warning: method `is_leader` is never used
+  --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/state.rs:20:19
+   |
+19 | impl State {
+   | ---------- method in this implementation
+20 |     pub(super) fn is_leader(&self) -> (result: bool)
+   |                   ^^^^^^^^^
+
+warning: enum `Event` is never used
+  --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/../../../tasks/election_start/api.rs:40:10
+   |
+40 | pub enum Event { Start, Receive(Request), Complete(Completion) }
+   |          ^^^^^
+
+warning: field `origin` is never read
+  --> /home/nitro/Desktop/raft_verus/runs/election-start-01/madraft/repro/../src/raft/vote_core.rs:40:61
+   |
+40 | pub struct Core { state: View, outputs: Ghost<Seq<Choice>>, origin: Ghost<Option<Record>> }
+   |            ---- field in this struct                        ^^^^^^
+
+warning: 21 warnings emitted
+
+seed 1: actual pending-write restart, closed/no-message observer, stale completion, rival denial, chosen-candidate retry and fresh file IDs PASS
+seed 2: actual pending-write restart, closed/no-message observer, stale completion, rival denial, chosen-candidate retry and fresh file IDs PASS
+seed 3: actual pending-write restart, closed/no-message observer, stale completion, rival denial, chosen-candidate retry and fresh file IDs PASS
+seed 4: actual pending-write restart, closed/no-message observer, stale completion, rival denial, chosen-candidate retry and fresh file IDs PASS
+seed 5: actual pending-write restart, closed/no-message observer, stale completion, rival denial, chosen-candidate retry and fresh file IDs PASS

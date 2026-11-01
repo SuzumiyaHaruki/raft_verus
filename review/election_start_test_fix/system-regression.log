@@ -1,0 +1,111 @@
+test_copied_tools_configuration_is_accepted_without_trusting_overrides (test_checks.CheckerTests) ... ok
+test_cross_candidate_results_cannot_be_assembled (test_checks.CheckerTests) ... ok
+test_default_final_seeds_are_all_checked_on_one_snapshot (test_checks.CheckerTests) ... ok
+test_diagnostic_categories_are_distinct (test_checks.CheckerTests) ... ok
+test_edit_during_checks_invalidates_results (test_checks.CheckerTests) ... ok
+test_empty_filter_and_missing_family_are_not_passes (test_checks.CheckerTests) ... ok
+test_expected_inventory_has_all_families_and_host_tests (test_checks.CheckerTests) ... ok
+test_hung_test_cannot_consume_proof_reservation (test_checks.CheckerTests) ... ok
+test_known_vacuity_forms_are_flagged_not_declared_semantically_complete (test_checks.CheckerTests) ... ok
+test_missing_actual_function_reference_never_becomes_checked_coverage (test_checks.CheckerTests) ... ok
+test_model_pass_and_vacuous_snapshot_keep_actual_connections_open (test_checks.CheckerTests) ... ok
+test_mutation_of_checked_snapshot_is_also_detected (test_checks.CheckerTests) ... ok
+test_newly_ignored_original_test_is_missing_coverage (test_checks.CheckerTests) ... ok
+test_nonfinite_call_cap_is_rejected_before_starting_a_process (test_checks.CheckerTests) ... ok
+test_one_passing_test_does_not_hide_missing_coverage (test_checks.CheckerTests) ... ok
+test_original_ignored_placeholder_is_not_counted_as_pass (test_checks.CheckerTests) ... ok
+test_protected_changes_use_original_tests_and_targets (test_checks.CheckerTests) ... ok
+test_rotation_is_deterministic_and_reaches_every_family (test_checks.CheckerTests) ... ok
+test_safety_cli_requests_formal_only (test_checks.CheckerTests) ... ok
+test_safety_never_calls_cargo (test_checks.CheckerTests) ... ok
+test_same_content_is_rechecked_and_changed_source_or_seed_never_reuses_pass (test_checks.CheckerTests) ... ok
+test_shared_dependency_compile_failure_is_not_rerun_or_passed (test_checks.CheckerTests) ... ok
+test_shared_errors_are_grouped_by_function_and_location (test_checks.CheckerTests) ... ok
+test_single_caller_keeps_fixed_target_and_no_function_filter (test_checks.CheckerTests) ... ok
+test_source_links_reject_an_external_answer_path (test_checks.CheckerTests) ... ok
+test_standards_changed_during_checks_are_not_accepted (test_checks.CheckerTests) ... ok
+test_top_caller_uses_the_copied_fixed_requirements (test_checks.CheckerTests) ... ok
+test_typechecking_is_not_verification (test_checks.CheckerTests) ... ok
+test_unavailable_verifier_is_reported_once_with_unrun_dependents (test_checks.CheckerTests) ... ok
+test_verified_nominated_units_and_table_are_not_semantic_acceptance (test_checks.CheckerTests) ... ok
+test_ab_inputs_and_acceptance_are_identical_only_guidance_differs (test_helpers.LoopTests) ... ok
+test_changed_fixed_inputs_require_review (test_helpers.LoopTests) ... ok
+test_closing_budget_uses_work_then_final_without_feedback_reserve (test_helpers.LoopTests) ... ok
+test_connection_gap_reaches_next_round_despite_model_pass (test_helpers.LoopTests) ... ok
+test_exhausted_budget_cannot_be_reset_by_resume (test_helpers.LoopTests) ... ok
+test_exit_zero_and_local_pass_continue_same_session (test_helpers.LoopTests) ... ok
+test_fake_agent_can_continue_past_eight_handoffs (test_helpers.LoopTests) ... ok
+test_fake_clock_records_actual_cost_not_reserved_cost (test_helpers.LoopTests) ... ok
+test_final_can_be_followed_by_useful_work_when_actual_cost_leaves_budget (test_helpers.LoopTests) ... ok
+test_five_safety_passes_do_not_replace_refinement (test_helpers.LoopTests) ... ok
+test_fresh_runs_and_personal_home_do_not_import_prior_answers (test_helpers.LoopTests) ... ok
+test_insufficient_useful_round_budget_never_calls_model (test_helpers.LoopTests) ... ok
+test_interrupted_history_is_saved_before_independent_check (test_helpers.LoopTests) ... ok
+test_interrupted_reservation_is_not_refunded (test_helpers.LoopTests) ... ok
+test_last_round_goes_directly_to_final (test_helpers.LoopTests) ... ok
+test_legacy_state_is_not_a_resume_origin (test_helpers.LoopTests) ... ok
+test_lock_prevents_two_writers (test_helpers.LoopTests) ... ok
+test_missing_interfaces_do_not_consume_redesigns (test_helpers.LoopTests) ... ok
+test_missing_tool_stops_before_agent (test_helpers.LoopTests) ... ok
+test_one_top_level_pass_does_not_finish (test_helpers.LoopTests) ... ok
+test_preview_has_no_side_effect_or_call (test_helpers.LoopTests) ... ok
+test_previous_pass_is_invalidated_on_resume (test_helpers.LoopTests) ... ok
+test_resume_keeps_budget_history_and_rechecks_before_agent (test_helpers.LoopTests) ... ok
+test_safety_and_execution_passes_do_not_replace_snapshot_coverage (test_helpers.LoopTests) ... ok
+test_simulated_full_acceptance_stops_only_after_independent_check (test_helpers.LoopTests) ... ok
+test_soft_handoff_and_hard_timeout_are_distinct (test_helpers.LoopTests) ... ok
+test_timeout_keeps_candidate_logs_and_same_session (test_helpers.LoopTests) ... ok
+test_token_usage_preserves_counters_without_double_summing (test_helpers.LoopTests) ... ok
+test_unchanged_candidate_after_final_does_not_repeat_identical_checks (test_helpers.LoopTests) ... ok
+test_controller_sigkill_cleans_worker (test_helpers.ProcessTests) ... ok
+test_log_limit_and_nonzero_exit (test_helpers.ProcessTests) ... ok
+test_after_two_local_handoffs_python_prioritizes_execution_connection (test_obligations.IncrementTests) ... ok
+test_current_test_selection_preserves_oldest_family_rotation (test_obligations.IncrementTests) ... ok
+test_failures_are_per_obligation_and_renaming_does_not_reset (test_obligations.IncrementTests) ... ok
+test_local_contract_survives_missing_outer_path_and_parent (test_obligations.IncrementTests) ... ok
+test_microattempt_claim_is_replayed_and_cannot_forge_success (test_obligations.IncrementTests) ... ok
+test_missing_timeout_and_compilation_do_not_consume_proof_redesign (test_obligations.IncrementTests) ... ok
+test_parent_nomination_is_checked_but_never_semantic_closure (test_obligations.IncrementTests) ... ok
+test_related_dependency_success_clears_stall_but_helpers_elsewhere_do_not (test_obligations.IncrementTests) ... ok
+test_renamed_or_rechecked_old_success_is_not_new_progress (test_obligations.IncrementTests) ... ok
+test_rollback_rejects_other_run_and_traversal_before_mutation (test_obligations.IncrementTests) ... ok
+test_rollback_restores_code_and_proof_keeps_unrelated_work_and_history (test_obligations.IncrementTests) ... ok
+test_run_redesign_cap_blocks_another_obligation_without_resetting_costs (test_obligations.IncrementTests) ... ok
+test_timeout_or_missing_plan_does_not_trigger_a_pending_redesign (test_obligations.IncrementTests) ... ok
+test_two_hour_defaults_do_not_stop_at_eight_rounds (test_obligations.IncrementTests) ... ok
+test_untrusted_test_commands_and_outside_proof_paths_are_rejected (test_obligations.IncrementTests) ... ok
+test_feedback_is_narrow_english_and_local_history_has_distinct_goals (test_request_vote.RequestVoteTests) ... ok
+test_fresh_preparation_preserves_root_and_excludes_answers (test_request_vote.RequestVoteTests) ... ok
+test_protection_covers_task_and_actual_host_but_not_student_core (test_request_vote.RequestVoteTests) ... ok
+test_raw_source_changes_are_detected_separately_from_preparation (test_request_vote.RequestVoteTests) ... ok
+test_simulated_local_pass_never_claims_global_completion (test_request_vote.RequestVoteTests) ... ok
+test_simulated_success_cannot_hide_modified_fixed_test (test_request_vote.RequestVoteTests) ... ok
+test_task_is_bound_across_resume_even_in_preview (test_request_vote.RequestVoteTests) ... ok
+test_all_authored_agent_inputs_and_feedback_are_english (test_election_start.ElectionStartTests) ... ok
+test_fixed_path_protected_core_editable (test_election_start.ElectionStartTests) ... ok
+test_fresh_unfinished_one_authority_and_input_isolation (test_election_start.ElectionStartTests) ... ok
+test_full_and_receiver_scopes_and_budget_preserved (test_election_start.ElectionStartTests) ... ok
+test_original_eight_receiver_tests_preserved (test_election_start.ElectionStartTests) ... ok
+test_preview_and_resume_task_binding (test_election_start.ElectionStartTests) ... ok
+test_safety_does_not_run_functional_tests (test_election_start.ElectionStartTests) ... ok
+test_simulated_final_requires_all_groups_and_seeds (test_election_start.ElectionStartTests) ... ok
+test_tampered_observer_or_test_cannot_pass (test_election_start.ElectionStartTests) ... ok
+test_actual_functional_blocker_and_no_final_in_both_scopes (test_review_stop.ReviewStopTests) ... ok
+test_core_change_requires_recheck_and_protected_change_stops (test_review_stop.ReviewStopTests) ... NEEDS_REVIEW: suspected_fixed_input_defect; state: /tmp/tmpjdf82r6k/source/runs/.controller/new-campaign/state.json
+ok
+test_diagnostic_timeout_is_inconclusive_and_budget_is_not_renewed (test_review_stop.ReviewStopTests) ... NEEDS_REVIEW: fixed_input_diagnostic_inconclusive; state: /tmp/tmpno1lngrm/source/runs/.controller/new-campaign/state.json
+ok
+test_failure_signature_normalizes_paths_not_assertions_or_seeds (test_review_stop.ReviewStopTests) ... ok
+test_identity_ignores_reports_and_unreferenced_repro_but_tracks_real_dependencies (test_review_stop.ReviewStopTests) ... ok
+test_objection_one_bounded_diagnostic_then_review_no_shell (test_review_stop.ReviewStopTests) ... NEEDS_REVIEW: suspected_fixed_input_defect; state: /tmp/tmprznm0a95/source/runs/.controller/new-campaign/state.json
+NEEDS_REVIEW: fixed_input_diagnostic_already_used; state: /tmp/tmprznm0a95/source/runs/.controller/new-campaign/state.json
+ok
+test_reports_and_unused_reproducer_cannot_repeat_failed_final (test_review_stop.ReviewStopTests) ... NEEDS_REVIEW: no_progress: unchanged checked inputs and failures after two handoffs; state: /tmp/tmp37n99lv2/source/runs/.controller/new-campaign/state.json
+ok
+test_unsubstantiated_claim_gets_one_gap_then_stops (test_review_stop.ReviewStopTests) ... NEEDS_REVIEW: no_progress: unchanged checked inputs and failures after two handoffs; state: /tmp/tmpaf06b1q9/source/runs/.controller/new-campaign/state.json
+ok
+
+----------------------------------------------------------------------
+Ran 100 tests in 18.539s
+
+OK

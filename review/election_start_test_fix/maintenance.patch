@@ -1,0 +1,904 @@
+--- a/scripts/check.py
++++ b/scripts/check.py
+@@ -410,6 +410,7 @@
+                 observed = dict(re.findall(r'^test (\S+) \.\.\. (ok|FAILED|ignored)', text, re.M))
+                 missing = sorted(n for n in expected - IGNORED if observed.get(n) != 'ok')
+                 item['passed_tests'] = sorted(n for n, state in observed.items() if state == 'ok')
++                item['failed_tests'] = sorted(n for n, state in observed.items() if state == 'FAILED')
+                 item['ignored_tests'] = sorted(n for n, state in observed.items() if state == 'ignored')
+             item['uncovered_tests'] = missing
+             if item['status'] == 'PASS' and (missing or not observed):
+--- a/scripts/election_start.py
++++ b/scripts/election_start.py
+@@ -1,12 +1,12 @@
+ """One additional scoped task; reuse the receiver's actual checking loop."""
+ from request_vote import evaluate, prepare as prepare_task
+ 
+-VERSION = 'madraft-election-start-1'
++VERSION = 'madraft-election-start-2'
+ DIRECTORY = 'tasks/election_start'
+ HELPERS = ['scripts/request_vote.py', 'scripts/election_start.py']
+ INPUTS = ('AGENTS.md','TASK.md','start.md','continue.md','redesign.md','api.rs','caller.rs',
+-          'core.rs','lemmas.rs','host.rs','driver.rs','rpc_tests.rs','election_tests.rs','prepare.py')
+-TEST_FILES = ('rpc_tests.rs','election_tests.rs')
++          'core.rs','lemmas.rs','host.rs','driver.rs','rpc_tests.rs','election_tests.rs','observer_tests.rs','prepare.py')
++TEST_FILES = ('rpc_tests.rs','election_tests.rs','observer_tests.rs')
+ TEST_FILTER = 'raft::raft::vote_tests::'
+ GOALS = ('rules','campaign','authorization','history','receive_confirmed','receive_pending',
+          'self_confirmed','self_pending')
+--- a/scripts/prompts/continue.md
++++ b/scripts/prompts/continue.md
+@@ -1,3 +1,5 @@
+ Continue the selected obligation using its first unfinished dependency and actual diagnostic below. Keep the checked local result while establishing its real caller, execution step or parent use. A dependency passing is relevant progress even when the full theorem is open; unrelated helper counts are not. Update the current obligation block if its statement or representation changes, retaining its identity and failed approaches.
+ 
+ Repair the smallest affected code/proof scope first. Run `python3 scripts/check.py obligation` for small attempts and relevant functional checks for regressions. Missing interfaces require construction, compilation errors require interface repair, and timeouts require checking/scheduling work; none alone establishes an unsafe execution. If abandoning this design, request a listed same-run checkpoint in the obligation block. Save PROGRESS.md and return normally by the soft handoff deadline.
++
++A suspected fixed-input defect is not permission to edit acceptance. In PROGRESS.md (madraft/PROGRESS.md for scoped tasks), use one `<!-- fixed-input-objection -->` JSON object followed by `<!-- /fixed-input-objection -->` with `file`, `test` (exact failing test or check), `conflict`, `evidence` (current independent log or local minimal reproducer), `reproduce` (command for human review only), `needs_fixed_change: true`, `recommendation` (unapplied), `candidate_revision` (from feedback) and `unresolved`. The controller may rerun the fixed failing item once, capped at 60 seconds charged to the cumulative budget, then stop NEEDS_REVIEW. It never executes your proposed shell command or adopts your suggested test change. Insufficient evidence gets one clarification opportunity; repeated unchanged checked inputs/failures stop for review. Report edits and unreferenced reproducer files are retained but are not implementation/proof progress.
+--- a/scripts/request_vote.py
++++ b/scripts/request_vote.py
+@@ -56,6 +56,9 @@
+         if goal != 'rules': argv += ['--cfg',spec.CFG + goal]
+         checks.run(spec.PREFIX + goal,argv,proof=True)
+     first = next((g for g in spec.GOALS if checks.results[spec.PREFIX + g]['status'] != 'PASS'), None)
++    # Order is build/inventory/tests/boundary/proofs. Report an actual failure,
++    # including its exact tests and seeds, even when every theorem passes.
++    blocker = next(((n,i) for n,i in checks.results.items() if i['status'] != 'PASS'), None)
+     # This small fixed dependency chain is metadata for existing failure history,
+     # not a candidate-selected proof target or another task scheduler.
+     goal = first or 'rules'
+@@ -66,7 +69,8 @@
+         functions=['madraft/src/raft/vote_core.rs::' + f for f in spec.FUNCTIONS],
+         dependencies=[],premises=spec.BOUNDARY),units={spec.PREFIX + goal:entry},
+         layer='LOCAL_UNIT_CHECKED' if not first else 'PREPARATION',
+-        first_blocker=dict(check=spec.PREFIX + goal,entry=entry,reason=item['reason'],log=item.get('log')) if first else
++        first_blocker=dict(check=blocker[0],entry=entry,**{k:blocker[1].get(k) for k in
++            ('reason','category','log','diagnostic','failed_tests','seed')}) if blocker else
+             dict(reason='run_all_local_tests_and_seeds'), imported_references=['madraft/src/raft/vote_core.rs'])
+     required = list(checks.results)
+     report = checks.finish(mode,required)
+--- a/scripts/run.py
++++ b/scripts/run.py
+@@ -24,6 +24,99 @@
+ 
+ PROMPTS = ('start', 'continue', 'redesign', 'behavior')
+ FORMAT = 'madraft-generate-check-5'
++DIAGNOSTIC_SECONDS = 60
++
++
++def progress_path(workspace, state):
++    return workspace / ('madraft/PROGRESS.md' if scoped_task(state.get('task','full')) else 'PROGRESS.md')
++
++
++def relevant_identity(workspace, authority, state, report):
++    """Reuse existing input binding, restricted to checked dependencies, not reports.
++
++    Literal module/include discovery is conservative scheduling metadata, never a
++    semantic proof. Unknown dynamic includes retain all source files as a fallback.
++    """
++    workspace = workspace.resolve()
++    module = scoped_task(state.get('task','full'))
++    entries = ['madraft/src/lib.rs', 'madraft/proof/progress.rs']
++    if module:
++        entries += [module.DIRECTORY + '/caller.rs']
++    else:
++        entries += ['madraft/proof/implementation.rs'] + ['madraft/proof/' + n + '.rs' for n in OBLIGATIONS]
++        plan = (report or {}).get('current_obligation',{}).get('plan',{})
++        entries += [plan.get('entry',''), *plan.get('dependencies',[])]
++    paths = set()
++    for n in filter(None,entries): paths.update(module_paths(workspace / n,workspace))
++    uncertain = False
++    for p in list(paths):
++        text = p.read_text() if p.is_file() else ''
++        # Inline module bases and macro-generated paths can defeat literal
++        # discovery. Do not reuse evidence based on an incomplete graph.
++        declarations = re.findall(r'(?:#\[path\s*=\s*"([^"]+)"\]\s*)?(?:pub(?:\([^)]*\))?\s+)?mod\s+(\w+)\s*;',text)
++        for explicit,name in declarations:
++            choices = [p.parent/explicit] if explicit else [p.parent/(name+'.rs'),p.parent/name/'mod.rs',p.parent/p.stem/(name+'.rs')]
++            uncertain |= not any(c.resolve() in paths for c in choices)
++        for name in re.findall(r'include_(?:str|bytes)!\(\s*"([^"]+)"\s*\)',text):
++            paths.add((p.parent / name).resolve())
++        if re.search(r'include(?:_str|_bytes)?!\(\s*[^"\s]',text):
++            uncertain = True
++    if uncertain: paths.update(files_under(workspace / 'madraft').values())
++    paths.update(workspace / n for n in protected_files(authority))
++    for n,p in files_under(workspace / 'madraft').items():
++        if Path(n).name in ('Cargo.toml','Cargo.lock','build.rs') or '.cargo' in Path(n).parts or n.startswith('rust-toolchain'):
++            paths.add(p)
++    files = {str(p.relative_to(workspace)):p for p in paths if p.is_relative_to(workspace) and p.is_file()}
++    # Full-mode nomination affects which units get checked; prose does not.
++    note = progress_path(workspace,state)
++    text = note.read_text() if note.is_file() else ''
++    nomination = re.findall(r'<!-- (?:obligation|connections) -->.*?<!-- /(?:obligation|connections) -->',text,re.S) if not module else []
++    return dict(sources=fingerprint(files), parameters=dict(task=state.get('task','full'),seeds=state['seeds'],
++        tools=state.get('tools'),input=state.get('input_fingerprint'),nomination=nomination))
++
++
++def failure_signature(report):
++    """Retain seeds and assertion text; discard paths, counters and timing noise."""
++    failures = []
++    for name,item in report['checks'].items():
++        if item['status'] == 'PASS': continue
++        diagnostic = item.get('diagnostic','')
++        raw = diagnostic.splitlines()
++        selected = set()
++        for i,line in enumerate(raw):
++            if any(x in line for x in ('assertion','panicked at','postcondition','precondition','left:','right:','error:')):
++                selected.update(range(i,min(len(raw),i+3)))
++        lines = [raw[i].strip() for i in sorted(selected) if raw[i].strip()]
++        text = '\n'.join(lines)
++        text = re.sub(r'/(?:[^\s:\'"()]+/)+[^\s:\'"()]+', '<path>',text)
++        text = re.sub(r':\d+:\d+', ':<location>',text)
++        text = re.sub(r'\b(?:check|round|replay)-[\d-]+', '<check>',text)
++        failures.append(dict(check=name,tests=item.get('failed_tests',[]),seed=item.get('seed'),
++            category=item.get('category',item.get('reason')),assertion=text))
++    return failures
++
++
++def fixed_objection(workspace, authority, state, report):
++    note = progress_path(workspace,state)
++    text = note.read_text() if note.is_file() else ''
++    match = re.search(r'<!-- fixed-input-objection -->\s*(.*?)\s*<!-- /fixed-input-objection -->',text,re.S)
++    if not match: return None, []
++    try:
++        value = json.loads(match[1]); assert isinstance(value,dict)
++    except (ValueError,AssertionError): return {}, ['Use one JSON object in the fixed-input-objection block.']
++    gaps = [k for k in ('file','test','conflict','candidate_revision','unresolved','recommendation') if not isinstance(value.get(k),str) or not value[k].strip()]
++    if value.get('file') not in protected_files(authority): gaps.append('file must name a protected input')
++    if value.get('needs_fixed_change') is not True: gaps.append('needs_fixed_change must be true; suggestions remain unapplied')
++    if value.get('candidate_revision') != report['candidate_revision']: gaps.append('candidate_revision must identify the current independent check')
++    tests = {t for n,i in report['checks'].items() if i['status'] != 'PASS' for t in [n,*i.get('failed_tests',[])]}
++    if value.get('test') not in tests: gaps.append('test must identify an actually failing check or test')
++    # Evidence is descriptive input; NEVER execute a candidate's command string.
++    evidence = value.get('evidence','')
++    p = (workspace / evidence).resolve() if isinstance(evidence,str) and evidence else None
++    independent = any(p == Path(i['log']).resolve() for i in report['checks'].values() if i.get('log'))
++    repro = p and p.is_relative_to(workspace / 'madraft') and p.is_file() and not (workspace / evidence).is_symlink() and value.get('reproduce')
++    if not independent and not repro: gaps.append('provide the current independent log or a local reproducer and command')
++    return value, gaps
+ 
+ 
+ def success_label(state):
+@@ -36,7 +129,14 @@
+     names = ([module.PREFIX + n for n in module.GOALS]
+         if module else
+         [*OBLIGATIONS,'safety','linkage_review',*('connection_' + a for a in CONNECTIONS)])
+-    return all(report['checks'].get(n,{}).get('status') == 'PASS' for n in names)
++    return (all(report['checks'].get(n,{}).get('status') == 'PASS' for n in names)
++            and all(i['status'] == 'PASS' for n,i in report['checks'].items()
++                    if n.startswith(('build', 'inventory', 'tests')) or n == 'source_boundary')
++            and not report.get('changed_standards') and not report.get('concurrent_changes'))
++
++
++def known_functional_failure(report):
++    return any(i['status'] != 'PASS' for n,i in report['checks'].items() if n.startswith(('build','inventory','tests')))
+ 
+ 
+ def command(state, workspace, output):
+@@ -191,10 +291,12 @@
+             f'Cumulative budget remaining: {state["total_seconds"] - state["seconds_spent"]:.1f}s, including generation and independent checks.',
+             'Edit this workspace’s madraft/, not check snapshots. Close this bounded task and disclose host premises.']
+         if report:
+-            parts += ['First unfinished dependency: ' + json.dumps(report.get('current_obligation',{}).get('first_blocker'),ensure_ascii=False),
++            parts += ['Independent candidate revision: ' + report['candidate_revision'],
++                'First unfinished dependency: ' + json.dumps(report.get('current_obligation',{}).get('first_blocker'),ensure_ascii=False),
+                 'Per-check results: ' + json.dumps({n:{k:i.get(k) for k in ('status','reason','log','errors','diagnostic')}
+                     for n,i in report['checks'].items()},ensure_ascii=False),
+                 'Available checkpoints from this experiment (not earlier solutions): ' + json.dumps(state.get('checkpoints',[])[-5:],ensure_ascii=False)]
++        if state.get('review_feedback'): parts.append(state['review_feedback'])
+         return '\n\n'.join(parts) + '\n'
+     parts = [(authority / f'scripts/prompts/{mode}.md').read_text().strip(),
+              f'Workspace: {workspace}. Soft handoff deadline: {deadline} ({soft:.1f} seconds from now). '
+@@ -204,6 +306,7 @@
+              f'Cumulative budget remaining: {state["total_seconds"] - state["seconds_spent"]:.1f} seconds. '
+              f'Round: {state["attempts"] + 1}/{state["max_rounds"]}.',
+              'Diagnostics refer to the stopped candidate. Edit this workspace’s madraft/ files, not check snapshots.']
++    if state.get('review_feedback'): parts.append(state['review_feedback'])
+     if state.get('guidance', 'B') == 'B':
+         parts.append((authority / 'scripts/prompts/behavior.md').read_text().strip())
+     if report:
+@@ -571,10 +674,57 @@
+         self.save()
+         return True
+ 
+-    def inspect(self, initial=False, final=False, advance=True):
++    def review_objection(self, report):
++        value, gaps = fixed_objection(self.workspace,self.authority,self.state,report)
++        if value is None: return None
++        if gaps:
++            self.state['review_feedback'] = 'Fixed-input objection evidence gaps: ' + '; '.join(gaps) + '. Acceptance is unchanged. One further handoff is available; unchanged checked inputs/failure then stop for review.'
++            self.save()
++            return None
++        # Once per experiment, persisted BEFORE running. Rewording the objection
++        # or resuming cannot renew the allowance. Never execute its shell command.
++        if self.state.get('fixed_input_diagnostic'):
++            return self.stop('NEEDS_REVIEW','fixed_input_diagnostic_already_used',report)
++        self.state['fixed_input_diagnostic'] = dict(objection=value,limit_seconds=DIAGNOSTIC_SECONDS,
++            status='RESERVED',source_report=self.state.get('last_check'))
++        self.save()
++        name,item = next((n,i) for n,i in report['checks'].items()
++            if i['status'] != 'PASS' and value['test'] in [n,*i.get('failed_tests',[])])
++        tag = 'fixed-input-diagnostic'
++        def diagnostic(seconds, started):
++            c = Checks(self.workspace,self.authority,self.root,self.control/tag,seconds,tag,task=self.state.get('task','full'))
++            module = scoped_task(self.state.get('task','full'))
++            if name.startswith('tests') and item.get('failed_tests'):
++                selection = value['test'] if value['test'] in item['failed_tests'] else item['failed_tests'][0]
++                c.expected = {selection}
++                c.cargo('build'); result = c.cargo('test',item.get('seed') or 1,selection)
++                confirmed = selection in result.get('failed_tests',[]) and result.get('process') == 'COMPLETED'
++            elif name in ('build','inventory'):
++                result = c.cargo(name); confirmed = result.get('reason') == item.get('reason') and result.get('process') == 'COMPLETED' and result['status'] != 'PASS'
++            elif module and name in [module.PREFIX + g for g in module.GOALS]:
++                goal = name.removeprefix(module.PREFIX)
++                argv = [c.cfg['verus'],str(c.snapshot/module.DIRECTORY/'caller.rs'),'--crate-type','lib','--cfg','madsim','--no-cheating']
++                if goal != 'rules': argv += ['--cfg',module.CFG + goal]
++                result = c.run(name,argv,proof=True)
++                confirmed = result['reason'] == item['reason'] == 'verification_failure'
++            else:
++                c.record('diagnostic','OPEN','no_safe_fixed_diagnostic_for_check')
++                confirmed = False
++            result = c.finish('fixed-input-diagnostic',list(c.results))
++            result['original_failure_reproduced'] = confirmed and not result['changed_standards'] and not result['concurrent_changes']
++            save_json(c.output/'results.json',result)
++            return result
++        result = self.charge('fixed-input-diagnostic',DIAGNOSTIC_SECONDS,diagnostic)
++        self.state['fixed_input_diagnostic'].update(status='FINISHED' if result else 'NOT_RUN_BUDGET_EXHAUSTED',
++            result=str(self.control/tag/'results.json') if result else None)
++        self.state['review_stop_identity'] = relevant_identity(self.workspace,self.authority,self.state,report)
++        return self.stop('NEEDS_REVIEW','suspected_fixed_input_defect' if result and result['original_failure_reproduced']
++            else 'fixed_input_diagnostic_inconclusive',report)
++
++    def inspect(self, initial=False, final=False, advance=True, use_reserve=False):
+         tag = f'check-{self.state["attempts"]}-{time.time_ns()}'
+         limit = self.state['final_seconds'] if final else min(self.state['check_seconds'],
+-            max(0, self.state['total_seconds'] - self.state['seconds_spent'] - self.state['final_seconds']))
++            max(0, self.state['total_seconds'] - self.state['seconds_spent'] - (0 if use_reserve else self.state['final_seconds'])))
+         report = self.charge('final' if final else 'check', limit, lambda seconds, started:
+             evaluate(self.workspace, authority=self.authority, tool_root=self.root,
+                      output=self.control / tag, timeout=seconds, seeds=self.state['seeds'],
+@@ -595,6 +745,9 @@
+                     record.update(candidate_revision=report['candidate_revision'], log=item.get('log'),
+                                   uncovered_tests=item.get('uncovered_tests', []))
+             self.state['last_check'] = str(self.control / tag / 'results.json')
++            self.state['last_checked_identity'] = (None if any(report.get(k) for k in
++                ('changed_standards','concurrent_changes','evidence_mismatches')) else
++                relevant_identity(self.workspace,self.authority,self.state,report))
+             visible = self.workspace / 'runs' / tag
+             visible.mkdir(parents=True)
+             for path in (self.control / tag).glob('*.log'):
+@@ -642,6 +795,9 @@
+         summary.update(current_obligation=(report or {}).get('current_obligation'),
+                        obligations=self.state.get('obligations', {}), checkpoints=self.state.get('checkpoints', []),
+                        rollbacks=self.state.get('rollbacks', []), pending_local_attempts=self.state.get('pending_local_attempts', 0))
++        summary.update(fixed_input_diagnostic=self.state.get('fixed_input_diagnostic'),
++            evidence_reuse=self.state.get('evidence_reuse',[]),no_progress=self.state.get('no_progress'),
++            review_feedback=self.state.get('review_feedback'))
+         summary['unchanged_source_agent_seconds'] = sum(h.get('process_seconds', 0) for h in self.state['history'] if h.get('no_source_change'))
+         summary['idle_or_wasted_seconds'] = None  # No-source-change time need not be wasted reasoning.
+         summary['interrupted_budget_seconds'] = self.state.get('interrupted_budget_seconds', 0)
+@@ -651,8 +807,12 @@
+         lines = ['# Experiment status', '', f'{status}: {reason}', '',
+                  f'Input: {self.state["input_version"]}; origin: {self.state["run_id"]}; source revision: {self.state["git_revision"]}.', '',
+                  f'Model: {self.state["model"]}; effort: {self.state["effort"]}; rounds: {self.state["attempts"]}; cumulative seconds: {self.state["seconds_spent"]:.1f}/{self.state["total_seconds"]:.1f}.', '',
+-                 f'Latest independent evidence: {self.state.get("last_check", "not run")}. Historical results are not reused after changes.', '',
++                 f'Latest independent evidence: {self.state.get("last_check", "not run")}. Evidence is invalidated by changes to checked inputs, tool versions or parameters.', '',
+                  '| Check or obligation | Independent result |', '| --- | --- |']
++        if self.state.get('evidence_reuse'):
++            lines[7:7] = ['Existing independent checks reused with unchanged checked inputs; these are not new executions: ' + json.dumps(self.state['evidence_reuse']), '']
++        if self.state.get('fixed_input_diagnostic'):
++            lines[7:7] = ['Fixed-input diagnostic (a review request, not an acceptance change): ' + json.dumps(self.state['fixed_input_diagnostic']), '']
+         for name in dict.fromkeys([*(report or {}).get('checks', {}), *OBLIGATIONS]):
+             item = (report or {}).get('checks', {}).get(name, {})
+             lines.append(f'| {name} | {item.get("status", "OPEN")}: {item.get("reason", "not checked")} |')
+@@ -688,7 +848,7 @@
+             directory = self.workspace / f'runs/round-{state["attempts"]}'
+             state['thread_id'] = session_id(directory / 'agent.jsonl', state['thread_id'])
+             if state['history'] and state['history'][-1]['process'] == 'INTERRUPTED':
+-                progress = self.workspace / 'PROGRESS.md'
++                progress = progress_path(self.workspace,state)
+                 state['history'][-1]['progress'] = progress.read_text() if progress.exists() else '(No candidate progress note)'
+             self.save()
+         if state['attempts'] and not state['thread_id']:
+@@ -706,14 +866,24 @@
+             return self.stop('NEEDS_REVIEW', 'Tool versions/capabilities changed since this experiment started')
+         state['tools'] = capability['evidence']
+         self.save()
+-        # Resume always refreshes checks; no historical PASS is reusable after edits.
+-        report = self.inspect(initial=state['attempts'] == 0, advance=False)
++        previous = Path(state['last_check']) if state.get('last_check') else None
++        report = json.loads(previous.read_text()) if previous and previous.is_file() else None
++        if report and state.get('last_checked_identity') == relevant_identity(self.workspace,self.authority,state,report):
++            state.setdefault('evidence_reuse',[]).append(dict(report=str(previous),reason='resume: checked dependencies and parameters unchanged; no new check'))
++            if state.get('review_stop_identity') == state['last_checked_identity']:
++                return self.stop('NEEDS_REVIEW','unchanged_candidate_waiting_for_review',report)
++        else:
++            report = self.inspect(initial=state['attempts'] == 0, advance=False)
+         reason = 'Insufficient budget for useful work and final checks'
+         while report:
+             if report['status'] in ('BLOCKED', 'NEEDS_REVIEW'):
+                 return self.stop(report['status'], 'Independent check cannot proceed under the fixed inputs', report)
++            if report.get('concurrent_changes') or report.get('evidence_mismatches'):
++                return self.stop('NEEDS_REVIEW','Independent evidence does not match a stopped candidate',report)
+             if report['status'] == success_label(state) and report.get('mode') == 'final':
+                 return self.stop(success_label(state), 'Scoped checks passed; semantic review remains outstanding', report)
++            review = self.review_objection(report)
++            if review is not None: return review
+             if report.get('mode') != 'final' and ready_for_final(state, report):
+                 report = self.inspect(final=True) or report
+                 if report and report['status'] == success_label(state) and report.get('mode') == 'final':
+@@ -738,7 +908,7 @@
+             directory.mkdir(exist_ok=True)
+             (directory / 'prompt.md').write_text(prompt)
+             before = {n: p.read_bytes() for n, p in files_under(self.workspace / 'madraft').items()}
+-            claim_before = (self.workspace / 'PROGRESS.md').read_bytes() if (self.workspace / 'PROGRESS.md').is_file() else None
++            relevant_before = relevant_identity(self.workspace,self.authority,state,report)
+             argv = command(state, self.workspace, directory / 'agent.md')
+             record = dict(round=number, mode=mode, process='INTERRUPTED', exit=None,
+                           soft_seconds=allowance - state['handoff_seconds'], hard_seconds=allowance,
+@@ -757,7 +927,7 @@
+                 break
+             state['thread_id'] = session_id(directory / 'agent.jsonl', state['thread_id'])
+             state['last_process'], state['last_exit'] = result.status, result.exit_code
+-            progress = self.workspace / 'PROGRESS.md'
++            progress = progress_path(self.workspace,state)
+             record.update(process=result.status, exit=result.exit_code,
+                           process_seconds=result.elapsed_seconds, token_usage=token_usage(directory / 'agent.jsonl'),
+                           handoff='normal' if result.status == 'COMPLETED' and result.exit_code == 0 else 'hard_timeout' if result.status == 'TIMEOUT' else 'failed',
+@@ -772,20 +942,35 @@
+                 patch.extend(difflib.unified_diff(old, new, 'before/madraft/' + name, 'after/madraft/' + name))
+             (directory / 'changes.patch').write_text(''.join(patch))
+             record.update(changed_files=changed, patch=str(directory / 'changes.patch'))
+-            record['no_source_change'] = not changed
++            substantive = relevant_before != relevant_identity(self.workspace,self.authority,state,report)
++            record.update(no_source_change=not substantive,changed_checked_inputs=substantive)
+             self.save()
+             if result.status == 'CANCELLED':
+                 return self.stop('INCOMPLETE', 'Controller interrupted; candidate and charged budget retained')
+-            if not changed and report.get('mode') == 'final' and claim_before == (
+-                    progress.read_bytes() if progress.is_file() else None) and not differences(
+-                        self.authority, self.workspace, protected_files(self.authority)):
+-                # No new check is represented as run. A stopped, unchanged
+-                # candidate already has a final result; do not burn another final.
++            if result.status == 'BLOCKED' or (result.status == 'COMPLETED' and result.exit_code != 0) or not state['thread_id']:
++                return self.stop('BLOCKED', 'Agent execution/authentication failed or no session ID was produced', report)
++            if differences(self.authority,self.workspace,protected_files(self.authority)):
++                return self.stop('NEEDS_REVIEW','Protected inputs changed during generation',report)
++            if not substantive:
+                 record.update(checks=state.get('last_check'), check_status=report['status'],
+-                              unchanged_final_evidence=state.get('last_check'))
+-                return self.stop('INCOMPLETE', 'Agent returned an unchanged candidate after final checks; no duplicate final invocation', report)
++                              reused_evidence=state.get('last_check'),evidence_kind='REUSED: checked inputs unchanged; no new check')
++                state.setdefault('evidence_reuse',[]).append(dict(round=number,report=state.get('last_check'),reason=record['evidence_kind']))
++                signature = dict(inputs=relevant_before,failures=failure_signature(report))
++                prior = state.get('no_progress') or {}
++                state['no_progress'] = dict(signature=signature,count=prior.get('count',0)+1 if prior.get('signature') == signature else 1)
++                review = self.review_objection(report)
++                if review is not None: return review
++                if state['no_progress']['count'] >= 2:
++                    state['review_stop_identity'] = relevant_before
++                    return self.stop('NEEDS_REVIEW','no_progress: unchanged checked inputs and failures after two handoffs',report)
++                state['review_feedback'] = state.get('review_feedback') or 'No checked implementation/proof/configuration changed. Existing independent evidence is reused, not rerun. Reports and unreferenced repro files are not protocol progress. Repair the actual blocker or supply a fixed-input-objection with evidence; another unchanged handoff stops for review.'
++                self.save()
++                continue
++            state['no_progress'] = None
++            state.pop('review_feedback',None)
+             self.replay_attempts()
+-            report = self.inspect(final=next_check == 'final')
++            report = self.inspect(final=next_check == 'final' and not known_functional_failure(report),
++                use_reserve=next_check == 'final')
+             if report and self.rollback(report):
+                 self.elapsed()  # Restoration is charged wall time, never refunded.
+                 report = self.inspect(final=next_check == 'final')
+@@ -798,12 +983,10 @@
+                 current_record = state.get('obligations', {}).get(state.get('current_key'), {})
+                 record['newly_checked_dependencies'] = current_record.get('newly_checked', [])
+             self.save()
+-            if result.status == 'BLOCKED' or (result.status == 'COMPLETED' and result.exit_code != 0) or not state['thread_id']:
+-                return self.stop('BLOCKED', 'Agent execution/authentication failed or no session ID was produced', report)
+             # TIMEOUT/LOG_LIMIT are bounded failed slices, not success. A captured
+             # thread may continue with actual diagnostics while budgets permit.
+         # The final reserve belongs to checks of the current stopped candidate.
+-        final_report = report if report and report.get('mode') == 'final' else self.inspect(final=True)
++        final_report = report if report and (report.get('mode') == 'final' or known_functional_failure(report)) else self.inspect(final=True)
+         if final_report:
+             report = final_report
+         if report and report['status'] == success_label(state) and report.get('mode') == 'final':
+--- a/scripts/tests/test_helpers.py
++++ b/scripts/tests/test_helpers.py
+@@ -61,6 +61,7 @@
+ print(json.dumps({'type':'thread.started','thread_id':'SIMULATED-session'}), flush=True)
+ with pathlib.Path('SIMULATED-calls.jsonl').open('a') as f: f.write(json.dumps(sys.argv[1:])+'\\n')
+ pathlib.Path('madraft/SIMULATED-edit.txt').write_text('SIMULATED generation; no protocol implementation')
++with pathlib.Path('madraft/src/lib.rs').open('a') as f: f.write('// SIMULATED checked-source edit '+str(time.time_ns())+'\\n')
+ pathlib.Path('PROGRESS.md').write_text('SIMULATED approach: tried a toy decomposition; actual global dependencies remain open.')
+ if pathlib.Path('SIMULATED-sleep').exists(): time.sleep(5)
+ pathlib.Path(sys.argv[sys.argv.index('--output-last-message')+1]).write_text('SIMULATED claim: all proved')
+@@ -189,7 +190,7 @@
+     def test_previous_pass_is_invalidated_on_resume(self):
+         self.plan=[{}, {'final':True}, {'final':True}]
+         self.invoke('new','--execute','--max-rounds','1')
+-        (self.workspace/'madraft/SIMULATED-edit.txt').write_text('SIMULATED regression')
++        (self.workspace/'madraft/src/lib.rs').write_text('// SIMULATED regression')
+         self.plan=[{}]
+         self.assertEqual(self.invoke('resume','--execute'),1)
+         self.assertEqual(self.state()['status'],'INCOMPLETE')
+@@ -336,15 +337,17 @@
+         self.assertLess(state['seconds_spent'],state['total_seconds'])
+ 
+     def test_unchanged_candidate_after_final_does_not_repeat_identical_checks(self):
++        text=self.fake.read_text().replace("with pathlib.Path('madraft/src/lib.rs').open('a') as f:","if not pathlib.Path('once').exists():\n pathlib.Path('once').touch()\n with pathlib.Path('madraft/src/lib.rs').open('a') as f:")
++        self.fake.write_text(text)
+         cfg=controller.settings(self.root)
+         cfg['agent'].update(check_seconds='10',final_seconds='1',total_seconds='3')
+         with (self.root/'tools.ini').open('w') as f:cfg.write(f)
+         self.invoke('new','--execute','--max-rounds','3')
+         state=self.state()
+-        self.assertEqual(state['attempts'],2)
++        self.assertEqual(state['attempts'],3)
+         self.assertEqual(len(self.calls),2)
+-        self.assertIn('unchanged candidate',state['reason'])
+-        self.assertIn('unchanged_final_evidence',state['history'][-1])
++        self.assertIn('no_progress',state['reason'])
++        self.assertIn('reused_evidence',state['history'][-1])
+ 
+     def test_ab_inputs_and_acceptance_are_identical_only_guidance_differs(self):
+         self.invoke('new','--guidance','A','--execute','--max-rounds','1')
+--- a/scripts/tests/test_review_stop.py
++++ b/scripts/tests/test_review_stop.py
+@@ -0,0 +1,157 @@
++"""SIMULATED controller regressions: no model, Rust or Verus is run here."""
++import json
++from pathlib import Path
++import unittest
++from unittest.mock import patch
++import test_election_start as fixtures
++import check
++import run
++from inputs import save_json
++from process import ProcessResult
++
++FAILED='raft::raft::vote_tests::restart_written_pending'
++
++class ReviewStopTests(unittest.TestCase):
++    setUp=fixtures.ElectionStartTests.setUp
++
++    def simulated(self,output,revision,mode='feedback'):
++        def cargo(c,kind,seed=1,selection=''):
++            name='tests_seed_'+str(seed) if kind=='test' else kind
++            log=c.output/(name+'.log');log.write_text('SIMULATED assertion failed: observer closed\n')
++            item=c.record(name,'OPEN' if kind=='test' else 'PASS','test_failure' if kind=='test' else 'checked',
++                category='functional_failure' if kind=='test' else 'pass',seed=seed,process='COMPLETED',
++                failed_tests=[FAILED] if kind=='test' else [],diagnostic='assertion failed: observer closed')
++            item['log']=str(log);return item
++        def proof(c,name,argv,**kw):return c.record(name,'PASS','SIMULATED')
++        with patch.object(check.Checks,'cargo',cargo),patch.object(check.Checks,'run',proof):
++            return check.evaluate(self.workspace,authority=self.authority,tool_root=self.root,output=output,
++                revision=revision,task='election-start',mode=mode,seeds=[1,2,3,4,5],timeout=30)
++
++    def objection(self,report,**updates):
++        value=dict(file='tasks/election_start/rpc_tests.rs',test=FAILED,conflict='Closed channel is not elapsed timeout',
++            evidence=report['checks']['tests_seed_1']['log'],needs_fixed_change=True,recommendation='Review observer lifetime; unapplied',
++            candidate_revision=report['candidate_revision'],unresolved='Fixed observation needs maintenance review')
++        value.update(updates)
++        run.progress_path(self.workspace,self.state).write_text('<!-- fixed-input-objection -->\n'+json.dumps(value)+'\n<!-- /fixed-input-objection -->\n')
++
++    def test_actual_functional_blocker_and_no_final_in_both_scopes(self):
++        report=self.simulated(self.root/'report','r')
++        first=report['current_obligation']['first_blocker']
++        self.assertEqual(first['failed_tests'],[FAILED]);self.assertEqual(first['seed'],1)
++        self.assertNotEqual(first['reason'],'run_all_local_tests_and_seeds')
++        self.assertEqual(set(report['local_goals'].values()),{'PASS'})
++        for scope in ('full','request-vote','election-start'):
++            module=run.scoped_task(scope)
++            names=[module.PREFIX+g for g in module.GOALS] if module else [*run.OBLIGATIONS,'safety','linkage_review',*('connection_'+a for a in run.CONNECTIONS)]
++            other=dict(report,checks={**{n:dict(status='PASS') for n in names},'tests_seed_1':report['checks']['tests_seed_1']})
++            self.assertFalse(run.ready_for_final(dict(task=scope),other))
++        # Exercise the actual shared evaluate function with the receiver descriptor.
++        from inputs import copy_files,input_files
++        import request_vote
++        a=self.root/'receiver-authority';w=self.root/'receiver-workspace'
++        copy_files(run.ROOT,a,input_files(run.ROOT,'request-vote'));request_vote.prepare(a)
++        copy_files(a,w,run.files_under(a))
++        # Same parser and blocker selection, four receiver proofs all green.
++        def cargo(c,kind,seed=1,selection=''):
++            return c.record(kind,'OPEN' if kind=='test' else 'PASS','SIMULATED',failed_tests=[FAILED],seed=seed)
++        with patch.object(check.Checks,'cargo',cargo),patch.object(check.Checks,'run',lambda c,n,a,**k:c.record(n,'PASS','SIMULATED')):
++            r=check.evaluate(w,authority=a,tool_root=run.ROOT,output=self.root/'receiver-report',task='request-vote',timeout=30)
++        self.assertEqual(r['current_obligation']['first_blocker']['check'],'test')
++
++    def test_identity_ignores_reports_and_unreferenced_repro_but_tracks_real_dependencies(self):
++        identity=lambda:run.relevant_identity(self.workspace,self.authority,self.state,{})
++        old=identity()
++        for name in ('madraft/PROGRESS.md','madraft/RESULT.md','madraft/repro/unreferenced.rs'):
++            p=self.workspace/name;p.parent.mkdir(exist_ok=True);p.write_text('diagnostic only')
++        self.assertEqual(old,identity())
++        for name in ('madraft/src/raft/vote_core.rs','madraft/proof/vote_lemmas.rs','tasks/election_start/rpc_tests.rs','scripts/check.py','madraft/Cargo.toml'):
++            p=self.workspace/name;b=p.read_bytes();p.write_bytes(b+b'\n// changed\n');self.assertNotEqual(old,identity(),name);p.write_bytes(b)
++        self.state['seeds']=[6];self.assertNotEqual(old,identity())
++
++    def test_failure_signature_normalizes_paths_not_assertions_or_seeds(self):
++        r=self.simulated(self.root/'report','r')
++        a=r['checks']['tests_seed_1'];a['diagnostic']="thread 'test' panicked at /tmp/old/check-1-77/file.rs:3:4:\nassertion failed: no old reply"
++        first=run.failure_signature(r)
++        a['diagnostic']=a['diagnostic'].replace('/tmp/old/check-1-77','/elsewhere/check-9-88').replace(':3:4',':9:2')
++        self.assertEqual(first,run.failure_signature(r))
++        a['seed']=5;self.assertNotEqual(first,run.failure_signature(r))
++        a['seed']=1;a['diagnostic']=a['diagnostic'].replace('no old reply','wrong restored vote');self.assertNotEqual(first,run.failure_signature(r))
++
++    def drive(self,edit,*,final=False):
++        reports=[];calls=[];diagnostics=[]
++        def evaluate(workspace,**kw):
++            report=self.simulated(kw['output'],kw['revision'],'final' if final else kw['mode']);reports.append(report);return report
++        def agent(argv,cwd,**kw):
++            calls.append(argv);edit(reports[-1],len(calls))
++            kw['output_paths'][0].write_text(json.dumps(dict(type='thread.started',thread_id='SIMULATED'))+'\n')
++            return ProcessResult(argv,'COMPLETED',0,'','',elapsed_seconds=.01)
++        def cargo(c,kind,seed=1,selection=''):
++            diagnostics.append((kind,selection,c.deadline-c.started))
++            return c.record(kind,'OPEN' if kind=='test' else 'PASS','test_failure' if kind=='test' else 'checked',
++                failed_tests=[FAILED] if kind=='test' else [],process='COMPLETED',seed=seed)
++        self.state['max_rounds']=10
++        loop=run.Loop(self.root,self.workspace,self.control,self.state)
++        with patch.object(run,'probe_tools',return_value=dict(status='PASS',evidence={'SIMULATED':'tools'})),patch.object(run,'evaluate',evaluate),patch.object(run,'run_process',agent),patch.object(check.Checks,'cargo',cargo):
++            result=loop.run()
++        return result,reports,calls,diagnostics
++
++    def test_objection_one_bounded_diagnostic_then_review_no_shell(self):
++        def edit(r,n):
++            p=self.workspace/'madraft/repro/closed.rs';p.parent.mkdir(exist_ok=True)
++            p.write_text('// SIMULATED reproducer; no verifier evidence\nfn main() {}\n')
++            self.objection(r,evidence='madraft/repro/closed.rs',reproduce='DO NOT EXECUTE; arbitrary shell')
++        result,reports,calls,diagnostics=self.drive(edit)
++        self.assertEqual(result,2);self.assertEqual(self.state['reason'],'suspected_fixed_input_defect')
++        self.assertEqual(len(calls),1);self.assertEqual(len(reports),1)
++        self.assertEqual([x[:2] for x in diagnostics],[('build',''),('test',FAILED)])
++        self.assertTrue(all(0<x[2]<=60 for x in diagnostics))
++        self.assertEqual(self.state['fixed_input_diagnostic']['limit_seconds'],60)
++        self.assertGreater(self.state['seconds_spent'],0)
++        loop=run.Loop(self.root,self.workspace,self.control,self.state)
++        with patch.object(run,'run_process',side_effect=AssertionError('must not execute again')):
++            self.assertEqual(loop.review_objection(reports[-1]),2)
++        self.assertEqual(self.state['reason'],'fixed_input_diagnostic_already_used')
++
++    def test_diagnostic_timeout_is_inconclusive_and_budget_is_not_renewed(self):
++        report=self.simulated(self.root/'report','r');self.objection(report)
++        self.state['seconds_spent']=self.state['total_seconds']-2
++        loop=run.Loop(self.root,self.workspace,self.control,self.state)
++        limits=[]
++        def timeout(c,kind,seed=1,selection=''):
++            limits.append(c.deadline-c.started)
++            return c.record(kind,'OPEN','check_budget_exhausted',process='TIMEOUT',seed=seed)
++        with patch.object(check.Checks,'cargo',timeout):
++            self.assertEqual(loop.review_objection(report),2)
++        self.assertEqual(self.state['reason'],'fixed_input_diagnostic_inconclusive')
++        self.assertTrue(all(0<x<=2 for x in limits))
++        self.assertEqual(self.state['total_seconds'],7200)
++        self.assertGreater(self.state['seconds_spent'],7198)
++
++    def test_unsubstantiated_claim_gets_one_gap_then_stops(self):
++        result,reports,calls,diagnostics=self.drive(lambda r,n:self.objection(r,evidence=''))
++        self.assertEqual(result,2);self.assertIn('no_progress',self.state['reason'])
++        self.assertEqual(len(calls),2);self.assertEqual(len(reports),1);self.assertEqual(diagnostics,[])
++        self.assertIn('evidence gaps', (self.workspace/'runs/round-2/prompt.md').read_text())
++
++    def test_reports_and_unused_reproducer_cannot_repeat_failed_final(self):
++        def edit(r,n):
++            run.progress_path(self.workspace,self.state).write_text('report updated '+str(n))
++            p=self.workspace/'madraft/repro/unused.rs';p.parent.mkdir(exist_ok=True);p.write_text('unused '+str(n))
++        result,reports,calls,diagnostics=self.drive(edit,final=True)
++        self.assertEqual(result,2);self.assertEqual(len(reports),1);self.assertEqual(len(calls),2)
++        self.assertTrue(all(h['no_source_change'] for h in self.state['history']))
++        self.assertEqual(len(self.state['evidence_reuse']),2);self.assertEqual(diagnostics,[])
++
++    def test_core_change_requires_recheck_and_protected_change_stops(self):
++        def edit(r,n):
++            if n==1:
++                p=self.workspace/'madraft/src/raft/vote_core.rs';p.write_text(p.read_text()+'\n// SIMULATED changed checked input\n')
++            else:self.objection(r)
++        result,reports,calls,diag=self.drive(edit)
++        self.assertEqual(result,2);self.assertEqual(len(reports),2)
++        self.assertTrue(self.state['history'][0]['changed_checked_inputs'])
++        p=self.workspace/'tasks/election_start/rpc_tests.rs';p.write_text('// unauthorized change')
++        c=check.Checks(self.workspace,self.authority,self.root,self.root/'protection',30,'tamper',task='election-start')
++        c.record('SIMULATED','PASS','SIMULATED');self.assertEqual(c.finish('final',['SIMULATED'])['status'],'NEEDS_REVIEW')
++
++if __name__=='__main__':unittest.main()
+--- a/tasks/election_start/AGENTS.md
++++ b/tasks/election_start/AGENTS.md
+@@ -15,3 +15,5 @@
+ python3 scripts/check.py safety --task election-start --timeout 240
+ python3 scripts/check.py final --task election-start --timeout 600
+ ```
++
++A suspected fixed-input defect is not permission to edit acceptance. In PROGRESS.md (madraft/PROGRESS.md for scoped tasks), use one `<!-- fixed-input-objection -->` JSON object followed by `<!-- /fixed-input-objection -->` with `file`, `test` (exact failing test or check), `conflict`, `evidence` (current independent log or local minimal reproducer), `reproduce` (command for human review only), `needs_fixed_change: true`, `recommendation` (unapplied), `candidate_revision` (from feedback) and `unresolved`. The controller may rerun the fixed failing item once, capped at 60 seconds charged to the cumulative budget, then stop NEEDS_REVIEW. It never executes your proposed shell command or adopts your suggested test change. Insufficient evidence gets one clarification opportunity; repeated unchanged checked inputs/failures stop for review. Report edits and unreferenced reproducer files are retained but are not implementation/proof progress.
+--- a/tasks/election_start/maintain.py
++++ b/tasks/election_start/maintain.py
+@@ -19,10 +19,117 @@
+ from tools import environment,settings
+ 
+ 
++def recheck_candidate(candidate, out):
++    """Read-only historical candidate; revised authority, real tools, no generation."""
++    import json
++    candidate=candidate.resolve();out=out.resolve();out.mkdir(parents=True,exist_ok=False)
++    cfg,env=environment(ROOT);results={}
++    old=files_under(candidate/'madraft');before={n:p.read_bytes() for n,p in old.items()}
++    history=fingerprint(files_under(candidate/'runs'))
++    authority=out/'authority';workspace=out/'workspace'
++    copy_files(ROOT,authority,input_files(ROOT,'election-start'));task.prepare(authority)
++    ini=settings(ROOT)
++    for k in ('verus','rust_bin','rustup_home','cargo_home'):ini['tools'][k]=cfg[k]
++    with (authority/'tools.ini').open('w') as f:ini.write(f)
++    copy_files(authority,workspace,files_under(authority))
++    shutil.rmtree(workspace/'madraft');copy_files(candidate/'madraft',workspace/'madraft',old)
++    # No generated/runtime code overlay: the corrected tests live outside madraft.
++    assert (workspace/'madraft/src/raft/raft.rs').read_bytes()==(authority/'madraft/src/raft/raft.rs').read_bytes()
++    cache=ROOT/'target/election-start-test-fix'/out.name;cache.mkdir(parents=True,exist_ok=False)
++    def require(ok,message):
++        if not ok: raise RuntimeError(message)
++    def run(name,argv,cwd=ROOT,extra=None):
++        argv=[str(a) for a in argv];e=env.copy();e.update(extra or {})
++        r=run_process(argv,cwd,env=e,timeout=180,max_log_bytes=16*1024*1024)
++        log=out/(name+'.log');log.write_text('$ '+shlex.join(argv)+'\n'+r.stdout+r.stderr+f'\nprocess={r.status} exit={r.exit_code}\n')
++        results[name]=dict(command=argv,cwd=str(cwd),process=r.status,exit=r.exit_code,seconds=r.elapsed_seconds,log=str(log),
++            environment={k:v for k,v in e.items() if k in ('RUSTC','RUSTUP_HOME','CARGO_HOME','CARGO_ENCODED_RUSTFLAGS','CARGO_TARGET_DIR','MADSIM_TEST_SEED','MADSIM_TEST_NUM')})
++        save_json(out/'maintenance.json',results);print(name,r.status,r.exit_code,flush=True);return r
++    def acceptance(name):
++        c=check.Checks(workspace,authority,ROOT,out/name,600,name,task='election-start')
++        c.env['CARGO_TARGET_DIR']=str(cache/name)
++        report=task.evaluate(c,'final',[1,2,3,4,5])
++        print(name,report['status'],flush=True)
++        require(report['status']==task.LABEL,'Candidate genuinely fails revised acceptance; preserve evidence, do not repair it')
++        return report
++    original=json.loads((candidate/'runs/EXPERIMENT.json').read_text())
++    provenance=dict(reference='490f1a0971851da53ca044e2a0a0fc6b3938d9ab',checkout=git_revision(ROOT),
++        old_candidate=str(candidate),old_status=original['status'],old_rounds=original['attempts'],old_seconds=original['seconds_spent'],
++        old_input_version=original['input_version'],old_input_fingerprint=original['input_fingerprint'],
++        new_input_version=task.VERSION,new_input_fingerprint=fingerprint(files_under(authority)),
++        generation_performed=False,passive_host_wiring_changed=False,
++        observation='Test-only client lifetime and always-forwarding MadSim response hook; no Core retained by observer',
++        candidate_source_files=sorted(old),unchanged_candidate_files=[],global_safety='ALL_OPEN',full_madraft='INCOMPLETE',liveness='OPEN')
++    save_json(out/'provenance.json',provenance)
++    for name,argv in [('rustc',[cfg['rust_bin']+'/rustc','--version']),('cargo',[cfg['rust_bin']+'/cargo','--version']),('verus',[cfg['verus'],'--version'])]:
++        r=run('version-'+name,argv);require(r.status=='COMPLETED' and r.exit_code==0,'BLOCKED tool: '+name)
++    # This input patch is tests/observation only; old authority remains untouched.
++    patch=[]
++    for name in task.INPUTS:
++        a=candidate/task.DIRECTORY/name;b=authority/task.DIRECTORY/name
++        patch.extend(difflib.unified_diff(a.read_text().splitlines(True) if a.exists() else [],b.read_text().splitlines(True),'old/'+name,'revised/'+name))
++    (out/'fixed-input.patch').write_text(''.join(patch))
++    first=acceptance('revised-acceptance')
++    # Uncaptured raw output exposes the closed-channel reproduction and the
++    # deliberately caught observer assertion failures; all four tests must pass.
++    observed=run('observer-cases',[cfg['rust_bin']+'/cargo','test','--manifest-path','madraft/Cargo.toml',
++        '--offline','--locked','--release','--lib',task.TEST_FILTER+'observer_','--','--nocapture','--test-threads=1'],
++        Path(first['snapshot']),{'CARGO_TARGET_DIR':str(cache/'revised-acceptance'),'MADSIM_TEST_SEED':'1','MADSIM_TEST_NUM':'1'})
++    require(observed.status=='COMPLETED' and observed.exit_code==0 and '4 passed' in observed.stdout,
++        'Observer self-tests failed; these are helpers, not a cluster proof')
++    # This is a deliberate HOST defect on an isolated copy, not a generated fix.
++    bad=cache/'bad-host';copy_files(workspace,bad,files_under(workspace))
++    actual=bad/'madraft/src/raft/raft.rs';text=actual.read_text()
++    marker='        handle.start_rpc_server();'
++    require(text.count(marker)==1,'cannot locate recovery output boundary')
++    defect='''
++        if recovery_only {
++            // DEFECT: emit an unsolicited old vote reply solely from recovered state.
++            let v=handle.inner.lock().unwrap().vote.inspect();
++            if let Some(client)=v.state.voted_for {
++                let dst=handle.inner.lock().unwrap().peers[client as usize];
++                let reply=Ok::<RequestVoteReply,String>(RequestVoteReply{term:v.state.term,vote_granted:true});
++                handle.endpoint.send_to_raw(dst,0,Box::new((reply,bytes::Bytes::new()))).await.unwrap();
++            }
++        }
++'''
++    actual.write_text(text.replace(marker,marker+defect))
++    # Already locked transitive bytes type is needed to construct MadSim's actual
++    # RPC wire payload in this negative fixture; no correct candidate change.
++    manifest=bad/'madraft/Cargo.toml';manifest.write_text(manifest.read_text().replace('[dependencies]','[dependencies]\nbytes = "1"'))
++    lock=bad/'madraft/Cargo.lock';body=lock.read_text();start=body.index('name = "madraft"');a,b=body[:start],body[start:];b=b.replace('dependencies = [','dependencies = [\n "bytes",',1);lock.write_text(a+b)
++    patch=[]
++    for n in ('src/raft/raft.rs','Cargo.toml','Cargo.lock'):
++        patch.extend(difflib.unified_diff((workspace/'madraft'/n).read_text().splitlines(True),(bad/'madraft'/n).read_text().splitlines(True),'correct/'+n,'host-defect/'+n))
++    (out/'host-unsolicited-reply.patch').write_text(''.join(patch))
++    extra={'CARGO_TARGET_DIR':str(cache/'bad-host-build'),'MADSIM_TEST_SEED':'1','MADSIM_TEST_NUM':'1'}
++    base=[cfg['rust_bin']+'/cargo','test','--manifest-path',bad/'madraft/Cargo.toml','--offline','--locked','--release','--lib']
++    r=run('bad-host-build',base+['--no-run'],bad,extra);require(r.exit_code==0,'BLOCKED: host mutation must compile')
++    for window in ('restart_confirmed','restart_written_pending'):
++        r=run('bad-host-'+window,base+[task.TEST_FILTER+window,'--','--exact','--nocapture'],bad,extra)
++        require(r.status=='COMPLETED' and r.exit_code!=0 and 'running 1 test' in r.stdout and
++            'recovery emitted an unsolicited RequestVote reply' in r.stdout+r.stderr,'Host mutation did not fail at actual reply observer')
++    require(all((bad/'madraft'/n).read_bytes()==b for n,b in before.items() if n not in ('src/raft/raft.rs','Cargo.toml','Cargo.lock')),'Host fixture changed candidate core/proof')
++    r=run('bad-host-core-history',[cfg['verus'],bad/'tasks/election_start/caller.rs','--crate-type','lib','--cfg','madsim','--cfg','es_history','--no-cheating'],bad)
++    require(r.exit_code==0 and 'verified, 0 errors' in r.stdout,'Host-only defect unexpectedly affected the core proof')
++    final=acceptance('correct-recheck')
++    require(all((candidate/'madraft'/n).read_bytes()==b and (workspace/'madraft'/n).read_bytes()==b for n,b in before.items()),'Original or review candidate changed')
++    require(history==fingerprint(files_under(candidate/'runs')),'Original experiment history changed')
++    provenance.update(unchanged_candidate_files=sorted(old),candidate_bytes_unchanged=True,old_history_unchanged=True,
++        result=final['status'],semantic_review='NOT_PERFORMED',host='UNVERIFIED',
++        note='Reacceptance after fixed test repair; not new generation and not acceptance under old inputs.')
++    save_json(out/'provenance.json',provenance)
++    print('REACCEPTANCE_COMPLETE; generation_performed=false; original INCOMPLETE preserved:',out,flush=True)
++
++
+ def main():
+     parser=argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--output',type=Path,default=ROOT/'review/election_start'/str(time.time_ns()))
+-    args=parser.parse_args();out=args.output.resolve();out.mkdir(parents=True,exist_ok=False)
++    parser.add_argument('--review-candidate',type=Path,help='Read-only reacceptance with revised tests; never generation')
++    args=parser.parse_args()
++    if args.review_candidate:
++        return recheck_candidate(args.review_candidate,args.output)
++    out=args.output.resolve();out.mkdir(parents=True,exist_ok=False)
+     work=ROOT/'target/election-start-maintenance'/out.name;work.mkdir(parents=True,exist_ok=False)
+     cfg,env=environment(ROOT);results={}
+     def require(ok,message):
+@@ -134,7 +241,7 @@
+     require(r.exit_code==0,'system regression failed')
+     r=run('definitions-recheck',[cfg['verus'],ROOT/'tasks/election_start/api.rs','--crate-type','lib','--no-cheating'])
+     require(r.exit_code==0,'definition recheck failed')
+-    r=run('preview',[sys.executable,'scripts/run.py','new','runs/election-start-01','--task','election-start'])
++    r=run('preview',[sys.executable,'scripts/run.py','new','runs/election-start-next','--task','election-start'])
+     require(r.exit_code==0,'preview failed')
+     results['summary']=dict(status='MAINTENANCE_CHECKS_PASSED',generation='NOT_RUN',local_goals='ALL_OPEN',
+         full_madraft='INCOMPLETE',global_safety='ALL_OPEN',host='UNVERIFIED',
+--- a/tasks/election_start/observer_tests.rs
++++ b/tasks/election_start/observer_tests.rs
+@@ -0,0 +1,68 @@
++// Test-only observation. Quiet requires an actual live producer; Closed is
++// cleanup, and every received value (including an error) ends observation.
++#[derive(Debug)]
++enum Observation<T> { Quiet, Closed, Received(T) }
++async fn observe<T>(receiver: &async_channel::Receiver<T>) -> Observation<T> {
++    match timeout(Duration::from_millis(30),receiver.recv()).await {
++        Err(_) => Observation::Quiet,
++        Ok(Err(_)) => Observation::Closed,
++        Ok(Ok(value)) => Observation::Received(value),
++    }
++}
++fn assert_quiet<T: std::fmt::Debug>(result: Observation<T>, label: &str) {
++    assert!(matches!(result,Observation::Quiet),"{}: observation ended or received output: {:?}",label,result);
++}
++#[madsim::test]
++async fn observer_live_then_cancelled() {
++    let (send,recv)=async_channel::bounded::<()>(1);
++    let (entered,ready)=async_channel::bounded(1);
++    let worker=task::spawn(async move {
++        entered.send(()).await.unwrap();
++        std::future::pending::<()>().await;
++        send.send(()).await.unwrap();
++    });
++    bounded(ready.recv()).await.unwrap();
++    assert_quiet(observe(&recv).await,"live worker has no output in window");
++    worker.abort();
++    assert!(bounded(worker).await.unwrap_err().is_cancelled());
++    assert!(matches!(observe(&recv).await,Observation::Closed));
++    println!("abort/join sole sender: Ok(Err(RecvError)), not Err(Elapsed); cleanup only");
++}
++#[madsim::test]
++async fn observer_queued_reply_then_closed() {
++    let (send,recv)=async_channel::bounded(1);
++    send.send(Ok::<_,String>((1u64,true))).await.unwrap(); drop(send);
++    let result=observe(&recv).await;
++    assert!(matches!(result,Observation::Received(Ok((1,true)))));
++    assert!(std::panic::catch_unwind(|| assert_quiet(result,"queued protocol reply")).is_err());
++    assert!(matches!(observe(&recv).await,Observation::Closed));
++}
++#[madsim::test]
++async fn observer_transport_error() {
++    let node=Handle::current().create_node().ip(peers()[1].ip()).build();
++    let (send,recv)=async_channel::bounded(1);
++    let worker=node.spawn(async move {
++        let ep=Endpoint::bind(peers()[1]).await.unwrap();
++        let result=ep.call_timeout::<RequestVoteArgs>(peers()[0],RequestVoteArgs{
++            term:1,candidate_id:1,last_log_term:0,last_log_index:0},Duration::from_millis(1)).await;
++        send.send(result.map_err(|e|e.kind())).await.unwrap();
++    });
++    bounded(worker).await.unwrap();
++    let result=observe(&recv).await;
++    assert!(matches!(result,Observation::Received(Err(_))),"real RPC error must remain distinct");
++    assert!(std::panic::catch_unwind(|| assert_quiet(result,"transport failure")).is_err());
++}
++#[madsim::test]
++async fn observer_panicked_producer() {
++    use futures::FutureExt;
++    let (send,recv)=async_channel::bounded::<()>(1);
++    // Catch at the task boundary so the runtime can inspect the closed channel.
++    let worker=task::spawn(std::panic::AssertUnwindSafe(async move {
++        let _owner=send;
++        panic!("controlled observer panic");
++    }).catch_unwind());
++    assert!(bounded(worker).await.unwrap().is_err());
++    let result=observe(&recv).await;
++    assert!(matches!(result,Observation::Closed));
++    assert!(std::panic::catch_unwind(|| assert_quiet(result,"observer died")).is_err());
++}
+--- a/tasks/election_start/rpc_tests.rs
++++ b/tasks/election_start/rpc_tests.rs
+@@ -5,6 +5,7 @@
+ use vote_api::Action;
+ use madsim::{runtime::{Handle, NodeHandle}, net::{Endpoint, NetSim}, time::{timeout, Duration}};
+ use std::future::Future;
++include!("observer_tests.rs");
+ 
+ fn initial(term: u64, vote: Option<u64>, log: Log) -> Initial {
+     Initial { state:Persistent{term,voted_for:vote,log},role:vote_api::Role::Follower }
+@@ -179,6 +180,13 @@
+     let (server,client,ep,h)=network().await;
+     let (other,other_ep)=second_client().await;
+     let rt=Handle::current(); let id=server.id();
++    // Passive delivery observation belongs to the surviving client, not the old
++    // Core or RPC task. Always forward the original packet unchanged.
++    let replies=Arc::new(Mutex::new(Vec::new()));
++    let record=replies.clone();
++    NetSim::current().hook_rpc_rsp::<std::result::Result<RequestVoteReply,String>>(client.id(),move |r| {
++        record.lock().unwrap().push(r.as_ref().map(|r|(r.term,r.vote_granted)).map_err(Clone::clone)); true
++    });
+     let (entered,waiting)=async_channel::bounded(1);
+     let (release,released)=async_channel::bounded(1);
+     if uncompleted {
+@@ -187,20 +195,29 @@
+     }
+     let (done,observed)=async_channel::bounded(1);
+     let c=client.clone(); let e=ep.clone();
+-    let mut running=Some(task::spawn(async move {done.send(call(&c,&e,request(1,1,0,0)).await).await.unwrap();}));
++    let mut running=Some(c.spawn(async move {
++        // Retain transport errors separately from the protocol Result. An RPC
++        // error or task panic cannot count as a live no-output observation.
++        let result=e.call_timeout::<RequestVoteArgs>(peers()[0],RequestVoteArgs{term:1,candidate_id:1,
++            last_log_term:0,last_log_index:0},Duration::from_secs(2)).await;
++        done.send(result).await.unwrap();
++    }));
+     if uncompleted {
+         let w=bounded(waiting.recv()).await.unwrap();
+         assert_eq!(h.inner.lock().unwrap().vote.inspect().pending,Some(w));
+-        assert!(timeout(Duration::from_millis(30),observed.recv()).await.is_err(),"no reply at post-write barrier");
++        assert_quiet(observe(&observed).await,"no reply at post-write barrier");
+     } else {
+-        assert!(bounded(observed.recv()).await.unwrap().unwrap().vote_granted);
++        assert!(bounded(observed.recv()).await.unwrap().unwrap().unwrap().vote_granted);
+         running.take().unwrap().await.unwrap();
++        assert_eq!(*replies.lock().unwrap(),vec![Ok((1,true))],"live network observer sees confirmed reply");
++        replies.lock().unwrap().clear();
+     }
+     file(&server,[0,1,1,1,0,0],"pre-kill actual saved vote").await;
+     // No release and no new accepted operation. Discard ALL old core handles.
+     let old = Arc::downgrade(&h.inner);
+     rt.kill(id);
+-    if let Some(running) = running { running.abort(); assert!(bounded(running).await.is_err()); }
++    // The client is a different node. Keep its observer alive until the restart
++    // window ends, while requiring every old server Core reference to disappear.
+     drop(h); drop(server); drop(release);
+     bounded(async { while old.upgrade().is_some() { task::yield_now().await; } }).await;
+     rt.restart(id);
+@@ -209,11 +226,22 @@
+     let fresh=start(&restarted,true).await;
+     let v=fresh.inner.lock().unwrap().vote.inspect();
+     assert_eq!((v.state.term,v.state.voted_for,v.next,v.pending),(1,Some(1),1,None),"restore vote from file");
++    assert_eq!(v.role,vote_api::Role::Follower,"recovery starts as Follower");
+     if uncompleted {
+-        assert!(timeout(Duration::from_millis(30),observed.recv()).await.is_err(),"restart must not synthesize old reply");
++        assert_quiet(observe(&observed).await,"restart must not synthesize old reply");
++    } else {
++        // Give actual network deliveries the same bounded observation window.
++        madsim::time::sleep(Duration::from_millis(30)).await;
++    }
++    assert!(replies.lock().unwrap().is_empty(),"recovery emitted an unsolicited RequestVote reply");
++    if let Some(running) = running {
++        running.abort();
++        assert!(bounded(running).await.unwrap_err().is_cancelled(),"observer cleanup must be cancellation");
++        assert!(matches!(observe(&observed).await,Observation::Closed),"closed empty observer is cleanup only");
+     }
+     assert!(!call(&other,&other_ep,request(1,2,0,0)).await.unwrap().vote_granted,"recovery must not forget vote");
+     assert!(call(&client,&ep,request(1,1,0,0)).await.unwrap().vote_granted);
++    assert_eq!(*replies.lock().unwrap(),vec![Ok((1,true))],"network observer must remain effective after restart");
+     file(&restarted,[2,1,1,1,0,0],"new requests use fresh operation IDs").await;
+     rt.kill(id);
+ }
+--- a/tasks/request_vote/AGENTS.md
++++ b/tasks/request_vote/AGENTS.md
+@@ -14,3 +14,5 @@
+ python3 scripts/check.py feedback --task request-vote --timeout 300
+ python3 scripts/check.py final --task request-vote --timeout 600
+ ```
++
++A suspected fixed-input defect is not permission to edit acceptance. In PROGRESS.md (madraft/PROGRESS.md for scoped tasks), use one `<!-- fixed-input-objection -->` JSON object followed by `<!-- /fixed-input-objection -->` with `file`, `test` (exact failing test or check), `conflict`, `evidence` (current independent log or local minimal reproducer), `reproduce` (command for human review only), `needs_fixed_change: true`, `recommendation` (unapplied), `candidate_revision` (from feedback) and `unresolved`. The controller may rerun the fixed failing item once, capped at 60 seconds charged to the cumulative budget, then stop NEEDS_REVIEW. It never executes your proposed shell command or adopts your suggested test change. Insufficient evidence gets one clarification opportunity; repeated unchanged checked inputs/failures stop for review. Report edits and unreferenced reproducer files are retained but are not implementation/proof progress.

@@ -199,26 +199,33 @@ def caller_text(authority, entry, obligation=None):
         '"../madraft/proof/implementation.rs"', json.dumps(str(entry)))
 
 
-def module_paths(entry, candidate):
-    """Conservative literal-module inspection, not a semantic refinement proof."""
-    pending, visited, outside = [entry], set(), []
+def module_paths(entry, candidate, *, conservative=False):
+    """Literal imports, not a refinement proof; conservative reuse also tracks data
+    and falls back to all candidate files when module discovery is incomplete.
+    """
+    pending = [Path(entry)] if isinstance(entry, (str, Path)) else list(entry)
+    visited, outside, data, uncertain = set(), set(), set(), False
     pattern = r'(?:#\[path\s*=\s*"([^"]+)"\]\s*)?(?:pub(?:\([^)]*\))?\s+)?mod\s+(\w+)\s*;'
     while pending:
         path = pending.pop().resolve()
         if path in visited or not path.is_file():
             continue
         if not path.is_relative_to(candidate.resolve()):
-            outside.append(str(path)); continue
+            outside.add(path); continue
         visited.add(path)
         text = re.sub(r'//[^\n]*|/\*[\s\S]*?\*/', '', path.read_text())
         for explicit, name in re.findall(pattern, text):
-            if explicit:
-                pending.append(path.parent / explicit)
-            else:
-                pending.extend(p for p in (path.parent / (name + '.rs'), path.parent / name / 'mod.rs',
-                                            path.parent / path.stem / (name + '.rs')) if p.exists())
+            choices = [path.parent / explicit] if explicit else [path.parent / (name + '.rs'),
+                path.parent / name / 'mod.rs', path.parent / path.stem / (name + '.rs')]
+            found = [p for p in choices if p.is_file()]
+            uncertain |= not found
+            pending.extend(found)
         pending.extend(path.parent / name for name in re.findall(r'include!\(\s*"([^"]+)"\s*\)', text))
-    return visited | {Path(p) for p in outside}
+        if conservative:
+            data.update((path.parent / name).resolve() for name in re.findall(r'include_(?:str|bytes)!\(\s*"([^"]+)"\s*\)',text))
+            uncertain |= bool(re.search(r'include(?:_str|_bytes)?!\(\s*[^"\s]',text))
+    if conservative and uncertain: data.update(files_under(candidate / 'madraft').values())
+    return visited | outside | data
 
 
 def source_links(entry, candidate):
@@ -410,6 +417,7 @@ class Checks:
                 observed = dict(re.findall(r'^test (\S+) \.\.\. (ok|FAILED|ignored)', text, re.M))
                 missing = sorted(n for n in expected - IGNORED if observed.get(n) != 'ok')
                 item['passed_tests'] = sorted(n for n, state in observed.items() if state == 'ok')
+                item['failed_tests'] = sorted(n for n, state in observed.items() if state == 'FAILED')
                 item['ignored_tests'] = sorted(n for n, state in observed.items() if state == 'ignored')
             item['uncovered_tests'] = missing
             if item['status'] == 'PASS' and (missing or not observed):
@@ -419,8 +427,14 @@ class Checks:
         return item
 
     def verus(self, kind, entry=None, obligation=None):
+        name, flags = obligation or kind, []
+        if kind == 'scoped':
+            spec = scoped_task(self.task)
+            if not spec or obligation not in spec.GOALS:
+                raise ValueError('Unknown scoped proof goal: ' + str(obligation))
+            entry, name = spec.DIRECTORY + '/caller.rs', spec.PREFIX + obligation
+            flags = ['--cfg','madsim'] + (['--cfg',spec.CFG + obligation] if obligation != 'rules' else [])
         proof_entry = self.snapshot / (entry or 'madraft/proof/progress.rs')
-        name = obligation or kind
         if not proof_entry.resolve().is_relative_to(self.snapshot):
             return self.record(name, 'NEEDS_REVIEW', 'proof_entry_outside_candidate')
         if kind in ('safety', 'top'):
@@ -442,7 +456,7 @@ class Checks:
         elif kind == 'definitions':
             proof_entry = self.snapshot / 'requirements/target_checks.rs'
         argv = [self.cfg['verus'], str(proof_entry), '--crate-type', 'lib',
-                '--no-cheating', '--triggers-mode', 'silent']
+                '--no-cheating', '--triggers-mode', 'silent'] + flags
         item = self.run(name, argv, proof=True, scope='entire imported compilation unit; no function filtering')
         # Reuse only an actual compile failure located inside a shared dependency.
         # A caller error or an unproved theorem is never treated as a cached pass.

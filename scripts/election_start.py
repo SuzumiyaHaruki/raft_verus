@@ -1,12 +1,12 @@
 """One additional scoped task; reuse the receiver's actual checking loop."""
 from request_vote import evaluate, prepare as prepare_task
 
-VERSION = 'madraft-election-start-1'
+VERSION = 'madraft-election-start-2'
 DIRECTORY = 'tasks/election_start'
 HELPERS = ['scripts/request_vote.py', 'scripts/election_start.py']
 INPUTS = ('AGENTS.md','TASK.md','start.md','continue.md','redesign.md','api.rs','caller.rs',
-          'core.rs','lemmas.rs','host.rs','driver.rs','rpc_tests.rs','election_tests.rs','prepare.py')
-TEST_FILES = ('rpc_tests.rs','election_tests.rs')
+          'core.rs','lemmas.rs','host.rs','driver.rs','rpc_tests.rs','election_tests.rs','observer_tests.rs','prepare.py')
+TEST_FILES = ('rpc_tests.rs','election_tests.rs','observer_tests.rs')
 TEST_FILTER = 'raft::raft::vote_tests::'
 GOALS = ('rules','campaign','authorization','history','receive_confirmed','receive_pending',
          'self_confirmed','self_pending')

@@ -1,0 +1,49 @@
+{
+  "paths": {
+    "madraft": {
+      "unchanged": true,
+      "before": "ab123399f7f2690a665d58d86e476e964b9778be1a0c61b83662af08482177b3",
+      "after": "ab123399f7f2690a665d58d86e476e964b9778be1a0c61b83662af08482177b3"
+    },
+    "requirements": {
+      "unchanged": true,
+      "before": "3ca84e3a57717158c85b7f678495a8e85372179e06e6223e6c7d9eb8e7df2286",
+      "after": "3ca84e3a57717158c85b7f678495a8e85372179e06e6223e6c7d9eb8e7df2286"
+    },
+    "labs": {
+      "unchanged": true,
+      "before": "41e68313e8544d8c550ad5fdc59e5b5e6b0e276a6e18c42113fef0c1ea590227",
+      "after": "41e68313e8544d8c550ad5fdc59e5b5e6b0e276a6e18c42113fef0c1ea590227"
+    },
+    "runs/election-start-01": {
+      "unchanged": true,
+      "before": "2e303cc78c66230d74bf44c32dbda2f885d943ccc6792b2c94bc1c1bc84f578e",
+      "after": "2e303cc78c66230d74bf44c32dbda2f885d943ccc6792b2c94bc1c1bc84f578e"
+    },
+    "tools.ini": {
+      "unchanged": true,
+      "before": "0f65b7a69d87aae8ca19a548084e0809cd0e7ac2058b3ac127db02f969a3252a",
+      "after": "0f65b7a69d87aae8ca19a548084e0809cd0e7ac2058b3ac127db02f969a3252a"
+    }
+  },
+  "candidate_bytes_unchanged": true,
+  "old_history_unchanged": true,
+  "changed_maintenance_files": [
+    "scripts/check.py",
+    "scripts/election_start.py",
+    "scripts/prompts/continue.md",
+    "scripts/request_vote.py",
+    "scripts/run.py",
+    "scripts/tests/test_helpers.py",
+    "scripts/tests/test_review_stop.py",
+    "tasks/election_start/AGENTS.md",
+    "tasks/election_start/maintain.py",
+    "tasks/election_start/observer_tests.rs",
+    "tasks/election_start/rpc_tests.rs",
+    "tasks/request_vote/AGENTS.md"
+  ],
+  "maintenance_source_identity": "201449ac37bcf9eba48f848b17559240db63360f16c0c2e0df21d4dc08ebbfa9",
+  "protected_protocol_definitions_unchanged": true,
+  "generation_performed": false,
+  "git_operations": "NONE"
+}

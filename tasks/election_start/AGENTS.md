@@ -15,3 +15,5 @@ python3 scripts/check.py obligation --task election-start --timeout 180
 python3 scripts/check.py safety --task election-start --timeout 240
 python3 scripts/check.py final --task election-start --timeout 600
 ```
+
+A suspected fixed-input defect is not permission to edit acceptance. In PROGRESS.md (madraft/PROGRESS.md for scoped tasks), use one `<!-- fixed-input-objection -->` JSON object followed by `<!-- /fixed-input-objection -->` with `file`, `test` (exact failing test or check), `conflict`, `evidence` (current independent log or local minimal reproducer), `reproduce` (command for human review only), `needs_fixed_change: true`, `recommendation` (unapplied), `candidate_revision` (from feedback) and `unresolved`. The controller may rerun the fixed failing item once, capped at 60 seconds charged to the cumulative budget, then stop NEEDS_REVIEW. It never executes your proposed shell command or adopts your suggested test change. Insufficient evidence gets one clarification opportunity; repeated unchanged checked inputs/failures stop for review. Report edits and unreferenced reproducer files are retained but are not implementation/proof progress.

@@ -1,0 +1,23 @@
+{
+  "offline_regression": {
+    "command": "PYTHONPATH=scripts/tests python3 -m unittest test_checks test_helpers test_obligations test_request_vote test_election_start test_review_stop -v",
+    "exit_code": 0,
+    "tests": 100,
+    "kind": "SIMULATED controller/checker regression; real local process transport only",
+    "log": "system-regression.log"
+  },
+  "candidate_review": {
+    "command": "python3 tasks/election_start/maintain.py --review-candidate runs/election-start-01 --output review/election_start_test_fix/recheck-01",
+    "exit_code": 0,
+    "kind": "REAL Rust/MadSim/Verus; no generation",
+    "provenance": "recheck-01/provenance.json"
+  },
+  "observer_output": {
+    "note": "Uncaptured observer-only replay added after the complete review; command and actual result recorded separately",
+    "result": "recheck-01/maintenance.json",
+    "log": "recheck-01/observer-cases.log"
+  },
+  "global_safety": "ALL_OPEN",
+  "liveness": "OPEN",
+  "generation_performed": false
+}
