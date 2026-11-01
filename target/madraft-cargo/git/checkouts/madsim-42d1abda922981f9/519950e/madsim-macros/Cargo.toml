@@ -1,0 +1,20 @@
+[package]
+name = "madsim-macros"
+version = "0.2.12"
+edition = "2021"
+authors = ["Runji Wang <wangrunji0408@163.com>"]
+description = "Madsim's proc-macro."
+homepage = "https://github.com/madsim-rs/madsim"
+repository = "https://github.com/madsim-rs/madsim"
+license = "Apache-2.0"
+categories = ["asynchronous"]
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+proc-macro = true
+
+[dependencies]
+darling = "0.14"
+proc-macro2 = "1"
+quote = "1"
+syn = "1"

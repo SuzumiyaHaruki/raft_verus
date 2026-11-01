@@ -1,0 +1,139 @@
+$ /home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc /home/nitro/Desktop/raft_verus/tasks/request_vote/fixtures.rs --edition 2021 --test --cfg bad_deny --cfg madsim --extern vstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib -L dependency=/home/nitro/.local/share/raft-verus/verus-x86-linux --check-cfg 'cfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)' -o /home/nitro/Desktop/raft_verus/target/request-vote-maintenance/final/bad-deny
+warning: unexpected `cfg` condition name: `test`
+  --> /home/nitro/Desktop/raft_verus/tasks/request_vote/fixtures.rs:37:7
+   |
+37 | #[cfg(test)]
+   |       ^^^^
+   |
+   = help: expected names are: `verus_keep_ghost`, `verus_keep_ghost_body`, `verus_no_vstd`, and `verus_verify_core` and 31 more
+   = help: to expect this configuration use `--check-cfg=cfg(test)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition name: `bad_deny`
+ --> /home/nitro/Desktop/raft_verus/tasks/request_vote/fixtures.rs:7:7
+  |
+7 | #[cfg(bad_deny)]
+  |       ^^^^^^^^
+  |
+  = help: to expect this configuration use `--check-cfg=cfg(bad_deny)`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_deny`
+  --> /home/nitro/Desktop/raft_verus/tasks/request_vote/fixtures.rs:11:7
+   |
+11 | #[cfg(bad_deny)]
+   |       ^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_deny)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_vote`
+  --> /home/nitro/Desktop/raft_verus/tasks/request_vote/fixtures.rs:20:7
+   |
+20 | #[cfg(bad_vote)]
+   |       ^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_vote)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_vote`
+  --> /home/nitro/Desktop/raft_verus/tasks/request_vote/fixtures.rs:24:7
+   |
+24 | #[cfg(bad_vote)]
+   |       ^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_vote)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_recovery`
+  --> /home/nitro/Desktop/raft_verus/tasks/request_vote/fixtures.rs:32:7
+   |
+32 | #[cfg(bad_recovery)]
+   |       ^^^^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_recovery)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `test`
+  --> /home/nitro/Desktop/raft_verus/tasks/request_vote/fixtures.rs:42:5
+   |
+42 |     #[test] fn semantic_rejection() {
+   |     ^^^^^^^
+   |
+   = note: using a cfg inside a attribute macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `test` crate for guidance on how handle this unexpected cfg
+   = help: to expect this configuration use `--check-cfg=cfg(test)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_deny`
+  --> /home/nitro/Desktop/raft_verus/tasks/request_vote/fixtures.rs:43:15
+   |
+43 |         #[cfg(bad_deny)] assert!(always_deny(v(),Request{term:1,candidate:1,log:Log{term:0,index:0}}).granted,"eligible grant required");
+   |               ^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_deny)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_vote`
+  --> /home/nitro/Desktop/raft_verus/tasks/request_vote/fixtures.rs:44:15
+   |
+44 | ...   #[cfg(bad_vote)] assert!(!ignore_vote(v(),Request{term:1,candidate:2,log:Log{term:0,index:0}}).granted,"same-term vote must not cha...
+   |             ^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_vote)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_recovery`
+  --> /home/nitro/Desktop/raft_verus/tasks/request_vote/fixtures.rs:45:15
+   |
+45 |         #[cfg(bad_recovery)] assert_eq!(forget_vote(Record{op:0,state:v().state}).voted_for,Some(1),"restored vote must not disappear");
+   |               ^^^^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_recovery)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unused variable: `actual`
+  --> /home/nitro/Desktop/raft_verus/tasks/request_vote/fixtures.rs:17:9
+   |
+17 |     let actual=always_deny(v,r);
+   |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_actual`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `Initial` is never constructed
+  --> /home/nitro/Desktop/raft_verus/tasks/request_vote/api.rs:13:12
+   |
+13 | pub struct Initial { pub state: Persistent, pub role: Role }
+   |            ^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `Completion` is never constructed
+  --> /home/nitro/Desktop/raft_verus/tasks/request_vote/api.rs:23:12
+   |
+23 | pub struct Completion { pub op: u64, pub success: bool }
+   |            ^^^^^^^^^^
+
+warning: enum `Fault` is never used
+  --> /home/nitro/Desktop/raft_verus/tasks/request_vote/api.rs:25:10
+   |
+25 | pub enum Fault { Invalid, Busy, Exhausted, Halted }
+   |          ^^^^^
+
+warning: enum `Receive` is never used
+  --> /home/nitro/Desktop/raft_verus/tasks/request_vote/api.rs:27:10
+   |
+27 | pub enum Receive { Save(Write), Reject(Fault) }
+   |          ^^^^^^^
+
+warning: enum `Event` is never used
+  --> /home/nitro/Desktop/raft_verus/tasks/request_vote/api.rs:32:10
+   |
+32 | pub enum Event { Receive(Request), Complete(Completion) }
+   |          ^^^^^
+
+warning: 16 warnings emitted
+
+
+process=COMPLETED exit=0

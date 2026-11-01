@@ -1,0 +1,141 @@
+--- root/raft.rs
++++ candidate/raft.rs
+@@ -16,6 +16,8 @@
+ pub struct RaftHandle {
+     pub(crate) endpoint: net::Endpoint,
+     inner: Arc<Mutex<Raft>>,
++    vote_serial: Arc<futures::lock::Mutex<()>>,
++    vote_hooks: Arc<Mutex<vote_host::Hooks>>,
+ }
+ 
+ type MsgSender = mpsc::UnboundedSender<ApplyMsg>;
+@@ -65,11 +67,17 @@
+     // Look at the paper's Figure 2 for a description of what
+     // state a Raft server must maintain.
+     state: State,
++    vote: vote_core::Core,
+ }
+ 
+ #[path = "state.rs"]
+ mod state;
+ use state::{State, Role};
++#[path = "../../../tasks/request_vote/api.rs"] mod vote_api;
++#[path = "vote_core.rs"] mod vote_core;
++#[path = "../../../tasks/request_vote/host.rs"] mod vote_host;
++#[cfg(test)]
++#[path = "../../../tasks/request_vote/rpc_tests.rs"] mod vote_tests;
+ 
+ /// Data needs to be persisted.
+ #[derive(Debug, Clone, Serialize, Deserialize)]
+@@ -86,6 +94,13 @@
+ // HINT: put async functions here
+ impl RaftHandle {
+     pub async fn new(peers: Vec<SocketAddr>, me: usize) -> (Self, MsgRecver) {
++        Self::new_receiver(peers, me, false).await
++    }
++
++    // Same builder and registered RPC on restart; only file existence is stricter.
++    async fn new_receiver(peers: Vec<SocketAddr>, me: usize, recovery_only: bool) -> (Self, MsgRecver) {
++        let vote = vote_host::load(vote_api::Config{node:me as u64,members:peers.len() as u64}, recovery_only)
++            .await.expect("restore receiver from actual file");
+         let endpoint = net::Endpoint::bind(peers[me]).await.expect("bind Raft RPC");
+         let (apply_ch, recver) = mpsc::unbounded();
+         let inner = Arc::new(Mutex::new(Raft {
+@@ -94,10 +109,13 @@
+             me,
+             apply_ch,
+             state: State::default(),
++            vote,
+         }));
+-        let handle = RaftHandle { inner, endpoint };
++        let handle = RaftHandle { inner, endpoint,
++            vote_serial: Arc::new(futures::lock::Mutex::new(())),
++            vote_hooks: Arc::new(Mutex::new(vote_host::Hooks::default())) };
+         // initialize from state persisted before a crash
+-        handle.restore().await.expect("failed to restore");
++        // Receiver recovery already called the actual Core above. Other labs remain TODO.
+         handle.start_rpc_server();
+ 
+         (handle, recver)
+@@ -119,13 +137,13 @@
+     /// The current term of this peer.
+     pub fn term(&self) -> u64 {
+         let raft = self.inner.lock().unwrap();
+-        raft.state.term
++        raft.vote.inspect().state.term
+     }
+ 
+     /// Whether this peer believes it is the leader.
+     pub fn is_leader(&self) -> bool {
+         let raft = self.inner.lock().unwrap();
+-        raft.state.is_leader()
++        raft.vote.inspect().role == vote_api::Role::Leader
+     }
+ 
+     /// A service wants to switch to snapshot.  
+@@ -198,20 +216,26 @@
+         let this = self.clone();
+         net.add_rpc_handler(move |args: RequestVoteArgs| {
+             let this = this.clone();
+-            async move { this.request_vote(args).await.unwrap() }
++            async move { this.request_vote(args).await.map_err(|e| e.to_string()) }
+         });
+         // add more RPC handers here
+     }
+ 
+     async fn request_vote(&self, args: RequestVoteArgs) -> Result<RequestVoteReply> {
+-        let reply = {
+-            let mut this = self.inner.lock().unwrap();
+-            this.request_vote(args)
++        // Public TCB: serialize a complete receive/save/complete operation.
++        let _serial = self.vote_serial.lock().await;
++        let decision = { self.inner.lock().unwrap().request_vote(args) };
++        let write = match decision {
++            vote_api::Receive::Save(w) => w,
++            vote_api::Receive::Reject(f) => return Err(io::Error::other(format!("receiver: {f:?}")).into()),
+         };
+-        // if you need to persist or call async functions here,
+-        // make sure the lock is scoped and dropped.
+-        self.persist().await.expect("failed to persist");
+-        Ok(reply)
++        let hooks = self.vote_hooks.lock().unwrap().clone();
++        let saved = vote_host::save(write, &hooks).await;
++        let reply = { self.inner.lock().unwrap().vote.complete(vote_api::Completion {
++            op:write.record.op, success:saved.is_ok() }) };
++        saved?;
++        let reply = reply.ok_or_else(|| io::Error::other("core did not authorize reply"))?;
++        Ok(RequestVoteReply { term:reply.term, vote_granted:reply.granted })
+     }
+ }
+ 
+@@ -234,8 +258,9 @@
+         self.apply_ch.unbounded_send(msg).unwrap();
+     }
+ 
+-    fn request_vote(&mut self, args: RequestVoteArgs) -> RequestVoteReply {
+-        todo!("handle RequestVote RPC");
++    fn request_vote(&mut self, args: RequestVoteArgs) -> vote_api::Receive {
++        self.vote.receive(vote_api::Request { term:args.term, candidate:args.candidate_id,
++            log:vote_api::Log{term:args.last_log_term,index:args.last_log_index} })
+     }
+ 
+     // Here is an example to generate random number.
+@@ -276,15 +301,13 @@
+ 
+ #[derive(Debug, Clone, Serialize, Deserialize)]
+ struct RequestVoteArgs {
+-    // Your data here.
++    term: u64, candidate_id: u64, last_log_term: u64, last_log_index: u64,
+ }
+ 
+ #[derive(Debug, Clone, Serialize, Deserialize)]
+-struct RequestVoteReply {
+-    // Your data here.
+-}
++struct RequestVoteReply { term: u64, vote_granted: bool }
+ 
+ impl net::rpc::Request for RequestVoteArgs {
+-    type Response = RequestVoteReply;
++    type Response = std::result::Result<RequestVoteReply, String>;
+     const ID: u64 = 1;
+ }

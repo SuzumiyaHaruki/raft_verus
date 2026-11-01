@@ -1,0 +1,14 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/tasks/request_vote/fixtures.rs --crate-type lib --cfg bad_recovery --no-cheating
+verification results:: 15 verified, 1 errors
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/tasks/request_vote/fixtures.rs:34:13
+   |
+34 |     ensures state == record.state,
+   |             ^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+35 | { Persistent{term:record.state.term,voted_for:None,log:record.state.log} }
+   |   ---------------------------------------------------------------------- at the end of the function body
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

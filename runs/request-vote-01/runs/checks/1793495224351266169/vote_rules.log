@@ -1,0 +1,18 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/request-vote-01/runs/checks/1793495224351266169/candidate/tasks/request_vote/caller.rs --crate-type lib --cfg madsim --no-cheating --triggers-mode silent
+error: expected curly braces
+  --> /home/nitro/Desktop/raft_verus/runs/request-vote-01/runs/checks/1793495224351266169/candidate/tasks/request_vote/../../madraft/src/raft/vote_core.rs:35:39
+   |
+35 |     pub proof fn facts(&self) ensures invariant(self.view(),self.replies(),self.base())
+   |                                       ^^^^^^^^^
+
+error[E0432]: unresolved import `vote_core::Core`
+ --> /home/nitro/Desktop/raft_verus/runs/request-vote-01/runs/checks/1793495224351266169/candidate/tasks/request_vote/caller.rs:7:5
+  |
+7 | use vote_core::Core;
+  |     ^^^^^^^^^^^^^^^ no `Core` in `vote_core`
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0432`.
+
+process=COMPLETED exit=1

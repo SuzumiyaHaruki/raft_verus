@@ -1,0 +1,6 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/target/request-vote-maintenance/final/unfinished/tasks/request_vote/caller.rs --crate-type lib --cfg madsim --cfg rv_history --verify-root
+verification results:: 6 verified, 0 errors (partial verification with `--verify-*`)
+note: verifying root module
+
+
+process=COMPLETED exit=0

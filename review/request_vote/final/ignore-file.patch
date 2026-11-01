@@ -1,0 +1,11 @@
+--- host.rs
++++ bad-host.rs
+@@ -26,7 +26,7 @@
+ }
+ pub async fn load(config: Config, recovery_only: bool) -> io::Result<Core> {
+     let core = match fs::read("state").await {
+-        Ok(bytes) => Core::recover(config,decode(&bytes)?),
++        Ok(_bytes) => Core::new(config, Initial { state:Persistent{term:0,voted_for:None,log:Log{term:0,index:0}},role:Role::Follower }), // DEFECT: ignores retained file
+         Err(e) if e.kind() == io::ErrorKind::NotFound && !recovery_only => Core::new(config,
+             Initial { state:Persistent{term:0,voted_for:None,log:Log{term:0,index:0}},role:Role::Follower }),
+         Err(e) => return Err(e),

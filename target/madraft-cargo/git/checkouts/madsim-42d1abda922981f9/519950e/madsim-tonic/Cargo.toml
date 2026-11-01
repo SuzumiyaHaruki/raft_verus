@@ -1,0 +1,44 @@
+[package]
+name = "madsim-tonic"
+version = "0.6.0+0.14"
+edition = "2021"
+authors = ["Runji Wang <wangrunji0408@163.com>"]
+description = "The `tonic` simulator on madsim."
+homepage = "https://github.com/madsim-rs/madsim"
+repository = "https://github.com/madsim-rs/madsim"
+categories = ["network-programming", "asynchronous", "simulation"]
+keywords = ["rpc", "grpc", "async", "protobuf", "simulator"]
+readme = "README.md"
+license = "Apache-2.0"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+# Tonic default features are always enabled via dependency defaults.
+# We only expose non-default/extra tonic features here.
+default = []
+deflate = ["tonic/deflate"]
+gzip = ["tonic/gzip"]
+zstd = ["tonic/zstd"]
+
+# TLS feature set in tonic 0.13.x.
+tls = ["tls-native-roots"]
+tls-aws-lc = ["tonic/tls-aws-lc"]
+tls-native-roots = ["tonic/tls-native-roots"]
+tls-ring = ["tonic/tls-ring"]
+tls-webpki-roots = ["tonic/tls-webpki-roots"]
+
+[target.'cfg(not(madsim))'.dependencies]
+tonic = { version = "0.14" }
+
+[target.'cfg(madsim)'.dependencies]
+async-stream = "0.3"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+futures-util = "0.3"
+madsim = { version = "0.2.20", path = "../madsim" }
+tracing = "0.1"
+tonic = { version = "0.14" }
+tokio = "1"
+tower = { version = "0.5" }
+
+[lints]
+workspace = true

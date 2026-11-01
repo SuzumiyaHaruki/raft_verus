@@ -38,7 +38,11 @@ def files_under(directory):
     return result
 
 
-def input_files(root):
+def input_version(task='full'):
+    return 'madraft-request-vote-1' if task == 'request-vote' else INPUT_VERSION
+
+
+def input_files(root, task='full'):
     root = Path(root)
     names = ['AGENTS.md', 'tools.ini', '.gitignore']
     names += [f'scripts/{name}' for name in HELPERS]
@@ -47,6 +51,9 @@ def input_files(root):
     names += [f'madraft/src/{name}' for name in files_under(root / 'madraft/src') if name.endswith('.rs')]
     names += [f'requirements/{p.name}' for p in sorted((root / 'requirements').iterdir())
               if p.is_file() and p.suffix in ('.md', '.rs')]
+    if task == 'request-vote':
+        from request_vote import INPUTS
+        names += ['scripts/request_vote.py'] + ['tasks/request_vote/' + n for n in INPUTS]
     for name in names:
         path = root / name
         if path.is_symlink() or any(p.is_symlink() for p in path.parents if p != root and root in p.parents) or not path.is_file():
@@ -79,6 +86,10 @@ def protected_files(authority):
     names += ['AGENTS.md', 'tools.ini', 'madraft/Cargo.toml', 'madraft/Cargo.lock', 'madraft/LICENSE']
     names += [f'madraft/src/{name}' for name in files_under(Path(authority) / 'madraft/src')
               if Path(name).name in ('tests.rs', 'tester.rs', 'test_support.rs')]
+    if (Path(authority) / 'madraft/src/raft/vote_core.rs').is_file() and (Path(authority) / 'tasks/request_vote/TASK.md').is_file():
+        from request_vote import INPUTS
+        names += ['scripts/request_vote.py', 'madraft/src/raft/raft.rs']
+        names += ['tasks/request_vote/' + n for n in INPUTS]
     return names
 
 

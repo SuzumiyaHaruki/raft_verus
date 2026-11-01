@@ -1,0 +1,10 @@
+--- host.rs
++++ bad-host.rs
+@@ -43,6 +43,7 @@
+     Ok(())
+ }
+ pub async fn save(w: Write, h: &Hooks) -> io::Result<()> {
++    return Ok(()); // DEFECT: no actual write
+     checkpoint(h,w,false).await?;
+     let file = fs::File::create("state").await?;
+     // Fault injection uses a real read-only file handle: the actual write fails.

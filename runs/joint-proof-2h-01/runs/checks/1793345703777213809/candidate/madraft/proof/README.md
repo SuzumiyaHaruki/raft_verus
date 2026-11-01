@@ -1,3 +1,0 @@
-# Generated proofs — DRAFT
-
-The experiment agent extends `progress.rs` for its current complete components and `implementation.rs` for the full executable correspondence and theorem interfaces consumed by `../../requirements/final.rs`. The supplied progress entrypoint checks only the existing upstream role observer and defaults. No student algorithm or protocol safety proof is supplied here. Import the same source functions called by the MadRaft runtime; implementation-layer specifications and proof bodies may live alongside those functions. See `../../requirements/safety.md` for the required meanings and commands.

@@ -1,0 +1,4 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/request-vote-01/runs/checks/1793495270835672399/candidate/tasks/request_vote/caller.rs --crate-type lib --cfg madsim --no-cheating --triggers-mode silent
+verification results:: 26 verified, 0 errors
+
+process=COMPLETED exit=0

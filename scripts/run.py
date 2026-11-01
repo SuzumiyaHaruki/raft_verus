@@ -18,12 +18,23 @@ import time
 import uuid
 
 from check import CONNECTIONS, FAMILIES, OBLIGATIONS, SEMANTIC_BOUNDARY, configured_seeds, current_obligation, evaluate, group_diagnostics, module_paths, Checks
-from inputs import INPUT_VERSION, copy_files, differences, files_under, fingerprint, git_revision, input_files, protected_files, save_json
+from inputs import INPUT_VERSION, input_version, copy_files, differences, files_under, fingerprint, git_revision, input_files, protected_files, save_json
 from process import run_process
 from tools import ROOT, environment, settings
 
 PROMPTS = ('start', 'continue', 'redesign', 'behavior')
 FORMAT = 'madraft-generate-check-5'
+
+
+def success_label(state):
+    return 'REQUEST_VOTE_CHECKS_PASSED' if state.get('task') == 'request-vote' else 'MACHINE_CHECKS_PASSED'
+
+
+def ready_for_final(state, report):
+    names = (['vote_' + n for n in ('rules','history','confirmed','pending')]
+        if state.get('task') == 'request-vote' else
+        [*OBLIGATIONS,'safety','linkage_review',*('connection_' + a for a in CONNECTIONS)])
+    return all(report['checks'].get(n,{}).get('status') == 'PASS' for n in names)
 
 
 def command(state, workspace, output):
@@ -45,10 +56,16 @@ def prepare(root, workspace, state):
     control.mkdir(parents=True, exist_ok=False)
     workspace.mkdir(parents=True, exist_ok=False)
     authority = control / 'inputs'
-    names = input_files(root)
+    task = state.get('task','full')
+    names = input_files(root,task)
+    source_names = list(names)
     copy_files(root, authority, names)
     system = ['scripts/run.py'] + [f'scripts/prompts/{name}.md' for name in PROMPTS]
     copy_files(root, authority, system)
+    if task == 'request-vote':
+        from request_vote import prepare as prepare_receiver
+        copy_files(root,control / 'source-inputs',names + system)
+        names = sorted(names + prepare_receiver(authority))
     raw_tools = (root / 'tools.ini').read_text()
     cfg = settings(root)
     resolved, _ = environment(root)
@@ -65,7 +82,7 @@ def prepare(root, workspace, state):
     for name in ('auth.json', 'rules'):
         if (personal / name).exists():
             (home / name).symlink_to(personal / name)
-    state.update(format=FORMAT, input_version=INPUT_VERSION, run_id=str(uuid.uuid4()),
+    state.update(format=FORMAT, input_version=input_version(task), task=task, source_input_files=source_names, run_id=str(uuid.uuid4()),
                  workspace=str(workspace), source_root=str(root), git_revision=git_revision(root),
                  input_files=names, system_files=system, original_tools=raw_tools,
                  created_at=time.time(), history=[], in_flight=None, tools=None,
@@ -80,11 +97,13 @@ def prepare(root, workspace, state):
 
 
 def origin_changes(root, control, state):
-    names = state['input_files'] + state['system_files']
-    changed = differences(root, control / 'inputs', [n for n in names if n != 'tools.ini'])
+    source_names = state.get('source_input_files',state['input_files'])
+    names = source_names + state['system_files']
+    origin = control / ('source-inputs' if state.get('task') == 'request-vote' else 'inputs')
+    changed = differences(root, origin, [n for n in names if n != 'tools.ini'])
     if (root / 'tools.ini').read_text() != state['original_tools']:
         changed.append('tools.ini')
-    if input_files(root) != state['input_files']:
+    if input_files(root,state.get('task','full')) != source_names:
         changed.append('input file list')
     return changed
 
@@ -164,6 +183,17 @@ def token_usage(log):
 def feedback(authority, state, report, mode, workspace, seconds):
     soft = max(0, seconds - state['handoff_seconds'])
     deadline = datetime.fromtimestamp(time.time() + soft, timezone.utc).isoformat(timespec='seconds')
+    if state.get('task') == 'request-vote':
+        parts = [(authority / f'tasks/request_vote/{mode}.md').read_text().strip(),
+            f'当前工作区：{workspace}。请在 {deadline} 前保存并正常返回（约 {soft:.1f} 秒）；硬限制 {seconds:.1f} 秒。',
+            f'累计剩余预算 {state["total_seconds"] - state["seconds_spent"]:.1f} 秒，包含生成和独立检查。',
+            '编辑当前 madraft/，不要编辑检查快照。只闭合本任务有限目标，宿主边界保持公开。']
+        if report:
+            parts += ['首个未完成依赖：' + json.dumps(report.get('current_obligation',{}).get('first_blocker'),ensure_ascii=False),
+                '分项结果：' + json.dumps({n:{k:i.get(k) for k in ('status','reason','log','errors','diagnostic')}
+                    for n,i in report['checks'].items()},ensure_ascii=False),
+                '已有同次实验检查点（不是旧实验答案）：' + json.dumps(state.get('checkpoints',[])[-5:],ensure_ascii=False)]
+        return '\n\n'.join(parts) + '\n'
     parts = [(authority / f'scripts/prompts/{mode}.md').read_text().strip(),
              f'Workspace: {workspace}. Soft handoff deadline: {deadline} ({soft:.1f} seconds from now). '
              f'Save code and PROGRESS.md, then return normally by this deadline. '
@@ -215,6 +245,8 @@ def obligation_key(state, plan):
     functions = set(plan['functions'])
     records = state.setdefault('obligations', {})
     for key, record in records.items():
+        if plan['goal'].startswith('request-vote-') and record['goal'] != plan['goal']:
+            continue
         if plan['id'] in record['aliases'] or plan['entry'] in record['roots'] or (record['goal'] == plan['goal'] and functions.intersection(record['functions'])):
             break
     else:
@@ -451,6 +483,9 @@ class Loop:
                 note = candidate / 'PROGRESS.md'
                 if note.is_symlink(): raise ValueError('Microcheck progress must not be an external link')
                 if note.is_file(): shutil.copy2(note, target / 'PROGRESS.md')
+                if self.state.get('task') == 'request-vote':
+                    return evaluate(target,authority=self.authority,tool_root=self.root,output=self.control/tag/'checked',
+                        timeout=seconds,revision=tag,mode='obligation',task='request-vote',seeds=self.state['seeds'])
                 checks = Checks(target, self.authority, self.root, self.control / tag / 'checked', seconds, tag)
                 checks.obligation()
                 return checks.finish('obligation-replay', list(checks.results))
@@ -543,7 +578,7 @@ class Loop:
                      output=self.control / tag, timeout=seconds, seeds=self.state['seeds'],
                      revision=tag, initial=initial, mode='final' if final else 'feedback',
                      changed_files=self.state['history'][-1]['changed_files'] if self.state['history'] else (),
-                     test_history=self.state.get('test_history', {})))
+                     test_history=self.state.get('test_history', {}),task=self.state.get('task','full')))
         if report:
             report['tool_versions'] = self.state.get('tools')
             save_json(self.control / tag / 'results.json', report)
@@ -588,6 +623,11 @@ class Loop:
         summary['last_check'] = self.state.get('last_check')
         summary['semantic_boundary'] = SEMANTIC_BOUNDARY
         summary['liveness'] = 'OPEN'
+        if self.state.get('task') == 'request-vote':
+            from request_vote import BOUNDARY
+            summary.update(task_scope='request-vote-receiver',full_madraft='INCOMPLETE',
+                global_safety={p:'OPEN' for p in OBLIGATIONS[:5]},semantic_boundary=BOUNDARY,
+                local_goals=(report or {}).get('local_goals',{}),host_verification='UNVERIFIED')
         summary.update(guidance=self.state.get('guidance', 'B'), system_version=FORMAT,
             input_fingerprint=self.state.get('input_fingerprint'), prompt_version=self.state.get('prompt_version'),
             unused_seconds=max(0, self.state['total_seconds'] - self.state['seconds_spent']),
@@ -607,14 +647,16 @@ class Loop:
             c['actual_seconds'] for c in summary['costs']) - summary['interrupted_budget_seconds'])
         save_json(self.workspace / 'runs/EXPERIMENT.json', summary)
         lines = ['# Experiment status', '', f'{status}: {reason}', '',
-                 f'Input: {INPUT_VERSION}; origin: {self.state["run_id"]}; source revision: {self.state["git_revision"]}.', '',
+                 f'Input: {self.state["input_version"]}; origin: {self.state["run_id"]}; source revision: {self.state["git_revision"]}.', '',
                  f'Model: {self.state["model"]}; effort: {self.state["effort"]}; rounds: {self.state["attempts"]}; cumulative seconds: {self.state["seconds_spent"]:.1f}/{self.state["total_seconds"]:.1f}.', '',
                  f'Latest independent evidence: {self.state.get("last_check", "not run")}. Historical results are not reused after changes.', '',
                  '| Check or obligation | Independent result |', '| --- | --- |']
         for name in dict.fromkeys([*(report or {}).get('checks', {}), *OBLIGATIONS]):
             item = (report or {}).get('checks', {}).get(name, {})
             lines.append(f'| {name} | {item.get("status", "OPEN")}: {item.get("reason", "not checked")} |')
-        lines += ['', SEMANTIC_BOUNDARY, '', 'Fixed environment/host assumptions: requirements/environment.md; coverage responsibilities: requirements/coverage.md. Candidate dependency notes in PROGRESS.md and RESULT.md remain unverified until actual callers discharge them. Agent RESULT.md does not override the independent results.', '']
+        lines += ['', summary['semantic_boundary'], '', 'Fixed environment/host assumptions: requirements/environment.md; coverage responsibilities: requirements/coverage.md. Candidate dependency notes in PROGRESS.md and RESULT.md remain unverified until actual callers discharge them. Agent RESULT.md does not override the independent results.', '']
+        if self.state.get('task') == 'request-vote':
+            lines += ['task_scope=request-vote-receiver; full MadRaft INCOMPLETE; five global safety properties OPEN. Local host boundary: tasks/request_vote/TASK.md.', '']
         lines += [f'Guidance: {summary["guidance"]}; unused budget: {summary["unused_seconds"]:.1f}s. Semantic review: NOT_PERFORMED; implementation acceptance: NOT_ESTABLISHED.', '',
                   '| Goal | Formula | Actual connection | Implementation task |', '| --- | --- | --- | --- |']
         for name, item in summary['assessments'].items():
@@ -622,7 +664,7 @@ class Loop:
         lines += ['', 'Reported token counters retain UNKNOWN scope and are not summed across resumed calls. Dollar cost is unknown. One fresh generation experiment contains multiple continuation rounds and multiple test seeds; these are not independent generation successes.', '']
         (self.workspace / 'runs/EXPERIMENT.md').write_text('\n'.join(lines))
         print(f'{status}: {reason}; state: {self.statefile}', flush=True)
-        return 0 if status == 'MACHINE_CHECKS_PASSED' else 2 if status in ('BLOCKED', 'NEEDS_REVIEW') else 1
+        return 0 if status == success_label(self.state) else 2 if status in ('BLOCKED', 'NEEDS_REVIEW') else 1
 
     def run(self):
         state = self.state
@@ -668,12 +710,12 @@ class Loop:
         while report:
             if report['status'] in ('BLOCKED', 'NEEDS_REVIEW'):
                 return self.stop(report['status'], 'Independent check cannot proceed under the fixed inputs', report)
-            if report['status'] == 'MACHINE_CHECKS_PASSED' and report.get('mode') == 'final':
-                return self.stop('MACHINE_CHECKS_PASSED', 'Machine checks passed; semantic review and implementation acceptance remain outstanding', report)
-            if report.get('mode') != 'final' and all(report['checks'].get(n, {}).get('status') == 'PASS' for n in (*OBLIGATIONS, 'safety', 'linkage_review', *('connection_' + a for a in CONNECTIONS))):
+            if report['status'] == success_label(state) and report.get('mode') == 'final':
+                return self.stop(success_label(state), 'Scoped checks passed; semantic review remains outstanding', report)
+            if report.get('mode') != 'final' and ready_for_final(state, report):
                 report = self.inspect(final=True) or report
-                if report and report['status'] == 'MACHINE_CHECKS_PASSED' and report.get('mode') == 'final':
-                    return self.stop('MACHINE_CHECKS_PASSED', 'Machine checks passed; semantic review and implementation acceptance remain outstanding', report)
+                if report and report['status'] == success_label(state) and report.get('mode') == 'final':
+                    return self.stop(success_label(state), 'Scoped checks passed; semantic review remains outstanding', report)
             if report['status'] in ('BLOCKED', 'NEEDS_REVIEW'):
                 return self.stop(report['status'], 'Final check cannot proceed under the fixed inputs', report)
             self.elapsed()
@@ -762,8 +804,8 @@ class Loop:
         final_report = report if report and report.get('mode') == 'final' else self.inspect(final=True)
         if final_report:
             report = final_report
-        if report and report['status'] == 'MACHINE_CHECKS_PASSED' and report.get('mode') == 'final':
-            return self.stop('MACHINE_CHECKS_PASSED', 'Machine checks passed; semantic review and implementation acceptance remain outstanding', report)
+        if report and report['status'] == success_label(state) and report.get('mode') == 'final':
+            return self.stop(success_label(state), 'Scoped checks passed; semantic review remains outstanding', report)
         return self.stop((report or {}).get('status') if (report or {}).get('status') in ('BLOCKED', 'NEEDS_REVIEW') else 'INCOMPLETE', reason, report)
 
 
@@ -772,6 +814,7 @@ def main():
     parser.add_argument('action', choices=['new', 'resume'])
     parser.add_argument('directory', type=Path)
     parser.add_argument('--execute', action='store_true')
+    parser.add_argument('--task',choices=['full','request-vote'],help='Default: full; resume retains its original task')
     parser.add_argument('--model')
     parser.add_argument('--effort', choices=['low', 'medium', 'high', 'xhigh'])
     parser.add_argument('--codex')
@@ -788,7 +831,7 @@ def main():
             parser.error('New requires an unused workspace and controller record')
         cfg = settings(root)
         a = cfg['agent']
-        state = dict(thread_id=None, seconds_spent=0.0, attempts=0, model=args.model or a['model'],
+        state = dict(task=args.task or 'full',thread_id=None, seconds_spent=0.0, attempts=0, model=args.model or a['model'],
                      effort=args.effort or a['reasoning_effort'], codex=args.codex or cfg['tools']['codex'],
                      guidance=args.guidance or a.get('guidance', 'B'),
                      seeds=configured_seeds(root))
@@ -800,7 +843,9 @@ def main():
         if not (control / 'state.json').is_file():
             parser.error('No new-system origin record: historical runs are read-only, not warm-start inputs')
         state = json.loads((control / 'state.json').read_text())
-        if state.get('format') != FORMAT or state.get('input_version') != INPUT_VERSION or state.get('workspace') != str(workspace):
+        if args.task and args.task != state.get('task','full'):
+            parser.error('Resume cannot change the task scope; start a fresh experiment')
+        if state.get('format') != FORMAT or state.get('input_version') != input_version(state.get('task','full')) or state.get('workspace') != str(workspace):
             parser.error('Run origin/input version mismatch; start a fresh experiment')
         for flag in ('model', 'effort', 'codex', 'guidance'):
             value = getattr(args, flag)
@@ -823,8 +868,8 @@ def main():
           f'Hard slice: {state["slice_seconds"]}s; handoff grace: {state["handoff_seconds"]}s; minimum work: {state["min_work_seconds"]}s; '
           f'feedback: {state["check_seconds"]}s; final reserve: {state["final_seconds"]}s', flush=True)
     if not args.execute:
-        names = input_files(root)
-        print('Input version: ' + INPUT_VERSION + '; source input fingerprint: ' + fingerprint({n:root/n for n in names}))
+        names = input_files(root,state.get('task','full'))
+        print('Task: ' + state.get('task','full') + '; input version: ' + input_version(state.get('task','full')) + '; source input fingerprint: ' + fingerprint({n:root/n for n in names}))
         print('Inputs: ' + ', '.join(names))
         print('One obligation at a time; independent checks, same-session repair and same-run checkpoints. Total budget includes agents and checks.')
         print('PREVIEW: no candidate created, no tools or agent called. Add --execute to run the independent feedback loop.')

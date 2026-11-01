@@ -1,0 +1,25 @@
+[workspace]
+members = [
+    "madsim",
+    "madsim-aws-sdk-s3",
+    "madsim-macros",
+    "madsim-tokio",
+    "madsim-tonic",
+    "madsim-tonic-build",
+    "madsim-etcd-client",
+    "madsim-rdkafka",
+    "tonic-example",
+]
+resolver = "2"
+
+[patch.crates-io]
+getrandom = { git = "https://github.com/madsim-rs/getrandom.git", rev = "6c9d9e9" }
+
+[workspace.lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = [
+    'cfg(madsim)',
+    'cfg(tokio_unstable)',
+] }
+
+[workspace.lints.clippy]
+result_large_err = "allow"

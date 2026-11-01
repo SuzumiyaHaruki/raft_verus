@@ -1,0 +1,30 @@
+{
+  "root_git_status": {
+    "exit": 128,
+    "stderr": "fatal: not a git repository (or any of the parent directories): .git\n"
+  },
+  "readable_publish_checkout": "/tmp/raft-verus-publish-labs",
+  "publish_revision": "54569d0d7a562220af168abb90cd746d86230c9b",
+  "pre_edit_snapshot": "/tmp/request-vote-maintenance-before-n2ok_c5t",
+  "before_compared_with_publish_checkout": {
+    "madraft": [],
+    "requirements": [],
+    "labs": [],
+    "docs": []
+  },
+  "preservation": {
+    "madraft": [],
+    "requirements": [],
+    "labs": [],
+    "docs": [],
+    "operator_files": []
+  },
+  "pre_edit_files_compared": 327,
+  "all_recorded_pre_edit_files_vs_publish": [],
+  "modified_existing_files": [
+    "README.md",
+    "scripts/check.py",
+    "scripts/inputs.py",
+    "scripts/run.py"
+  ]
+}

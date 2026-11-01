@@ -1,0 +1,279 @@
+--- before/madraft/PROGRESS.md
++++ after/madraft/PROGRESS.md
+@@ -0,0 +1,33 @@
++# RequestVote progress
++
++Implemented the actual synchronous Core used by the existing Raft RPC: checked fresh/recovered construction, term/log/vote decision, ordered rejection, operation exhaustion, pending save, matching completion, failed-save halt and exact ghost output accounting. Private type invariants connect every emitted grant to the current vote and to the recovered origin record; constructors establish them and receive/complete preserve them. The fixed finite caller observes all actual replies.
++
++Checks: official obligation attempt 1 failed compilation (reserved invariant identifier); direct compilation then identified spec-mode borrowing and ghost assignment. Repaired with core_ok, tracked proof references and ghost field updates. Official obligation attempt 2 passed build, all eight seed-1 tests and all four proofs. Official final runs/checks/1793495300732175752 returned REQUEST_VOTE_CHECKS_PASSED: build/inventory/source boundary, eight tests on each seed 1–5, rules 26/0, history 30/0, confirmed 32/0, pending 32/0 verified/errors. No rollback or imported candidate was used. Current bounded task has no remaining failed dependency; controller recheck and semantic review remain separate. Next obstacle outside this task: unverified host correspondence, arbitrary crash recovery and global Raft behavior.
++
++<!-- obligation -->
++```ini
++[obligation]
++id = request-vote-recovery-composition
++statement = Actual constructors and transitions preserve output uniqueness and the recovered-record constraint for arbitrary finite calls.
++goal = execution_link
++kind = composition
++functions = madraft/src/raft/vote_core.rs::new, madraft/src/raft/vote_core.rs::recover, madraft/src/raft/vote_core.rs::receive, madraft/src/raft/vote_core.rs::complete
++entry = madraft/proof/vote_lemmas.rs
++parent =
++dependencies = madraft/src/raft/vote_core.rs
++premises = Faithful I/O readback, genuine completion, serialized host calls and forwarding to the original RPC requester remain unverified host premises.
++tests = raft::raft::vote_tests::
++```
++<!-- /obligation -->
++
++<!-- connections -->
++| Behavior | Actual functions | Proof entry | Open premises / next step |
++| --- | --- | --- | --- |
++| initialization | madraft/src/raft/vote_core.rs::new | madraft/src/raft/vote_core.rs | Fixed constructors/nonempty caller checks exact state and a real grant; host configuration and log fixture are inputs. |
++| transitions | madraft/src/raft/vote_core.rs::receive | madraft/src/raft/vote_core.rs | Fixed rules and finite_calls check every actual decision; async host serialization remains unverified. |
++| outputs | madraft/src/raft/vote_core.rs::complete | madraft/proof/vote_lemmas.rs | Fixed caller appends every returned reply; authentic save completion and RPC forwarding remain host premises. |
++| recovery | madraft/src/raft/vote_core.rs::recover | madraft/proof/vote_lemmas.rs | Fixed restart_window checks confirmed and written-pending windows under readback equality; arbitrary crashes remain OPEN. |
++| snapshots | madraft/src/raft/raft.rs::snapshot, madraft/src/raft/raft.rs::cond_install_snapshot | | OPEN; unrelated student TODOs preserved. |
++<!-- /connections -->
++
++The fixed call path remains RaftHandle::new/new_receiver → vote_host::load → Core::new/recover, and start_rpc_server → RaftHandle::request_vote → Raft::request_vote → Core::receive → vote_host::save → Core::complete. The code does not add a service or move voting rules into the host. Five global safety properties, full MadRaft, full log correspondence and conditional liveness remain OPEN.
+--- before/madraft/RESULT.md
++++ after/madraft/RESULT.md
+@@ -0,0 +1,50 @@
++# RequestVote result
++
++REQUEST_VOTE_CHECKS_PASSED for the bounded receiver task. Official final evidence: [results](../runs/checks/1793495300732175752/results.json) and [summary](../runs/checks/1793495300732175752/results.md). This is local machine-check acceptance; semantic review remains required and full implementation acceptance is not established.
++
++| Local proof | Outcome | Actual connection |
++| --- | --- | --- |
++| rules | PASS; 26 verified, 0 errors | Core::new/recover validate external state; receive obeys fixed term, vote, log, rejection and counter rules; complete authorizes only matching successful saves; inspect exposes exact state. Fixed nonempty constructs and obtains a real positive reply. |
++| history | PASS; 30 verified, 0 errors | Private type invariant is established by constructors and preserved by both transitions. Fixed finite_calls records every actual reply for any finite event vector; uniqueness follows from the invariant. |
++| confirmed | PASS; 32 verified, 0 errors | Actual receive and successful complete precede recover of the same record; arbitrary finite suffix outputs compose with the prior output history. |
++| pending | PASS; 32 verified, 0 errors | Actual receive precedes recover of the written record without inventing a completion or old reply; arbitrary suffix composes with the existing history. |
++
++The invariant connects granted output terms to the current persistent term, fixes every equal-term grant to the current voted_for, and preserves uniqueness of prior outputs. Pending granted replies satisfy the same constraint. A recovered origin additionally bounds future grants from below and fixes equal-origin-term grants to the retained vote. The restart proof combines the prefix upper bound with the suffix lower bound; equal-term cross-boundary grants must name the same candidate. Ghost outputs are erased at runtime, and the fixed caller checks their exact correspondence to every actual complete return.
++
++Build, inventory and same-candidate source boundary passed. All eight fixed tests passed for each configured seed 1, 2, 3, 4, 5 (40 test executions): rules_and_nonempty; invalid_busy_failure_completion_and_bounds; rpc_rules_and_file; rpc_nonempty_log_and_denial_persist; rpc_delayed_and_failed_save; restart_confirmed; restart_written_pending; malformed_storage_is_error. These exercise the original registered RPC, independent file-byte assertions, a real write failure, pre-write delay, same-node kill/restart with fresh endpoint/Core, malformed files, nonempty log fixtures, maximum terms/indexes and operation exhaustion. The other 60 discovered tests were filtered out by this task's fixed runner.
++
++The original path is RaftHandle::new/new_receiver → vote_host::load → Core::new/recover; start_rpc_server registers RaftHandle::request_vote, which calls Raft::request_vote → Core::receive, awaits vote_host::save, then calls Core::complete and forwards its authorized reply. Protocol decisions remain in the verified synchronous core. Only vote_core.rs and vote_lemmas.rs were changed as code; other student TODOs, fixed interfaces, tests and checker were preserved.
++
++Host boundary remains UNVERIFIED: RaftHandle::new_receiver, start_rpc_server and request_vote; Raft::request_vote argument adaptation; vote_host::{load,encode,decode,save,checkpoint}; mutexes, async scheduling, RPC identity/forwarding, actual I/O results and faithful retained-record readback. Verus/vstd/Rust/SMT are trusted. The two recovery theorems require readback equal to the actual emitted record and no intervening accepted operation. A success boolean does not prove external I/O. MadSim completed writes survive node restart, sync_all is a no-op, and create truncates; this result does not establish real-disk durability or interrupted-write crash consistency.
++
++Recovery coverage is restricted to confirmed-save and written-but-uncompleted windows. Arbitrary crashes, recovery after failed/interrupted writes, other term/vote-changing paths, full replicated-log-to-summary correspondence and snapshots remain OPEN. No snapshot creation, installation, decoding or application correctness is claimed.
++
++| Global target | Outcome |
++| --- | --- |
++| Election Safety | OPEN |
++| Leader Append-Only | OPEN |
++| Log Matching | OPEN |
++| Leader Completeness | OPEN |
++| State Machine Safety | OPEN |
++
++| Student lab | Outcome |
++| --- | --- |
++| Raft 2A | INCOMPLETE; receiver task locally checked, candidate tally/majority/election not completed |
++| Raft 2B | OPEN |
++| Raft 2C | INCOMPLETE; only the two bounded receiver recovery windows checked |
++| Raft 2D | OPEN |
++| KV 3A/3B | OPEN |
++| Shard controller 4A | OPEN |
++| Sharded KV 4B | OPEN |
++
++Full MadRaft is INCOMPLETE. Conditional liveness and application correctness beyond the Raft properties remain OPEN. No assume, admit, skipped consensus body or imported earlier solution was used.
++
++Reproduce from the workspace root using the existing tools.ini and offline dependencies:
++
++```bash
++python3 scripts/check.py obligation --task request-vote --timeout 120
++python3 scripts/check.py safety --task request-vote --timeout 240
++python3 scripts/check.py final --task request-vote --timeout 300
++```
++
++The successful obligation evidence is runs/checks/1793495270835672399; the earlier compilation failure is retained in runs/checks/1793495224351266169. Final code was unchanged after the successful final snapshot; only these reports were completed afterward.
+--- before/madraft/proof/vote_lemmas.rs
++++ after/madraft/proof/vote_lemmas.rs
+@@ -1,16 +1,30 @@
+-//! Student proof entry. No implementation-specific invariant is supplied.
+-use crate::{vote_api::*, vote_core::Core};
++//! Finite-output uniqueness and faithful-record restart composition.
++use crate::{vote_api::*, vote_core::{Core,bounded,rooted}};
+ use vstd::prelude::*;
+ verus! {
+-pub proof fn uniqueness(c: &Core) ensures unique(c.replies()) {
+-    assert(false); // OPEN: generate an invariant of the actual executable core.
+-}
++pub proof fn uniqueness(tracked c: &Core) ensures unique(c.replies()) { c.facts(); }
+ #[cfg(any(rv_confirmed, rv_pending))]
+-pub proof fn restart_composition(before: &Core, after: &Core, record: Record)
++pub proof fn restart_composition(tracked before: &Core, tracked after: &Core, record: Record)
+     requires before.view().state == record.state, before.view().next == record.op + 1,
+         after.base() == Some(record), before.view().config == after.view().config,
+     ensures unique(before.replies() + after.replies()),
+ {
+-    assert(false); // OPEN: preserved vote constrains every subsequent actual output.
++    before.facts(); after.facts();
++    let a = before.replies(); let b = after.replies(); let h = a + b;
++    assert forall|i:int,j:int| 0 <= i < h.len() && 0 <= j < h.len()
++        && (#[trigger] h[i]).granted && (#[trigger] h[j]).granted
++        && h[i].node == h[j].node && h[i].term == h[j].term
++        implies h[i].candidate == h[j].candidate by {
++        if i < a.len() && j < a.len() { assert(a[i].candidate == a[j].candidate); }
++        else if i >= a.len() && j >= a.len() {
++            assert(b[i-a.len()].candidate == b[j-a.len()].candidate);
++        } else if i < a.len() {
++            assert(bounded(a[i],record.state));
++            assert(rooted(b[j-a.len()],Some(record)));
++        } else {
++            assert(bounded(a[j],record.state));
++            assert(rooted(b[i-a.len()],Some(record)));
++        }
++    }
+ }
+ }
+--- before/madraft/src/raft/vote_core.rs
++++ after/madraft/src/raft/vote_core.rs
+@@ -1,47 +1,128 @@
+-//! UNIMPLEMENTED student input. Cargo and Verus import this exact file.
++//! Synchronous RequestVote decision and persistence authorization core.
+ use super::vote_api::*;
+ use super::vote_api::View;
+ use vstd::prelude::*;
+ verus! {
+-// These fields are a starting declaration, NOT an invariant or solution.
+-// You may redesign private representation and add auxiliary ghost state.
+ pub struct Core { state: View, outputs: Ghost<Seq<Reply>>, origin: Ghost<Option<Record>> }
++
++pub open spec fn bounded(a: Reply, s: Persistent) -> bool {
++    a.granted ==> a.term <= s.term && (a.term == s.term ==> s.voted_for == Some(a.candidate))
++}
++pub open spec fn rooted(a: Reply, b: Option<Record>) -> bool {
++    b.is_some() && a.granted ==> a.term >= b.unwrap().state.term
++        && (a.term == b.unwrap().state.term && b.unwrap().state.voted_for.is_some()
++            ==> b.unwrap().state.voted_for == Some(a.candidate))
++}
++pub open spec fn core_ok(v: View, h: Seq<Reply>, b: Option<Record>) -> bool {
++    &&& valid_state(v.config,v.state)
++    &&& unique(h)
++    &&& forall|i:int| 0 <= i < h.len() ==> bounded(#[trigger] h[i],v.state) && rooted(h[i],b)
++    &&& (b.is_some() ==> v.state.term >= b.unwrap().state.term
++        && (v.state.term == b.unwrap().state.term && b.unwrap().state.voted_for.is_some()
++            ==> v.state.voted_for == b.unwrap().state.voted_for))
++    &&& (v.pending.is_some() ==> {
++        let w = v.pending.unwrap();
++        w.record.state == v.state && w.record.op < u64::MAX && w.record.op + 1 == v.next
++        && w.reply.term == v.state.term && bounded(w.reply,v.state) && rooted(w.reply,b)
++    })
++}
+ impl Core {
+     pub closed spec fn view(&self) -> View { self.state }
+     pub closed spec fn replies(&self) -> Seq<Reply> { self.outputs@ }
+     pub closed spec fn base(&self) -> Option<Record> { self.origin@ }
++    #[verifier::type_invariant]
++    closed spec fn inv(&self) -> bool { core_ok(self.state,self.outputs@,self.origin@) }
++    pub proof fn facts(tracked &self) ensures core_ok(self.view(),self.replies(),self.base())
++    { use_type_invariant(self); }
++    pub proof fn domain(tracked &self) ensures valid_state(self.view().config,self.view().state)
++    { self.facts(); }
+ 
+-    // Public domain fact, not a supplied inductive Raft invariant. Establish it
+-    // with your own representation and invariant, including after recovery.
+-    pub proof fn domain(&self)
+-        ensures valid_state(self.view().config,self.view().state),
+-    { assert(false); } // OPEN
+-
++    fn valid(c: Config, s: Persistent) -> (ok: bool)
++        ensures ok == valid_state(c,s),
++    {
++        c.members > 0 && c.node < c.members && ((s.log.index == 0) == (s.log.term == 0))
++        && s.log.term <= s.term && match s.voted_for { Some(x) => s.term > 0 && x < c.members, None => true }
++    }
+     pub fn new(c: Config, initial: Initial) -> (out: Option<Self>)
+         ensures out.is_some() <==> valid_initial(c,initial),
+             out.is_some() ==> out.unwrap().view() == fresh_view(c,initial)
+                 && out.unwrap().replies() == Seq::<Reply>::empty() && out.unwrap().base().is_none(),
+-    { unreached() } // TODO: implement checked initialization
+-
++    {
++        if !Self::valid(c,initial.state) || (initial.state.term == 0 && !matches!(initial.role,Role::Follower)) { return None; }
++        Some(Core { state: View { config:c,state:initial.state,role:initial.role,next:0,pending:None,halted:false },
++            outputs:Ghost(Seq::empty()),origin:Ghost(None) })
++    }
+     pub fn recover(c: Config, record: Record) -> (out: Option<Self>)
+         ensures out.is_some() <==> valid_record(c,record),
+             out.is_some() ==> out.unwrap().view() == recovered_view(c,record)
+                 && out.unwrap().replies() == Seq::<Reply>::empty() && out.unwrap().base() == Some(record),
+-    { unreached() } // TODO: implement actual recovery and establish your invariant
+-
+-    pub fn inspect(&self) -> (out: View) ensures out == self.view()
+-    { unreached() } // TODO: return the actual state
+-
++    {
++        if !Self::valid(c,record.state) || record.op == u64::MAX { return None; }
++        Some(Core { state: View { config:c,state:record.state,role:Role::Follower,next:record.op+1,pending:None,halted:false },
++            outputs:Ghost(Seq::empty()),origin:Ghost(Some(record)) })
++    }
++    pub fn inspect(&self) -> (out: View) ensures out == self.view() { self.state }
+     pub fn receive(&mut self, request: Request) -> (out: Receive)
+         ensures out == receive_result(old(self).view(), request),
+             self.view() == receive_after(old(self).view(),request,out),
+             self.replies() == old(self).replies(), self.base() == old(self).base(),
+-    { unreached() } // TODO: implement actual receiver and choose useful invariants
+-
++    {
++        proof { use_type_invariant(&*self); }
++        if self.state.halted { return Receive::Reject(Fault::Halted); }
++        if self.state.pending.is_some() { return Receive::Reject(Fault::Busy); }
++        if request.term == 0 || request.candidate >= self.state.config.members
++            || ((request.log.index == 0) != (request.log.term == 0)) || request.log.term > request.term {
++            return Receive::Reject(Fault::Invalid);
++        }
++        if self.state.next == u64::MAX { return Receive::Reject(Fault::Exhausted); }
++        let ghost previous = self.state;
++        let higher = request.term > self.state.state.term;
++        let available = match self.state.state.voted_for { None => true, Some(x) => x == request.candidate };
++        let grant = request.term >= self.state.state.term && (higher || available)
++            && (request.log.term > self.state.state.log.term
++                || (request.log.term == self.state.state.log.term && request.log.index >= self.state.state.log.index));
++        let s = Persistent { term: if higher { request.term } else { self.state.state.term },
++            voted_for: if grant { Some(request.candidate) } else if higher { None } else { self.state.state.voted_for },
++            log:self.state.state.log };
++        let w = Write { record:Record{op:self.state.next,state:s},request,
++            reply:Reply{node:self.state.config.node,term:s.term,candidate:request.candidate,granted:grant} };
++        self.state = View { config:self.state.config,state:s,role:if higher {Role::Follower} else {self.state.role},
++            next:self.state.next+1,pending:Some(w),halted:false };
++        proof {
++            assert forall|i:int| 0 <= i < self.outputs@.len() implies bounded(#[trigger] self.outputs@[i],s) && rooted(self.outputs@[i],self.origin@) by {
++                assert(bounded(self.outputs@[i],previous.state));
++            }
++        }
++        Receive::Save(w)
++    }
+     pub fn complete(&mut self, notice: Completion) -> (out: Option<Reply>)
+         ensures out == complete_result(old(self).view(),notice),
+             self.view() == complete_after(old(self).view(),notice),
+             self.replies() == append_reply(old(self).replies(),out), self.base() == old(self).base(),
+-    { unreached() } // TODO: authorize only the matching saved reply
++    {
++        proof { use_type_invariant(&*self); }
++        if let Some(w) = self.state.pending {
++            if w.record.op == notice.op {
++                self.state.pending = None;
++                if notice.success {
++                    proof {
++                        let h = self.outputs@;
++                        assert forall|i:int,j:int| 0 <= i < h.push(w.reply).len() && 0 <= j < h.push(w.reply).len()
++                            && (#[trigger] h.push(w.reply)[i]).granted && (#[trigger] h.push(w.reply)[j]).granted
++                            && h.push(w.reply)[i].node == h.push(w.reply)[j].node
++                            && h.push(w.reply)[i].term == h.push(w.reply)[j].term
++                            implies h.push(w.reply)[i].candidate == h.push(w.reply)[j].candidate by {
++                            if i < h.len() && j < h.len() { assert(h[i].candidate == h[j].candidate); }
++                            else if i < h.len() { assert(bounded(h[i],self.state.state)); }
++                            else if j < h.len() { assert(bounded(h[j],self.state.state)); }
++                        }
++                        self.outputs@ = h.push(w.reply);
++                    }
++                    return Some(w.reply);
++                } else { self.state.halted = true; }
++            }
++        }
++        None
++    }
+ }
+ }
