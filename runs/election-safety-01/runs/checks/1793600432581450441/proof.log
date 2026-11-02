@@ -1,0 +1,18 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793600432581450441/candidate/madraft/proof/core_connection.rs --crate-type lib --no-cheating --triggers-mode silent
+error: expected curly braces
+  --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793600432581450441/candidate/madraft/proof/../src/raft/vote_core.rs:54:9
+   |
+54 |         ensures out == receive_result(old(self).view(), request),
+   |         ^^^^^^^
+
+error[E0433]: failed to resolve: could not find `Core` in `vote_core`
+ --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793600432581450441/candidate/madraft/proof/core_connection.rs:7:25
+  |
+7 |     let core=vote_core::Core::new(c,initial);
+  |                         ^^^^ could not find `Core` in `vote_core`
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0433`.
+
+process=COMPLETED exit=1

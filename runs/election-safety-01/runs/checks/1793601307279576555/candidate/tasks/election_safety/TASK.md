@@ -1,0 +1,39 @@
+# Saved majority to actual Leader — DRAFT
+
+Generate one receiver/campaign/collection/promotion implementation and its proofs from the original unfinished MadRaft scaffold. No previous candidate is an input. The same Core owns term, role, votedFor, log summary, Pending, operation IDs, saved round and executable distinct voter set. The host calls this Core through the registered RequestVote path. This task adds real Leader promotion and historical Election Safety for finite executions without node restart. It does not add timers, heartbeats, replication, commit, snapshots, a storage protocol or full 2A. Complete Raft, its five global properties and conditional liveness remain OPEN.
+
+## Changed stage semantics
+
+| Previous collection stage | This task | Reason |
+| --- | --- | --- |
+| Never promote, including one member | Saved strict majority must promote; before saving it must not | The actual election decision is now in scope |
+| Only Candidate may retain votes | Candidate and Leader may retain a saved round's votes; Leader retains its winning tally | Becoming Leader must not erase the evidence or make source checks vacuous |
+| active means Candidate | active still governs adding votes; round_valid includes Candidate and Leader | Equal/lower-term late replies do not add Leader votes; higher terms still invalidate leadership |
+| Every peer must eventually be counted | A Leader's tally is retained, not extended; three nodes may win with two votes | A slow third RPC must not delay promotion |
+| Arbitrary valid Initial role | Local guard fixtures may still construct Leader; network boot requires all Followers | A fabricated initial Leader is not an observed election |
+
+## Fixed behavior
+
+try_become_leader takes no certificate, count or eligibility boolean. It reads its own actual voter set and configuration. It returns true exactly when not halted, no Pending, current saved Candidate round, votedFor=self, self present, members valid/distinct and votes.len() > members/2; its observable role then becomes Leader. It leaves term, votedFor, log, Pending, IDs, votes and Choice history unchanged. A repeated call returns false unchanged. No count*2 arithmetic is needed. Refusal is required when ineligible; success is required when eligible. This is not another election or another disk write.
+
+Preserve receiver priority Halted/Busy/Invalid/Exhausted, log freshness by last term then index, same-term retries and no change of candidate. Preserve checked campaign term/save-ID increment, saved authorization of replies/sends, failure closure, wrong/duplicate completion refusal and higher-term invalidation. Self choice is observed before save, but only matching successful self-save counts self. Starting a new round, higher term, failure and recovery clear the effective tally as specified by api.rs. Recovery is Follower, no active round, empty Pending and empty votes. Save IDs never wrap. Available IDs on a higher request/reply require saving; exhaustion makes the existing volatile higher-term/Follower update, clears eligibility and halts. These DRAFT bounded policies are unchanged from the collection stage.
+
+Collection uses the original immutable Send and destination member. Higher reply term is checked before Candidate eligibility, even for an old RPC or a current Leader. Equal/lower-term replies to a Leader retain its winning set; they do not create new votes or elections. Pending returns Busy at the core API; the driver serializes actual operations. Ordinary same-term receiver saves may temporarily block promotion, so the driver checks again after completion. Do not move eligibility or term decisions into the host.
+
+## Actual calls and independent observation
+
+The driver calls promotion immediately after self-save completion, after each consumed RPC and after receiver/save completion, under the existing serial discipline. Network waits do not hold that lock. A three-node candidate must become Leader when B's actual vote arrives while C's future is still blocked. A one-member candidate must promote without waiting for peers. is_leader and term read that same Core. The existing unfinished start/log service remains unfinished.
+
+observation.rs reads actual before/after views, independent of the promotion return flag. Every role-changing entry in the fixed network records a Frame; no frame is erased. Any non-Leader to Leader transition or Leader term change is observed as an election, including incorrect transitions. The actual network execute calls inspect around every Core entry and proves exact append-only correspondence; the passive host test hook records the same views. Changes map to the existing requirements/targets.rs Event::Elect or Silent for one arbitrary fixed group. The vocabulary bridge takes any History whose events equal this projection, without inventing log, command or snapshot states. It is not a Raft proof.
+
+## Proof assignment
+
+Retain all prior local rule, mixed history, source, nonempty and four recovery callers. Mixed local histories now include promotion. The fixed no-restart network constructs actual Cores from any supported finite nonempty configuration with valid Follower initial states and valid, possibly nonempty log summaries. Standard term-zero/empty-log initialization is included. Log-to-replicated-log correspondence is outside this slice. Start/Receive/Save/Deliver/Error/Promote allow multiple candidates, split votes, delay, repetition, reordering, omission and failed/pending saves. Promote enabled checks only the node bound, never majority or safety. The fixed executor records actual outputs and changes even when wrong; no desired property filters executions.
+
+Choose network_inv and prove initialization, preservation and the fixed conclusions. Current votes must have actual sent/received/completed/delivered sources and a matching Choice in each voter's actual history. Each observed historical election must retain its own strict-majority basis and those Choice witnesses after demotion, clearing or later terms. Same-node/same-term Choice uniqueness, genuine vote provenance and majority intersection must together establish same-group/same-term election uniqueness across all observed times. The maintenance input supplies no election invariant, intersection proof or implementation. The final caller checks each finite prefix and invokes the original Election Safety target on the same event projection. Current-state leader exclusion alone is insufficient. Nonempty callers require actual three-Core and one-Core elections; they do not replace induction.
+
+## Boundaries and checking
+
+The network theorem has no restart. The confirmed and written-but-uncompleted receiver/self-save recovery windows are separate local results with arbitrary mixed suffixes, including promotion; they do not establish arbitrary or repeated cluster crash safety. Host membership/address mapping, original RPC association, serialization, truthful I/O/completion/readback, file retention, encoding, cancellation and forwarding remain UNVERIFIED. None of these assumes valid majorities, no double votes or Election Safety. Physical durability and interrupted/failed-write recovery are OPEN.
+
+Run python3 scripts/check.py safety --task election-safety for formal feedback and final --task election-safety for all required proofs and seeds on the same stopped candidate. Formal acceptance verifies imported candidate bodies with --no-cheating and no function filtering. ELECTION_SAFETY_NO_RESTART_CHECKS_PASSED is scoped machine evidence pending semantic review; full Election Safety including all protocol paths/faults, the other four global properties, full execution/snapshot correspondence, complete MadRaft and liveness stay OPEN. Preserve concrete failures, bounded fixed-input objections and same-run checkpoint rules. Reports and diagnostic output must stop changing during final. Unknown token accounting or cost remains unknown.

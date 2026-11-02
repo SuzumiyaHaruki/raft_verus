@@ -1,0 +1,4 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793602439240667043/candidate/madraft/proof/network_connection.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 72 verified, 0 errors
+
+process=COMPLETED exit=0

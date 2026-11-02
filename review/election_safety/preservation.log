@@ -1,0 +1,7 @@
+External Git metadata: /tmp/raft-vote-collection-publish/.git
+Reference and actual HEAD: 81f5f7c96728ad184641eadf48f02c487137a09e
+Initial status: clean
+Protected tracked paths: madraft, requirements, labs, runs, tools.ini, AGENTS.md, .gitignore, tasks/request_vote, tasks/election_start, tasks/vote_collection
+Git diff --exit-code HEAD: 0
+
+No old candidate or root scaffold was edited or used to prepare an answer. Root .git itself is not exposed.

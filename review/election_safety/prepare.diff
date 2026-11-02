@@ -1,0 +1,79 @@
+--- tasks/vote_collection/prepare.py
++++ tasks/election_safety/prepare.py
+@@ -4,7 +4,7 @@
+ 
+ def prepare(root):
+     root = Path(root)
+-    task = root / 'tasks/vote_collection'
++    task = root / 'tasks/election_safety'
+     for source, destination in [('core.rs', 'src/raft/vote_core.rs'), ('lemmas.rs', 'proof/vote_lemmas.rs')]:
+         dest = root / 'madraft' / destination
+         dest.parent.mkdir(parents=True, exist_ok=True)
+@@ -14,18 +14,20 @@
+     def replace(old, new):
+         nonlocal text
+         if text.count(old) != 1:
+-            raise ValueError('Vote-collection scaffold changed; review preparation: ' + old[:70])
++            raise ValueError('Election-safety scaffold changed; review preparation: ' + old[:70])
+         text = text.replace(old,new)
+     replace('    inner: Arc<Mutex<Raft>>,', '''    inner: Arc<Mutex<Raft>>,
+     vote_serial: Arc<futures::lock::Mutex<()>>,
+     vote_hooks: Arc<Mutex<vote_host::Hooks>>,''')
+     replace('    state: State,', '    vote: vote_core::Core,')
+     replace('use state::{State, Role};', '''// The old State type remains an unused student source, not a second authority.
+-#[path = "../../../tasks/vote_collection/api.rs"] mod vote_api;
++#[path = "../../../tasks/election_safety/api.rs"] mod vote_api;
+ #[path = "vote_core.rs"] mod vote_core;
+-#[path = "../../../tasks/vote_collection/host.rs"] mod vote_host;
++#[path = "../../../tasks/election_safety/observation.rs"] mod election_observation;
++#[path = "../../../requirements/targets.rs"] mod targets;
++#[path = "../../../tasks/election_safety/host.rs"] mod vote_host;
+ #[cfg(test)]
+-#[path = "../../../tasks/vote_collection/rpc_tests.rs"] mod vote_tests;''')
++#[path = "../../../tasks/election_safety/rpc_tests.rs"] mod vote_tests;''')
+     replace('''    pub async fn new(peers: Vec<SocketAddr>, me: usize) -> (Self, MsgRecver) {
+         let endpoint''', '''    pub async fn new(peers: Vec<SocketAddr>, me: usize) -> (Self, MsgRecver) {
+         Self::new_receiver(peers, me, false).await
+@@ -54,15 +56,17 @@
+             let _ = observer.try_send(vote_api::Request{term:args.term,candidate:args.candidate_id,
+                 log:vote_api::Log{term:args.last_log_term,index:args.last_log_index}});
+         }
+-        let decision = { self.inner.lock().unwrap().request_vote(args) };
++        let decision = self.vote_call(|c| c.receive(vote_api::Request{term:args.term,candidate:args.candidate_id,
++            log:vote_api::Log{term:args.last_log_term,index:args.last_log_index}}));
+         let write = match decision {
+             vote_api::Receive::Save(w) => w,
+             vote_api::Receive::Reject(f) => return Err(io::Error::other(format!("receiver: {f:?}")).into()),
+         };
+         let hooks = self.vote_hooks.lock().unwrap().clone();
+         let saved = vote_host::save(write, &hooks).await;
+-        let reply = { self.inner.lock().unwrap().vote.complete(vote_api::Completion {
+-            op:write.record.op, success:saved.is_ok() }) };
++        let reply = self.vote_call(|c| c.complete(vote_api::Completion {
++            op:write.record.op, success:saved.is_ok() }));
++        self.vote_call(|c| c.try_become_leader());
+         saved?;
+         let Some(vote_api::Action::Reply(reply)) = reply else {
+             return Err(io::Error::other("core did not authorize receiver reply").into());
+@@ -71,10 +75,8 @@
+     }''' + text[end:]
+     replace('''    fn request_vote(&mut self, args: RequestVoteArgs) -> RequestVoteReply {
+         todo!("handle RequestVote RPC");
+-    }''', '''    fn request_vote(&mut self, args: RequestVoteArgs) -> vote_api::Receive {
+-        self.vote.receive(vote_api::Request { term:args.term, candidate:args.candidate_id,
+-            log:vote_api::Log{term:args.last_log_term,index:args.last_log_index} })
+-    }''')
++    }''', '''    // RequestVote is dispatched once through the observed handle/Core path.
++''')
+     replace('''struct RequestVoteArgs {
+     // Your data here.
+ }''', '''struct RequestVoteArgs {
+@@ -87,7 +89,7 @@
+     # Remove the unused old sender example, which reads no authoritative Core.
+     start = text.index('    // Here is an example to send RPC and manage concurrent tasks.')
+     end = text.index('\n}\n',start)
+-    text = text[:start] + '    // Leader promotion remains OPEN.\n' + text[end:]
++    text = text[:start] + '    // Log replication and application remain OPEN.\n' + text[end:]
+     methods = (task / 'driver.rs').read_text()
+     insert = text.index('    /// Start agreement on the next command')
+     text = text[:insert] + methods + '\n' + text[insert:]

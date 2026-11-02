@@ -1,0 +1,4 @@
+2026-11-02T06:17:34.997979Z ERROR codex_models_manager::manager: failed to refresh available models: request timed out
+2026-11-02T06:17:35.096371Z ERROR codex_models_manager::manager: failed to refresh available models: request timed out
+2026-11-02T06:22:10.006362Z ERROR codex_models_manager::manager: failed to refresh available models: request timed out
+2026-11-02T06:26:31.049106Z ERROR codex_core::session: failed to record rollout items: thread 01a19ae7-e0e7-7892-bfe9-67733d6c1e55 not found

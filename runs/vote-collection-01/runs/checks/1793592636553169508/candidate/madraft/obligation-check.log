@@ -1,7 +1,0 @@
-build: OPEN (missing_entry_or_dependency)
-  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592617712639732/build.log
-inventory: OPEN (build_dependency_failed)
-remaining_functional_coverage: OPEN (not_run_in_feedback)
-current_entry: OPEN (missing_current_obligation)
-INCOMPLETE: /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592617712639732/results.json
-Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.

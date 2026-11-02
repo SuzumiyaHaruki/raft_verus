@@ -1,0 +1,17 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793601322044951305/candidate/madraft/proof/network_connection.rs --crate-type lib --no-cheating --triggers-mode silent
+error: Could not automatically infer triggers for this quantifier.  Use #[trigger] annotations to manually mark trigger terms instead.
+   --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793601322044951305/candidate/madraft/proof/network_proof.rs:141:15
+    |
+141 |           let j=choose|j:int| 0<=j<b.delivered.len() && {
+    |  _______________^
+142 | |             let i=b.delivered[j];
+143 | |             &&& i<b.replies.len() && b.replies[i as int].request.is_some()
+144 | |             &&& {let r=b.replies[i as int];let d=r.request.unwrap();
+145 | |                 d.send<b.sent.len() && b.sent[d.send as int].node==n &&...
+146 | |         };
+    | |_________^
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

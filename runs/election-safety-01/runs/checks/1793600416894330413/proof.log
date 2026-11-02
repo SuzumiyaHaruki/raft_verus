@@ -1,0 +1,16 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793600416894330413/candidate/madraft/proof/core_connection.rs --crate-type lib --no-cheating --triggers-mode silent
+error: this function call takes a &mut ref of a field of a datatype with a user-defined type invariant; thus, this function should be marked no_unwind (note: this check is currently implemented overly-conservatively and requires the function to be marked no_unwind in its signature)
+   --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793600416894330413/candidate/madraft/proof/../src/raft/vote_core.rs:107:83
+    |
+107 |             Action::Send(_) => {self.state.self_saved=true;self.voters=Vec::new();self.voters.push(v.config.node);},
+    |                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/std_specs/vec.rs:140:1
+    |
+140 | pub assume_specification<T, A: Allocator>[ Vec::<T, A>::push ](vec: &mut Vec<T, A>, value: T)
+    | ---------------------------------------------------------------------------------------------
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

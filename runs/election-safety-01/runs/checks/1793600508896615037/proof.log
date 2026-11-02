@@ -1,0 +1,60 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793600508896615037/candidate/madraft/proof/core_connection.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 34 verified, 3 errors
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793600508896615037/candidate/madraft/proof/../src/raft/vote_core.rs:29:14
+   |
+29 |     { assert(false); } // OPEN
+   |              ^^^^^ assertion failed
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793600508896615037/candidate/madraft/proof/../src/raft/vote_core.rs:95:5
+   |
+95 |     pub fn complete(&mut self, notice: Completion) -> (out: Option<Action>)
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793600508896615037/candidate/madraft/proof/../src/raft/vote_core.rs:99:13
+    |
+ 99 |             self.votes() == completion_votes(old(self).view(),old(self).votes(),notice),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+111 |         Some(w.action)
+    |         -------------- at the end of the function body
+
+error: constructed value may fail to meet its declared type invariant
+   --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793600508896615037/candidate/madraft/proof/../src/raft/vote_core.rs:107:113
+    |
+ 11 |     spec fn inv(self) -> bool { self.voters@.no_duplicates() && self.voters.len() <= u64::MAX && (forall|n:u64| self.voters@.contains(n) ...
+    |          -------------------- type invariant declared here
+...
+107 |             Action::Send(_) => {self.state.self_saved=true;let mut voters=Vec::new();voters.push(v.config.node);self.voters=voters;},
+    |                                                                                                                 ^^^^
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793600508896615037/candidate/madraft/proof/../src/raft/vote_core.rs:113:5
+    |
+113 |     pub fn collect(&mut self, context: RpcContext, result: RpcResult) -> (out: Collect)
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793600508896615037/candidate/madraft/proof/../src/raft/vote_core.rs:116:13
+    |
+116 |             self.votes() == collect_votes(old(self).view(),old(self).votes(),context,result,out),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+132 |             let mut voters=self.voters.clone();voters.push(context.peer);self.voters=voters;return Collect::Counted;
+    |                                                                                             ----------------------- at this exit
+
+error: constructed value may fail to meet its declared type invariant
+   --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793600508896615037/candidate/madraft/proof/../src/raft/vote_core.rs:132:74
+    |
+ 11 |     spec fn inv(self) -> bool { self.voters@.no_duplicates() && self.voters.len() <= u64::MAX && (forall|n:u64| self.voters@.contains(n) ...
+    |          -------------------- type invariant declared here
+...
+132 |             let mut voters=self.voters.clone();voters.push(context.peer);self.voters=voters;return Collect::Counted;
+    |                                                                          ^^^^
+
+error: aborting due to 5 previous errors
+
+
+process=COMPLETED exit=1

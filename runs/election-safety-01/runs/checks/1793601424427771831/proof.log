@@ -1,0 +1,11 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793601424427771831/candidate/madraft/proof/network_connection.rs --crate-type lib --no-cheating --triggers-mode silent
+error: struct literals are not allowed here; try surrounding the struct literal with parentheses
+   --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793601424427771831/candidate/madraft/proof/network_proof.rs:256:102
+    |
+256 | ...mes[i]).change.before.config==Config{node:after.frames[i].change.node,members:after.nodes.len() as u64},
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

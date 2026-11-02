@@ -1,0 +1,30 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793601307279576555/candidate/madraft/proof/network_connection.rs --crate-type lib --no-cheating --triggers-mode silent
+error[E0308]: mismatched types
+   --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793601307279576555/candidate/madraft/proof/network_proof.rs:220:69
+    |
+220 |             Step::Save{node,success} => {assert(v==n);assert(t.sent[b.sent.len()].node==n);assert(self_evidence(t,n,term));},
+    |                                                              -------^^^^^^^^^^^^-
+    |                                                              |      |
+    |                                                              |      expected `int`, found `nat`
+    |                                                              arguments to this method are incorrect
+    |
+note: method defined here
+   --> /home/runner/work/verus/verus/source/vstd/seq.rs:60:22
+
+error[E0308]: mismatched types
+   --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793601307279576555/candidate/madraft/proof/network_proof.rs:224:49
+    |
+224 |                 assert(v==d.peer && t.delivered[b.delivered.len()]==i);
+    |                                     ------------^^^^^^^^^^^^^^^^^-
+    |                                     |           |
+    |                                     |           expected `int`, found `nat`
+    |                                     arguments to this method are incorrect
+    |
+note: method defined here
+   --> /home/runner/work/verus/verus/source/vstd/seq.rs:60:22
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0308`.
+
+process=COMPLETED exit=1

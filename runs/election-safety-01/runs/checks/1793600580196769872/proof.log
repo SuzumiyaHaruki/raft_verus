@@ -1,0 +1,23 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793600580196769872/candidate/madraft/proof/core_connection.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 36 verified, 2 errors
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793600580196769872/candidate/madraft/proof/../src/raft/vote_core.rs:42:68
+   |
+41 |     pub proof fn domain(tracked &self)
+   |     ---------------------------------- at the end of the function body
+42 |         ensures valid_state(self.view().config,self.view().state), voters_domain(self.view(),self.votes()),
+   |                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+
+error: constructed value may fail to meet its declared type invariant
+   --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793600580196769872/candidate/madraft/proof/../src/raft/vote_core.rs:134:192
+    |
+ 12 | ...ec fn inv(self) -> bool {
+    |       -------------------- type invariant declared here
+...
+134 | ...      Action::Send(_) => {self.state.self_saved=true;let mut voters=Vec::new();voters.push(v.config.node);proof {assert(voters@.to_set() =~= Set::<u64>::empty().insert(v.config.node));}self.vo...
+    |                                                                                                                                                                                             ^^^^
+
+error: aborting due to 2 previous errors
+
+
+process=COMPLETED exit=1

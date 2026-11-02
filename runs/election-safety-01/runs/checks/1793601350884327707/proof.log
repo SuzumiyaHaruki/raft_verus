@@ -1,0 +1,18 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793601350884327707/candidate/madraft/proof/network_connection.rs --crate-type lib --no-cheating --triggers-mode silent
+error: assertion failed
+   --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793601350884327707/candidate/madraft/proof/network_proof.rs:197:52
+    |
+197 |     assert forall|i:int| 0<=i<t.sent.len() implies sent_ok(t,i) by {
+    |                                                    ^^^^^^^^^^^^ assertion failed
+
+error: precondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793601350884327707/candidate/madraft/proof/network_proof.rs:198:44
+    |
+128 |     requires extends(b,t),choice_for(b,v,c,term), ensures choice_for(t,v,c,term),
+    |                           ---------------------- failed precondition
+...
+198 |         if i<b.sent.len() {let s=b.sent[i];keep_choice(b,t,s.node,s.node,s.payload.request.term);}
+    |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+process=TIMEOUT exit=-15

@@ -1,6 +1,6 @@
 # Joint MadRaft implementation and proof experiment — DRAFT
 
-The experimental Codex starts from the unfinished MadRaft labs and generates executable implementation and Verus proofs together. Maintenance changes the controller, inputs and generic examples; it does not supply a Raft solution. Current maintenance results and limitations are in [the vote-collection maintenance report](review/vote_collection/RESULT.md); [RESULT.md](RESULT.md) retains earlier controller results.
+The experimental Codex starts from the unfinished MadRaft labs and generates executable implementation and Verus proofs together. Maintenance changes the controller, inputs and generic examples; it does not supply a Raft solution. Current maintenance results and limitations are in [the election-safety maintenance report](review/election_safety/RESULT.md); [RESULT.md](RESULT.md) retains earlier controller results.
 
 | Path | Purpose |
 | --- | --- |
@@ -72,6 +72,15 @@ python3 scripts/run.py new runs/vote-collection-01 --task vote-collection
 python3 scripts/run.py new runs/vote-collection-01 --task vote-collection --execute
 # Maintenance-only tool and fixture checks; the output name must be unused.
 python3 tasks/vote_collection/maintain.py --output review/vote_collection/check-next
+```
+
+The optional `--task election-safety` extends the unfinished input with actual strict-majority Leader promotion and historical Election Safety for finite executions without node restart. It reuses the original `targets::Event::Elect` meaning, observes real before/after role changes, and requires saved vote/Choice provenance for past elections. A Leader retains its winning tally and can promote before the last RPC completes. Four local recovery windows are checked separately; full Raft safety, replication, snapshots and liveness remain OPEN. See [the task](tasks/election_safety/TASK.md) and [maintenance results](review/election_safety/RESULT.md). New experiments use the current model and budget in `tools.ini`; command-line overrides remain available.
+
+```bash
+# Preview only; no candidate, session or agent invocation.
+python3 scripts/run.py new runs/election-safety-01 --task election-safety
+# Start only when the operator chooses to run the generation experiment.
+python3 scripts/run.py new runs/election-safety-01 --task election-safety --execute
 ```
 
 The following per-obligation/block and full-acceptance discussion applies to default full mode.

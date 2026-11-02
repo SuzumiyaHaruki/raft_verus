@@ -1,0 +1,1286 @@
+{
+  "status": "INCOMPLETE",
+  "mode": "feedback",
+  "input_version": "madraft-election-safety-1",
+  "candidate_revision": "check-2-1793601905317506523",
+  "workspace": "/home/nitro/Desktop/raft_verus/runs/election-safety-01",
+  "checker_authority": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/inputs",
+  "snapshot": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/candidate",
+  "source_files": [
+    "Cargo.lock",
+    "Cargo.toml",
+    "LICENSE",
+    "PROGRESS.md",
+    "README.md",
+    "RESULT.md",
+    "proof/README.md",
+    "proof/core_connection.rs",
+    "proof/network_connection.rs",
+    "proof/network_proof.rs",
+    "proof/progress.rs",
+    "proof/vote_lemmas.rs",
+    "src/kvraft/client.rs",
+    "src/kvraft/mod.rs",
+    "src/kvraft/msg.rs",
+    "src/kvraft/server.rs",
+    "src/kvraft/tester.rs",
+    "src/kvraft/tests.rs",
+    "src/lib.rs",
+    "src/raft/mod.rs",
+    "src/raft/raft.rs",
+    "src/raft/state.rs",
+    "src/raft/tester.rs",
+    "src/raft/tests.rs",
+    "src/raft/vote_core.rs",
+    "src/shard_ctrler/client.rs",
+    "src/shard_ctrler/mod.rs",
+    "src/shard_ctrler/msg.rs",
+    "src/shard_ctrler/server.rs",
+    "src/shard_ctrler/tester.rs",
+    "src/shard_ctrler/tests.rs",
+    "src/shardkv/client.rs",
+    "src/shardkv/mod.rs",
+    "src/shardkv/msg.rs",
+    "src/shardkv/server.rs",
+    "src/shardkv/tester.rs",
+    "src/shardkv/tests.rs",
+    "src/test_support.rs"
+  ],
+  "checks": {
+    "build": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--manifest-path",
+        "madraft/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--lib",
+        "--no-run"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/build.log",
+      "scope": "build",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 26.397107741999207,
+      "seed": 1,
+      "diagnostic": "    |         ^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_last_included_index`\n\nwarning: unused variable: `snapshot`\n   --> src/raft/raft.rs:272:9\n    |\n272 |         snapshot: &[u8],\n    |         ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`\n\nwarning: unused variable: `index`\n   --> src/raft/raft.rs:281:34\n    |\n281 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {\n    |                                  ^^^^^ help: if this is intentional, prefix it with an underscore: `_index`\n\nwarning: unused variable: `snapshot`\n   --> src/raft/raft.rs:281:46\n    |\n281 |     pub async fn snapshot(&self, index: u64, snapshot: &[u8]) -> Result<()> {\n    |                                              ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`\n\nwarning: unused variable: `persist`\n   --> src/raft/raft.rs:289:13\n    |\n289 |         let persist: Persist = todo!(\"persist state\");\n    |             ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_persist`\n\nwarning: unused variable: `snapshot`\n   --> src/raft/raft.rs:311:16\n    |\n311 |             Ok(snapshot) => {\n    |                ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_snapshot`\n\nwarning: unused variable: `persist`\n   --> src/raft/raft.rs:319:21\n    |\n319 |                 let persist: Persist = bincode::deserialize(&state).unwrap();\n    |                     ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_persist`\n\nwarning: unused variable: `data`\n   --> src/raft/raft.rs:367:25\n    |\n367 |     fn start(&mut self, data: &[u8]) -> Result<Start> {\n    |                         ^^^^ help: if this is intentional, prefix it with an underscore: `_data`\n\nwarning: unused variable: `msg`\n   --> src/raft/raft.rs:377:13\n    |\n377 |         let msg = ApplyMsg::Command {\n    |             ^^^ help: if this is intentional, prefix it with an underscore: `_msg`\n\nwarning: unused variable: `cmd`\n  --> src/shard_ctrler/server.rs:16:25\n   |\n16 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:15:29\n   |\n15 |     pub async fn get(&self, key: String) -> String {\n   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:19:29\n   |\n19 |     pub async fn put(&self, key: String, value: String) {\n   |                             ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `value`\n  --> src/shardkv/client.rs:19:42\n   |\n19 |     pub async fn put(&self, key: String, value: String) {\n   |                                          ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:23:32\n   |\n23 |     pub async fn append(&self, key: String, value: String) {\n   |                                ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `value`\n  --> src/shardkv/client.rs:23:45\n   |\n23 |     pub async fn append(&self, key: String, value: String) {\n   |                                             ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`\n\nwarning: unused variable: `ctrl_ck`\n  --> src/shardkv/server.rs:13:9\n   |\n13 |         ctrl_ck: CtrlerClerk,\n   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_ctrl_ck`\n\nwarning: unused variable: `servers`\n  --> src/shardkv/server.rs:14:9\n   |\n14 |         servers: Vec<SocketAddr>,\n   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_servers`\n\nwarning: unused variable: `gid`\n  --> src/shardkv/server.rs:15:9\n   |\n15 |         gid: u64,\n   |         ^^^ help: if this is intentional, prefix it with an underscore: `_gid`\n\nwarning: unused variable: `me`\n  --> src/shardkv/server.rs:16:9\n   |\n16 |         me: usize,\n   |         ^^ help: if this is intentional, prefix it with an underscore: `_me`\n\nwarning: unused variable: `max_raft_state`\n  --> src/shardkv/server.rs:17:9\n   |\n17 |         max_raft_state: Option<usize>,\n   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`\n\nwarning: unused variable: `cmd`\n  --> src/shardkv/server.rs:34:25\n   |\n34 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: fields `endpoint` and `apply_ch` are never read\n  --> src/raft/raft.rs:61:5\n   |\n60 | struct Raft {\n   |        ---- fields in this struct\n61 |     endpoint: net::Endpoint,\n   |     ^^^^^^^^\n...\n64 |     apply_ch: MsgSender,\n   |     ^^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: struct `Persist` is never constructed\n  --> src/raft/raft.rs:85:8\n   |\n85 | struct Persist {\n   |        ^^^^^^^\n\nwarning: methods `persist` and `restore` are never used\n   --> src/raft/raft.rs:288:14\n    |\n 96 | impl RaftHandle {\n    | --------------- methods in this implementation\n...\n288 |     async fn persist(&self) -> io::Result<()> {\n    |              ^^^^^^^\n...\n309 |     async fn restore(&self) -> io::Result<()> {\n    |              ^^^^^^^\n\nwarning: associated items `apply` and `generate_election_timeout` are never used\n   --> src/raft/raft.rs:376:8\n    |\n366 | impl Raft {\n    | --------- associated items in this implementation\n...\n376 |     fn apply(&self) {\n    |        ^^^^^\n...\n388 |     fn generate_election_timeout() -> Duration {\n    |        ^^^^^^^^^^^^^^^^^^^^^^^^^\n\nwarning: struct `State` is never constructed\n --> src/raft/state.rs:7:19\n  |\n7 | pub(super) struct State {\n  |                   ^^^^^\n\nwarning: enum `Role` is never used\n  --> src/raft/state.rs:13:17\n   |\n13 | pub(super) enum Role {\n   |                 ^^^^\n\nwarning: method `is_leader` is never used\n  --> src/raft/state.rs:20:19\n   |\n19 | impl State {\n   | ---------- method in this implementation\n20 |     pub(super) fn is_leader(&self) -> (result: bool)\n   |                   ^^^^^^^^^\n\nwarning: enum `Event` is never used\n  --> src/raft/../../../tasks/election_safety/api.rs:41:10\n   |\n41 | pub enum Event { Promote, Start, Receive(Request), Complete(Completion), Rpc(RpcContext, RpcResult) }\n   |          ^^^^^\n\nwarning: fields `outputs` and `origin` are never read\n --> src/raft/vote_core.rs:9:37\n  |\n9 | pub struct Core { state: StateView, outputs: Ghost<Seq<Choice>>, origin: Ghost<Option<Record>>, voters: Vec<u64> }\n  |            ----                     ^^^^^^^                      ^^^^^^\n  |            |\n  |            fields in this struct\n\nwarning: type alias `Group` is never used\n --> src/raft/../../../requirements/targets.rs:6:10\n  |\n6 | pub type Group = nat;\n  |          ^^^^^\n\nwarning: type alias `Node` is never used\n --> src/raft/../../../requirements/targets.rs:7:10\n  |\n7 | pub type Node = nat;\n  |          ^^^^\n\nwarning: type alias `Term` is never used\n --> src/raft/../../../requirements/targets.rs:8:10\n  |\n8 | pub type Term = nat;\n  |          ^^^^\n\nwarning: type alias `Index` is never used\n --> src/raft/../../../requirements/targets.rs:9:10\n  |\n9 | pub type Index = nat;\n  |          ^^^^^\n\nwarning: struct `Key` is never constructed\n  --> src/raft/../../../requirements/targets.rs:11:12\n   |\n11 | pub struct Key { pub group: Group, pub node: Node }\n   |            ^^^\n\nwarning: struct `Entry` is never constructed\n  --> src/raft/../../../requirements/targets.rs:12:12\n   |\n12 | pub struct Entry { pub term: Term, pub command: Seq<u8> }\n   |            ^^^^^\n\nwarning: struct `Snapshot` is never constructed\n  --> src/raft/../../../requirements/targets.rs:13:12\n   |\n13 | pub struct Snapshot {\n   |            ^^^^^^^^\n\nwarning: struct `View` is never constructed\n  --> src/raft/../../../requirements/targets.rs:18:12\n   |\n18 | pub struct View {\n   |            ^^^^\n\nwarning: enum `Event` is never used\n  --> src/raft/../../../requirements/targets.rs:26:10\n   |\n26 | pub enum Event {\n   |          ^^^^^\n\nwarning: struct `History` is never constructed\n  --> src/raft/../../../requirements/targets.rs:38:12\n   |\n38 | pub struct History {\n   |            ^^^^^^^\n\nwarning: struct `Application` is never constructed\n   --> src/raft/../../../requirements/targets.rs:130:12\n    |\n130 | pub struct Application {\n    |            ^^^^^^^^^^^\n\nwarning: field `ctrl_ck` is never read\n --> src/shardkv/client.rs:5:5\n  |\n4 | pub struct Clerk {\n  |            ----- field in this struct\n5 |     ctrl_ck: CtrlerClerk,\n  |     ^^^^^^^\n\nwarning: field `inner` is never read\n --> src/shardkv/server.rs:8:5\n  |\n7 | pub struct ShardKvServer {\n  |            ------------- field in this struct\n8 |     inner: Arc<Server<ShardKv>>,\n  |     ^^^^^\n\nwarning: the `term:` in this pattern is redundant\n   --> src/raft/vote_core.rs:184:30\n    |\n184 |         let RpcResult::Reply{term,granted}=result else {return Collect::Ignored;};\n    |                              ^^^^ help: use shorthand field pattern: `term`\n    |\n    = note: `#[warn(non_shorthand_field_patterns)]` on by default\n\nwarning: the `granted:` in this pattern is redundant\n   --> src/raft/vote_core.rs:184:35\n    |\n184 |         let RpcResult::Reply{term,granted}=result else {return Collect::Ignored;};\n    |                                   ^^^^^^^ help: use shorthand field pattern: `granted`\n\nwarning: `madraft` (lib test) generated 65 warnings (run `cargo fix --lib -p madraft --tests` to apply 31 suggestions)\n    Finished `release` profile [optimized] target(s) in 26.37s\n  Executable unittests src/lib.rs (/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target/release/deps/madraft-9d1fbd9857b1c1bd)\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_SEED": "1",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "family": ""
+    },
+    "inventory": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--manifest-path",
+        "madraft/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--lib",
+        "--",
+        "--list"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/inventory.log",
+      "scope": "inventory",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.1185844889987493,
+      "seed": 1,
+      "diagnostic": "uct Raft {\n   |        ---- fields in this struct\n61 |     endpoint: net::Endpoint,\n   |     ^^^^^^^^\n...\n64 |     apply_ch: MsgSender,\n   |     ^^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: struct `Persist` is never constructed\n  --> src/raft/raft.rs:85:8\n   |\n85 | struct Persist {\n   |        ^^^^^^^\n\nwarning: methods `persist` and `restore` are never used\n   --> src/raft/raft.rs:288:14\n    |\n 96 | impl RaftHandle {\n    | --------------- methods in this implementation\n...\n288 |     async fn persist(&self) -> io::Result<()> {\n    |              ^^^^^^^\n...\n309 |     async fn restore(&self) -> io::Result<()> {\n    |              ^^^^^^^\n\nwarning: associated items `apply` and `generate_election_timeout` are never used\n   --> src/raft/raft.rs:376:8\n    |\n366 | impl Raft {\n    | --------- associated items in this implementation\n...\n376 |     fn apply(&self) {\n    |        ^^^^^\n...\n388 |     fn generate_election_timeout() -> Duration {\n    |        ^^^^^^^^^^^^^^^^^^^^^^^^^\n\nwarning: struct `State` is never constructed\n --> src/raft/state.rs:7:19\n  |\n7 | pub(super) struct State {\n  |                   ^^^^^\n\nwarning: enum `Role` is never used\n  --> src/raft/state.rs:13:17\n   |\n13 | pub(super) enum Role {\n   |                 ^^^^\n\nwarning: method `is_leader` is never used\n  --> src/raft/state.rs:20:19\n   |\n19 | impl State {\n   | ---------- method in this implementation\n20 |     pub(super) fn is_leader(&self) -> (result: bool)\n   |                   ^^^^^^^^^\n\nwarning: enum `Event` is never used\n  --> src/raft/../../../tasks/election_safety/api.rs:41:10\n   |\n41 | pub enum Event { Promote, Start, Receive(Request), Complete(Completion), Rpc(RpcContext, RpcResult) }\n   |          ^^^^^\n\nwarning: fields `outputs` and `origin` are never read\n --> src/raft/vote_core.rs:9:37\n  |\n9 | pub struct Core { state: StateView, outputs: Ghost<Seq<Choice>>, origin: Ghost<Option<Record>>, voters: Vec<u64> }\n  |            ----                     ^^^^^^^                      ^^^^^^\n  |            |\n  |            fields in this struct\n\nwarning: type alias `Group` is never used\n --> src/raft/../../../requirements/targets.rs:6:10\n  |\n6 | pub type Group = nat;\n  |          ^^^^^\n\nwarning: type alias `Node` is never used\n --> src/raft/../../../requirements/targets.rs:7:10\n  |\n7 | pub type Node = nat;\n  |          ^^^^\n\nwarning: type alias `Term` is never used\n --> src/raft/../../../requirements/targets.rs:8:10\n  |\n8 | pub type Term = nat;\n  |          ^^^^\n\nwarning: type alias `Index` is never used\n --> src/raft/../../../requirements/targets.rs:9:10\n  |\n9 | pub type Index = nat;\n  |          ^^^^^\n\nwarning: struct `Key` is never constructed\n  --> src/raft/../../../requirements/targets.rs:11:12\n   |\n11 | pub struct Key { pub group: Group, pub node: Node }\n   |            ^^^\n\nwarning: struct `Entry` is never constructed\n  --> src/raft/../../../requirements/targets.rs:12:12\n   |\n12 | pub struct Entry { pub term: Term, pub command: Seq<u8> }\n   |            ^^^^^\n\nwarning: struct `Snapshot` is never constructed\n  --> src/raft/../../../requirements/targets.rs:13:12\n   |\n13 | pub struct Snapshot {\n   |            ^^^^^^^^\n\nwarning: struct `View` is never constructed\n  --> src/raft/../../../requirements/targets.rs:18:12\n   |\n18 | pub struct View {\n   |            ^^^^\n\nwarning: enum `Event` is never used\n  --> src/raft/../../../requirements/targets.rs:26:10\n   |\n26 | pub enum Event {\n   |          ^^^^^\n\nwarning: struct `History` is never constructed\n  --> src/raft/../../../requirements/targets.rs:38:12\n   |\n38 | pub struct History {\n   |            ^^^^^^^\n\nwarning: struct `Application` is never constructed\n   --> src/raft/../../../requirements/targets.rs:130:12\n    |\n130 | pub struct Application {\n    |            ^^^^^^^^^^^\n\nwarning: field `ctrl_ck` is never read\n --> src/shardkv/client.rs:5:5\n  |\n4 | pub struct Clerk {\n  |            ----- field in this struct\n5 |     ctrl_ck: CtrlerClerk,\n  |     ^^^^^^^\n\nwarning: field `inner` is never read\n --> src/shardkv/server.rs:8:5\n  |\n7 | pub struct ShardKvServer {\n  |            ------------- field in this struct\n8 |     inner: Arc<Server<ShardKv>>,\n  |     ^^^^^\n\nwarning: the `term:` in this pattern is redundant\n   --> src/raft/vote_core.rs:184:30\n    |\n184 |         let RpcResult::Reply{term,granted}=result else {return Collect::Ignored;};\n    |                              ^^^^ help: use shorthand field pattern: `term`\n    |\n    = note: `#[warn(non_shorthand_field_patterns)]` on by default\n\nwarning: the `granted:` in this pattern is redundant\n   --> src/raft/vote_core.rs:184:35\n    |\n184 |         let RpcResult::Reply{term,granted}=result else {return Collect::Ignored;};\n    |                                   ^^^^^^^ help: use shorthand field pattern: `granted`\n\nwarning: `madraft` (lib test) generated 65 warnings (run `cargo fix --lib -p madraft --tests` to apply 31 suggestions)\n    Finished `release` profile [optimized] target(s) in 0.09s\n     Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target/release/deps/madraft-9d1fbd9857b1c1bd)\nkvraft::tests::basic_3a: test\nkvraft::tests::concurrent_3a: test\nkvraft::tests::many_partitions_many_clients_3a: test\nkvraft::tests::many_partitions_one_client_3a: test\nkvraft::tests::one_partition_3a: test\nkvraft::tests::persist_concurrent_3a: test\nkvraft::tests::persist_concurrent_unreliable_3a: test\nkvraft::tests::persist_one_client_3a: test\nkvraft::tests::persist_partition_3a: test\nkvraft::tests::persist_partition_unreliable_3a: test\nkvraft::tests::snapshot_recover_3b: test\nkvraft::tests::snapshot_recover_many_clients_3b: test\nkvraft::tests::snapshot_rpc_3b: test\nkvraft::tests::snapshot_size_3b: test\nkvraft::tests::snapshot_unreliable_3b: test\nkvraft::tests::snapshot_unreliable_recover_3b: test\nkvraft::tests::snapshot_unreliable_recover_concurrent_partition_3b: test\nkvraft::tests::unreliable_3a: test\nkvraft::tests::unreliable_one_key_3a: test\nraft::raft::vote_tests::campaign_guards_completion_and_max: test\nraft::raft::vote_tests::collection_delayed_old_and_new_round: test\nraft::raft::vote_tests::collection_guards_and_self_save: test\nraft::raft::vote_tests::collection_higher_term_and_exhaustion: test\nraft::raft::vote_tests::collection_observation_calibration: test\nraft::raft::vote_tests::collection_old_higher_failed: test\nraft::raft::vote_tests::collection_old_higher_saved: test\nraft::raft::vote_tests::collection_queue_calibration: test\nraft::raft::vote_tests::collection_real_peers_and_duplicate: test\nraft::raft::vote_tests::collection_transport_and_denial: test\nraft::raft::vote_tests::competing_candidates_keep_past_election_after_demotion: test\nraft::raft::vote_tests::elected_node_consumes_higher_old_rpc: test\nraft::raft::vote_tests::election_observation_calibration: test\nraft::raft::vote_tests::invalid_busy_failure_completion_and_bounds: test\nraft::raft::vote_tests::majority_before_last_rpc_and_stable_history: test\nraft::raft::vote_tests::malformed_storage_is_error: test\nraft::raft::vote_tests::mixed_choices_and_shared_state: test\nraft::raft::vote_tests::observer_live_then_cancelled: test\nraft::raft::vote_tests::observer_panicked_producer: test\nraft::raft::vote_tests::observer_queued_reply_then_closed: test\nraft::raft::vote_tests::observer_transport_error: test\nraft::raft::vote_tests::promotion_guards_old_round_and_completion: test\nraft::raft::vote_tests::promotion_schedule_calibration: test\nraft::raft::vote_tests::restart_confirmed: test\nraft::raft::vote_tests::restart_written_pending: test\nraft::raft::vote_tests::rpc_campaign_delayed_save: test\nraft::raft::vote_tests::rpc_campaign_failed_save: test\nraft::raft::vote_tests::rpc_campaign_real_peers_and_shared_term: test\nraft::raft::vote_tests::rpc_delayed_and_failed_save: test\nraft::raft::vote_tests::rpc_nonempty_log_and_denial_persist: test\nraft::raft::vote_tests::rpc_rules_and_file: test\nraft::raft::vote_tests::rules_and_nonempty: test\nraft::raft::vote_tests::self_restart_confirmed: test\nraft::raft::vote_tests::self_restart_written_pending: test\nraft::raft::vote_tests::single_member_saved_majority_promotes: test\nraft::raft::vote_tests::single_member_waits_for_actual_save: test\nraft::raft::vote_tests::split_real_votes_can_leave_no_leader: test\nraft::raft::vote_tests::strict_majority_distinct_real_votes: test\nraft::tests::backup_2b: test\nraft::tests::basic_agree_2b: test\nraft::tests::concurrent_starts_2b: test\nraft::tests::count_2b: test\nraft::tests::fail_agree_2b: test\nraft::tests::fail_no_agree_2b: test\nraft::tests::figure_8_2c: test\nraft::tests::figure_8_unreliable_2c: test\nraft::tests::initial_election_2a: test\nraft::tests::many_election_2a: test\nraft::tests::persist1_2c: test\nraft::tests::persist2_2c: test\nraft::tests::persist3_2c: test\nraft::tests::reelection_2a: test\nraft::tests::rejoin_2b: test\nraft::tests::reliable_churn_2c: test\nraft::tests::snapshot_basic_2d: test\nraft::tests::snapshot_install_2d: test\nraft::tests::snapshot_install_crash_2d: test\nraft::tests::snapshot_install_unreliable_2d: test\nraft::tests::snapshot_install_unreliable_crash_2d: test\nraft::tests::unreliable_agree_2c: test\nraft::tests::unreliable_churn_2c: test\nshard_ctrler::tests::basic_4a: test\nshard_ctrler::tests::multi_4a: test\nshardkv::tests::challenge1_delete_4b: test\nshardkv::tests::challenge2_partial_4b: test\nshardkv::tests::challenge2_unaffected_4b: test\nshardkv::tests::concurrent1_4b: test\nshardkv::tests::concurrent2_4b: test\nshardkv::tests::concurrent3_4b: test\nshardkv::tests::join_leave_4b: test\nshardkv::tests::miss_change_4b: test\nshardkv::tests::snapshot_4b: test\nshardkv::tests::static_shards_4b: test\nshardkv::tests::unreliable1_4b: test\nshardkv::tests::unreliable2_4b: test\nshardkv::tests::unreliable3_4b: test\ntest_support::explicit_abort_preserves_old_drop_cancellation: test\ntest_support::restart_preserves_node_and_simulated_file: test\ntest_support::rpc_partition_and_reconnect: test\n\n98 tests, 0 benchmarks\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_SEED": "1",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "family": "",
+      "uncovered_tests": []
+    },
+    "tests_seed_1_raft_raft_vote_tests": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "test",
+        "--manifest-path",
+        "madraft/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--release",
+        "--lib",
+        "--no-fail-fast",
+        "raft::raft::vote_tests::",
+        "--",
+        "--test-threads=1"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/tests_seed_1_raft_raft_vote_tests.log",
+      "scope": "tests_seed_1_raft_raft_vote_tests",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.12810908000028576,
+      "seed": 1,
+      "diagnostic": "refix it with an underscore: `_key`\n\nwarning: unused variable: `value`\n  --> src/shardkv/client.rs:19:42\n   |\n19 |     pub async fn put(&self, key: String, value: String) {\n   |                                          ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`\n\nwarning: unused variable: `key`\n  --> src/shardkv/client.rs:23:32\n   |\n23 |     pub async fn append(&self, key: String, value: String) {\n   |                                ^^^ help: if this is intentional, prefix it with an underscore: `_key`\n\nwarning: unused variable: `value`\n  --> src/shardkv/client.rs:23:45\n   |\n23 |     pub async fn append(&self, key: String, value: String) {\n   |                                             ^^^^^ help: if this is intentional, prefix it with an underscore: `_value`\n\nwarning: unused variable: `ctrl_ck`\n  --> src/shardkv/server.rs:13:9\n   |\n13 |         ctrl_ck: CtrlerClerk,\n   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_ctrl_ck`\n\nwarning: unused variable: `servers`\n  --> src/shardkv/server.rs:14:9\n   |\n14 |         servers: Vec<SocketAddr>,\n   |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_servers`\n\nwarning: unused variable: `gid`\n  --> src/shardkv/server.rs:15:9\n   |\n15 |         gid: u64,\n   |         ^^^ help: if this is intentional, prefix it with an underscore: `_gid`\n\nwarning: unused variable: `me`\n  --> src/shardkv/server.rs:16:9\n   |\n16 |         me: usize,\n   |         ^^ help: if this is intentional, prefix it with an underscore: `_me`\n\nwarning: unused variable: `max_raft_state`\n  --> src/shardkv/server.rs:17:9\n   |\n17 |         max_raft_state: Option<usize>,\n   |         ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_max_raft_state`\n\nwarning: unused variable: `cmd`\n  --> src/shardkv/server.rs:34:25\n   |\n34 |     fn apply(&mut self, cmd: Self::Command) -> Self::Output {\n   |                         ^^^ help: if this is intentional, prefix it with an underscore: `_cmd`\n\nwarning: fields `endpoint` and `apply_ch` are never read\n  --> src/raft/raft.rs:61:5\n   |\n60 | struct Raft {\n   |        ---- fields in this struct\n61 |     endpoint: net::Endpoint,\n   |     ^^^^^^^^\n...\n64 |     apply_ch: MsgSender,\n   |     ^^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: struct `Persist` is never constructed\n  --> src/raft/raft.rs:85:8\n   |\n85 | struct Persist {\n   |        ^^^^^^^\n\nwarning: methods `persist` and `restore` are never used\n   --> src/raft/raft.rs:288:14\n    |\n 96 | impl RaftHandle {\n    | --------------- methods in this implementation\n...\n288 |     async fn persist(&self) -> io::Result<()> {\n    |              ^^^^^^^\n...\n309 |     async fn restore(&self) -> io::Result<()> {\n    |              ^^^^^^^\n\nwarning: associated items `apply` and `generate_election_timeout` are never used\n   --> src/raft/raft.rs:376:8\n    |\n366 | impl Raft {\n    | --------- associated items in this implementation\n...\n376 |     fn apply(&self) {\n    |        ^^^^^\n...\n388 |     fn generate_election_timeout() -> Duration {\n    |        ^^^^^^^^^^^^^^^^^^^^^^^^^\n\nwarning: struct `State` is never constructed\n --> src/raft/state.rs:7:19\n  |\n7 | pub(super) struct State {\n  |                   ^^^^^\n\nwarning: enum `Role` is never used\n  --> src/raft/state.rs:13:17\n   |\n13 | pub(super) enum Role {\n   |                 ^^^^\n\nwarning: method `is_leader` is never used\n  --> src/raft/state.rs:20:19\n   |\n19 | impl State {\n   | ---------- method in this implementation\n20 |     pub(super) fn is_leader(&self) -> (result: bool)\n   |                   ^^^^^^^^^\n\nwarning: enum `Event` is never used\n  --> src/raft/../../../tasks/election_safety/api.rs:41:10\n   |\n41 | pub enum Event { Promote, Start, Receive(Request), Complete(Completion), Rpc(RpcContext, RpcResult) }\n   |          ^^^^^\n\nwarning: fields `outputs` and `origin` are never read\n --> src/raft/vote_core.rs:9:37\n  |\n9 | pub struct Core { state: StateView, outputs: Ghost<Seq<Choice>>, origin: Ghost<Option<Record>>, voters: Vec<u64> }\n  |            ----                     ^^^^^^^                      ^^^^^^\n  |            |\n  |            fields in this struct\n\nwarning: type alias `Group` is never used\n --> src/raft/../../../requirements/targets.rs:6:10\n  |\n6 | pub type Group = nat;\n  |          ^^^^^\n\nwarning: type alias `Node` is never used\n --> src/raft/../../../requirements/targets.rs:7:10\n  |\n7 | pub type Node = nat;\n  |          ^^^^\n\nwarning: type alias `Term` is never used\n --> src/raft/../../../requirements/targets.rs:8:10\n  |\n8 | pub type Term = nat;\n  |          ^^^^\n\nwarning: type alias `Index` is never used\n --> src/raft/../../../requirements/targets.rs:9:10\n  |\n9 | pub type Index = nat;\n  |          ^^^^^\n\nwarning: struct `Key` is never constructed\n  --> src/raft/../../../requirements/targets.rs:11:12\n   |\n11 | pub struct Key { pub group: Group, pub node: Node }\n   |            ^^^\n\nwarning: struct `Entry` is never constructed\n  --> src/raft/../../../requirements/targets.rs:12:12\n   |\n12 | pub struct Entry { pub term: Term, pub command: Seq<u8> }\n   |            ^^^^^\n\nwarning: struct `Snapshot` is never constructed\n  --> src/raft/../../../requirements/targets.rs:13:12\n   |\n13 | pub struct Snapshot {\n   |            ^^^^^^^^\n\nwarning: struct `View` is never constructed\n  --> src/raft/../../../requirements/targets.rs:18:12\n   |\n18 | pub struct View {\n   |            ^^^^\n\nwarning: enum `Event` is never used\n  --> src/raft/../../../requirements/targets.rs:26:10\n   |\n26 | pub enum Event {\n   |          ^^^^^\n\nwarning: struct `History` is never constructed\n  --> src/raft/../../../requirements/targets.rs:38:12\n   |\n38 | pub struct History {\n   |            ^^^^^^^\n\nwarning: struct `Application` is never constructed\n   --> src/raft/../../../requirements/targets.rs:130:12\n    |\n130 | pub struct Application {\n    |            ^^^^^^^^^^^\n\nwarning: field `ctrl_ck` is never read\n --> src/shardkv/client.rs:5:5\n  |\n4 | pub struct Clerk {\n  |            ----- field in this struct\n5 |     ctrl_ck: CtrlerClerk,\n  |     ^^^^^^^\n\nwarning: field `inner` is never read\n --> src/shardkv/server.rs:8:5\n  |\n7 | pub struct ShardKvServer {\n  |            ------------- field in this struct\n8 |     inner: Arc<Server<ShardKv>>,\n  |     ^^^^^\n\nwarning: the `term:` in this pattern is redundant\n   --> src/raft/vote_core.rs:184:30\n    |\n184 |         let RpcResult::Reply{term,granted}=result else {return Collect::Ignored;};\n    |                              ^^^^ help: use shorthand field pattern: `term`\n    |\n    = note: `#[warn(non_shorthand_field_patterns)]` on by default\n\nwarning: the `granted:` in this pattern is redundant\n   --> src/raft/vote_core.rs:184:35\n    |\n184 |         let RpcResult::Reply{term,granted}=result else {return Collect::Ignored;};\n    |                                   ^^^^^^^ help: use shorthand field pattern: `granted`\n\nwarning: `madraft` (lib test) generated 65 warnings (run `cargo fix --lib -p madraft --tests` to apply 31 suggestions)\n    Finished `release` profile [optimized] target(s) in 0.08s\n     Running unittests src/lib.rs (/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target/release/deps/madraft-9d1fbd9857b1c1bd)\n\nrunning 38 tests\ntest raft::raft::vote_tests::campaign_guards_completion_and_max ... ok\ntest raft::raft::vote_tests::collection_delayed_old_and_new_round ... ok\ntest raft::raft::vote_tests::collection_guards_and_self_save ... ok\ntest raft::raft::vote_tests::collection_higher_term_and_exhaustion ... ok\ntest raft::raft::vote_tests::collection_observation_calibration ... ok\ntest raft::raft::vote_tests::collection_old_higher_failed ... ok\ntest raft::raft::vote_tests::collection_old_higher_saved ... ok\ntest raft::raft::vote_tests::collection_queue_calibration ... ok\ntest raft::raft::vote_tests::collection_real_peers_and_duplicate ... ok\ntest raft::raft::vote_tests::collection_transport_and_denial ... ok\ntest raft::raft::vote_tests::competing_candidates_keep_past_election_after_demotion ... ok\ntest raft::raft::vote_tests::elected_node_consumes_higher_old_rpc ... ok\ntest raft::raft::vote_tests::election_observation_calibration ... ok\ntest raft::raft::vote_tests::invalid_busy_failure_completion_and_bounds ... ok\ntest raft::raft::vote_tests::majority_before_last_rpc_and_stable_history ... ok\ntest raft::raft::vote_tests::malformed_storage_is_error ... ok\ntest raft::raft::vote_tests::mixed_choices_and_shared_state ... ok\ntest raft::raft::vote_tests::observer_live_then_cancelled ... ok\ntest raft::raft::vote_tests::observer_panicked_producer ... ok\ntest raft::raft::vote_tests::observer_queued_reply_then_closed ... ok\ntest raft::raft::vote_tests::observer_transport_error ... ok\ntest raft::raft::vote_tests::promotion_guards_old_round_and_completion ... ok\ntest raft::raft::vote_tests::promotion_schedule_calibration ... ok\ntest raft::raft::vote_tests::restart_confirmed ... ok\ntest raft::raft::vote_tests::restart_written_pending ... ok\ntest raft::raft::vote_tests::rpc_campaign_delayed_save ... ok\ntest raft::raft::vote_tests::rpc_campaign_failed_save ... ok\ntest raft::raft::vote_tests::rpc_campaign_real_peers_and_shared_term ... ok\ntest raft::raft::vote_tests::rpc_delayed_and_failed_save ... ok\ntest raft::raft::vote_tests::rpc_nonempty_log_and_denial_persist ... ok\ntest raft::raft::vote_tests::rpc_rules_and_file ... ok\ntest raft::raft::vote_tests::rules_and_nonempty ... ok\ntest raft::raft::vote_tests::self_restart_confirmed ... ok\ntest raft::raft::vote_tests::self_restart_written_pending ... ok\ntest raft::raft::vote_tests::single_member_saved_majority_promotes ... ok\ntest raft::raft::vote_tests::single_member_waits_for_actual_save ... ok\ntest raft::raft::vote_tests::split_real_votes_can_leave_no_leader ... ok\ntest raft::raft::vote_tests::strict_majority_distinct_real_votes ... ok\n\ntest result: ok. 38 passed; 0 failed; 0 ignored; 0 measured; 60 filtered out; finished in 0.02s\n\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_SEED": "1",
+        "MADSIM_TEST_NUM": "1"
+      },
+      "family": "raft::raft::vote_tests::",
+      "passed_tests": [
+        "raft::raft::vote_tests::campaign_guards_completion_and_max",
+        "raft::raft::vote_tests::collection_delayed_old_and_new_round",
+        "raft::raft::vote_tests::collection_guards_and_self_save",
+        "raft::raft::vote_tests::collection_higher_term_and_exhaustion",
+        "raft::raft::vote_tests::collection_observation_calibration",
+        "raft::raft::vote_tests::collection_old_higher_failed",
+        "raft::raft::vote_tests::collection_old_higher_saved",
+        "raft::raft::vote_tests::collection_queue_calibration",
+        "raft::raft::vote_tests::collection_real_peers_and_duplicate",
+        "raft::raft::vote_tests::collection_transport_and_denial",
+        "raft::raft::vote_tests::competing_candidates_keep_past_election_after_demotion",
+        "raft::raft::vote_tests::elected_node_consumes_higher_old_rpc",
+        "raft::raft::vote_tests::election_observation_calibration",
+        "raft::raft::vote_tests::invalid_busy_failure_completion_and_bounds",
+        "raft::raft::vote_tests::majority_before_last_rpc_and_stable_history",
+        "raft::raft::vote_tests::malformed_storage_is_error",
+        "raft::raft::vote_tests::mixed_choices_and_shared_state",
+        "raft::raft::vote_tests::observer_live_then_cancelled",
+        "raft::raft::vote_tests::observer_panicked_producer",
+        "raft::raft::vote_tests::observer_queued_reply_then_closed",
+        "raft::raft::vote_tests::observer_transport_error",
+        "raft::raft::vote_tests::promotion_guards_old_round_and_completion",
+        "raft::raft::vote_tests::promotion_schedule_calibration",
+        "raft::raft::vote_tests::restart_confirmed",
+        "raft::raft::vote_tests::restart_written_pending",
+        "raft::raft::vote_tests::rpc_campaign_delayed_save",
+        "raft::raft::vote_tests::rpc_campaign_failed_save",
+        "raft::raft::vote_tests::rpc_campaign_real_peers_and_shared_term",
+        "raft::raft::vote_tests::rpc_delayed_and_failed_save",
+        "raft::raft::vote_tests::rpc_nonempty_log_and_denial_persist",
+        "raft::raft::vote_tests::rpc_rules_and_file",
+        "raft::raft::vote_tests::rules_and_nonempty",
+        "raft::raft::vote_tests::self_restart_confirmed",
+        "raft::raft::vote_tests::self_restart_written_pending",
+        "raft::raft::vote_tests::single_member_saved_majority_promotes",
+        "raft::raft::vote_tests::single_member_waits_for_actual_save",
+        "raft::raft::vote_tests::split_real_votes_can_leave_no_leader",
+        "raft::raft::vote_tests::strict_majority_distinct_real_votes"
+      ],
+      "failed_tests": [],
+      "ignored_tests": [],
+      "uncovered_tests": []
+    },
+    "source_boundary": {
+      "status": "PASS",
+      "reason": "same_candidate_imports",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [],
+      "log": null,
+      "scope": "source_boundary",
+      "external_paths": []
+    },
+    "election_rules": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/candidate/tasks/election_safety/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_rules.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 9.183447697996598,
+      "seed": null,
+      "diagnostic": "verification results:: 48 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "election_campaign": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/candidate/tasks/election_safety/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_campaign"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_campaign.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 9.985783891999745,
+      "seed": null,
+      "diagnostic": "verification results:: 50 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "election_authorization": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/candidate/tasks/election_safety/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_authorization"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_authorization.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 9.929707168001187,
+      "seed": null,
+      "diagnostic": "verification results:: 50 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "election_history": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/candidate/tasks/election_safety/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_history"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_history.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 10.792578286000207,
+      "seed": null,
+      "diagnostic": "verification results:: 51 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "election_reply_rules": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/candidate/tasks/election_safety/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_reply_rules"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_reply_rules.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 9.76080682799875,
+      "seed": null,
+      "diagnostic": "verification results:: 49 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "election_self_vote": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/candidate/tasks/election_safety/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_self_vote"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_self_vote.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 10.47107645899814,
+      "seed": null,
+      "diagnostic": "verification results:: 49 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "election_rounds": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/candidate/tasks/election_safety/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_rounds"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_rounds.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 11.481335580996529,
+      "seed": null,
+      "diagnostic": "verification results:: 49 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "election_higher_reply": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/candidate/tasks/election_safety/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_higher_reply"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_higher_reply.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 9.856080870002188,
+      "seed": null,
+      "diagnostic": "verification results:: 49 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "election_provenance": {
+      "status": "OPEN",
+      "reason": "verification_timeout",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/candidate/tasks/election_safety/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_provenance"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_provenance.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "TIMEOUT",
+      "exit_code": -15,
+      "elapsed_seconds": 45.0757592259979,
+      "seed": null,
+      "diagnostic": "",
+      "errors": [],
+      "category": "timeout",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "election_nonempty": {
+      "status": "OPEN",
+      "reason": "verification_timeout",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/candidate/tasks/election_safety/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_nonempty"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_nonempty.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "TIMEOUT",
+      "exit_code": -15,
+      "elapsed_seconds": 45.04165655599718,
+      "seed": null,
+      "diagnostic": "",
+      "errors": [],
+      "category": "timeout",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "election_promotion": {
+      "status": "PASS",
+      "reason": "checked",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/candidate/tasks/election_safety/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_promotion"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_promotion.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 10.099979270002223,
+      "seed": null,
+      "diagnostic": "verification results:: 49 verified, 0 errors\n",
+      "errors": [],
+      "category": "pass",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "election_election_basis": {
+      "status": "OPEN",
+      "reason": "verification_timeout",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/candidate/tasks/election_safety/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_election_basis"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_election_basis.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "TIMEOUT",
+      "exit_code": -15,
+      "elapsed_seconds": 45.047223723999195,
+      "seed": null,
+      "diagnostic": "",
+      "errors": [],
+      "category": "timeout",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "election_election_history": {
+      "status": "OPEN",
+      "reason": "verification_timeout",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/candidate/tasks/election_safety/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_election_history"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_election_history.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "TIMEOUT",
+      "exit_code": -15,
+      "elapsed_seconds": 45.041276053998445,
+      "seed": null,
+      "diagnostic": "",
+      "errors": [],
+      "category": "timeout",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "election_election_nonempty": {
+      "status": "OPEN",
+      "reason": "verification_timeout",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/candidate/tasks/election_safety/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_election_nonempty"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_election_nonempty.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "TIMEOUT",
+      "exit_code": -15,
+      "elapsed_seconds": 1.5696659540008113,
+      "seed": null,
+      "diagnostic": "",
+      "errors": [],
+      "category": "timeout",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "election_receive_confirmed": {
+      "status": "OPEN",
+      "reason": "check_budget_exhausted",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [],
+      "log": null,
+      "scope": "election_receive_confirmed",
+      "category": "not_run",
+      "seed": null
+    },
+    "election_receive_pending": {
+      "status": "OPEN",
+      "reason": "check_budget_exhausted",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [],
+      "log": null,
+      "scope": "election_receive_pending",
+      "category": "not_run",
+      "seed": null
+    },
+    "election_self_confirmed": {
+      "status": "OPEN",
+      "reason": "check_budget_exhausted",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [],
+      "log": null,
+      "scope": "election_self_confirmed",
+      "category": "not_run",
+      "seed": null
+    },
+    "election_self_pending": {
+      "status": "OPEN",
+      "reason": "check_budget_exhausted",
+      "input_version": "madraft-election-safety-1",
+      "candidate_revision": "check-2-1793601905317506523",
+      "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+      "command": [],
+      "log": null,
+      "scope": "election_self_pending",
+      "category": "not_run",
+      "seed": null
+    }
+  },
+  "required": [
+    "build",
+    "inventory",
+    "tests_seed_1_raft_raft_vote_tests",
+    "source_boundary",
+    "election_rules",
+    "election_campaign",
+    "election_authorization",
+    "election_history",
+    "election_reply_rules",
+    "election_self_vote",
+    "election_rounds",
+    "election_higher_reply",
+    "election_provenance",
+    "election_nonempty",
+    "election_promotion",
+    "election_election_basis",
+    "election_election_history",
+    "election_election_nonempty",
+    "election_receive_confirmed",
+    "election_receive_pending",
+    "election_self_confirmed",
+    "election_self_pending"
+  ],
+  "input_fingerprint": "f7f6ce6b53700d6c16c5de6399ec1731b71b0f3a3b3c9d9eb540965732c5a63a",
+  "evidence_mismatches": [],
+  "result_reuse": "No historical PASS reuse; identical units in this invocation share one actual result/log.",
+  "current_obligation": {
+    "plan": {
+      "id": "election-safety-provenance",
+      "goal": "election-safety-provenance",
+      "statement": "Close the fixed election-safety provenance caller",
+      "kind": "composition",
+      "entry": "madraft/proof/vote_lemmas.rs",
+      "functions": [
+        "madraft/src/raft/vote_core.rs::try_become_leader",
+        "madraft/src/raft/vote_core.rs::receive",
+        "madraft/src/raft/vote_core.rs::start_election",
+        "madraft/src/raft/vote_core.rs::complete",
+        "madraft/src/raft/vote_core.rs::collect",
+        "madraft/src/raft/vote_core.rs::vote_count",
+        "madraft/src/raft/vote_core.rs::has_vote",
+        "madraft/src/raft/vote_core.rs::recover"
+      ],
+      "dependencies": [],
+      "premises": "Historical Election Safety uses the original targets::Event::Elect vocabulary for a single fixed group, finite executions from Followers, without node restart. Four local recovery windows are separate. RPC association, I/O/readback, serialization and forwarding remain UNVERIFIED. Complete Raft Election Safety, the other four properties, full MadRaft and conditional liveness remain OPEN."
+    },
+    "units": {
+      "election_provenance": "madraft/proof/vote_lemmas.rs"
+    },
+    "layer": "PREPARATION",
+    "first_blocker": {
+      "check": "election_provenance",
+      "entry": "madraft/proof/vote_lemmas.rs",
+      "reason": "verification_timeout",
+      "category": "timeout",
+      "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_provenance.log",
+      "diagnostic": "",
+      "failed_tests": null,
+      "seed": null
+    },
+    "imported_references": [
+      "madraft/src/raft/vote_core.rs"
+    ]
+  },
+  "assessments": {
+    "election_safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "leader_append_only": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "log_matching": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "leader_completeness": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "state_machine_safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "execution_link": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "snapshot_observation": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "nonempty_execution": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    }
+  },
+  "functional_plan": [
+    "raft::raft::vote_tests::"
+  ],
+  "placeholders": [
+    "madraft/src/kvraft/client.rs::call",
+    "madraft/src/kvraft/server.rs::apply",
+    "madraft/src/raft/raft.rs::apply",
+    "madraft/src/raft/raft.rs::cond_install_snapshot",
+    "madraft/src/raft/raft.rs::persist",
+    "madraft/src/raft/raft.rs::restore",
+    "madraft/src/raft/raft.rs::snapshot",
+    "madraft/src/raft/raft.rs::start",
+    "madraft/src/shard_ctrler/server.rs::apply",
+    "madraft/src/shardkv/client.rs::append",
+    "madraft/src/shardkv/client.rs::get",
+    "madraft/src/shardkv/client.rs::put",
+    "madraft/src/shardkv/server.rs::apply",
+    "madraft/src/shardkv/server.rs::new"
+  ],
+  "semantic_review": "NOT_PERFORMED",
+  "implementation_acceptance": "NOT_ESTABLISHED",
+  "elapsed_seconds": 300.08436650899966,
+  "diagnostics": [
+    {
+      "category": "timeout",
+      "message": "verification_timeout",
+      "dependency": "election_provenance",
+      "detail": "",
+      "affected": [
+        "election_provenance"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_provenance.log"
+      ]
+    },
+    {
+      "category": "timeout",
+      "message": "verification_timeout",
+      "dependency": "election_nonempty",
+      "detail": "",
+      "affected": [
+        "election_nonempty"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_nonempty.log"
+      ]
+    },
+    {
+      "category": "timeout",
+      "message": "verification_timeout",
+      "dependency": "election_election_basis",
+      "detail": "",
+      "affected": [
+        "election_election_basis"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_election_basis.log"
+      ]
+    },
+    {
+      "category": "timeout",
+      "message": "verification_timeout",
+      "dependency": "election_election_history",
+      "detail": "",
+      "affected": [
+        "election_election_history"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_election_history.log"
+      ]
+    },
+    {
+      "category": "timeout",
+      "message": "verification_timeout",
+      "dependency": "election_election_nonempty",
+      "detail": "",
+      "affected": [
+        "election_election_nonempty"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_election_nonempty.log"
+      ]
+    },
+    {
+      "category": "not_run",
+      "message": "check_budget_exhausted",
+      "dependency": "election_receive_confirmed",
+      "detail": "",
+      "affected": [
+        "election_receive_confirmed"
+      ],
+      "logs": []
+    },
+    {
+      "category": "not_run",
+      "message": "check_budget_exhausted",
+      "dependency": "election_receive_pending",
+      "detail": "",
+      "affected": [
+        "election_receive_pending"
+      ],
+      "logs": []
+    },
+    {
+      "category": "not_run",
+      "message": "check_budget_exhausted",
+      "dependency": "election_self_confirmed",
+      "detail": "",
+      "affected": [
+        "election_self_confirmed"
+      ],
+      "logs": []
+    },
+    {
+      "category": "not_run",
+      "message": "check_budget_exhausted",
+      "dependency": "election_self_pending",
+      "detail": "",
+      "affected": [
+        "election_self_pending"
+      ],
+      "logs": []
+    }
+  ],
+  "changed_standards": [],
+  "concurrent_changes": [],
+  "liveness": "OPEN \u2014 not accepted by safety checks",
+  "semantic_boundary": "Historical Election Safety uses the original targets::Event::Elect vocabulary for a single fixed group, finite executions from Followers, without node restart. Four local recovery windows are separate. RPC association, I/O/readback, serialization and forwarding remain UNVERIFIED. Complete Raft Election Safety, the other four properties, full MadRaft and conditional liveness remain OPEN.",
+  "task_completion": "OPEN",
+  "task_scope": "election-safety",
+  "full_madraft": "INCOMPLETE",
+  "global_safety": {
+    "election_safety": "OPEN",
+    "leader_append_only": "OPEN",
+    "log_matching": "OPEN",
+    "leader_completeness": "OPEN",
+    "state_machine_safety": "OPEN"
+  },
+  "local_goals": {
+    "rules": "PASS",
+    "campaign": "PASS",
+    "authorization": "PASS",
+    "history": "PASS",
+    "reply_rules": "PASS",
+    "self_vote": "PASS",
+    "rounds": "PASS",
+    "higher_reply": "PASS",
+    "provenance": "OPEN",
+    "nonempty": "OPEN",
+    "promotion": "PASS",
+    "election_basis": "OPEN",
+    "election_history": "OPEN",
+    "election_nonempty": "OPEN",
+    "receive_confirmed": "OPEN",
+    "receive_pending": "OPEN",
+    "self_confirmed": "OPEN",
+    "self_pending": "OPEN"
+  },
+  "host_verification": "UNVERIFIED",
+  "uncovered": [
+    "cross-node restart induction",
+    "arbitrary/interrupted/failed-write recovery",
+    "real log-to-summary correspondence",
+    "replication and snapshots",
+    "complete Raft protocol and faults"
+  ],
+  "scoped_election_safety_no_restart": "OPEN",
+  "local_recovery_windows": {
+    "receive_confirmed": "OPEN",
+    "receive_pending": "OPEN",
+    "self_confirmed": "OPEN",
+    "self_pending": "OPEN"
+  },
+  "tool_versions": {
+    "codex": {
+      "command": [
+        "codex",
+        "--version"
+      ],
+      "output": "codex-cli 0.162.0-alpha.17.2",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "codex_help": {
+      "command": [
+        "codex",
+        "--help"
+      ],
+      "output": "Codex CLI\n\nIf no subcommand is specified, options will be forwarded to the interactive CLI.\n\nUsage: codex [OPTIONS] [PROMPT]\n       codex [OPTIONS] <COMMAND> [ARGS]\n\nCommands:\n  agents            Browse all agent sessions on the shared local app-server daemon\n  exec              Run Codex non-interactively [aliases: e]\n  review            Run a code review non-interactively\n  login             Manage login\n  logout            Remove stored authentication credentials\n  mcp               Manage external MCP servers for Codex\n  plugin            Manage Codex plugins\n  app-server        [experimental] Run the app server or related tooling\n  remote-control    [experimental] Manage the app-server daemon with remote control enabled\n  completion        Generate shell completion scripts\n  update            Update Codex to the latest version\n  doctor            Diagnose local Codex installation, config, auth, and runtime health\n  sandbox           Run commands within a Codex-provided sandbox\n  debug             Debugging tools\n  apply             Apply the latest diff produced by Codex agent as a `git apply` to your local\n                    working tree [aliases: a]\n  resume            Resume a previous interactive session (picker by default; use --last to continue\n                    the most recent)\n  queue             Queue a message for an existing session\n  archive           Archive a saved session by id or session name\n  delete            Permanently delete a saved session by id or session name\n  migrate-rollouts  Inspect or migrate legacy local sessions to paginated thread history\n  unarchive         Unarchive a saved session by id or session name\n  fork              Fork a previous interactive session (picker by default; use --last to fork the\n                    most recent)\n  cloud             [EXPERIMENTAL] Browse tasks from Codex Cloud and apply changes locally\n  exec-server       [EXPERIMENTAL] Run the standalone exec-server service\n  features          Inspect feature flags\n  help              Print this message or the help of the given subcommand(s)\n\nArguments:\n  [PROMPT]\n          Optional user prompt to start the session\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n      --remote <ADDR>\n          Connect the TUI to a remote app server endpoint.\n          \n          Accepted forms: `ws://host:port`, `wss://host:port`, `unix://`, or `unix://PATH`.\n\n      --remote-auth-token-env <ENV_VAR>\n          Name of the environment variable containing the bearer token to send to a remote app\n          server websocket\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -i, --image <FILE>...\n          Optional image(s) to attach to the initial prompt\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --oss\n          Use open-source provider\n\n      --local-provider <OSS_PROVIDER>\n          Specify which local provider to use (lmstudio or ollama). If not specified with --oss,\n          will use config default or show selection\n\n  -p, --profile <CONFIG_PROFILE_V2>\n          Layer $CODEX_HOME/<name>.config.toml on top of the base user config\n\n  -s, --sandbox <SANDBOX_MODE>\n          Select the sandbox policy to use when executing model-generated shell commands\n          \n          [possible values: read-only, workspace-write, danger-full-access]\n\n      --approve-for-me\n          Route approval requests through automatic review using the workspace-write sandbox\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n  -C, --cd <DIR>\n          Tell the agent to use the specified directory as its working root\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --add-dir <DIR>\n          Additional directories that should be writable alongside the primary workspace\n\n  -a, --ask-for-approval <APPROVAL_POLICY>\n          Configure when the model requires human approval before executing a command\n\n          Possible values:\n          - on-request: The model decides when to ask the user for approval\n          - never:      Never ask for user approval Execution failures are immediately returned to\n            the model\n\n      --search\n          Enable live web search. When enabled, the native Responses `web_search` tool is available\n          to the model (no per\u2011call approval)\n\n      --no-alt-screen\n          Disable alternate screen mode\n          \n          Runs the TUI in inline mode, preserving terminal scrollback history.\n\n      --no-daemon\n          Run without the shared background server, even if it is already running\n\n  -h, --help\n          Print help (see a summary with '-h')\n\n  -V, --version\n          Print version",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "exec_help": {
+      "command": [
+        "codex",
+        "exec",
+        "--help"
+      ],
+      "output": "Run Codex non-interactively\n\nUsage: codex exec [OPTIONS] [PROMPT]\n       codex exec [OPTIONS] <COMMAND> [ARGS]\n\nCommands:\n  resume  Resume a previous session by id or pick the most recent with --last\n  fork    Fork a previous session by id into a new session\n  review  Run a code review against the current repository\n  help    Print this message or the help of the given subcommand(s)\n\nArguments:\n  [PROMPT]\n          Initial instructions for the agent. If not provided as an argument (or if `-` is used),\n          instructions are read from stdin. If stdin is piped and a prompt is also provided, stdin\n          is appended as a `<stdin>` block\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -i, --image <FILE>...\n          Optional image(s) to attach to the initial prompt\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --oss\n          Use open-source provider\n\n      --local-provider <OSS_PROVIDER>\n          Specify which local provider to use (lmstudio or ollama). If not specified with --oss,\n          will use config default or show selection\n\n  -p, --profile <CONFIG_PROFILE_V2>\n          Layer $CODEX_HOME/<name>.config.toml on top of the base user config\n\n  -s, --sandbox <SANDBOX_MODE>\n          Select the sandbox policy to use when executing model-generated shell commands\n          \n          [possible values: read-only, workspace-write, danger-full-access]\n\n      --approve-for-me\n          Route approval requests through automatic review using the workspace-write sandbox\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n  -C, --cd <DIR>\n          Tell the agent to use the specified directory as its working root\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --add-dir <DIR>\n          Additional directories that should be writable alongside the primary workspace\n\n      --thread-source <SOURCE>\n          Source classification for newly created or forked threads\n\n      --cyber-access-program <PROGRAM>\n          Request an experimental Cyber access program for this turn (OpenAI provider only). Omit to\n          use server defaults. Not supported with review; fork requires a prompt\n          \n          [possible values: standard, daybreak_blue, daybreak_red]\n\n      --skip-git-repo-check\n          Allow running Codex outside a Git repository\n\n      --ephemeral\n          Run without persisting session files to disk\n\n      --ignore-user-config\n          Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`\n\n      --ignore-rules\n          Do not load user or project execpolicy `.rules` files\n\n      --output-schema <FILE>\n          Path to a JSON Schema file describing the model's final response shape\n\n      --color <COLOR>\n          Specifies color settings for use in the output\n          \n          [default: auto]\n          [possible values: always, never, auto]\n\n      --json\n          Print events to stdout as JSONL\n\n  -o, --output-last-message <FILE>\n          Specifies file where the last message from the agent should be written\n\n  -h, --help\n          Print help (see a summary with '-h')\n\n  -V, --version\n          Print version",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "resume_help": {
+      "command": [
+        "codex",
+        "exec",
+        "resume",
+        "--help"
+      ],
+      "output": "Resume a previous session by id or pick the most recent with --last\n\nUsage: codex exec resume [OPTIONS] [SESSION_ID] [PROMPT]\n\nArguments:\n  [SESSION_ID]\n          Conversation/session id (UUID) or thread name. UUIDs take precedence if it parses. If\n          omitted, use --last to pick the most recent recorded session\n\n  [PROMPT]\n          Prompt to send after resuming the session. If `-` is used, read from stdin\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --last\n          Resume the most recent recorded session (newest) without specifying an id\n\n      --all\n          Show all sessions (disables cwd filtering)\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n  -i, --image <FILE>\n          Optional image(s) to attach to the prompt sent after resuming\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --thread-source <SOURCE>\n          Source classification for newly created or forked threads\n\n      --cyber-access-program <PROGRAM>\n          Request an experimental Cyber access program for this turn (OpenAI provider only). Omit to\n          use server defaults. Not supported with review; fork requires a prompt\n          \n          [possible values: standard, daybreak_blue, daybreak_red]\n\n      --skip-git-repo-check\n          Allow running Codex outside a Git repository\n\n      --ephemeral\n          Run without persisting session files to disk\n\n      --ignore-user-config\n          Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`\n\n      --ignore-rules\n          Do not load user or project execpolicy `.rules` files\n\n      --output-schema <FILE>\n          Path to a JSON Schema file describing the model's final response shape\n\n      --json\n          Print events to stdout as JSONL\n\n  -o, --output-last-message <FILE>\n          Specifies file where the last message from the agent should be written\n\n  -h, --help\n          Print help (see a summary with '-h')",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "rustc": {
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--version"
+      ],
+      "output": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "cargo": {
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "--version"
+      ],
+      "output": "cargo 1.92.0 (344c4567c 2025-10-21)",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "verus": {
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "--version"
+      ],
+      "output": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "new_command_help": {
+      "command": [
+        "codex",
+        "--no-daemon",
+        "--ask-for-approval",
+        "never",
+        "-c",
+        "sandbox_mode=\"workspace-write\"",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "exec",
+        "--ignore-user-config",
+        "--skip-git-repo-check",
+        "--json",
+        "--model",
+        "gpt-6.1-sol",
+        "--output-last-message",
+        "/home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/probe-unused.md",
+        "--help"
+      ],
+      "output": "Run Codex non-interactively\n\nUsage: codex exec [OPTIONS] [PROMPT]\n       codex exec [OPTIONS] <COMMAND> [ARGS]\n\nCommands:\n  resume  Resume a previous session by id or pick the most recent with --last\n  fork    Fork a previous session by id into a new session\n  review  Run a code review against the current repository\n  help    Print this message or the help of the given subcommand(s)\n\nArguments:\n  [PROMPT]\n          Initial instructions for the agent. If not provided as an argument (or if `-` is used),\n          instructions are read from stdin. If stdin is piped and a prompt is also provided, stdin\n          is appended as a `<stdin>` block\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -i, --image <FILE>...\n          Optional image(s) to attach to the initial prompt\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --oss\n          Use open-source provider\n\n      --local-provider <OSS_PROVIDER>\n          Specify which local provider to use (lmstudio or ollama). If not specified with --oss,\n          will use config default or show selection\n\n  -p, --profile <CONFIG_PROFILE_V2>\n          Layer $CODEX_HOME/<name>.config.toml on top of the base user config\n\n  -s, --sandbox <SANDBOX_MODE>\n          Select the sandbox policy to use when executing model-generated shell commands\n          \n          [possible values: read-only, workspace-write, danger-full-access]\n\n      --approve-for-me\n          Route approval requests through automatic review using the workspace-write sandbox\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n  -C, --cd <DIR>\n          Tell the agent to use the specified directory as its working root\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --add-dir <DIR>\n          Additional directories that should be writable alongside the primary workspace\n\n      --thread-source <SOURCE>\n          Source classification for newly created or forked threads\n\n      --cyber-access-program <PROGRAM>\n          Request an experimental Cyber access program for this turn (OpenAI provider only). Omit to\n          use server defaults. Not supported with review; fork requires a prompt\n          \n          [possible values: standard, daybreak_blue, daybreak_red]\n\n      --skip-git-repo-check\n          Allow running Codex outside a Git repository\n\n      --ephemeral\n          Run without persisting session files to disk\n\n      --ignore-user-config\n          Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`\n\n      --ignore-rules\n          Do not load user or project execpolicy `.rules` files\n\n      --output-schema <FILE>\n          Path to a JSON Schema file describing the model's final response shape\n\n      --color <COLOR>\n          Specifies color settings for use in the output\n          \n          [default: auto]\n          [possible values: always, never, auto]\n\n      --json\n          Print events to stdout as JSONL\n\n  -o, --output-last-message <FILE>\n          Specifies file where the last message from the agent should be written\n\n  -h, --help\n          Print help (see a summary with '-h')\n\n  -V, --version\n          Print version",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "resume_command_help": {
+      "command": [
+        "codex",
+        "--no-daemon",
+        "--ask-for-approval",
+        "never",
+        "-c",
+        "sandbox_mode=\"workspace-write\"",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "exec",
+        "resume",
+        "00000000-0000-0000-0000-000000000000",
+        "--ignore-user-config",
+        "--skip-git-repo-check",
+        "--json",
+        "--model",
+        "gpt-6.1-sol",
+        "--output-last-message",
+        "/home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/probe-unused.md",
+        "--help"
+      ],
+      "output": "Resume a previous session by id or pick the most recent with --last\n\nUsage: codex exec resume [OPTIONS] [SESSION_ID] [PROMPT]\n\nArguments:\n  [SESSION_ID]\n          Conversation/session id (UUID) or thread name. UUIDs take precedence if it parses. If\n          omitted, use --last to pick the most recent recorded session\n\n  [PROMPT]\n          Prompt to send after resuming the session. If `-` is used, read from stdin\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --last\n          Resume the most recent recorded session (newest) without specifying an id\n\n      --all\n          Show all sessions (disables cwd filtering)\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n  -i, --image <FILE>\n          Optional image(s) to attach to the prompt sent after resuming\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --thread-source <SOURCE>\n          Source classification for newly created or forked threads\n\n      --cyber-access-program <PROGRAM>\n          Request an experimental Cyber access program for this turn (OpenAI provider only). Omit to\n          use server defaults. Not supported with review; fork requires a prompt\n          \n          [possible values: standard, daybreak_blue, daybreak_red]\n\n      --skip-git-repo-check\n          Allow running Codex outside a Git repository\n\n      --ephemeral\n          Run without persisting session files to disk\n\n      --ignore-user-config\n          Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`\n\n      --ignore-rules\n          Do not load user or project execpolicy `.rules` files\n\n      --output-schema <FILE>\n          Path to a JSON Schema file describing the model's final response shape\n\n      --json\n          Print events to stdout as JSONL\n\n  -o, --output-last-message <FILE>\n          Specifies file where the last message from the agent should be written\n\n  -h, --help\n          Print help (see a summary with '-h')",
+      "exit": 0,
+      "process": "COMPLETED"
+    }
+  }
+}

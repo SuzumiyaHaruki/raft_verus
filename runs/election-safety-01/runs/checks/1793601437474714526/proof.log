@@ -1,0 +1,27 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793601437474714526/candidate/madraft/proof/network_connection.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 71 verified, 1 errors
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793601437474714526/candidate/madraft/proof/network_proof.rs:202:1
+    |
+202 | pub proof fn messages_step(before:Trace,after:Trace,event:Step)
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: assertion failed
+   --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793601437474714526/candidate/madraft/proof/network_proof.rs:209:52
+    |
+209 |     assert forall|i:int| 0<=i<t.sent.len() implies sent_ok(t,i) by {
+    |                                                    ^^^^^^^^^^^^ assertion failed
+
+error: precondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793601437474714526/candidate/madraft/proof/network_proof.rs:210:44
+    |
+128 |     requires extends(b,t),choice_for(b,v,c,term), ensures choice_for(t,v,c,term),
+    |                           ---------------------- failed precondition
+...
+210 |         if i<b.sent.len() {let s=b.sent[i];keep_choice(b,t,s.node,s.node,s.payload.request.term);}
+    |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 2 previous errors
+
+
+process=COMPLETED exit=1

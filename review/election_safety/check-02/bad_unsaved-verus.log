@@ -1,0 +1,62 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/tasks/election_safety/fixtures.rs --crate-type lib --cfg bad_unsaved --no-cheating
+verification results:: 27 verified, 1 errors
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/tasks/election_safety/fixtures.rs:14:46
+   |
+14 | fn unsaved(saved:bool) -> (won:bool) ensures won ==> saved,
+   |                                              ^^^^^^^^^^^^^ failed this postcondition
+15 | { true }
+   |   ---- at the end of the function body
+
+note: automatically chose triggers for this expression:
+   --> /home/nitro/Desktop/raft_verus/tasks/election_safety/../../requirements/targets.rs:121:5
+    |
+121 | /     forall |a: int, b: int, group: Group, index: Index|
+122 | |         0 <= a < h.events.len() && 0 <= b < h.events.len()
+123 | |         && applied(h.events[a], group, index).is_some()
+124 | |         && applied(h.events[b], group, index).is_some()
+125 | |         ==> applied(h.events[a], group, index) == applied(h.events[b], group, index)
+    | |____________________________________________________________________________________^
+
+note:   trigger 1 of 2:
+   --> /home/nitro/Desktop/raft_verus/tasks/election_safety/../../requirements/targets.rs:123:20
+    |
+123 |         && applied(h.events[a], group, index).is_some()
+    |                    ^^^^^^^^^^^
+124 |         && applied(h.events[b], group, index).is_some()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 2 of 2:
+   --> /home/nitro/Desktop/raft_verus/tasks/election_safety/../../requirements/targets.rs:123:12
+    |
+123 |         && applied(h.events[a], group, index).is_some()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+124 |         && applied(h.events[b], group, index).is_some()
+    |                    ^^^^^^^^^^^
+
+note: Verus printed one or more automatically chosen quantifier triggers
+      because it had low confidence in the chosen triggers.
+      To suppress these messages, do one of the following:
+        (1) manually annotate a single desired trigger using #[trigger]
+            (example: forall|i: int, j: int| f(i) && #[trigger] g(i) && #[trigger] h(j)),
+        (2) manually annotate multiple desired triggers using #![trigger ...]
+            (example: forall|i: int| #![trigger f(i)] #![trigger g(i)] f(i) && g(i)),
+        (3) accept the automatically chosen trigger using #![auto]
+            (example: forall|i: int, j: int| #![auto] f(i) && g(i) && h(j))
+        (4) use the --triggers-mode silent command-line option to suppress all printing of triggers.
+      (Note: triggers are used by the underlying SMT theorem prover to instantiate quantifiers;
+      the theorem prover instantiates a quantifier whenever some expression matches the
+      pattern specified by one of the quantifier's triggers.)
+   --> /home/nitro/Desktop/raft_verus/tasks/election_safety/../../requirements/targets.rs:121:5
+    |
+121 | /     forall |a: int, b: int, group: Group, index: Index|
+122 | |         0 <= a < h.events.len() && 0 <= b < h.events.len()
+123 | |         && applied(h.events[a], group, index).is_some()
+124 | |         && applied(h.events[b], group, index).is_some()
+125 | |         ==> applied(h.events[a], group, index) == applied(h.events[b], group, index)
+    | |____________________________________________________________________________________^
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

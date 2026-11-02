@@ -10,7 +10,7 @@ import subprocess
 HELPERS = ('check.py', 'process.py', 'tools.py', 'inputs.py')
 SKIP = {'target', 'runs', '__pycache__', '.git', '.codex', '.agents', 'codex-home', '.verus-log'}
 INPUT_VERSION = 'madraft-joint-proof-5'
-SCOPED_TASKS = ('request-vote', 'election-start', 'vote-collection')
+SCOPED_TASKS = ('request-vote', 'election-start', 'vote-collection', 'election-safety')
 
 
 def fingerprint(files):

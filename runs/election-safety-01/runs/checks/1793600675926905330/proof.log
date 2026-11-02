@@ -1,0 +1,15 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793600675926905330/candidate/madraft/proof/core_connection.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 38 verified, 1 errors
+error: constructed value may fail to meet its declared type invariant
+   --> /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793600675926905330/candidate/madraft/proof/../src/raft/vote_core.rs:168:17
+    |
+ 12 |     spec fn inv(self) -> bool {
+    |          -------------------- type invariant declared here
+...
+168 |                 self.outputs@=next;}}},
+    |                 ^^^^
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

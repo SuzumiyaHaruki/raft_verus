@@ -1,0 +1,772 @@
+{
+  "status": "ELECTION_SAFETY_NO_RESTART_CHECKS_PASSED",
+  "reason": "Scoped checks passed; semantic review remains outstanding",
+  "run_id": "5c98388f-dc06-462c-ac2d-b445ee397dff",
+  "input_version": "madraft-election-safety-1",
+  "git_revision": "UNAVAILABLE: Git metadata not exposed",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "attempts": 4,
+  "redesigns": 0,
+  "seconds_spent": 4038.4521020509965,
+  "total_seconds": 7200.0,
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "last_check": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-4-1793603876604771367/results.json",
+  "semantic_boundary": "Historical Election Safety uses the original targets::Event::Elect vocabulary for a single fixed group, finite executions from Followers, without node restart. Four local recovery windows are separate. RPC association, I/O/readback, serialization and forwarding remain UNVERIFIED. Complete Raft Election Safety, the other four properties, full MadRaft and conditional liveness remain OPEN.",
+  "liveness": "OPEN",
+  "task_scope": "election-safety",
+  "full_madraft": "INCOMPLETE",
+  "global_safety": {
+    "election_safety": "OPEN",
+    "leader_append_only": "OPEN",
+    "log_matching": "OPEN",
+    "leader_completeness": "OPEN",
+    "state_machine_safety": "OPEN"
+  },
+  "local_goals": {
+    "rules": "PASS",
+    "campaign": "PASS",
+    "authorization": "PASS",
+    "history": "PASS",
+    "reply_rules": "PASS",
+    "self_vote": "PASS",
+    "rounds": "PASS",
+    "higher_reply": "PASS",
+    "provenance": "PASS",
+    "nonempty": "PASS",
+    "promotion": "PASS",
+    "election_basis": "PASS",
+    "election_history": "PASS",
+    "election_nonempty": "PASS",
+    "receive_confirmed": "PASS",
+    "receive_pending": "PASS",
+    "self_confirmed": "PASS",
+    "self_pending": "PASS"
+  },
+  "host_verification": "UNVERIFIED",
+  "guidance": "B",
+  "system_version": "madraft-generate-check-5",
+  "input_fingerprint": "7ce0decc0722a1f122fa27690c453dc83c66570b636256a58630899a68c86a26",
+  "prompt_version": "041f308757885527518ea33c918604c4f98043fbed6b6ffa8bc819578b8171c0",
+  "unused_seconds": 3161.5478979490035,
+  "costs": [
+    {
+      "round": 0,
+      "kind": "preflight",
+      "reserved_seconds": 40,
+      "actual_seconds": 0.18065566200311878
+    },
+    {
+      "round": 0,
+      "kind": "check",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 141.69259366000188
+    },
+    {
+      "round": 1,
+      "kind": "agent",
+      "reserved_seconds": 600.0,
+      "actual_seconds": 552.9877171689986
+    },
+    {
+      "round": 1,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 65.32066929400025
+    },
+    {
+      "round": 1,
+      "kind": "check",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 188.73342336699716
+    },
+    {
+      "round": 2,
+      "kind": "agent",
+      "reserved_seconds": 600.0,
+      "actual_seconds": 548.6133465070016
+    },
+    {
+      "round": 2,
+      "kind": "attempt-replay",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 300.0795633650014
+    },
+    {
+      "round": 2,
+      "kind": "check",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 300.11274299700017
+    },
+    {
+      "round": 3,
+      "kind": "agent",
+      "reserved_seconds": 600.0,
+      "actual_seconds": 583.6687664560013
+    },
+    {
+      "round": 3,
+      "kind": "check",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 300.14621655299925
+    },
+    {
+      "round": 4,
+      "kind": "agent",
+      "reserved_seconds": 600.0,
+      "actual_seconds": 527.2630441450019
+    },
+    {
+      "round": 4,
+      "kind": "check",
+      "reserved_seconds": 300.0,
+      "actual_seconds": 259.566042450002
+    },
+    {
+      "round": 4,
+      "kind": "final",
+      "reserved_seconds": 600.0,
+      "actual_seconds": 268.99313909099874
+    }
+  ],
+  "interventions": [],
+  "historical_test_coverage": {},
+  "semantic_review": "NOT_PERFORMED",
+  "implementation_acceptance": "NOT_ESTABLISHED",
+  "generation_experiments": 1,
+  "continuation_rounds": 3,
+  "token_usage": [
+    {
+      "raw_events": [
+        {
+          "event": "turn.completed",
+          "counters": {
+            "input_tokens": 8377357,
+            "cached_input_tokens": 8219008,
+            "output_tokens": 14364
+          }
+        }
+      ],
+      "counter_scope": "UNKNOWN",
+      "summed_tokens": null,
+      "dollar_cost": null
+    },
+    {
+      "raw_events": [
+        {
+          "event": "turn.completed",
+          "counters": {
+            "input_tokens": 16422224,
+            "cached_input_tokens": 16220288,
+            "output_tokens": 29455
+          }
+        }
+      ],
+      "counter_scope": "UNKNOWN",
+      "summed_tokens": null,
+      "dollar_cost": null
+    },
+    {
+      "raw_events": [
+        {
+          "event": "turn.completed",
+          "counters": {
+            "input_tokens": 19651278,
+            "cached_input_tokens": 19322368,
+            "output_tokens": 36867
+          }
+        }
+      ],
+      "counter_scope": "UNKNOWN",
+      "summed_tokens": null,
+      "dollar_cost": null
+    },
+    {
+      "raw_events": [
+        {
+          "event": "turn.completed",
+          "counters": {
+            "input_tokens": 22788107,
+            "cached_input_tokens": 22428160,
+            "output_tokens": 47374
+          }
+        }
+      ],
+      "counter_scope": "UNKNOWN",
+      "summed_tokens": null,
+      "dollar_cost": null
+    }
+  ],
+  "tools": {
+    "codex": {
+      "command": [
+        "codex",
+        "--version"
+      ],
+      "output": "codex-cli 0.162.0-alpha.17.2",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "codex_help": {
+      "command": [
+        "codex",
+        "--help"
+      ],
+      "output": "Codex CLI\n\nIf no subcommand is specified, options will be forwarded to the interactive CLI.\n\nUsage: codex [OPTIONS] [PROMPT]\n       codex [OPTIONS] <COMMAND> [ARGS]\n\nCommands:\n  agents            Browse all agent sessions on the shared local app-server daemon\n  exec              Run Codex non-interactively [aliases: e]\n  review            Run a code review non-interactively\n  login             Manage login\n  logout            Remove stored authentication credentials\n  mcp               Manage external MCP servers for Codex\n  plugin            Manage Codex plugins\n  app-server        [experimental] Run the app server or related tooling\n  remote-control    [experimental] Manage the app-server daemon with remote control enabled\n  completion        Generate shell completion scripts\n  update            Update Codex to the latest version\n  doctor            Diagnose local Codex installation, config, auth, and runtime health\n  sandbox           Run commands within a Codex-provided sandbox\n  debug             Debugging tools\n  apply             Apply the latest diff produced by Codex agent as a `git apply` to your local\n                    working tree [aliases: a]\n  resume            Resume a previous interactive session (picker by default; use --last to continue\n                    the most recent)\n  queue             Queue a message for an existing session\n  archive           Archive a saved session by id or session name\n  delete            Permanently delete a saved session by id or session name\n  migrate-rollouts  Inspect or migrate legacy local sessions to paginated thread history\n  unarchive         Unarchive a saved session by id or session name\n  fork              Fork a previous interactive session (picker by default; use --last to fork the\n                    most recent)\n  cloud             [EXPERIMENTAL] Browse tasks from Codex Cloud and apply changes locally\n  exec-server       [EXPERIMENTAL] Run the standalone exec-server service\n  features          Inspect feature flags\n  help              Print this message or the help of the given subcommand(s)\n\nArguments:\n  [PROMPT]\n          Optional user prompt to start the session\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n      --remote <ADDR>\n          Connect the TUI to a remote app server endpoint.\n          \n          Accepted forms: `ws://host:port`, `wss://host:port`, `unix://`, or `unix://PATH`.\n\n      --remote-auth-token-env <ENV_VAR>\n          Name of the environment variable containing the bearer token to send to a remote app\n          server websocket\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -i, --image <FILE>...\n          Optional image(s) to attach to the initial prompt\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --oss\n          Use open-source provider\n\n      --local-provider <OSS_PROVIDER>\n          Specify which local provider to use (lmstudio or ollama). If not specified with --oss,\n          will use config default or show selection\n\n  -p, --profile <CONFIG_PROFILE_V2>\n          Layer $CODEX_HOME/<name>.config.toml on top of the base user config\n\n  -s, --sandbox <SANDBOX_MODE>\n          Select the sandbox policy to use when executing model-generated shell commands\n          \n          [possible values: read-only, workspace-write, danger-full-access]\n\n      --approve-for-me\n          Route approval requests through automatic review using the workspace-write sandbox\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n  -C, --cd <DIR>\n          Tell the agent to use the specified directory as its working root\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --add-dir <DIR>\n          Additional directories that should be writable alongside the primary workspace\n\n  -a, --ask-for-approval <APPROVAL_POLICY>\n          Configure when the model requires human approval before executing a command\n\n          Possible values:\n          - on-request: The model decides when to ask the user for approval\n          - never:      Never ask for user approval Execution failures are immediately returned to\n            the model\n\n      --search\n          Enable live web search. When enabled, the native Responses `web_search` tool is available\n          to the model (no per\u2011call approval)\n\n      --no-alt-screen\n          Disable alternate screen mode\n          \n          Runs the TUI in inline mode, preserving terminal scrollback history.\n\n      --no-daemon\n          Run without the shared background server, even if it is already running\n\n  -h, --help\n          Print help (see a summary with '-h')\n\n  -V, --version\n          Print version",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "exec_help": {
+      "command": [
+        "codex",
+        "exec",
+        "--help"
+      ],
+      "output": "Run Codex non-interactively\n\nUsage: codex exec [OPTIONS] [PROMPT]\n       codex exec [OPTIONS] <COMMAND> [ARGS]\n\nCommands:\n  resume  Resume a previous session by id or pick the most recent with --last\n  fork    Fork a previous session by id into a new session\n  review  Run a code review against the current repository\n  help    Print this message or the help of the given subcommand(s)\n\nArguments:\n  [PROMPT]\n          Initial instructions for the agent. If not provided as an argument (or if `-` is used),\n          instructions are read from stdin. If stdin is piped and a prompt is also provided, stdin\n          is appended as a `<stdin>` block\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -i, --image <FILE>...\n          Optional image(s) to attach to the initial prompt\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --oss\n          Use open-source provider\n\n      --local-provider <OSS_PROVIDER>\n          Specify which local provider to use (lmstudio or ollama). If not specified with --oss,\n          will use config default or show selection\n\n  -p, --profile <CONFIG_PROFILE_V2>\n          Layer $CODEX_HOME/<name>.config.toml on top of the base user config\n\n  -s, --sandbox <SANDBOX_MODE>\n          Select the sandbox policy to use when executing model-generated shell commands\n          \n          [possible values: read-only, workspace-write, danger-full-access]\n\n      --approve-for-me\n          Route approval requests through automatic review using the workspace-write sandbox\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n  -C, --cd <DIR>\n          Tell the agent to use the specified directory as its working root\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --add-dir <DIR>\n          Additional directories that should be writable alongside the primary workspace\n\n      --thread-source <SOURCE>\n          Source classification for newly created or forked threads\n\n      --cyber-access-program <PROGRAM>\n          Request an experimental Cyber access program for this turn (OpenAI provider only). Omit to\n          use server defaults. Not supported with review; fork requires a prompt\n          \n          [possible values: standard, daybreak_blue, daybreak_red]\n\n      --skip-git-repo-check\n          Allow running Codex outside a Git repository\n\n      --ephemeral\n          Run without persisting session files to disk\n\n      --ignore-user-config\n          Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`\n\n      --ignore-rules\n          Do not load user or project execpolicy `.rules` files\n\n      --output-schema <FILE>\n          Path to a JSON Schema file describing the model's final response shape\n\n      --color <COLOR>\n          Specifies color settings for use in the output\n          \n          [default: auto]\n          [possible values: always, never, auto]\n\n      --json\n          Print events to stdout as JSONL\n\n  -o, --output-last-message <FILE>\n          Specifies file where the last message from the agent should be written\n\n  -h, --help\n          Print help (see a summary with '-h')\n\n  -V, --version\n          Print version",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "resume_help": {
+      "command": [
+        "codex",
+        "exec",
+        "resume",
+        "--help"
+      ],
+      "output": "Resume a previous session by id or pick the most recent with --last\n\nUsage: codex exec resume [OPTIONS] [SESSION_ID] [PROMPT]\n\nArguments:\n  [SESSION_ID]\n          Conversation/session id (UUID) or thread name. UUIDs take precedence if it parses. If\n          omitted, use --last to pick the most recent recorded session\n\n  [PROMPT]\n          Prompt to send after resuming the session. If `-` is used, read from stdin\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --last\n          Resume the most recent recorded session (newest) without specifying an id\n\n      --all\n          Show all sessions (disables cwd filtering)\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n  -i, --image <FILE>\n          Optional image(s) to attach to the prompt sent after resuming\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --thread-source <SOURCE>\n          Source classification for newly created or forked threads\n\n      --cyber-access-program <PROGRAM>\n          Request an experimental Cyber access program for this turn (OpenAI provider only). Omit to\n          use server defaults. Not supported with review; fork requires a prompt\n          \n          [possible values: standard, daybreak_blue, daybreak_red]\n\n      --skip-git-repo-check\n          Allow running Codex outside a Git repository\n\n      --ephemeral\n          Run without persisting session files to disk\n\n      --ignore-user-config\n          Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`\n\n      --ignore-rules\n          Do not load user or project execpolicy `.rules` files\n\n      --output-schema <FILE>\n          Path to a JSON Schema file describing the model's final response shape\n\n      --json\n          Print events to stdout as JSONL\n\n  -o, --output-last-message <FILE>\n          Specifies file where the last message from the agent should be written\n\n  -h, --help\n          Print help (see a summary with '-h')",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "rustc": {
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--version"
+      ],
+      "output": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "cargo": {
+      "command": [
+        "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "--version"
+      ],
+      "output": "cargo 1.92.0 (344c4567c 2025-10-21)",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "verus": {
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "--version"
+      ],
+      "output": "Verus\n  Version: 0.2026.01.23.1650a05\n  Profile: release\n  Platform: linux_x86_64\n  Toolchain: 1.92.0-x86_64-unknown-linux-gnu",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "new_command_help": {
+      "command": [
+        "codex",
+        "--no-daemon",
+        "--ask-for-approval",
+        "never",
+        "-c",
+        "sandbox_mode=\"workspace-write\"",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "exec",
+        "--ignore-user-config",
+        "--skip-git-repo-check",
+        "--json",
+        "--model",
+        "gpt-6.1-sol",
+        "--output-last-message",
+        "/home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/probe-unused.md",
+        "--help"
+      ],
+      "output": "Run Codex non-interactively\n\nUsage: codex exec [OPTIONS] [PROMPT]\n       codex exec [OPTIONS] <COMMAND> [ARGS]\n\nCommands:\n  resume  Resume a previous session by id or pick the most recent with --last\n  fork    Fork a previous session by id into a new session\n  review  Run a code review against the current repository\n  help    Print this message or the help of the given subcommand(s)\n\nArguments:\n  [PROMPT]\n          Initial instructions for the agent. If not provided as an argument (or if `-` is used),\n          instructions are read from stdin. If stdin is piped and a prompt is also provided, stdin\n          is appended as a `<stdin>` block\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -i, --image <FILE>...\n          Optional image(s) to attach to the initial prompt\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --oss\n          Use open-source provider\n\n      --local-provider <OSS_PROVIDER>\n          Specify which local provider to use (lmstudio or ollama). If not specified with --oss,\n          will use config default or show selection\n\n  -p, --profile <CONFIG_PROFILE_V2>\n          Layer $CODEX_HOME/<name>.config.toml on top of the base user config\n\n  -s, --sandbox <SANDBOX_MODE>\n          Select the sandbox policy to use when executing model-generated shell commands\n          \n          [possible values: read-only, workspace-write, danger-full-access]\n\n      --approve-for-me\n          Route approval requests through automatic review using the workspace-write sandbox\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n  -C, --cd <DIR>\n          Tell the agent to use the specified directory as its working root\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --add-dir <DIR>\n          Additional directories that should be writable alongside the primary workspace\n\n      --thread-source <SOURCE>\n          Source classification for newly created or forked threads\n\n      --cyber-access-program <PROGRAM>\n          Request an experimental Cyber access program for this turn (OpenAI provider only). Omit to\n          use server defaults. Not supported with review; fork requires a prompt\n          \n          [possible values: standard, daybreak_blue, daybreak_red]\n\n      --skip-git-repo-check\n          Allow running Codex outside a Git repository\n\n      --ephemeral\n          Run without persisting session files to disk\n\n      --ignore-user-config\n          Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`\n\n      --ignore-rules\n          Do not load user or project execpolicy `.rules` files\n\n      --output-schema <FILE>\n          Path to a JSON Schema file describing the model's final response shape\n\n      --color <COLOR>\n          Specifies color settings for use in the output\n          \n          [default: auto]\n          [possible values: always, never, auto]\n\n      --json\n          Print events to stdout as JSONL\n\n  -o, --output-last-message <FILE>\n          Specifies file where the last message from the agent should be written\n\n  -h, --help\n          Print help (see a summary with '-h')\n\n  -V, --version\n          Print version",
+      "exit": 0,
+      "process": "COMPLETED"
+    },
+    "resume_command_help": {
+      "command": [
+        "codex",
+        "--no-daemon",
+        "--ask-for-approval",
+        "never",
+        "-c",
+        "sandbox_mode=\"workspace-write\"",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "exec",
+        "resume",
+        "00000000-0000-0000-0000-000000000000",
+        "--ignore-user-config",
+        "--skip-git-repo-check",
+        "--json",
+        "--model",
+        "gpt-6.1-sol",
+        "--output-last-message",
+        "/home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/probe-unused.md",
+        "--help"
+      ],
+      "output": "Resume a previous session by id or pick the most recent with --last\n\nUsage: codex exec resume [OPTIONS] [SESSION_ID] [PROMPT]\n\nArguments:\n  [SESSION_ID]\n          Conversation/session id (UUID) or thread name. UUIDs take precedence if it parses. If\n          omitted, use --last to pick the most recent recorded session\n\n  [PROMPT]\n          Prompt to send after resuming the session. If `-` is used, read from stdin\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n      --last\n          Resume the most recent recorded session (newest) without specifying an id\n\n      --all\n          Show all sessions (disables cwd filtering)\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n  -i, --image <FILE>\n          Optional image(s) to attach to the prompt sent after resuming\n\n      --strict-config\n          Error out when config.toml contains fields that are not recognized by this version of\n          Codex\n\n  -m, --model <MODEL>\n          Model the agent should use\n\n      --dangerously-bypass-approvals-and-sandbox\n          Skip all confirmation prompts and execute commands without sandboxing. EXTREMELY\n          DANGEROUS. Intended solely for running in environments that are externally sandboxed\n\n      --dangerously-bypass-hook-trust\n          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.\n          Intended only for automation that already vets hook sources\n\n      --worktree\n          Run the session in a new managed Git worktree\n\n      --thread-source <SOURCE>\n          Source classification for newly created or forked threads\n\n      --cyber-access-program <PROGRAM>\n          Request an experimental Cyber access program for this turn (OpenAI provider only). Omit to\n          use server defaults. Not supported with review; fork requires a prompt\n          \n          [possible values: standard, daybreak_blue, daybreak_red]\n\n      --skip-git-repo-check\n          Allow running Codex outside a Git repository\n\n      --ephemeral\n          Run without persisting session files to disk\n\n      --ignore-user-config\n          Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`\n\n      --ignore-rules\n          Do not load user or project execpolicy `.rules` files\n\n      --output-schema <FILE>\n          Path to a JSON Schema file describing the model's final response shape\n\n      --json\n          Print events to stdout as JSONL\n\n  -o, --output-last-message <FILE>\n          Specifies file where the last message from the agent should be written\n\n  -h, --help\n          Print help (see a summary with '-h')",
+      "exit": 0,
+      "process": "COMPLETED"
+    }
+  },
+  "assessments": {
+    "election_safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "leader_append_only": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "log_matching": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "leader_completeness": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "state_machine_safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "execution_link": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "snapshot_observation": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "nonempty_execution": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    }
+  },
+  "current_obligation": {
+    "plan": {
+      "id": "election-safety-rules",
+      "goal": "election-safety-rules",
+      "statement": "Close the fixed election-safety rules caller",
+      "kind": "composition",
+      "entry": "madraft/src/raft/vote_core.rs",
+      "functions": [
+        "madraft/src/raft/vote_core.rs::try_become_leader",
+        "madraft/src/raft/vote_core.rs::receive",
+        "madraft/src/raft/vote_core.rs::start_election",
+        "madraft/src/raft/vote_core.rs::complete",
+        "madraft/src/raft/vote_core.rs::collect",
+        "madraft/src/raft/vote_core.rs::vote_count",
+        "madraft/src/raft/vote_core.rs::has_vote",
+        "madraft/src/raft/vote_core.rs::recover"
+      ],
+      "dependencies": [],
+      "premises": "Historical Election Safety uses the original targets::Event::Elect vocabulary for a single fixed group, finite executions from Followers, without node restart. Four local recovery windows are separate. RPC association, I/O/readback, serialization and forwarding remain UNVERIFIED. Complete Raft Election Safety, the other four properties, full MadRaft and conditional liveness remain OPEN."
+    },
+    "units": {
+      "election_rules": "madraft/src/raft/vote_core.rs"
+    },
+    "layer": "LOCAL_UNIT_CHECKED",
+    "first_blocker": {
+      "reason": "run_all_local_tests_and_seeds"
+    },
+    "imported_references": [
+      "madraft/src/raft/vote_core.rs"
+    ]
+  },
+  "obligations": {
+    "obligation-1": {
+      "aliases": [
+        "election-safety-rules"
+      ],
+      "goal": "election-safety-rules",
+      "entries": [
+        "madraft/src/raft/vote_core.rs"
+      ],
+      "roots": [
+        "madraft/src/raft/vote_core.rs"
+      ],
+      "functions": [
+        "madraft/src/raft/vote_core.rs::collect",
+        "madraft/src/raft/vote_core.rs::complete",
+        "madraft/src/raft/vote_core.rs::has_vote",
+        "madraft/src/raft/vote_core.rs::receive",
+        "madraft/src/raft/vote_core.rs::recover",
+        "madraft/src/raft/vote_core.rs::start_election",
+        "madraft/src/raft/vote_core.rs::try_become_leader",
+        "madraft/src/raft/vote_core.rs::vote_count"
+      ],
+      "versions": [
+        {
+          "version": 1,
+          "plan": {
+            "goal": "election-safety-rules",
+            "statement": "Close the fixed election-safety rules caller",
+            "kind": "composition",
+            "entry": "madraft/src/raft/vote_core.rs",
+            "functions": [
+              "madraft/src/raft/vote_core.rs::try_become_leader",
+              "madraft/src/raft/vote_core.rs::receive",
+              "madraft/src/raft/vote_core.rs::start_election",
+              "madraft/src/raft/vote_core.rs::complete",
+              "madraft/src/raft/vote_core.rs::collect",
+              "madraft/src/raft/vote_core.rs::vote_count",
+              "madraft/src/raft/vote_core.rs::has_vote",
+              "madraft/src/raft/vote_core.rs::recover"
+            ],
+            "dependencies": [],
+            "premises": "Historical Election Safety uses the original targets::Event::Elect vocabulary for a single fixed group, finite executions from Followers, without node restart. Four local recovery windows are separate. RPC association, I/O/readback, serialization and forwarding remain UNVERIFIED. Complete Raft Election Safety, the other four properties, full MadRaft and conditional liveness remain OPEN."
+          }
+        }
+      ],
+      "units": {
+        "madraft/src/raft/vote_core.rs": "PASS"
+      },
+      "stalled": 0,
+      "redesigns": 0,
+      "blocked": false,
+      "attempts": 3,
+      "passed_units": [
+        {
+          "entry": "madraft/src/raft/vote_core.rs",
+          "snapshot": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-4-1793603616956903953/candidate"
+        }
+      ],
+      "last_outcome": "LOCAL_ONLY_OR_REVIEW",
+      "newly_checked": [],
+      "first_blocker": {
+        "reason": "run_all_local_tests_and_seeds"
+      }
+    },
+    "obligation-2": {
+      "aliases": [
+        "election-safety-provenance"
+      ],
+      "goal": "election-safety-provenance",
+      "entries": [
+        "madraft/proof/vote_lemmas.rs"
+      ],
+      "roots": [
+        "madraft/proof/vote_lemmas.rs"
+      ],
+      "functions": [
+        "madraft/src/raft/vote_core.rs::collect",
+        "madraft/src/raft/vote_core.rs::complete",
+        "madraft/src/raft/vote_core.rs::has_vote",
+        "madraft/src/raft/vote_core.rs::receive",
+        "madraft/src/raft/vote_core.rs::recover",
+        "madraft/src/raft/vote_core.rs::start_election",
+        "madraft/src/raft/vote_core.rs::try_become_leader",
+        "madraft/src/raft/vote_core.rs::vote_count"
+      ],
+      "versions": [
+        {
+          "version": 1,
+          "plan": {
+            "goal": "election-safety-provenance",
+            "statement": "Close the fixed election-safety provenance caller",
+            "kind": "composition",
+            "entry": "madraft/proof/vote_lemmas.rs",
+            "functions": [
+              "madraft/src/raft/vote_core.rs::try_become_leader",
+              "madraft/src/raft/vote_core.rs::receive",
+              "madraft/src/raft/vote_core.rs::start_election",
+              "madraft/src/raft/vote_core.rs::complete",
+              "madraft/src/raft/vote_core.rs::collect",
+              "madraft/src/raft/vote_core.rs::vote_count",
+              "madraft/src/raft/vote_core.rs::has_vote",
+              "madraft/src/raft/vote_core.rs::recover"
+            ],
+            "dependencies": [],
+            "premises": "Historical Election Safety uses the original targets::Event::Elect vocabulary for a single fixed group, finite executions from Followers, without node restart. Four local recovery windows are separate. RPC association, I/O/readback, serialization and forwarding remain UNVERIFIED. Complete Raft Election Safety, the other four properties, full MadRaft and conditional liveness remain OPEN."
+          }
+        }
+      ],
+      "units": {
+        "madraft/proof/vote_lemmas.rs": "OPEN"
+      },
+      "stalled": 1,
+      "redesigns": 0,
+      "blocked": false,
+      "attempts": 4,
+      "passed_units": [],
+      "last_outcome": "SCHEDULING_OR_TOOL",
+      "newly_checked": [],
+      "first_blocker": {
+        "check": "election_provenance",
+        "entry": "madraft/proof/vote_lemmas.rs",
+        "reason": "verification_timeout",
+        "category": "timeout",
+        "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-3-1793602789318684990/election_provenance.log",
+        "diagnostic": "",
+        "failed_tests": null,
+        "seed": null
+      }
+    }
+  },
+  "checkpoints": [
+    {
+      "id": "cp-1",
+      "run_id": "5c98388f-dc06-462c-ac2d-b445ee397dff",
+      "input_fingerprint": "7ce0decc0722a1f122fa27690c453dc83c66570b636256a58630899a68c86a26",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/replay-1793600802388194681/checked/results.json",
+      "scope": [
+        "src/raft/vote_core.rs"
+      ],
+      "layer": "BUILDABLE",
+      "build_status": "PASS",
+      "premises": "Historical Election Safety uses the original targets::Event::Elect vocabulary for a single fixed group, finite executions from Followers, without node restart. Four local recovery windows are separate. RPC association, I/O/readback, serialization and forwarding remain UNVERIFIED. Complete Raft Election Safety, the other four properties, full MadRaft and conditional liveness remain OPEN.",
+      "first_blocker": {
+        "check": "election_rules",
+        "entry": "madraft/src/raft/vote_core.rs",
+        "reason": "compilation_error",
+        "category": "dependency_failure",
+        "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/replay-1793600802388194681/checked/election_rules.log",
+        "diagnostic": "error: cannot use function `caller::vote_api::Role::eq` which is ignored because it is either declared outside the verus! macro or it is marked as `external`.\n   --> /home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/replay-1793600802388194681/checked/candidate/tasks/election_safety/../../madraft/src/raft/vote_core.rs:83:12\n    |\n 83 | ...   if v.role==Role::Leader {return Campaign::Reject(Fault::Leader);}\n    |          ^^^^^^^^^^^^^^^^^^^^\n...\n131 | ...   if v.role==Role::Candidate && v.self_saved && v.round==Some(v.state.term) && granted && term==v.state.term && s.request.term==term ...\n    |          -----------------------\n...\n145 | ...   if !v.halted && v.pending.is_none() && v.role==Role::Candidate && v.self_saved && v.round==Some(v.state.term) && v.state.voted_for=...\n    |                                              -----------------------\n    |\n    = help: The following declaration may resolve this error:\n            pub assume_specification [<crate::vote_api::Role as std::cmp::PartialEq>::crate::eq] (_0: &crate::vote_api::Role, _1: &crate::vote_api::Role) -> bool;\n\nerror: aborting due to 1 previous error\n\n",
+        "failed_tests": null,
+        "seed": null
+      }
+    },
+    {
+      "id": "cp-2",
+      "run_id": "5c98388f-dc06-462c-ac2d-b445ee397dff",
+      "input_fingerprint": "7ce0decc0722a1f122fa27690c453dc83c66570b636256a58630899a68c86a26",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-1-1793600867719489403/results.json",
+      "scope": [
+        "proof/vote_lemmas.rs",
+        "src/raft/vote_core.rs"
+      ],
+      "layer": "BUILDABLE",
+      "build_status": "PASS",
+      "premises": "Historical Election Safety uses the original targets::Event::Elect vocabulary for a single fixed group, finite executions from Followers, without node restart. Four local recovery windows are separate. RPC association, I/O/readback, serialization and forwarding remain UNVERIFIED. Complete Raft Election Safety, the other four properties, full MadRaft and conditional liveness remain OPEN.",
+      "first_blocker": {
+        "check": "election_provenance",
+        "entry": "madraft/proof/vote_lemmas.rs",
+        "reason": "verification_failure",
+        "category": "proof_failure",
+        "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-1-1793600867719489403/election_provenance.log",
+        "diagnostic": "error: assertion failed\n  --> /home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-1-1793600867719489403/candidate/tasks/election_safety/../../madraft/proof/vote_lemmas.rs:32:10\n   |\n32 | { assert(false); }\n   |          ^^^^^ assertion failed\n\nerror: aborting due to 1 previous error\n\nverification results:: 63 verified, 1 errors\n",
+        "failed_tests": null,
+        "seed": null
+      }
+    },
+    {
+      "id": "cp-3",
+      "run_id": "5c98388f-dc06-462c-ac2d-b445ee397dff",
+      "input_fingerprint": "7ce0decc0722a1f122fa27690c453dc83c66570b636256a58630899a68c86a26",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/replay-1793601605224705855/checked/results.json",
+      "scope": [
+        "proof/network_proof.rs",
+        "proof/vote_lemmas.rs",
+        "src/raft/vote_core.rs"
+      ],
+      "layer": "BUILDABLE",
+      "build_status": "PASS",
+      "premises": "Historical Election Safety uses the original targets::Event::Elect vocabulary for a single fixed group, finite executions from Followers, without node restart. Four local recovery windows are separate. RPC association, I/O/readback, serialization and forwarding remain UNVERIFIED. Complete Raft Election Safety, the other four properties, full MadRaft and conditional liveness remain OPEN.",
+      "first_blocker": {
+        "check": "election_provenance",
+        "entry": "madraft/proof/vote_lemmas.rs",
+        "reason": "verification_timeout",
+        "category": "timeout",
+        "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/replay-1793601605224705855/checked/election_provenance.log",
+        "diagnostic": "verification results:: 79 verified, 0 errors\n",
+        "failed_tests": null,
+        "seed": null
+      }
+    },
+    {
+      "id": "cp-4",
+      "run_id": "5c98388f-dc06-462c-ac2d-b445ee397dff",
+      "input_fingerprint": "7ce0decc0722a1f122fa27690c453dc83c66570b636256a58630899a68c86a26",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/results.json",
+      "scope": [
+        "proof/network_proof.rs",
+        "proof/vote_lemmas.rs",
+        "src/raft/vote_core.rs"
+      ],
+      "layer": "BUILDABLE",
+      "build_status": "PASS",
+      "premises": "Historical Election Safety uses the original targets::Event::Elect vocabulary for a single fixed group, finite executions from Followers, without node restart. Four local recovery windows are separate. RPC association, I/O/readback, serialization and forwarding remain UNVERIFIED. Complete Raft Election Safety, the other four properties, full MadRaft and conditional liveness remain OPEN.",
+      "first_blocker": {
+        "check": "election_provenance",
+        "entry": "madraft/proof/vote_lemmas.rs",
+        "reason": "verification_timeout",
+        "category": "timeout",
+        "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-2-1793601905317506523/election_provenance.log",
+        "diagnostic": "",
+        "failed_tests": null,
+        "seed": null
+      }
+    },
+    {
+      "id": "cp-5",
+      "run_id": "5c98388f-dc06-462c-ac2d-b445ee397dff",
+      "input_fingerprint": "7ce0decc0722a1f122fa27690c453dc83c66570b636256a58630899a68c86a26",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-3-1793602789318684990/results.json",
+      "scope": [
+        "proof/network_proof.rs",
+        "proof/vote_lemmas.rs",
+        "src/raft/vote_core.rs"
+      ],
+      "layer": "BUILDABLE",
+      "build_status": "PASS",
+      "premises": "Historical Election Safety uses the original targets::Event::Elect vocabulary for a single fixed group, finite executions from Followers, without node restart. Four local recovery windows are separate. RPC association, I/O/readback, serialization and forwarding remain UNVERIFIED. Complete Raft Election Safety, the other four properties, full MadRaft and conditional liveness remain OPEN.",
+      "first_blocker": {
+        "check": "election_provenance",
+        "entry": "madraft/proof/vote_lemmas.rs",
+        "reason": "verification_timeout",
+        "category": "timeout",
+        "log": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-3-1793602789318684990/election_provenance.log",
+        "diagnostic": "",
+        "failed_tests": null,
+        "seed": null
+      }
+    },
+    {
+      "id": "cp-6",
+      "run_id": "5c98388f-dc06-462c-ac2d-b445ee397dff",
+      "input_fingerprint": "7ce0decc0722a1f122fa27690c453dc83c66570b636256a58630899a68c86a26",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-4-1793603616956903953/results.json",
+      "scope": [
+        "src/raft/vote_core.rs"
+      ],
+      "layer": "LOCAL_UNIT_CHECKED",
+      "build_status": "PASS",
+      "premises": "Historical Election Safety uses the original targets::Event::Elect vocabulary for a single fixed group, finite executions from Followers, without node restart. Four local recovery windows are separate. RPC association, I/O/readback, serialization and forwarding remain UNVERIFIED. Complete Raft Election Safety, the other four properties, full MadRaft and conditional liveness remain OPEN.",
+      "first_blocker": {
+        "reason": "run_all_local_tests_and_seeds"
+      }
+    },
+    {
+      "id": "cp-7",
+      "run_id": "5c98388f-dc06-462c-ac2d-b445ee397dff",
+      "input_fingerprint": "7ce0decc0722a1f122fa27690c453dc83c66570b636256a58630899a68c86a26",
+      "report": "/home/nitro/Desktop/raft_verus/runs/.controller/election-safety-01/check-4-1793603876604771367/results.json",
+      "scope": [
+        "src/raft/vote_core.rs"
+      ],
+      "layer": "LOCAL_UNIT_CHECKED",
+      "build_status": "PASS",
+      "premises": "Historical Election Safety uses the original targets::Event::Elect vocabulary for a single fixed group, finite executions from Followers, without node restart. Four local recovery windows are separate. RPC association, I/O/readback, serialization and forwarding remain UNVERIFIED. Complete Raft Election Safety, the other four properties, full MadRaft and conditional liveness remain OPEN.",
+      "first_blocker": {
+        "reason": "run_all_local_tests_and_seeds"
+      }
+    }
+  ],
+  "rollbacks": [],
+  "pending_local_attempts": 0,
+  "fixed_input_diagnostic": null,
+  "evidence_reuse": [],
+  "no_progress": null,
+  "review_feedback": null,
+  "unchanged_source_agent_seconds": 0,
+  "idle_or_wasted_seconds": null,
+  "interrupted_budget_seconds": 0,
+  "controller_overhead_seconds": 1.0941813349891163
+}

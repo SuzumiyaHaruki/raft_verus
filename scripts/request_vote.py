@@ -59,7 +59,7 @@ def evaluate(checks, mode, seeds):
     # This small fixed dependency chain is metadata for existing failure history,
     # not a candidate-selected proof target or another task scheduler.
     goal = first or 'rules'
-    entry = 'madraft/src/raft/vote_core.rs' if goal in ('rules','campaign','authorization','reply_rules','self_vote','rounds','higher_reply') else 'madraft/proof/vote_lemmas.rs'
+    entry = 'madraft/src/raft/vote_core.rs' if goal in ('rules','campaign','authorization','reply_rules','self_vote','rounds','higher_reply','promotion') else 'madraft/proof/vote_lemmas.rs'
     checks.current = dict(plan=dict(id=checks.task + '-' + goal,goal=checks.task + '-' + goal,
         statement='Close the fixed ' + checks.task + ' ' + goal + ' caller',kind='composition',entry=entry,
         functions=['madraft/src/raft/vote_core.rs::' + f for f in spec.FUNCTIONS],

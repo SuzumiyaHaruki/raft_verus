@@ -1,0 +1,3 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-safety-01/runs/checks/1793602492387130557/candidate/tasks/election_safety/caller.rs --crate-type lib --no-cheating --triggers-mode silent --cfg madsim --cfg es_provenance
+
+process=TIMEOUT exit=-15
