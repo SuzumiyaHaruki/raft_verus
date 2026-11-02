@@ -1,0 +1,14 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/maintenance-p012/real-tools-1793586119032060392/selected-defect/candidate/madraft/proof/selected.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 0 verified, 1 errors
+error: postcondition not satisfied
+ --> /home/nitro/Desktop/raft_verus/runs/maintenance-p012/real-tools-1793586119032060392/selected-defect/candidate/madraft/proof/../src/counter_toy.rs:2:64
+  |
+2 | verus! { pub fn actual(n:u64)->(r:u64) requires n<100, ensures r==n+1, { n+2 } }
+  |                                                                ^^^^^^    --- at the end of the function body
+  |                                                                |
+  |                                                                failed this postcondition
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

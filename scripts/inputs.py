@@ -10,6 +10,7 @@ import subprocess
 HELPERS = ('check.py', 'process.py', 'tools.py', 'inputs.py')
 SKIP = {'target', 'runs', '__pycache__', '.git', '.codex', '.agents', 'codex-home', '.verus-log'}
 INPUT_VERSION = 'madraft-joint-proof-5'
+SCOPED_TASKS = ('request-vote', 'election-start', 'vote-collection')
 
 
 def fingerprint(files):
@@ -41,7 +42,7 @@ def files_under(directory):
 
 def scoped_task(task):
     if task == 'full': return None
-    if task not in ('request-vote', 'election-start'): raise ValueError('Unknown task: ' + task)
+    if task not in SCOPED_TASKS: raise ValueError('Unknown task: ' + task)
     return importlib.import_module(task.replace('-', '_'))
 
 
@@ -95,7 +96,7 @@ def protected_files(authority):
     names += [f'madraft/src/{name}' for name in files_under(Path(authority) / 'madraft/src')
               if Path(name).name in ('tests.rs', 'tester.rs', 'test_support.rs')]
     if (Path(authority) / 'madraft/src/raft/vote_core.rs').is_file():
-        for task in ('request-vote', 'election-start'):
+        for task in SCOPED_TASKS:
             directory = 'tasks/' + task.replace('-', '_')
             if (Path(authority) / directory / 'TASK.md').is_file():
                 module = scoped_task(task)

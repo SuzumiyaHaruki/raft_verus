@@ -10,7 +10,7 @@ import shlex
 import sys
 import time
 
-from inputs import scoped_task, INPUT_VERSION, input_version, copy_files, differences, files_under, fingerprint, protected_files, save_json
+from inputs import SCOPED_TASKS, scoped_task, INPUT_VERSION, input_version, copy_files, differences, files_under, fingerprint, protected_files, save_json
 from process import run_process
 from tools import ROOT, environment, settings
 
@@ -696,7 +696,7 @@ def main():
     parser.add_argument('kind', choices=['build', 'inventory', 'test', 'definitions', 'proof', 'top', 'foundation', 'obligation', 'feedback', 'safety', 'final'])
     parser.add_argument('selection', nargs='?', help='Test filter, proof file, or top-level obligation')
     parser.add_argument('--workspace', type=Path, default=ROOT)
-    parser.add_argument('--task', choices=['full','request-vote','election-start'], default='full')
+    parser.add_argument('--task', choices=['full',*SCOPED_TASKS], default='full')
     parser.add_argument('--seed', type=int, default=1, help='Single-test seed; final uses --seeds or tools.ini')
     parser.add_argument('--seeds', help='Explicit complete final seed set, e.g. 1,2,3,4,5')
     parser.add_argument('--timeout', type=float, default=600, help='Wall time for this entire check invocation')

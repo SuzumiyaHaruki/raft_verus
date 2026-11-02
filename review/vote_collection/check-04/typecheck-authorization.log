@@ -1,0 +1,4 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/target/vote-collection-maintenance/check-04/unfinished/tasks/vote_collection/caller.rs --crate-type lib --cfg madsim --cfg vc_authorization --no-verify
+verification results:: 0 verified, 0 errors
+
+process=COMPLETED exit=0

@@ -1,6 +1,0 @@
-READY_CLOSED: no message was sent; recv completes with Err, so timeout returns Ok(Err), not Err(elapsed)
-seed 1: cancelled task joined; empty closed observer; timeout = Ok(Err(RecvError)), no message
-seed 2: cancelled task joined; empty closed observer; timeout = Ok(Err(RecvError)), no message
-seed 3: cancelled task joined; empty closed observer; timeout = Ok(Err(RecvError)), no message
-seed 4: cancelled task joined; empty closed observer; timeout = Ok(Err(RecvError)), no message
-seed 5: cancelled task joined; empty closed observer; timeout = Ok(Err(RecvError)), no message

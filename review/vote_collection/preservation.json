@@ -1,0 +1,29 @@
+{
+  "madraft": {
+    "unchanged": true,
+    "file_count": 31
+  },
+  "requirements": {
+    "unchanged": true,
+    "file_count": 10
+  },
+  "labs": {
+    "unchanged": true,
+    "file_count": 267
+  },
+  "runs": {
+    "unchanged": true,
+    "file_count": 61611
+  },
+  "review": {
+    "unchanged": true,
+    "file_count": 807
+  },
+  "existing_tasks": {
+    "unchanged": true,
+    "file_count": 33
+  },
+  "root_agent_tools_gitignore": {
+    "unchanged": true
+  }
+}

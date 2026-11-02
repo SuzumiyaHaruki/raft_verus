@@ -1,0 +1,18 @@
+$ /home/nitro/Desktop/raft_verus/target/vote-collection-maintenance/check-04/fixture-bad_source --nocapture
+
+running 1 test
+test tests::calibration ... FAILED
+
+failures:
+
+failures:
+    tests::calibration
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+thread 'tests::calibration' (4650) panicked at /home/nitro/Desktop/raft_verus/tasks/vote_collection/fixtures.rs:43:28:
+unbacked reply delivery is forbidden
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+process=COMPLETED exit=101

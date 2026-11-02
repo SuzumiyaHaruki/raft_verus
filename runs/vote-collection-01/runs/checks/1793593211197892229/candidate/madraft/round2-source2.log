@@ -1,0 +1,40 @@
+error: assertion failed
+   --> tasks/vote_collection/../../madraft/proof/vote_lemmas.rs:133:17
+    |
+133 |           implies if v==a { self_evidence(after,a,after.nodes[a].state.state.term) }
+    |  _________________^
+134 | |             else { remote_evidence(after,a,after.nodes[a].state.state.term,v) } by {
+    | |_______________________________________________________________________________^ assertion failed
+
+note: diagnostics via expansion
+   --> tasks/vote_collection/network.rs:120:5
+    |
+120 | /     exists|i:int| 0 <= i < t.sent.len() && (#[trigger] t.sent[i]).node == node
+121 | |         && t.sent[i].notice.success && t.sent[i].notice.op == t.sent[i].write.record.op
+122 | |         && t.sent[i].payload.config == t.nodes[node].state.config
+123 | |         && t.sent[i].payload.request.term == term && t.sent[i].payload.request.candidate == node
+124 | |         && t.sent[i].write.record.state.term == term && t.sent[i].write.record.state.voted_for == Some(node as u64)
+    | |___________________________________________________________________________________________________________________^
+...
+127 | /     exists|j:int| 0 <= j < t.delivered.len() && {
+128 | |         let i=#[trigger] t.delivered[j];
+129 | |         &&& i < t.replies.len()
+130 | |         &&& t.replies[i as int].request.is_some()
+...   |
+139 | |     }
+    | |_____^
+
+note: 
+
+v == a ==>
+    self_evidence(after, a, after.nodes.index(a).state.state.term)
+    |   (exists |i| let tmp%% = 0 in let tmp%% = i in let tmp%% = after.sent.len() in tmp%% <= tmp%% && tmp%% < tmp%% && after.sent.index(i).node == a && after.sent.index(i).notice.success && after.sent.index(i).notice.op == after.sent.index(i).write.record.op && after.sent.index(i).payload.config == after.nodes.index(a).state.config && after.sent.index(i).payload.request.term == after.nodes.index(a).state.state.term && after.sent.index(i).payload.request.candidate == a && after.sent.index(i).write.record.state.term == after.nodes.index(a).state.state.term && after.sent.index(i).write.record.state.voted_for == Some(clip(u64, a))) ✘
+    +---
+!(v == a) ==>
+    remote_evidence(after, a, after.nodes.index(a).state.state.term, v)
+    |   (exists |j| let tmp%% = 0 in let tmp%% = j in let tmp%% = after.delivered.len() in tmp%% <= tmp%% && tmp%% < tmp%% && let i = after.delivered.index(j) in i < after.replies.len() && after.replies.index(i).request is Some && let r = after.replies.index(i) in let d = r.request.0 in d.send < after.sent.len() && after.sent.index(d.send).node == a && after.sent.index(d.send).payload.request.candidate == a && after.sent.index(d.send).payload.request.term == after.nodes.index(a).state.state.term && (d.peer == v && r.node == v && r.payload.node == v) && (r.payload.candidate == a && r.payload.term == after.nodes.index(a).state.state.term && r.payload.granted)) ✘
+    +---
+
+verification results:: 61 verified, 1 errors
+error: aborting due to 1 previous error
+

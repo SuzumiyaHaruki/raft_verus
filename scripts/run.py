@@ -18,7 +18,7 @@ import time
 import uuid
 
 from check import CONNECTIONS, FAMILIES, OBLIGATIONS, SEMANTIC_BOUNDARY, configured_seeds, current_obligation, evaluate, group_diagnostics, module_paths, Checks
-from inputs import scoped_task, input_version, copy_files, differences, files_under, fingerprint, git_revision, input_files, protected_files, save_json
+from inputs import SCOPED_TASKS, scoped_task, input_version, copy_files, differences, files_under, fingerprint, git_revision, input_files, protected_files, save_json
 from process import run_process
 from tools import ROOT, environment, settings
 
@@ -182,7 +182,7 @@ def prepare(root, workspace, state):
 def origin_changes(root, control, state):
     source_names = state.get('source_input_files',state['input_files'])
     names = source_names + state['system_files']
-    origin = control / ('source-inputs' if state.get('task','full') in ('request-vote','election-start') else 'inputs')
+    origin = control / ('source-inputs' if state.get('task','full') in SCOPED_TASKS else 'inputs')
     changed = differences(root, origin, [n for n in names if n != 'tools.ini'])
     if (root / 'tools.ini').read_text() != state['original_tools']:
         changed.append('tools.ini')
@@ -328,7 +328,7 @@ def obligation_key(state, plan):
     functions = set(plan['functions'])
     records = state.setdefault('obligations', {})
     for key, record in records.items():
-        if plan['goal'].startswith(('request-vote-','election-start-')) and record['goal'] != plan['goal']:
+        if plan['goal'].startswith(tuple(t + '-' for t in SCOPED_TASKS)) and record['goal'] != plan['goal']:
             continue
         if plan['id'] in record['aliases'] or plan['entry'] in record['roots'] or (record['goal'] == plan['goal'] and functions.intersection(record['functions'])):
             break
@@ -566,7 +566,7 @@ class Loop:
                 note = candidate / 'PROGRESS.md'
                 if note.is_symlink(): raise ValueError('Microcheck progress must not be an external link')
                 if note.is_file(): shutil.copy2(note, target / 'PROGRESS.md')
-                if self.state.get('task','full') in ('request-vote','election-start'):
+                if self.state.get('task','full') in SCOPED_TASKS:
                     return evaluate(target,authority=self.authority,tool_root=self.root,output=self.control/tag/'checked',
                         timeout=seconds,revision=tag,mode='obligation',task=self.state['task'],seeds=self.state['seeds'])
                 checks = Checks(target, self.authority, self.root, self.control / tag / 'checked', seconds, tag)
@@ -752,7 +752,7 @@ class Loop:
         summary['last_check'] = self.state.get('last_check')
         summary['semantic_boundary'] = SEMANTIC_BOUNDARY
         summary['liveness'] = 'OPEN'
-        if self.state.get('task','full') in ('request-vote','election-start'):
+        if self.state.get('task','full') in SCOPED_TASKS:
             module = scoped_task(self.state['task'])
             summary.update(task_scope=module.SCOPE,full_madraft='INCOMPLETE',
                 global_safety={p:'OPEN' for p in OBLIGATIONS[:5]},semantic_boundary=module.BOUNDARY,
@@ -791,7 +791,7 @@ class Loop:
             item = (report or {}).get('checks', {}).get(name, {})
             lines.append(f'| {name} | {item.get("status", "OPEN")}: {item.get("reason", "not checked")} |')
         lines += ['', summary['semantic_boundary'], '', 'Fixed environment/host assumptions: requirements/environment.md; coverage responsibilities: requirements/coverage.md. Candidate dependency notes in PROGRESS.md and RESULT.md remain unverified until actual callers discharge them. Agent RESULT.md does not override the independent results.', '']
-        if self.state.get('task','full') in ('request-vote','election-start'):
+        if self.state.get('task','full') in SCOPED_TASKS:
             lines += [f'task_scope={module.SCOPE}; full MadRaft INCOMPLETE; five global safety properties OPEN. Local host boundary: {module.DIRECTORY}/TASK.md.', '']
         lines += [f'Guidance: {summary["guidance"]}; unused budget: {summary["unused_seconds"]:.1f}s. Semantic review: NOT_PERFORMED; implementation acceptance: NOT_ESTABLISHED.', '',
                   '| Goal | Formula | Actual connection | Implementation task |', '| --- | --- | --- | --- |']
@@ -972,7 +972,7 @@ def main():
     parser.add_argument('action', choices=['new', 'resume'])
     parser.add_argument('directory', type=Path)
     parser.add_argument('--execute', action='store_true')
-    parser.add_argument('--task',choices=['full','request-vote','election-start'],help='Default: full; resume retains its original task')
+    parser.add_argument('--task',choices=['full',*SCOPED_TASKS],help='Default: full; resume retains its original task')
     parser.add_argument('--model')
     parser.add_argument('--effort', choices=['low', 'medium', 'high', 'xhigh'])
     parser.add_argument('--codex')

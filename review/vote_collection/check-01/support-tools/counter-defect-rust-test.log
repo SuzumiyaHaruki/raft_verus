@@ -1,0 +1,23 @@
+$ /home/nitro/Desktop/raft_verus/runs/maintenance-p012/real-tools-1793586119032060392/counter-defect-test
+
+running 1 test
+test tests::actual_increment ... FAILED
+
+failures:
+
+---- tests::actual_increment stdout ----
+
+thread 'tests::actual_increment' (5493) panicked at /home/nitro/Desktop/raft_verus/runs/maintenance-p012/real-tools-1793586119032060392/counter-defect.rs:10:37:
+assertion `left == right` failed
+  left: 2
+ right: 3
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    tests::actual_increment
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+process=COMPLETED exit=101

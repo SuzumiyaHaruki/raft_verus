@@ -1,0 +1,3 @@
+# Real generic-support regression artifacts
+
+These files came from the 13 real-tool regressions in test_verification.py during check-01. Its existing harness wrote a new real-tools directory under runs/maintenance-p012. That newly created directory was moved to target/vote-collection-extra-support, without changing pre-existing files; readable logs and top-level toy inputs are copied here. Original paths in raw logs remain as executed. The final task maintenance runs the 109 offline system tests separately and its own real Rust/Verus calibrations, so it does not append artifacts to historical runs.

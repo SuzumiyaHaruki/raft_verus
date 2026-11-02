@@ -1,0 +1,14 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/tasks/vote_collection/fixtures.rs --crate-type lib --cfg bad_duplicate --no-cheating
+verification results:: 22 verified, 1 errors
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/tasks/vote_collection/fixtures.rs:12:13
+   |
+12 |     ensures out as nat==Set::<u64>::empty().insert(0).insert(1).len(),
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+13 | { 3 }
+   |   - at the end of the function body
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

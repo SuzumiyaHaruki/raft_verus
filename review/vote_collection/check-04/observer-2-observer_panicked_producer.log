@@ -1,0 +1,16 @@
+$ /home/nitro/Desktop/raft_verus/target/vote-collection-maintenance/check-04/observer-build/release/deps/madraft-9d1fbd9857b1c1bd raft::raft::vote_tests::observer_panicked_producer --exact --nocapture
+
+running 1 test
+test raft::raft::vote_tests::observer_panicked_producer ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 88 filtered out; finished in 0.00s
+
+
+thread '<unnamed>' (4388) panicked at src/raft/../../../tasks/vote_collection/observer_tests.rs:62:9:
+controlled observer panic
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread '<unnamed>' (4388) panicked at src/raft/../../../tasks/vote_collection/observer_tests.rs:13:5:
+observer died: observation ended or received output: Closed
+
+process=COMPLETED exit=0

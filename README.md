@@ -1,6 +1,6 @@
 # Joint MadRaft implementation and proof experiment — DRAFT
 
-The experimental Codex starts from the unfinished MadRaft labs and generates executable implementation and Verus proofs together. Maintenance changes the controller, inputs and generic examples; it does not supply a Raft solution. Current maintenance results and limitations are in [the election-start maintenance report](review/ELECTION_START_MAINTENANCE.md); [RESULT.md](RESULT.md) retains earlier controller results.
+The experimental Codex starts from the unfinished MadRaft labs and generates executable implementation and Verus proofs together. Maintenance changes the controller, inputs and generic examples; it does not supply a Raft solution. Current maintenance results and limitations are in [the vote-collection maintenance report](review/vote_collection/RESULT.md); [RESULT.md](RESULT.md) retains earlier controller results.
 
 | Path | Purpose |
 | --- | --- |
@@ -19,7 +19,7 @@ The experimental Codex starts from the unfinished MadRaft labs and generates exe
 | `runs/.controller/<name>/` | This experiment's authority inputs, state, checked snapshots, attempt journal and failed rollback versions. |
 | `target/` | Local dependency/build cache and temporary maintenance builds; ignored for new files, not proof evidence. |
 
-The run selected for Git tracking is `runs/election-start-01`; other experiments remain local. Recorded candidates, prompts, sessions and patches are never fresh-run inputs. The full input/controller versions remain `madraft-joint-proof-5` and `madraft-generate-check-5`; scoped input versions are `madraft-request-vote-1` and `madraft-election-start-1`. Existing experiments remain unchanged and are not warm-start inputs to a new experiment.
+The run selected for Git tracking is `runs/election-start-01`; other experiments remain local. Recorded candidates, prompts, sessions and patches are never fresh-run inputs. The full input/controller versions remain `madraft-joint-proof-5` and `madraft-generate-check-5`; scoped input versions are `madraft-request-vote-1` and `madraft-election-start-2`. Existing experiments remain unchanged and are not warm-start inputs to a new experiment.
 
 A fresh workspace receives only the allowlisted initial MadRaft source, AGENTS, tool configuration, four local check helpers and fixed requirements. It does not receive root README/RESULT, maintenance tests, old results or controller prompt templates. The private CODEX_HOME shares existing authentication/security rules, without loading personal configuration/instructions/sessions. This is input isolation, not a claim of OS-level read isolation from every accessible sibling path.
 
@@ -61,6 +61,17 @@ python3 scripts/run.py new runs/election-start-01 --task election-start
 python3 scripts/run.py new runs/election-start-01 --task election-start --execute
 # Reproduce maintenance with real tools and explicitly wrong fixtures, no agent.
 python3 tasks/election_start/maintain.py
+```
+
+The optional `--task vote-collection` prepares one unfinished receiver/campaign/real-vote-collection Core from the original scaffold; it does not import either previous candidate. See [TASK.md](tasks/vote_collection/TASK.md) for fixed round/self-save/deduplication/higher-term rules and the actual multi-node source caller. All fourteen proof groups, retained observer/recovery checks, new RPC tests and configured seeds are required together. The new source theorem covers finite message executions without node restart; the two local recovery windows are separate. `VOTE_COLLECTION_CHECKS_PASSED` leaves Election Safety, actual leader promotion, complete MadRaft and conditional liveness OPEN. Maintenance results are in [review/vote_collection/RESULT.md](review/vote_collection/RESULT.md).
+
+```bash
+# Preview only: no workspace or agent invocation.
+python3 scripts/run.py new runs/vote-collection-01 --task vote-collection
+# Start this fresh experiment after reviewing the maintenance delivery.
+python3 scripts/run.py new runs/vote-collection-01 --task vote-collection --execute
+# Maintenance-only tool and fixture checks; the output name must be unused.
+python3 tasks/vote_collection/maintain.py --output review/vote_collection/check-next
 ```
 
 The following per-obligation/block and full-acceptance discussion applies to default full mode.

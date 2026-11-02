@@ -1,0 +1,35 @@
+build: OPEN (compilation_error)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592706848856014/build.log
+inventory: OPEN (build_dependency_failed)
+tests_seed_1_raft_raft_vote_tests: OPEN (build_dependency_failed)
+source_boundary: PASS (same_candidate_imports)
+collection_rules: OPEN (compilation_error)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592706848856014/collection_rules.log
+collection_campaign: OPEN (compilation_error)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592706848856014/collection_campaign.log
+collection_authorization: OPEN (compilation_error)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592706848856014/collection_authorization.log
+collection_history: OPEN (compilation_error)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592706848856014/collection_history.log
+collection_reply_rules: OPEN (compilation_error)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592706848856014/collection_reply_rules.log
+collection_self_vote: OPEN (compilation_error)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592706848856014/collection_self_vote.log
+collection_rounds: OPEN (compilation_error)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592706848856014/collection_rounds.log
+collection_higher_reply: OPEN (compilation_error)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592706848856014/collection_higher_reply.log
+collection_provenance: OPEN (compilation_error)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592706848856014/collection_provenance.log
+collection_nonempty: OPEN (compilation_error)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592706848856014/collection_nonempty.log
+collection_receive_confirmed: OPEN (compilation_error)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592706848856014/collection_receive_confirmed.log
+collection_receive_pending: OPEN (compilation_error)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592706848856014/collection_receive_pending.log
+collection_self_confirmed: OPEN (compilation_error)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592706848856014/collection_self_confirmed.log
+collection_self_pending: OPEN (compilation_error)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592706848856014/collection_self_pending.log
+INCOMPLETE: /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592706848856014/results.json
+Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.

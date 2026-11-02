@@ -1,0 +1,156 @@
+error: assertion failed
+   --> madraft/proof/../src/raft/vote_core.rs:170:32
+    |
+170 |                 proof { assert(data.wf()); }
+    |                                ^^^^^^^^^ assertion failed
+
+note: diagnostics via expansion
+   --> madraft/proof/../../tasks/vote_collection/api.rs:156:12
+    |
+156 |         && votes.len() <= v.config.members
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+157 |         && ((!v.self_saved || v.halted || v.round.is_none() || v.role != Role::Candidate) ==> votes == Set::<u64>::empty())
+    |                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+   ::: madraft/proof/../src/raft/vote_core.rs:18:13
+    |
+ 18 |         &&& voters_domain(self.state,self.votes())
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: 
+
+data.wf()
+|   valid_state(data.state.config, data.state.state) ✔
+|   data.voters.view().no_duplicates() ✔
+|   voters_domain(data.state, data.votes()) ✘
+|   |   data.votes().finite() ✔
+|   |   forall |n|
+|   |       data.votes().contains(n) ==>
+|   |           n < data.state.config.members ✔
+|   |   data.votes().len() <= data.state.config.members ✘
+|   |   !data.state.self_saved || data.state.halted || data.state.round is None || !(data.state.role == Candidate) ==>
+|   |       data.votes() == empty() ✘
+|   |           datatype is opaque here
+|   +---
+|   unique(data.choices()) ✔
+|   forall |i|
+|       let tmp%% = 0 in let tmp%% = i in let tmp%% = data.choices().len() in tmp%% <= tmp%% && tmp%% < tmp%% ==>
+|           let c = data.choices().index(i);
+|               c.node == data.state.config.node ✔
+|               c.term <= data.state.state.term ✔
+|               c.term == data.state.state.term ==>
+|                   data.state.state.voted_for == Some(c.candidate) ✔
+|   data.base() is Some ==>
+|       let b = data.base().0;
+|           valid_record(data.state.config, b) ✔
+|           b.state.term <= data.state.state.term ✔
+|           b.state.term == data.state.state.term && b.state.voted_for is Some ==>
+|               data.state.state.voted_for == b.state.voted_for ✔
+|           forall |i|
+|               let tmp%% = 0 in let tmp%% = i in let tmp%% = data.choices().len() in tmp%% <= tmp%% && tmp%% < tmp%% ==>
+|                   let c = data.choices().index(i);
+|                       c.term >= b.state.term ✔
+|                       c.term == b.state.term && b.state.voted_for is Some ==>
+|                           Some(c.candidate) == b.state.voted_for ✔
+|   data.state.pending is Some ==>
+|       let w = data.state.pending.0;
+|           w.record.state == data.state.state ✔
+|           w.record.op < data.state.next ✔
+|           let tmp%% = w.action;
+|               tmp%% is Reply && true ==>
+|                   let r = tmp%%.0;
+|                       r.node == data.state.config.node ✔
+|                       r.term == data.state.state.term ✔
+|                       r.granted ==>
+|                           data.state.state.voted_for == Some(r.candidate) ✔
+|               !(tmp%% is Reply && true) ==>
+|                   tmp%% is Send && true ==>
+|                       let s = tmp%%.0;
+|                           s.config == data.state.config ✔
+|                           s.request == Request { term: data.state.state.term, candidate: data.state.config.node, log: data.state.state.log } ✔
+|                           data.state.state.voted_for == Some(data.state.config.node) ✔
+|                           data.state.role == Candidate ✔
+|                           data.state.round == Some(data.state.state.term) ✔
+|                   !(tmp%% is Send && true) ==>
+|                       true ✔
++---
+
+error: assertion failed
+   --> madraft/proof/../src/raft/vote_core.rs:206:24
+    |
+206 |         proof { assert(data.wf()); }
+    |                        ^^^^^^^^^ assertion failed
+
+note: diagnostics via expansion
+   --> madraft/proof/../../tasks/vote_collection/api.rs:155:71
+    |
+155 |     votes.finite() && (forall|n:u64| #[trigger] votes.contains(n) ==> n < v.config.members)
+    |                                                                       ^^^^^^^^^^^^^^^^^^^^
+156 |         && votes.len() <= v.config.members
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+   ::: madraft/proof/../src/raft/vote_core.rs:18:13
+    |
+ 18 |         &&& voters_domain(self.state,self.votes())
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: 
+
+data.wf()
+|   valid_state(data.state.config, data.state.state) ✔
+|   data.voters.view().no_duplicates() ✔
+|   voters_domain(data.state, data.votes()) ✘
+|   |   data.votes().finite() ✔
+|   |   forall |n|
+|   |       data.votes().contains(n) ==>
+|   |           n < data.state.config.members ✘
+|   |   data.votes().len() <= data.state.config.members ✘
+|   |   !data.state.self_saved || data.state.halted || data.state.round is None || !(data.state.role == Candidate) ==>
+|   |       data.votes() == empty() ✔
+|   +---
+|   unique(data.choices()) ✔
+|   forall |i|
+|       let tmp%% = 0 in let tmp%% = i in let tmp%% = data.choices().len() in tmp%% <= tmp%% && tmp%% < tmp%% ==>
+|           let c = data.choices().index(i);
+|               c.node == data.state.config.node ✔
+|               c.term <= data.state.state.term ✔
+|               c.term == data.state.state.term ==>
+|                   data.state.state.voted_for == Some(c.candidate) ✔
+|   data.base() is Some ==>
+|       let b = data.base().0;
+|           valid_record(data.state.config, b) ✔
+|           b.state.term <= data.state.state.term ✔
+|           b.state.term == data.state.state.term && b.state.voted_for is Some ==>
+|               data.state.state.voted_for == b.state.voted_for ✔
+|           forall |i|
+|               let tmp%% = 0 in let tmp%% = i in let tmp%% = data.choices().len() in tmp%% <= tmp%% && tmp%% < tmp%% ==>
+|                   let c = data.choices().index(i);
+|                       c.term >= b.state.term ✔
+|                       c.term == b.state.term && b.state.voted_for is Some ==>
+|                           Some(c.candidate) == b.state.voted_for ✔
+|   data.state.pending is Some ==>
+|       let w = data.state.pending.0;
+|           w.record.state == data.state.state ✔
+|           w.record.op < data.state.next ✔
+|           let tmp%% = w.action;
+|               tmp%% is Reply && true ==>
+|                   let r = tmp%%.0;
+|                       r.node == data.state.config.node ✔
+|                       r.term == data.state.state.term ✔
+|                       r.granted ==>
+|                           data.state.state.voted_for == Some(r.candidate) ✔
+|               !(tmp%% is Reply && true) ==>
+|                   tmp%% is Send && true ==>
+|                       let s = tmp%%.0;
+|                           s.config == data.state.config ✔
+|                           s.request == Request { term: data.state.state.term, candidate: data.state.config.node, log: data.state.state.log } ✔
+|                           data.state.state.voted_for == Some(data.state.config.node) ✔
+|                           data.state.role == Candidate ✔
+|                           data.state.round == Some(data.state.state.term) ✔
+|                   !(tmp%% is Send && true) ==>
+|                       true ✔
++---
+
+verification results:: 51 verified, 2 errors
+error: aborting due to 2 previous errors
+

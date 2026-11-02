@@ -1,0 +1,12 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/maintenance-p012/real-tools-1793586119032060392/negative-imported-body.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 25 verified, 1 errors
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/maintenance-p012/real-tools-1793586119032060392/imported-dependency-module.rs:37:52
+   |
+37 | verus! { pub proof fn broken_dependency() { assert(false); } }
+   |                                                    ^^^^^ assertion failed
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

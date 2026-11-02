@@ -1,0 +1,14 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/maintenance-p012/real-tools-1793586119032060392/counter-defect.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 0 verified, 1 errors
+error: postcondition not satisfied
+ --> /home/nitro/Desktop/raft_verus/runs/maintenance-p012/real-tools-1793586119032060392/counter-defect.rs:6:13
+  |
+6 |     ensures r == n + 1,
+  |             ^^^^^^^^^^ failed this postcondition
+7 | { n }
+  |   - at the end of the function body
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

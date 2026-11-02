@@ -1,4 +1,0 @@
-$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/.controller/election-start-01/check-31-1793503766191909708/candidate/tasks/election_start/caller.rs --crate-type lib --cfg madsim --no-cheating --triggers-mode silent
-verification results:: 36 verified, 0 errors
-
-process=COMPLETED exit=0

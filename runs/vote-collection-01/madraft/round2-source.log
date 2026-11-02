@@ -1,0 +1,104 @@
+error: postcondition not satisfied
+   --> tasks/vote_collection/../../madraft/proof/vote_lemmas.rs:93:13
+    |
+ 93 |       ensures network_inv(after),
+    |               ^^^^^^^^^^^^^^^^^^ failed this postcondition
+ 94 |   {
+ 95 | /     match event {
+ 96 | |         Step::Start(a) => {},
+ 97 | |         Step::Receive(d) => {},
+ 98 | |         Step::Save{node,success} => {},
+ 99 | |         Step::Deliver(i) => {},
+100 | |         Step::Error(d) => {},
+101 | |     }
+    | |_____- at the end of the function body
+
+note: diagnostics via expansion
+  --> tasks/vote_collection/api.rs:50:52
+   |
+50 | pub open spec fn valid_config(c: Config) -> bool { c.members > 0 && c.node < c.members }
+   |                                                    ^^^^^^^^^^^^^    ^^^^^^^^^^^^^^^^^^
+51 | pub open spec fn valid_log(l: Log) -> bool { (l.index == 0) == (l.term == 0) }
+   |                                              ^^^^^^^^^^^^^^    ^^^^^^^^^^^^^
+52 | pub open spec fn valid_state(c: Config, s: Persistent) -> bool {
+53 |     valid_config(c) && valid_log(s.log) && s.log.term <= s.term
+   |     ^^^^^^^^^^^^^^^    ^^^^^^^^^^^^^^^^
+   |
+  ::: tasks/vote_collection/../../madraft/proof/vote_lemmas.rs:34:9
+   |
+34 |     &&& valid_state(o.state.config,o.state.state)
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+80 |     &&& forall|a:int| 0<=a<t.nodes.len() ==> pending_origin(t,a)
+   |                                              ^^^^^^^^^^^^^^^^^^^
+
+note: 
+
+network_inv(after)
+|   forall |a|
+|       let tmp%% = 0 in let tmp%% = a in let tmp%% = after.nodes.len() in tmp%% <= tmp%% && tmp%% < tmp%% ==>
+|           pending_origin(after, a) ✘
+|           |   let o = after.nodes.index(a);
+|           |       valid_state(o.state.config, o.state.state) ✘
+|           |       |   valid_config(o.state.config) ✘
+|           |       |   |   o.state.config.members > 0 ✘
+|           |       |   |   o.state.config.node < o.state.config.members ✘
+|           |       |   +---
+|           |       |   valid_log(o.state.state.log) ✘
+|           |       |   |   (o.state.state.log.index == 0) == (o.state.state.log.term == 0)
+|           |       |   |   |   o.state.state.log.index == 0 ==>
+|           |       |   |   |       o.state.state.log.term == 0 ✘
+|           |       |   |   |   o.state.state.log.term == 0 ==>
+|           |       |   |   |       o.state.state.log.index == 0 ✘
+|           |       |   |   +---
+|           |       |   +---
+|           |       |   o.state.state.log.term <= o.state.state.term 
+|           |       |   o.state.state.voted_for is Some ==>
+|           |       |       o.state.state.term > 0 
+|           |       |       o.state.state.voted_for.0 < o.state.config.members 
+|           |       +---
+|           |       after.pending.index(a) is Some == o.state.pending is Some 
+|           |       after.pending.index(a) is Some ==>
+|           |           let p = after.pending.index(a).0;
+|           |               o.state.pending == Some(p.write) 
+|           |               !o.state.halted 
+|           |               p.write.record.state == o.state.state 
+|           |               let tmp%% = p.write.action;
+|           |                   tmp%% is Send && true ==>
+|           |                       let sent = tmp%%.0;
+|           |                           p.request is None 
+|           |                           sent.config == o.state.config 
+|           |                           sent.request == Request { term: o.state.state.term, candidate: clip(u64, a), log: o.state.state.log } 
+|           |                           o.state.state.voted_for == Some(clip(u64, a)) 
+|           |                           o.state.role == Candidate 
+|           |                           o.state.round == Some(o.state.state.term) 
+|           |                   !(tmp%% is Send && true) ==>
+|           |                       tmp%% is Reply && true ==>
+|           |                           let r = tmp%%.0;
+|           |                               p.request is Some 
+|           |                               routed(after, p.request.0) 
+|           |                               p.request.0.peer == a 
+|           |                               r.node == a 
+|           |                               r.candidate == after.sent.index(p.request.0.send).payload.request.candidate 
+|           |                               r.granted ==>
+|           |                                   r.term == after.sent.index(p.request.0.send).payload.request.term 
+|           |                       !(tmp%% is Reply && true) ==>
+|           |                           p.request is None 
+|           +---
+|   forall |i|
+|       let tmp%% = 0 in let tmp%% = i in let tmp%% = after.sent.len() in tmp%% <= tmp%% && tmp%% < tmp%% ==>
+|           sent_origin(after, i) 
+|   forall |i|
+|       let tmp%% = 0 in let tmp%% = i in let tmp%% = after.replies.len() in tmp%% <= tmp%% && tmp%% < tmp%% ==>
+|           reply_origin(after, i) 
+|   forall |a, v|
+|       let tmp%% = 0 in let tmp%% = a in let tmp%% = after.nodes.len() in tmp%% <= tmp%% && tmp%% < tmp%% && after.nodes.index(a).votes.contains(v) ==>
+|           v == a ==>
+|               self_evidence(after, a, after.nodes.index(a).state.state.term) 
+|           !(v == a) ==>
+|               remote_evidence(after, a, after.nodes.index(a).state.state.term, v) 
++---
+
+verification results:: 61 verified, 1 errors
+error: aborting due to 1 previous error
+

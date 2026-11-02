@@ -1,0 +1,14 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/tasks/vote_collection/fixtures.rs --crate-type lib --cfg bad_context --no-cheating
+verification results:: 22 verified, 1 errors
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/tasks/vote_collection/fixtures.rs:17:13
+   |
+17 |     ensures out==c,
+   |             ^^^^^^ failed this postcondition
+18 | { RpcContext{sent:Send{request:Request{term:now,..c.sent.request},..c.sent},..c} }
+   |   ------------------------------------------------------------------------------ at the end of the function body
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

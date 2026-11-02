@@ -1,0 +1,3 @@
+$ /home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc /home/nitro/Desktop/raft_verus/runs/maintenance-p012/real-tools-1793586119032060392/counter-defect.rs --crate-name counter_example --edition=2021 --test --extern vstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib -L dependency=/home/nitro/.local/share/raft-verus/verus-x86-linux -o /home/nitro/Desktop/raft_verus/runs/maintenance-p012/real-tools-1793586119032060392/counter-defect-test
+
+process=COMPLETED exit=0

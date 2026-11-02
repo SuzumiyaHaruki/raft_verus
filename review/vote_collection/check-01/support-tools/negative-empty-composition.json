@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+    "/home/nitro/Desktop/raft_verus/runs/maintenance-p012/real-tools-1793586119032060392/negative-empty-composition.rs",
+    "--crate-type",
+    "lib",
+    "--no-cheating",
+    "--triggers-mode",
+    "silent"
+  ],
+  "process": "COMPLETED",
+  "exit_code": 1,
+  "elapsed_seconds": 0.8802071000000069,
+  "result_kind": "REAL_TOOL_EXECUTION",
+  "log": "/home/nitro/Desktop/raft_verus/runs/maintenance-p012/real-tools-1793586119032060392/negative-empty-composition.log"
+}

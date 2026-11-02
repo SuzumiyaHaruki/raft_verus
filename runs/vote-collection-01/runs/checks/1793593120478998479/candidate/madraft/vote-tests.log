@@ -1,0 +1,4 @@
+tests_seed_1_raft_raft_vote_tests: PASS (checked)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592663752132862/tests_seed_1_raft_raft_vote_tests.log
+INCOMPLETE: /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793592663752132862/results.json
+Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.

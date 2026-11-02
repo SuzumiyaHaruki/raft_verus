@@ -1,0 +1,4 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/maintenance-p012/real-tools-1793586119032060392/actual-handler-plus-one-accepted.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 15 verified, 0 errors
+
+process=COMPLETED exit=0

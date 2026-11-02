@@ -1,0 +1,22 @@
+error: struct literals are not allowed here; try surrounding the struct literal with parentheses
+   --> madraft/proof/../src/raft/vote_core.rs:103:30
+    |
+103 | ...)==StateView{state:Persistent{term,voted_for:None,log:old(self).view().state.log},role:Role::Follower,round:None,self_saved:false,..old(self).view()},
+    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0432]: unresolved import `crate::vote_core::Core`
+ --> madraft/proof/../../tasks/vote_collection/network.rs:3:26
+  |
+3 | use crate::{vote_api::*, vote_core::Core};
+  |                          ^^^^^^^^^^^^^^^ no `Core` in `vote_core`
+
+error[E0433]: failed to resolve: could not find `Core` in `vote_core`
+ --> madraft/proof/vote_initial.rs:9:38
+  |
+9 |     if let Some(mut core)=vote_core::Core::new(c,initial) {
+  |                                      ^^^^ could not find `Core` in `vote_core`
+
+error: aborting due to 3 previous errors
+
+Some errors have detailed explanations: E0432, E0433.
+For more information about an error, try `rustc --explain E0432`.

@@ -1,0 +1,16 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/maintenance-p012/real-tools-1793586119032060392/toy-link-incorrect.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 24 verified, 1 errors
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/runs/maintenance-p012/real-tools-1793586119032060392/toy-link-incorrect-module.rs:23:37
+   |
+20 | / pub proof fn prove_runtime_step(s: u64, i: Input, t: u64, o: Output,
+21 | |     a: Seq<Envelope<u64>>, b: Seq<Envelope<u64>>)
+   | |_________________________________________________- at the end of the function body
+22 |       requires runtime_invariant(s,a), runtime_step(s,i,t,o), exchange(a,receive(i),emit(o),b),
+23 |       ensures runtime_invariant(t,b), step(view(s),i,view(t),o), {}
+   |                                       ^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

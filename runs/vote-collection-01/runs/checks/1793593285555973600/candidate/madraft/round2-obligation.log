@@ -1,0 +1,32 @@
+build: OPEN (test_timeout)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793593120478998479/build.log
+inventory: OPEN (build_dependency_failed)
+tests_seed_1_raft_raft_vote_tests: OPEN (build_dependency_failed)
+source_boundary: PASS (same_candidate_imports)
+collection_rules: PASS (checked)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793593120478998479/collection_rules.log
+collection_campaign: PASS (checked)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793593120478998479/collection_campaign.log
+collection_authorization: PASS (checked)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793593120478998479/collection_authorization.log
+collection_history: PASS (checked)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793593120478998479/collection_history.log
+collection_reply_rules: PASS (checked)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793593120478998479/collection_reply_rules.log
+collection_self_vote: PASS (checked)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793593120478998479/collection_self_vote.log
+collection_rounds: PASS (checked)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793593120478998479/collection_rounds.log
+collection_higher_reply: PASS (checked)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793593120478998479/collection_higher_reply.log
+collection_provenance: OPEN (verification_failure)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793593120478998479/collection_provenance.log
+collection_nonempty: OPEN (verification_failure)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793593120478998479/collection_nonempty.log
+collection_receive_confirmed: OPEN (verification_timeout)
+  /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793593120478998479/collection_receive_confirmed.log
+collection_receive_pending: OPEN (check_budget_exhausted)
+collection_self_confirmed: OPEN (check_budget_exhausted)
+collection_self_pending: OPEN (check_budget_exhausted)
+INCOMPLETE: /home/nitro/Desktop/raft_verus/runs/vote-collection-01/runs/checks/1793593120478998479/results.json
+Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.

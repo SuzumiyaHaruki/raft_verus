@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+    "/home/nitro/Desktop/raft_verus/runs/maintenance-p012/real-tools-1793586119032060392/counter-repaired.rs",
+    "--crate-name",
+    "counter_example",
+    "--edition=2021",
+    "--test",
+    "--extern",
+    "vstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+    "-L",
+    "dependency=/home/nitro/.local/share/raft-verus/verus-x86-linux",
+    "-o",
+    "/home/nitro/Desktop/raft_verus/runs/maintenance-p012/real-tools-1793586119032060392/counter-repaired-test"
+  ],
+  "process": "COMPLETED",
+  "exit_code": 0,
+  "elapsed_seconds": 0.1145827209993513,
+  "result_kind": "REAL_TOOL_EXECUTION",
+  "log": "/home/nitro/Desktop/raft_verus/runs/maintenance-p012/real-tools-1793586119032060392/counter-repaired-rustc.log"
+}

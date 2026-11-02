@@ -1,0 +1,6 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/tasks/vote_collection/fixtures.rs --crate-type lib --cfg source_control --verify-root
+verification results:: 1 verified, 0 errors (partial verification with `--verify-*`)
+note: verifying root module
+
+
+process=COMPLETED exit=0
