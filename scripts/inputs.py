@@ -10,7 +10,7 @@ import subprocess
 HELPERS = ('check.py', 'process.py', 'tools.py', 'inputs.py')
 SKIP = {'target', 'runs', '__pycache__', '.git', '.codex', '.agents', 'codex-home', '.verus-log'}
 INPUT_VERSION = 'madraft-joint-proof-5'
-SCOPED_TASKS = ('request-vote', 'election-start', 'vote-collection', 'election-safety')
+SCOPED_TASKS = ('request-vote', 'election-start', 'vote-collection', 'election-safety', 'election-recovery')
 
 
 def fingerprint(files):
@@ -49,6 +49,11 @@ def scoped_task(task):
 def input_version(task='full'):
     module = scoped_task(task)
     return module.VERSION if module else INPUT_VERSION
+
+
+def success_label(task='full'):
+    module = scoped_task(task)
+    return module.LABEL if module else 'MACHINE_CHECKS_PASSED'
 
 
 def input_files(root, task='full'):

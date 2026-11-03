@@ -1,0 +1,534 @@
+{
+  "status": "INCOMPLETE",
+  "mode": "proof",
+  "input_version": "madraft-election-recovery-1",
+  "candidate_revision": "standalone-1793623384493059024",
+  "workspace": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01",
+  "checker_authority": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01",
+  "snapshot": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate",
+  "source_files": [
+    "Cargo.lock",
+    "Cargo.toml",
+    "LICENSE",
+    "README.md",
+    "core-check.out",
+    "proof/README.md",
+    "proof/core_check.rs",
+    "proof/progress.rs",
+    "proof/recovery_lemmas.rs",
+    "proof/vote_lemmas.rs",
+    "refactor_core.py",
+    "src/kvraft/client.rs",
+    "src/kvraft/mod.rs",
+    "src/kvraft/msg.rs",
+    "src/kvraft/server.rs",
+    "src/kvraft/tester.rs",
+    "src/kvraft/tests.rs",
+    "src/lib.rs",
+    "src/raft/mod.rs",
+    "src/raft/raft.rs",
+    "src/raft/state.rs",
+    "src/raft/tester.rs",
+    "src/raft/tests.rs",
+    "src/raft/vote_core.rs",
+    "src/shard_ctrler/client.rs",
+    "src/shard_ctrler/mod.rs",
+    "src/shard_ctrler/msg.rs",
+    "src/shard_ctrler/server.rs",
+    "src/shard_ctrler/tester.rs",
+    "src/shard_ctrler/tests.rs",
+    "src/shardkv/client.rs",
+    "src/shardkv/mod.rs",
+    "src/shardkv/msg.rs",
+    "src/shardkv/server.rs",
+    "src/shardkv/tester.rs",
+    "src/shardkv/tests.rs",
+    "src/test_support.rs",
+    "tests.out"
+  ],
+  "checks": {
+    "proof": {
+      "status": "OPEN",
+      "reason": "verification_failure",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone-1793623384493059024",
+      "input_fingerprint": "b425defbe28b0451b4a11cdeed738bd2001a9951d5d747dc89dc422e1f7a1739",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/core_check.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/proof.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 2.1390903840001556,
+      "seed": null,
+      "diagnostic": "te(&mut self, term:u64)\n    |     ------------------------------ at the end of the function body\n253 |         requires old(self).wf(), old(self).state.pending.is_none(), term>=old(self).state.state.term,\n254 |         ensures self.wf(),\n    |                 ^^^^^^^^^ failed this postcondition\n\nnote: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function\n   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:116:5\n    |\n116 |     fn receive(&mut self, request: Request) -> (out: Receive)\n    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nerror: cannot show this call will not unwind, in function marked 'no_unwind'\n   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:128:12\n    |\n128 |         if v.pending.is_some() {return Receive::Reject(Fault::Busy);}\n    |            ^^^^^^^^^^^^^^^^^^^ call to core::option::impl&%0::is_some might unwind\n    |\n   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/std_specs/option.rs:125:1\n    |\n125 | pub assume_specification<T>[ Option::<T>::is_some ](option: &Option<T>) -> (b: bool)\n    | ----------------------------------------------------------------------------------- perhaps you need to mark this function as 'no_unwind'?\n\nerror: cannot show this call will not unwind, in function marked 'no_unwind'\n   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:129:13\n    |\n129 |         if !request_valid(v.config,request) {return Receive::Reject(Fault::Invalid);}\n    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ call to core_check::vote_core::request_valid might unwind\n...\n277 | fn request_valid(c:Config,r:Request) -> (ok:bool) ensures ok==valid_request(c,r) {\n    | ------------------------------------------------ perhaps you need to mark this function as 'no_unwind'?\n\nnote: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function\n   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:143:5\n    |\n143 |     fn start_election(&mut self) -> (out: Campaign)\n    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nerror: cannot show this call will not unwind, in function marked 'no_unwind'\n   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:154:12\n    |\n154 |         if v.pending.is_some() {return Campaign::Reject(Fault::Busy);}\n    |            ^^^^^^^^^^^^^^^^^^^ call to core::option::impl&%0::is_some might unwind\n    |\n   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/std_specs/option.rs:125:1\n    |\n125 | pub assume_specification<T>[ Option::<T>::is_some ](option: &Option<T>) -> (b: bool)\n    | ----------------------------------------------------------------------------------- perhaps you need to mark this function as 'no_unwind'?\n\nerror: cannot show this call will not unwind, in function marked 'no_unwind'\n   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:162:9\n    |\n162 |         self.voters=Vec::new();\n    |         ^^^^^^^^^^^^^^^^^^^^^^ call to alloc::vec::impl&%0::new might unwind\n    |\n   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/std_specs/vec.rs:99:1\n    |\n 99 | pub assume_specification<T>[ Vec::<T>::new ]() -> (v: Vec<T>)\n    | ------------------------------------------------------------ perhaps you need to mark this function as 'no_unwind'?\n\nnote: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function\n   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:167:5\n    |\n167 |     fn complete(&mut self, notice: Completion) -> (out: Option<Action>)\n    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nerror: postcondition not satisfied\n   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:169:17\n    |\n169 |         ensures self.wf(),\n    |                 ^^^^^^^^^ failed this postcondition\n...\n182 |                     self.state.halted=true;self.state.round=None;self.state.self_saved=false;self.voters=Vec::new();return None;\n    |                                                                                                                     ----------- at this exit\n\nerror: cannot show this call will not unwind, in function marked 'no_unwind'\n   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:182:94\n    |\n182 |                     self.state.halted=true;self.state.round=None;self.state.self_saved=false;self.voters=Vec::new();return None;\n    |                                                                                              ^^^^^^^^^^^^^^^^^^^^^^ call to alloc::vec::impl&%0::new might unwind\n    |\n   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/std_specs/vec.rs:99:1\n    |\n 99 | pub assume_specification<T>[ Vec::<T>::new ]() -> (v: Vec<T>)\n    | ------------------------------------------------------------ perhaps you need to mark this function as 'no_unwind'?\n\nnote: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function\n   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:191:5\n    |\n191 |     fn collect(&mut self, context: RpcContext, result: RpcResult) -> (out: Collect)\n    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nerror: cannot show this call will not unwind, in function marked 'no_unwind'\n   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:203:12\n    |\n203 |         if v.pending.is_some() {return Collect::Reject(Fault::Busy);}\n    |            ^^^^^^^^^^^^^^^^^^^ call to core::option::impl&%0::is_some might unwind\n    |\n   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/std_specs/option.rs:125:1\n    |\n125 | pub assume_specification<T>[ Option::<T>::is_some ](option: &Option<T>) -> (b: bool)\n    | ----------------------------------------------------------------------------------- perhaps you need to mark this function as 'no_unwind'?\n\nerror: cannot show this call will not unwind, in function marked 'no_unwind'\n   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:204:13\n    |\n204 |         if !context_valid(v,context) {return Collect::Reject(Fault::Invalid);}\n    |             ^^^^^^^^^^^^^^^^^^^^^^^^ call to core_check::vote_core::context_valid might unwind\n...\n280 | fn context_valid(v:StateView,c:RpcContext) -> (ok:bool) ensures ok==valid_context(v,c) {\n    | ------------------------------------------------------ perhaps you need to mark this function as 'no_unwind'?\n\nnote: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function\n   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:220:5\n    |\n220 |     fn try_become_leader(&mut self) -> (elected: bool)\n    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nerror: cannot show this call will not unwind, in function marked 'no_unwind'\n   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:231:25\n    |\n231 | ...   if !v.halted && v.pending.is_none() && matches!(v.role,Role::Candidate) && v.self_saved && v.round==Some(v.state.term) && v.state.v...\n    |                       ^^^^^^^^^^^^^^^^^^^ call to core::option::impl&%0::is_none might unwind\n    |\n   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/std_specs/option.rs:137:1\n    |\n137 | pub assume_specification<T>[ Option::<T>::is_none ](option: &Option<T>) -> (b: bool)\n    | ----------------------------------------------------------------------------------- perhaps you need to mark this function as 'no_unwind'?\n\nerror: cannot show this call will not unwind, in function marked 'no_unwind'\n   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:231:173\n    |\n231 |         if !v.halted && v.pending.is_none() && matches!(v.role,Role::Candidate) && v.self_saved && v.round==Some(v.state.term) && v.state.voted_for==Some(v.config.node) && self.has_vote(v.config.node) &&...\n    |                                                                                                                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ call to core_check::vote_core::Data::has_vote might unwind\n...\n242 |     fn has_vote(&self, member: u64) -> (out: bool) requires self.wf(), ensures out == self.votes().contains(member)\n    |     --------------------------------------------- perhaps you need to mark this function as 'no_unwind'?\n\nerror: aborting due to 13 previous errors\n\nverification results:: 43 verified, 8 errors\n",
+      "errors": [
+        {
+          "file": "madraft/proof/../src/raft/vote_core.rs",
+          "function": "new",
+          "line": 94,
+          "column": 17,
+          "message": "postcondition not satisfied",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/../src/raft/vote_core.rs",
+          "function": "recover",
+          "line": 104,
+          "column": 17,
+          "message": "postcondition not satisfied",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/../src/raft/vote_core.rs",
+          "function": "demote",
+          "line": 254,
+          "column": 17,
+          "message": "postcondition not satisfied",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/../src/raft/vote_core.rs",
+          "function": "receive",
+          "line": 128,
+          "column": 12,
+          "message": "cannot show this call will not unwind, in function marked 'no_unwind'",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/../src/raft/vote_core.rs",
+          "function": "receive",
+          "line": 129,
+          "column": 13,
+          "message": "cannot show this call will not unwind, in function marked 'no_unwind'",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/../src/raft/vote_core.rs",
+          "function": "start_election",
+          "line": 154,
+          "column": 12,
+          "message": "cannot show this call will not unwind, in function marked 'no_unwind'",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/../src/raft/vote_core.rs",
+          "function": "start_election",
+          "line": 162,
+          "column": 9,
+          "message": "cannot show this call will not unwind, in function marked 'no_unwind'",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/../src/raft/vote_core.rs",
+          "function": "complete",
+          "line": 169,
+          "column": 17,
+          "message": "postcondition not satisfied",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/../src/raft/vote_core.rs",
+          "function": "complete",
+          "line": 182,
+          "column": 94,
+          "message": "cannot show this call will not unwind, in function marked 'no_unwind'",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/../src/raft/vote_core.rs",
+          "function": "collect",
+          "line": 203,
+          "column": 12,
+          "message": "cannot show this call will not unwind, in function marked 'no_unwind'",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/../src/raft/vote_core.rs",
+          "function": "collect",
+          "line": 204,
+          "column": 13,
+          "message": "cannot show this call will not unwind, in function marked 'no_unwind'",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/../src/raft/vote_core.rs",
+          "function": "try_become_leader",
+          "line": 231,
+          "column": 25,
+          "message": "cannot show this call will not unwind, in function marked 'no_unwind'",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "madraft/proof/../src/raft/vote_core.rs",
+          "function": "try_become_leader",
+          "line": 231,
+          "column": 173,
+          "message": "cannot show this call will not unwind, in function marked 'no_unwind'",
+          "category": "dependency_failure"
+        }
+      ],
+      "category": "proof_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    }
+  },
+  "required": [
+    "proof"
+  ],
+  "input_fingerprint": "b425defbe28b0451b4a11cdeed738bd2001a9951d5d747dc89dc422e1f7a1739",
+  "evidence_mismatches": [],
+  "result_reuse": "No historical PASS reuse; identical units in this invocation share one actual result/log.",
+  "current_obligation": {},
+  "assessments": {
+    "election_safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "leader_append_only": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "log_matching": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "leader_completeness": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "state_machine_safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "execution_link": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "snapshot_observation": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "nonempty_execution": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    }
+  },
+  "functional_plan": [],
+  "placeholders": [
+    "madraft/src/kvraft/client.rs::call",
+    "madraft/src/kvraft/server.rs::apply",
+    "madraft/src/raft/raft.rs::apply",
+    "madraft/src/raft/raft.rs::cond_install_snapshot",
+    "madraft/src/raft/raft.rs::persist",
+    "madraft/src/raft/raft.rs::restore",
+    "madraft/src/raft/raft.rs::snapshot",
+    "madraft/src/raft/raft.rs::start",
+    "madraft/src/shard_ctrler/server.rs::apply",
+    "madraft/src/shardkv/client.rs::append",
+    "madraft/src/shardkv/client.rs::get",
+    "madraft/src/shardkv/client.rs::put",
+    "madraft/src/shardkv/server.rs::apply",
+    "madraft/src/shardkv/server.rs::new"
+  ],
+  "semantic_review": "NOT_PERFORMED",
+  "implementation_acceptance": "NOT_ESTABLISHED",
+  "elapsed_seconds": 2.2098947089980356,
+  "diagnostics": [
+    {
+      "file": "madraft/proof/../src/raft/vote_core.rs",
+      "function": "new",
+      "line": 94,
+      "column": 17,
+      "message": "postcondition not satisfied",
+      "category": "dependency_failure",
+      "affected": [
+        "proof"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/proof.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/../src/raft/vote_core.rs",
+      "function": "recover",
+      "line": 104,
+      "column": 17,
+      "message": "postcondition not satisfied",
+      "category": "dependency_failure",
+      "affected": [
+        "proof"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/proof.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/../src/raft/vote_core.rs",
+      "function": "demote",
+      "line": 254,
+      "column": 17,
+      "message": "postcondition not satisfied",
+      "category": "dependency_failure",
+      "affected": [
+        "proof"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/proof.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/../src/raft/vote_core.rs",
+      "function": "receive",
+      "line": 128,
+      "column": 12,
+      "message": "cannot show this call will not unwind, in function marked 'no_unwind'",
+      "category": "dependency_failure",
+      "affected": [
+        "proof"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/proof.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/../src/raft/vote_core.rs",
+      "function": "receive",
+      "line": 129,
+      "column": 13,
+      "message": "cannot show this call will not unwind, in function marked 'no_unwind'",
+      "category": "dependency_failure",
+      "affected": [
+        "proof"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/proof.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/../src/raft/vote_core.rs",
+      "function": "start_election",
+      "line": 154,
+      "column": 12,
+      "message": "cannot show this call will not unwind, in function marked 'no_unwind'",
+      "category": "dependency_failure",
+      "affected": [
+        "proof"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/proof.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/../src/raft/vote_core.rs",
+      "function": "start_election",
+      "line": 162,
+      "column": 9,
+      "message": "cannot show this call will not unwind, in function marked 'no_unwind'",
+      "category": "dependency_failure",
+      "affected": [
+        "proof"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/proof.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/../src/raft/vote_core.rs",
+      "function": "complete",
+      "line": 169,
+      "column": 17,
+      "message": "postcondition not satisfied",
+      "category": "dependency_failure",
+      "affected": [
+        "proof"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/proof.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/../src/raft/vote_core.rs",
+      "function": "complete",
+      "line": 182,
+      "column": 94,
+      "message": "cannot show this call will not unwind, in function marked 'no_unwind'",
+      "category": "dependency_failure",
+      "affected": [
+        "proof"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/proof.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/../src/raft/vote_core.rs",
+      "function": "collect",
+      "line": 203,
+      "column": 12,
+      "message": "cannot show this call will not unwind, in function marked 'no_unwind'",
+      "category": "dependency_failure",
+      "affected": [
+        "proof"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/proof.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/../src/raft/vote_core.rs",
+      "function": "collect",
+      "line": 204,
+      "column": 13,
+      "message": "cannot show this call will not unwind, in function marked 'no_unwind'",
+      "category": "dependency_failure",
+      "affected": [
+        "proof"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/proof.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/../src/raft/vote_core.rs",
+      "function": "try_become_leader",
+      "line": 231,
+      "column": 25,
+      "message": "cannot show this call will not unwind, in function marked 'no_unwind'",
+      "category": "dependency_failure",
+      "affected": [
+        "proof"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/proof.log"
+      ]
+    },
+    {
+      "file": "madraft/proof/../src/raft/vote_core.rs",
+      "function": "try_become_leader",
+      "line": 231,
+      "column": 173,
+      "message": "cannot show this call will not unwind, in function marked 'no_unwind'",
+      "category": "dependency_failure",
+      "affected": [
+        "proof"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/proof.log"
+      ]
+    }
+  ],
+  "changed_standards": [],
+  "concurrent_changes": [],
+  "liveness": "OPEN \u2014 not accepted by safety checks",
+  "semantic_boundary": "Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.",
+  "task_completion": "OPEN"
+}

@@ -1,0 +1,14 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs --crate-type lib --cfg bad_history --no-cheating
+verification results:: 22 verified, 1 errors
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:18:60
+   |
+18 | fn retained(old:&Vec<Choice>) -> (out:Vec<Choice>) ensures out@==old@,
+   |                                                            ^^^^^^^^^^ failed this postcondition
+19 | { Vec::new() }
+   |   ---------- at the end of the function body
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

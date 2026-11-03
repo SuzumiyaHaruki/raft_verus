@@ -1,0 +1,14 @@
+verification results:: 22 verified, 1 errors
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:9:13
+   |
+ 9 |     ensures out==recovered_view(c,r),
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+14 |     vote_api::View{config:c,state,role:Role::Follower,next:r.op+1,pending:None,halted:false,round:None,self_saved:false}
+   |     -------------------------------------------------------------------------------------------------------------------- at the end of the function body
+
+error: aborting due to 1 previous error
+
+
+COMPLETED 1

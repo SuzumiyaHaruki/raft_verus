@@ -1,0 +1,165 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/core_check.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 43 verified, 8 errors
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:94:17
+    |
+ 94 | ...   ensures out.is_some() ==> out.unwrap().wf(),
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+100 | ...   Some(Data{state:StateView{config:c,state:initial.state,role:initial.role,next:0,pending:None,halted:false,round:None,self_saved:false},outputs:Ghost(Seq::empty()),origin:Ghost(None),voters:Vec::new()})
+    |       --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- at the end of the function body
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:104:17
+    |
+104 | ...   ensures out.is_some() ==> out.unwrap().wf(),
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+110 | ...   Some(Data{state:StateView{config:c,state:record.state,role:Role::Follower,next:record.op+1,pending:None,halted:false,round:None,self_saved:false},outputs:Ghost(Seq::empty()),origin:Ghost(Some(record)),voters:Vec::new()})
+    |       ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- at the end of the function body
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:254:17
+    |
+252 |     fn demote(&mut self, term:u64)
+    |     ------------------------------ at the end of the function body
+253 |         requires old(self).wf(), old(self).state.pending.is_none(), term>=old(self).state.state.term,
+254 |         ensures self.wf(),
+    |                 ^^^^^^^^^ failed this postcondition
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:116:5
+    |
+116 |     fn receive(&mut self, request: Request) -> (out: Receive)
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: cannot show this call will not unwind, in function marked 'no_unwind'
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:128:12
+    |
+128 |         if v.pending.is_some() {return Receive::Reject(Fault::Busy);}
+    |            ^^^^^^^^^^^^^^^^^^^ call to core::option::impl&%0::is_some might unwind
+    |
+   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/std_specs/option.rs:125:1
+    |
+125 | pub assume_specification<T>[ Option::<T>::is_some ](option: &Option<T>) -> (b: bool)
+    | ----------------------------------------------------------------------------------- perhaps you need to mark this function as 'no_unwind'?
+
+error: cannot show this call will not unwind, in function marked 'no_unwind'
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:129:13
+    |
+129 |         if !request_valid(v.config,request) {return Receive::Reject(Fault::Invalid);}
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ call to core_check::vote_core::request_valid might unwind
+...
+277 | fn request_valid(c:Config,r:Request) -> (ok:bool) ensures ok==valid_request(c,r) {
+    | ------------------------------------------------ perhaps you need to mark this function as 'no_unwind'?
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:143:5
+    |
+143 |     fn start_election(&mut self) -> (out: Campaign)
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: cannot show this call will not unwind, in function marked 'no_unwind'
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:154:12
+    |
+154 |         if v.pending.is_some() {return Campaign::Reject(Fault::Busy);}
+    |            ^^^^^^^^^^^^^^^^^^^ call to core::option::impl&%0::is_some might unwind
+    |
+   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/std_specs/option.rs:125:1
+    |
+125 | pub assume_specification<T>[ Option::<T>::is_some ](option: &Option<T>) -> (b: bool)
+    | ----------------------------------------------------------------------------------- perhaps you need to mark this function as 'no_unwind'?
+
+error: cannot show this call will not unwind, in function marked 'no_unwind'
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:162:9
+    |
+162 |         self.voters=Vec::new();
+    |         ^^^^^^^^^^^^^^^^^^^^^^ call to alloc::vec::impl&%0::new might unwind
+    |
+   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/std_specs/vec.rs:99:1
+    |
+ 99 | pub assume_specification<T>[ Vec::<T>::new ]() -> (v: Vec<T>)
+    | ------------------------------------------------------------ perhaps you need to mark this function as 'no_unwind'?
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:167:5
+    |
+167 |     fn complete(&mut self, notice: Completion) -> (out: Option<Action>)
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:169:17
+    |
+169 |         ensures self.wf(),
+    |                 ^^^^^^^^^ failed this postcondition
+...
+182 |                     self.state.halted=true;self.state.round=None;self.state.self_saved=false;self.voters=Vec::new();return None;
+    |                                                                                                                     ----------- at this exit
+
+error: cannot show this call will not unwind, in function marked 'no_unwind'
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:182:94
+    |
+182 |                     self.state.halted=true;self.state.round=None;self.state.self_saved=false;self.voters=Vec::new();return None;
+    |                                                                                              ^^^^^^^^^^^^^^^^^^^^^^ call to alloc::vec::impl&%0::new might unwind
+    |
+   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/std_specs/vec.rs:99:1
+    |
+ 99 | pub assume_specification<T>[ Vec::<T>::new ]() -> (v: Vec<T>)
+    | ------------------------------------------------------------ perhaps you need to mark this function as 'no_unwind'?
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:191:5
+    |
+191 |     fn collect(&mut self, context: RpcContext, result: RpcResult) -> (out: Collect)
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: cannot show this call will not unwind, in function marked 'no_unwind'
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:203:12
+    |
+203 |         if v.pending.is_some() {return Collect::Reject(Fault::Busy);}
+    |            ^^^^^^^^^^^^^^^^^^^ call to core::option::impl&%0::is_some might unwind
+    |
+   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/std_specs/option.rs:125:1
+    |
+125 | pub assume_specification<T>[ Option::<T>::is_some ](option: &Option<T>) -> (b: bool)
+    | ----------------------------------------------------------------------------------- perhaps you need to mark this function as 'no_unwind'?
+
+error: cannot show this call will not unwind, in function marked 'no_unwind'
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:204:13
+    |
+204 |         if !context_valid(v,context) {return Collect::Reject(Fault::Invalid);}
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^ call to core_check::vote_core::context_valid might unwind
+...
+280 | fn context_valid(v:StateView,c:RpcContext) -> (ok:bool) ensures ok==valid_context(v,c) {
+    | ------------------------------------------------------ perhaps you need to mark this function as 'no_unwind'?
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:220:5
+    |
+220 |     fn try_become_leader(&mut self) -> (elected: bool)
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: cannot show this call will not unwind, in function marked 'no_unwind'
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:231:25
+    |
+231 | ...   if !v.halted && v.pending.is_none() && matches!(v.role,Role::Candidate) && v.self_saved && v.round==Some(v.state.term) && v.state.v...
+    |                       ^^^^^^^^^^^^^^^^^^^ call to core::option::impl&%0::is_none might unwind
+    |
+   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/std_specs/option.rs:137:1
+    |
+137 | pub assume_specification<T>[ Option::<T>::is_none ](option: &Option<T>) -> (b: bool)
+    | ----------------------------------------------------------------------------------- perhaps you need to mark this function as 'no_unwind'?
+
+error: cannot show this call will not unwind, in function marked 'no_unwind'
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623384493059024/candidate/madraft/proof/../src/raft/vote_core.rs:231:173
+    |
+231 |         if !v.halted && v.pending.is_none() && matches!(v.role,Role::Candidate) && v.self_saved && v.round==Some(v.state.term) && v.state.voted_for==Some(v.config.node) && self.has_vote(v.config.node) &&...
+    |                                                                                                                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ call to core_check::vote_core::Data::has_vote might unwind
+...
+242 |     fn has_vote(&self, member: u64) -> (out: bool) requires self.wf(), ensures out == self.votes().contains(member)
+    |     --------------------------------------------- perhaps you need to mark this function as 'no_unwind'?
+
+error: aborting due to 13 previous errors
+
+
+process=COMPLETED exit=1

@@ -1,0 +1,16 @@
+/usr/bin/python3 -m unittest discover -s scripts/tests -q
+NEEDS_REVIEW: suspected_fixed_input_defect; state: /tmp/tmph4qedfox/source/runs/.controller/new-campaign/state.json
+NEEDS_REVIEW: fixed_input_diagnostic_inconclusive; state: /tmp/tmp434cd5_e/source/runs/.controller/new-campaign/state.json
+NEEDS_REVIEW: suspected_fixed_input_defect; state: /tmp/tmp2s26qpx8/source/runs/.controller/new-campaign/state.json
+NEEDS_REVIEW: fixed_input_diagnostic_already_used; state: /tmp/tmp2s26qpx8/source/runs/.controller/new-campaign/state.json
+NEEDS_REVIEW: no_progress: unchanged checked inputs and failures after two handoffs; state: /tmp/tmptl_8l_ad/source/runs/.controller/new-campaign/state.json
+NEEDS_REVIEW: suspected_fixed_input_defect; state: /tmp/tmp38hm2z0_/source/runs/.controller/new-campaign/state.json
+BLOCKED: SIMULATED missing tool; state: /tmp/tmp38hm2z0_/source/runs/.controller/new-campaign/state.json
+NEEDS_REVIEW: unchanged_candidate_waiting_for_review; state: /tmp/tmp38hm2z0_/source/runs/.controller/new-campaign/state.json
+NEEDS_REVIEW: no_progress: unchanged checked inputs and failures after two handoffs; state: /tmp/tmpdiyjohd9/source/runs/.controller/new-campaign/state.json
+----------------------------------------------------------------------
+Ran 135 tests in 34.036s
+
+OK
+
+process=COMPLETED exit=0

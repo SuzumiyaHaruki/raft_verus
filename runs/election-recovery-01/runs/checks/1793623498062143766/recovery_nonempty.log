@@ -1,0 +1,33 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/candidate/tasks/election_recovery/caller.rs --crate-type lib --no-cheating --triggers-mode silent --cfg madsim --cfg es_nonempty
+verification results:: 77 verified, 4 errors
+error: assertion failed
+ --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:6:12
+  |
+6 |     assert(false); // OPEN: generate an invariant of the actual executable core.
+  |            ^^^^^ assertion failed
+
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:13:12
+   |
+13 |     assert(false); // OPEN: preserved vote constrains every subsequent actual output.
+   |            ^^^^^ assertion failed
+
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:25:10
+   |
+25 | { assert(false); }
+   |          ^^^^^ assertion failed
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/candidate/tasks/election_recovery/../../madraft/src/raft/vote_core.rs:184:17
+    |
+184 |         ensures self.wf(),
+    |                 ^^^^^^^^^ failed this postcondition
+...
+201 |                 return Some(w.action);
+    |                 --------------------- at this exit
+
+error: aborting due to 4 previous errors
+
+
+process=COMPLETED exit=1

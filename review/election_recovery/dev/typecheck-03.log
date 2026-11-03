@@ -1,0 +1,11 @@
+/home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/caller.rs --crate-type lib --cfg madsim --cfg es_restart_history --no-verify
+error: The verifier does not yet support the following Rust feature: only variables are supported here, not general patterns
+   --> /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/recovery_network.rs:202:65
+    |
+202 |             cores.len()==i,obs.len()==i,io@==Seq::new(i as nat,|_:int|None::<Io>),images@==Seq::new(i as nat,|_:int|None::<Image>),
+    |                                                                 ^
+
+error: aborting due to 1 previous error
+
+
+exit=1 process=COMPLETED

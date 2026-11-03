@@ -1,0 +1,6 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs --crate-type lib --cfg madsim --cfg es_provenance --verify-module vote_network --no-cheating
+verification results:: 11 verified, 0 errors (partial verification with `--verify-*`)
+note: verifying module vote_network
+
+
+process=COMPLETED exit=0

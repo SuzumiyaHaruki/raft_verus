@@ -1,0 +1,106 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624343526696041/candidate/madraft/proof/source_check.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 87 verified, 3 errors
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624343526696041/candidate/madraft/proof/recovery_source.rs:19:1
+   |
+19 | pub proof fn initialize(t:Trace)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624343526696041/candidate/madraft/proof/recovery_source.rs:20:30
+   |
+20 |     requires boot(t),ensures source_inv(t),
+   |                              ^^^^^^^^^^^^^ failed this postcondition
+21 | {
+22 |     assert forall|n:int| 0<=n<t.net.nodes.len() implies {
+   |     ------ at the end of the function body
+
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624343526696041/candidate/madraft/proof/recovery_source.rs:22:57
+   |
+22 |       assert forall|n:int| 0<=n<t.net.nodes.len() implies {
+   |  _________________________________________________________^
+23 | |         let o=#[trigger] t.net.nodes[n];
+24 | |         &&& storage_ok(o.state)
+25 | |         &&& (t.live[n] ==> o.state.pending==match t.io[n] {Some(p)=>Some(p.proposed.write),None=>None})
+26 | |         &&& (t.images[n].is_some() ==> valid_record(o.state.config,t.images[n].unwrap().record))
+27 | |     } by {assert(t.net.nodes[n].state.pending.is_none());}
+   | |_____^ assertion failed
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624343526696041/candidate/madraft/proof/recovery_source.rs:29:1
+   |
+29 | pub proof fn source_extends(a:Trace,b:Trace,i:Image,n:int)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: recommendation not met
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624343526696041/candidate/madraft/proof/recovery_source.rs:30:34
+    |
+ 30 |     requires image_source(a,i,n),b.frames.drop_last()==a.frames,
+    |                                  ^^^^^^^^^^^^^^^^^^^^
+    |
+   ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/seq_lib.rs:492:13
+    |
+492 |             self.len() >= 1,
+    |             --------------- recommendation not met
+
+error: postcondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624343526696041/candidate/madraft/proof/recovery_source.rs:31:13
+   |
+29 | pub proof fn source_extends(a:Trace,b:Trace,i:Image,n:int)
+   | ---------------------------------------------------------- at the end of the function body
+30 |     requires image_source(a,i,n),b.frames.drop_last()==a.frames,
+31 |     ensures image_source(b,i,n),
+   |             ^^^^^^^^^^^^^^^^^^^ failed this postcondition
+
+note: recommendation not met
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624343526696041/candidate/madraft/proof/recovery_source.rs:32:9
+   |
+32 | {assert(b.frames[i.at as int]==a.frames[i.at as int]);}
+   |         ^^^^^^^^^^^^^^^^^^^^^
+   |
+  ::: /home/nitro/.local/share/raft-verus/verus-x86-linux/vstd/seq.rs:62:13
+   |
+62 |             0 <= i < self.len(),
+   |             ------------------- recommendation not met
+
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624343526696041/candidate/madraft/proof/recovery_source.rs:32:9
+   |
+32 | {assert(b.frames[i.at as int]==a.frames[i.at as int]);}
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed
+
+error: precondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624343526696041/candidate/madraft/proof/recovery_source.rs:59:50
+   |
+30 |     requires image_source(a,i,n),b.frames.drop_last()==a.frames,
+   |                                  ------------------------------ failed precondition
+...
+59 |         } else {assert(b.images[n]==a.images[n]);source_extends(a,b,a.images[n].unwrap(),n);}
+   |                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: precondition not satisfied
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624343526696041/candidate/madraft/proof/recovery_source.rs:67:63
+   |
+30 |     requires image_source(a,i,n),b.frames.drop_last()==a.frames,
+   |                                  ------------------------------ failed precondition
+...
+67 |         if k<a.frames.len() {assert(b.frames[k]==a.frames[k]);source_extends(a,b,a.frames[k].image.unwrap(),a.frames[k].node as int);}
+   |                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624343526696041/candidate/madraft/proof/recovery_source.rs:57:20
+   |
+57 |             assert(b.images[n].unwrap().at==a.frames.len());
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624343526696041/candidate/madraft/proof/recovery_source.rs:34:1
+   |
+34 | pub proof fn preserve(a:Trace,b:Trace,s:Step)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 7 previous errors
+
+
+process=COMPLETED exit=1

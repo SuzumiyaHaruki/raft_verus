@@ -1,0 +1,69 @@
+/home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/caller.rs --crate-type lib --cfg madsim --cfg es_restart_history --no-verify
+error: expected curly braces
+ --> /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/../../madraft/proof/recovery_lemmas.rs:7:60
+  |
+7 | pub proof fn initialize(t:Trace) requires boot(t), ensures invariant(t), { assert(false); }
+  |                                                            ^^^^^^^^^
+
+error[E0425]: cannot find function `initialize` in module `recovery_lemmas`
+   --> /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/caller.rs:404:28
+    |
+404 |     proof{recovery_lemmas::initialize(n.trace());recovery_lemmas::conclude(n.trace());}
+    |                            ^^^^^^^^^^ not found in `recovery_lemmas`
+
+error[E0425]: cannot find function `conclude` in module `recovery_lemmas`
+   --> /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/caller.rs:404:67
+    |
+404 |     proof{recovery_lemmas::initialize(n.trace());recovery_lemmas::conclude(n.trace());}
+    |                                                                   ^^^^^^^^ not found in `recovery_lemmas`
+
+error[E0425]: cannot find function `preserve` in module `recovery_lemmas`
+   --> /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/caller.rs:414:32
+    |
+414 |         proof{recovery_lemmas::preserve(before,n.trace(),s);recovery_lemmas::conclude(n.trace());}
+    |                                ^^^^^^^^ not found in `recovery_lemmas`
+
+error[E0425]: cannot find function `conclude` in module `recovery_lemmas`
+   --> /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/caller.rs:414:78
+    |
+414 |         proof{recovery_lemmas::preserve(before,n.trace(),s);recovery_lemmas::conclude(n.trace());}
+    |                                                                              ^^^^^^^^ not found in `recovery_lemmas`
+
+error[E0603]: function import `invariant` is private
+   --> /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/caller.rs:407:94
+    |
+407 |         invariant k<=events.len(),n.represented(),n.trace().frames.len()==k,recovery_lemmas::invariant(n.trace()),
+    |                                                                                              ^^^^^^^^^ private function import
+    |
+note: the function import `invariant` is defined here...
+   --> /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/../../madraft/proof/recovery_lemmas.rs:4:5
+    |
+  4 | use vstd::prelude::*;
+    |     ^^^^^^^^^^^^^^^^
+note: ...and refers to the function `invariant` which is defined here
+   --> /home/runner/work/verus/verus/source/vstd/prelude.rs:2:9
+    |
+    = note: you could import this directly
+help: consider importing one of these functions instead
+    |
+407 -         invariant k<=events.len(),n.represented(),n.trace().frames.len()==k,recovery_lemmas::invariant(n.trace()),
+407 +         invariant k<=events.len(),n.represented(),n.trace().frames.len()==k,crate::invariant(n.trace()),
+    |
+407 -         invariant k<=events.len(),n.represented(),n.trace().frames.len()==k,recovery_lemmas::invariant(n.trace()),
+407 +         invariant k<=events.len(),n.represented(),n.trace().frames.len()==k,verus_builtin::invariant(n.trace()),
+    |
+407 -         invariant k<=events.len(),n.represented(),n.trace().frames.len()==k,recovery_lemmas::invariant(n.trace()),
+407 +         invariant k<=events.len(),n.represented(),n.trace().frames.len()==k,vstd::prelude::invariant(n.trace()),
+    |
+help: import `invariant` directly
+    |
+407 -         invariant k<=events.len(),n.represented(),n.trace().frames.len()==k,recovery_lemmas::invariant(n.trace()),
+407 +         invariant k<=events.len(),n.represented(),n.trace().frames.len()==k,verus_builtin::invariant(n.trace()),
+    |
+
+error: aborting due to 6 previous errors
+
+Some errors have detailed explanations: E0425, E0603.
+For more information about an error, try `rustc --explain E0425`.
+
+exit=1 process=COMPLETED

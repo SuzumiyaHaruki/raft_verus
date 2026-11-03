@@ -1,0 +1,4 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs --crate-type lib --cfg control --no-cheating
+verification results:: 24 verified, 0 errors
+
+process=COMPLETED exit=0

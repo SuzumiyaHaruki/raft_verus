@@ -1,0 +1,73 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-02/unfinished/tasks/election_recovery/caller.rs --crate-type lib --cfg madsim --cfg es_restart_history --verify-module recovery_network --no-cheating
+verification results:: 9 verified, 1 errors (partial verification with `--verify-*`)
+note: verifying module recovery_network
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-02/unfinished/tasks/election_recovery/recovery_network.rs:196:9
+    |
+196 |         forall|i:int| 0<=i<initials.len() ==> (#[trigger] n.trace().net.nodes[i]).state==fresh_view(Config{node:i as u64,members:initials.len() as u64},initials[i]),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+223 |     Network{tick:0,cores,io,images,ready,epochs,sent:Vec::new(),replies:Vec::new(),send_epochs:Vec::new(),history:Ghost(history)}
+    |     ----------------------------------------------------------------------------------------------------------------------------- at the end of the function body
+
+note: automatically chose triggers for this expression:
+  --> /home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-02/unfinished/tasks/election_recovery/recovery_network.rs:55:12
+   |
+55 |           && forall|i:int| 0<=i<t.net.nodes.len() ==> t.live[i] && t.epochs[i]==0
+   |  ____________^
+56 | |             && t.io[i].is_none() && t.images[i].is_none() && !t.ready[i]
+   | |________________________________________________________________________^
+
+note:   trigger 1 of 3:
+  --> /home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-02/unfinished/tasks/election_recovery/recovery_network.rs:55:53
+   |
+55 |         && forall|i:int| 0<=i<t.net.nodes.len() ==> t.live[i] && t.epochs[i]==0
+   |                                                     ^^^^^^^^^
+
+note:   trigger 2 of 3:
+  --> /home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-02/unfinished/tasks/election_recovery/recovery_network.rs:55:66
+   |
+55 |         && forall|i:int| 0<=i<t.net.nodes.len() ==> t.live[i] && t.epochs[i]==0
+   |                                                                  ^^^^^^^^^^^
+
+note:   trigger 3 of 3:
+  --> /home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-02/unfinished/tasks/election_recovery/recovery_network.rs:56:63
+   |
+56 |             && t.io[i].is_none() && t.images[i].is_none() && !t.ready[i]
+   |                                                               ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> /home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-02/unfinished/tasks/election_recovery/recovery_network.rs:215:5
+    |
+215 |     assert forall|j:int| 0<=j<i implies {
+    |     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> /home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-02/unfinished/tasks/election_recovery/recovery_network.rs:216:13
+    |
+216 |         &&& obs[j].state.config==Config{node:j as u64,members:i as u64}
+    |             ^^^^^^
+
+note: Verus printed one or more automatically chosen quantifier triggers
+      because it had low confidence in the chosen triggers.
+      To suppress these messages, do one of the following:
+        (1) manually annotate a single desired trigger using #[trigger]
+            (example: forall|i: int, j: int| f(i) && #[trigger] g(i) && #[trigger] h(j)),
+        (2) manually annotate multiple desired triggers using #![trigger ...]
+            (example: forall|i: int| #![trigger f(i)] #![trigger g(i)] f(i) && g(i)),
+        (3) accept the automatically chosen trigger using #![auto]
+            (example: forall|i: int, j: int| #![auto] f(i) && g(i) && h(j))
+        (4) use the --triggers-mode silent command-line option to suppress all printing of triggers.
+      (Note: triggers are used by the underlying SMT theorem prover to instantiate quantifiers;
+      the theorem prover instantiates a quantifier whenever some expression matches the
+      pattern specified by one of the quantifier's triggers.)
+   --> /home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-02/unfinished/tasks/election_recovery/recovery_network.rs:215:5
+    |
+215 |     assert forall|j:int| 0<=j<i implies {
+    |     ^^^^^^
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

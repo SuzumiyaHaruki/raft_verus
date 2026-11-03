@@ -1,0 +1,584 @@
+--- before/madraft/PROGRESS.md
++++ after/madraft/PROGRESS.md
+@@ -1,19 +1,23 @@
+-Implemented the shared executable Core constructors, receiving, campaign preparation, completion authorization, collection of distinct votes, majority promotion and recovery. All 43 election tests passed at seed 1 in runs/checks/1793623374295078319; the first cold test invocation timed out during compilation. No earlier candidate was imported.
++Round 2 repaired the first independent proof failures: the actual Core invariant now constrains output Choice node/term/candidate, equal-term current vote, recovered base and pending granted Reply. vote_lemmas::uniqueness and restart_composition are proved from that invariant; executable decisions and public contracts are unchanged. Core check 1793624216318333848 PASS (59 verified, zero errors); local_history 1793624251002251375 PASS. Independent check-1 build/inventory/43 seed-1 tests PASS; this round's 43 seed-2 tests PASS (1793624344713672616), and the obligation run's seed-1 tests also PASS.
+ 
+-Current proof repair: the first direct field invariant approach failed because intermediate field mutations did not preserve the invariant. A private Data transition now works on a copy and restores the Core invariant at its public boundary. Core verification PASSED (56 verified, zero errors, runs/checks/1793623511685136342). The executable successful-write/recovery connection PASSED (83 verified, zero errors, runs/checks/1793623528019081807). Local uniqueness and general network induction remain OPEN.
++The new source_check::finite_sources executes arbitrary structurally enabled fixed recovery-network prefixes. recovery_source proves initialization and single-step preservation of valid pending/retained records, actual successful-write origins, and all restarted instances' exact record/base/empty-volatile correspondence. Check 1793624447135242101 PASS (90 verified, zero errors); an extension asserting all four retention predicates together timed out at 25 seconds (1793624512256568125). Removed the three redundant prefix assertions, retaining exact frame-prefix correspondence and all historical write-source obligations; the fixed executor continues to retain Choices, sends and replies. No safety predicate enables a restart and no pre-restart evidence is deleted.
++
++Failed approach/repair: the first source induction omitted explicit instantiations of boot's epoch/liveness quantifier, sequence prefix facts and the actual executor's frame-index bound; those caused proof failures, not execution failures. The checked source theorem includes the machine bound discharged by its actual loop. Next obstacle: construct the old network invariant and the cross-instance archived Choice/current vote/retained image/majority invariant, then compose source induction with full recovery preservation and historical Election Safety. The original general network and full recovery lemma bodies remain OPEN.
++
++Checks are distinct: safety 1793624252156454503 passed rules, campaign, authorization, history, reply_rules, self_vote, rounds, higher_reply and promotion; provenance/nonempty failed mathematically at network_initial, election_basis timed out, and later groups were NOT RUN after budget exhaustion. Obligation 1793624424773628093 passed build/inventory/tests and eight proof groups, then provenance timed out. The root PROGRESS.md discovery mismatch is documented in OBJECTION.md and is separate from those failures. All other safety targets, full labs, arbitrary/interrupted-write recovery, snapshots and liveness remain OPEN. Truthful I/O/readback, identity, encoding, RPC forwarding, callback incarnation/cancellation and scheduling remain UNVERIFIED host premises detailed in RESULT.md.
+ 
+ <!-- obligation -->
+ ```ini
+ [obligation]
+ id = successful-write-origin
+-statement = An actual campaign Write followed by successful Write, optional Notify, Stop and Restart retains the observed Choice ledger and recovers exactly that node's retained record.
++statement = All actual enabled finite executor prefixes retain successful Write origins and recover from the same node's retained record while retaining prior Choice/message/frame evidence.
+ goal = election_safety
+ kind = composition
+-functions = madraft/src/raft/vote_core.rs::new, madraft/src/raft/vote_core.rs::start_election, madraft/src/raft/vote_core.rs::complete, madraft/src/raft/vote_core.rs::recover
+-entry = madraft/proof/recovery_connection.rs
++functions = madraft/src/raft/vote_core.rs::new, madraft/src/raft/vote_core.rs::receive, madraft/src/raft/vote_core.rs::start_election, madraft/src/raft/vote_core.rs::complete, madraft/src/raft/vote_core.rs::collect, madraft/src/raft/vote_core.rs::recover
++entry = madraft/proof/source_check.rs
+ parent =
+-dependencies = madraft/proof/core_check.rs
+-premises = Truthful completed-write/readback and fixed host mapping; arbitrary repeated-history induction and archived vote provenance remain open.
++dependencies = madraft/proof/local_history.rs
++premises = Truthful I/O and fixed host mapping; archived Choice uniqueness and current/historical majority provenance remain open.
+ tests = raft::raft::vote_tests
+ ```
+ <!-- /obligation -->
+@@ -21,13 +25,11 @@
+ <!-- connections -->
+ | Behavior | Actual functions | Proof entry | Open premises / next step |
+ | --- | --- | --- | --- |
+-| initialization | madraft/src/raft/vote_core.rs::new | madraft/proof/core_check.rs | Establish private invariant and fixed host inputs. |
+-| transitions | madraft/src/raft/vote_core.rs::receive, madraft/src/raft/vote_core.rs::collect, madraft/src/raft/vote_core.rs::try_become_leader | madraft/proof/core_check.rs | General network preservation remains open. |
+-| outputs | madraft/src/raft/vote_core.rs::complete, madraft/src/raft/vote_core.rs::start_election | madraft/proof/recovery_connection.rs | Truthful I/O completion, RPC mapping and scheduling remain host premises. |
+-| recovery | madraft/src/raft/vote_core.rs::recover | madraft/proof/recovery_connection.rs | Repeated restart ledger/provenance induction remains open. |
++| initialization | madraft/src/raft/vote_core.rs::new | madraft/proof/source_check.rs | Actual fixed executor initialization checked; full network invariant open. |
++| transitions | madraft/src/raft/vote_core.rs::receive, madraft/src/raft/vote_core.rs::collect, madraft/src/raft/vote_core.rs::try_become_leader | madraft/proof/local_history.rs | Local invariant checked; historical majority induction open. |
++| outputs | madraft/src/raft/vote_core.rs::complete, madraft/src/raft/vote_core.rs::start_election | madraft/proof/source_check.rs | Truthful I/O and RPC mapping remain host premises. |
++| recovery | madraft/src/raft/vote_core.rs::recover | madraft/proof/source_check.rs | All-prefix write origins checked; archived vote/majority composition open. |
+ | snapshots | madraft/src/raft/raft.rs::snapshot, madraft/src/raft/raft.rs::cond_install_snapshot | madraft/proof/progress.rs | Unimplemented and unproved. |
+ <!-- /connections -->
+ 
+-The obligation command was run with --task election-recovery --timeout 100 on an earlier revision; it includes earlier Core proof failures. The checker reads only root PROGRESS.md, so it does not discover this required madraft/PROGRESS.md obligation; see OBJECTION.md. Safety/final checks are bounded for the handoff and cannot establish complete acceptance. Next obstacle: strengthen the private invariant with pending-action/Choice constraints, prove uniqueness and restart_composition, then prove cross-instance ledger/image/source preservation for every fixed recovery step.
+-
+-Final diagnostic revision 1793623612629693837: build TIMEOUT; no final test-coverage claim. Safety revision 1793623568871359626 isolates vote_lemmas.rs::uniqueness and restart_composition as the first assertion failures. Reports and failures are retained for the next slice.
++Stopped-candidate final 1793624584766961427 completed INCOMPLETE: build/inventory and all 43 election tests at every seed 1–5 PASS; the same nine scoped groups listed above PASS. provenance, nonempty, election_basis, election_history and election_nonempty FAIL at unfinished network_initial. receive_confirmed TIMEOUT under the remaining final budget; the other three local windows and all three general restart groups were NOT RUN due to budget exhaustion. Final source_check recheck 1793624583630103300 PASS (90 verified, zero errors), including exact frame-prefix correspondence. No complete Election Safety status is claimed.
+--- before/madraft/RESULT.md
++++ after/madraft/RESULT.md
+@@ -2,12 +2,18 @@
+ 
+ The one public Core now implements checked initialization, receiver decisions, self-vote campaigning, matching completion authorization, distinct real-peer collection, strict-majority promotion and completed-record recovery. It is used by the unchanged registered RPC/async driver and fixed executors. Its private Data and invariant establish the unchanged executable method contracts, state validity and bounded finite distinct voter set. Public mutations copy the private voter vector; this is correct but adds O(cluster size) allocation/copy cost. No assume/admit/external consensus body was added.
+ 
+-Checks: all 43 election-recovery tests PASS at seed 1 on revision 1793623374295078319, including actual file windows, same-node restart, RPC failures/delays, old callbacks and historical elections. The first cold invocation timed out compiling (1793623241115667927), not a test assertion failure. Core proof PASS: 56 verified, zero errors (1793623511685136342). Recovery connection PASS: 83 verified, zero errors (1793623528019081807). Both use real fixed executor/candidate bodies under --no-cheating. The connection covers arbitrary legal initial cluster/member selection followed by an accepted campaign, actual successful Write, optional Notify, Stop and Restart; it retains the actual Choice ledger and proves the retained image's write-event origin. It does not prove arbitrary repetitions or receiver/higher-reply write histories.
++Checks: all 43 election-recovery tests PASS at seed 1 on revision 1793623374295078319, including actual file windows, same-node restart, RPC failures/delays, old callbacks and historical elections. The first cold invocation timed out compiling (1793623241115667927), not a test assertion failure. Core proof PASS: 56 verified, zero errors (1793623511685136342). Recovery connection PASS: 83 verified, zero errors (1793623528019081807). Both use real fixed executor/candidate bodies under --no-cheating. The connection covers arbitrary legal initial cluster/member selection followed by an accepted campaign, actual successful Write, optional Notify, Stop and Restart; it retains the actual Choice ledger and proves the retained image's write-event origin. That first connection does not prove arbitrary repetitions. Round 2 additionally provides source_check.rs::finite_sources, calling the fixed new_network/is_enabled/execute for every enabled finite input prefix, and recovery_source.rs initialization and step induction for every operation including receiver and higher-reply writes, both successful-write windows and repeated restarts. Check 1793624447135242101 PASS: 90 verified, zero errors. This establishes valid retained-record origins and recovered-instance correspondence for all such actual prefixes; it does not establish cross-instance Choice uniqueness, majority provenance or historical Election Safety. No pre-restart evidence is erased.
+ 
+-All 18 preserved scoped theorem groups and all three general restart groups remain OPEN pending the original vote_lemmas/recovery_lemmas bodies: uniqueness, restart_composition, network_initial/network_step/network_conclusion and recovery initialize/preserve/conclude still contain explicit failing obligations. Four local recovery-window callers are not closed because they import those unfinished lemmas. The five global safety targets remain OPEN: Election Safety, Leader Append-Only, Log Matching, Leader Completeness and State Machine Safety. Full Raft 2A/2B/2C/2D, KV 3A/3B, shard controller 4A and sharded KV 4B are OPEN; their original tests were preserved and not established by this slice. Snapshots, interrupted writes, arbitrary crash recovery, log-summary refinement, application correctness and conditional liveness remain OPEN. No global model theorem or local count is presented as implementation acceptance.
++Round 2 closes uniqueness and restart_composition using an inductive invariant of the actual executable Core; no executable behavior or fixed contract was weakened. Core check 1793624216318333848 PASS (59 verified, zero errors), local_history 1793624251002251375 PASS, and seed-2 tests 1793624344713672616 PASS (43 tests). Safety 1793624252156454503 passed rules, campaign, authorization, history, reply_rules, self_vote, rounds, higher_reply and promotion; provenance/nonempty failed at network_initial, election_basis timed out, and later groups exhausted the 70-second budget. The four local recovery-window callers were not reached in that run. General no-restart network_initial/network_step/network_conclusion and recovery initialize/preserve/conclude remain explicit unfinished obligations. The five global safety targets remain OPEN: Election Safety, Leader Append-Only, Log Matching, Leader Completeness and State Machine Safety. Full Raft 2A/2B/2C/2D, KV 3A/3B, shard controller 4A and sharded KV 4B are OPEN; their original tests were preserved and not established by this slice. Snapshots, interrupted writes, arbitrary crash recovery, log-summary refinement, application correctness and conditional liveness remain OPEN. No global model theorem or local count is presented as implementation acceptance.
+ 
+ Host premises remain UNVERIFIED: vote_host::encode/decode preserve record values; load reads this same node's latest permitted retained successful image; save/checkpoint report the actual operation and result; RaftHandle::new_receiver_observed, start_election, send_vote_request, deliver_vote_result, vote_call, start_rpc_server and request_vote serialize operations, associate immutable RPC contexts with genuine peers, forward actual outputs and cancel dead caller tasks. The fixed recovery executor separates actual Write and Notify, retains message/Choice/election history and checks incarnations, but it is not a filesystem or async-host refinement proof. MadSim completed writes survive node kill/restart; sync_all is a simulator no-op and power_fail is unfinished. No physical durability, torn-write or stale/corrupt read guarantee is proved. Stable configuration/identity, non-forging peers, faithful encoding, Rust/Verus/vstd/SMT and scheduling/storage host contracts are trusted as disclosed by the fixed environment.
+ 
+ Reproduce with `python3 scripts/check.py test raft::raft::vote_tests --task election-recovery --seed 1 --timeout 90`, `python3 scripts/check.py proof madraft/proof/core_check.rs --task election-recovery --timeout 30`, `python3 scripts/check.py proof madraft/proof/recovery_connection.rs --task election-recovery --timeout 30`, `python3 scripts/check.py obligation --task election-recovery --timeout 100`, `python3 scripts/check.py safety --task election-recovery --timeout 25`, and `python3 scripts/check.py final --task election-recovery --timeout 50`. The final bounded checks are diagnostic runs, not complete acceptance. See OBJECTION.md for the root-versus-madraft progress-path mismatch.
+ 
+ Stopped-candidate safety (1793623568871359626) reports uniqueness and restart_composition assertion failures at vote_lemmas.rs lines 6 and 13; recovery_provenance timed out and remaining groups exhausted the 25-second budget. The bounded final run (1793623612629693837) timed out during build, so inventory/tests were not established on its final snapshot; its formal failures and budget exhaustion are retained in that results.json. The earlier seed-1 PASS and direct proof PASS remain separately scoped evidence.
++
++Round-2 obligation 1793624424773628093: build, inventory, seed-1 tests and the first eight scoped proof groups PASS; provenance timed out under its 35-second total budget and later groups were not run. The root progress-path objection remains a tool-discovery limitation, separate from mathematical failures. The next mathematical obstacle is the no-restart network invariant at vote_lemmas.rs::network_initial and the full archived Choice/majority invariant at recovery_lemmas.rs; the new source induction is a checked component, not a substituted Election Safety theorem. Host premises listed above are unchanged.
++
++An extension of source_check asserting simultaneous Choice/send/reply prefix facts timed out in 1793624512256568125 at the 25-second check budget. Those redundant assertions were removed; actual fixed executor retention and historical source obligations remain. This is a proof timeout, not a functional failure.
++
++Round-2 stopped-candidate final 1793624584766961427: build and inventory PASS; 43 election tests PASS at each of seeds 1, 2, 3, 4 and 5 (215 successful test executions). rules, campaign, authorization, history, reply_rules, self_vote, rounds, higher_reply and promotion PASS. provenance, nonempty, election_basis, election_history and election_nonempty have proof failures at the still-unimplemented network invariant initialization. receive_confirmed timed out when the total 90-second budget expired; receive_pending, self_confirmed, self_pending and the three restart groups were not run after budget exhaustion. Final source_check recheck 1793624583630103300 PASS (90 verified, zero errors) on the same source state, with exact prior-frame retention. Reproduce this source component with `python3 scripts/check.py proof madraft/proof/source_check.rs --task election-recovery --timeout 35` and local composition with `python3 scripts/check.py proof madraft/proof/local_history.rs --task election-recovery --timeout 30`. Aggregate status remains INCOMPLETE, full repeated-restart Election Safety remains OPEN, and all host premises above remain UNVERIFIED.
+--- before/madraft/core-round2.out
++++ after/madraft/core-round2.out
+@@ -0,0 +1,4 @@
++proof: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624216318333848/proof.log
++PASS: /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624216318333848/results.json
++Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.
+--- before/madraft/final-round2.out
++++ after/madraft/final-round2.out
+@@ -0,0 +1,53 @@
++build: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/build.log
++inventory: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/inventory.log
++tests_seed_1_raft_raft_vote_tests: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/tests_seed_1_raft_raft_vote_tests.log
++tests_seed_2_raft_raft_vote_tests: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/tests_seed_2_raft_raft_vote_tests.log
++tests_seed_3_raft_raft_vote_tests: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/tests_seed_3_raft_raft_vote_tests.log
++tests_seed_4_raft_raft_vote_tests: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/tests_seed_4_raft_raft_vote_tests.log
++tests_seed_5_raft_raft_vote_tests: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/tests_seed_5_raft_raft_vote_tests.log
++source_boundary: PASS (same_candidate_imports)
++recovery_rules: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/recovery_rules.log
++recovery_campaign: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/recovery_campaign.log
++recovery_authorization: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/recovery_authorization.log
++recovery_history: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/recovery_history.log
++recovery_reply_rules: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/recovery_reply_rules.log
++recovery_self_vote: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/recovery_self_vote.log
++recovery_rounds: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/recovery_rounds.log
++recovery_higher_reply: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/recovery_higher_reply.log
++recovery_provenance: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/recovery_provenance.log
++recovery_nonempty: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/recovery_nonempty.log
++recovery_promotion: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/recovery_promotion.log
++recovery_election_basis: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/recovery_election_basis.log
++recovery_election_history: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/recovery_election_history.log
++recovery_election_nonempty: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/recovery_election_nonempty.log
++recovery_receive_confirmed: OPEN (verification_timeout)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/recovery_receive_confirmed.log
++recovery_receive_pending: OPEN (check_budget_exhausted)
++recovery_self_confirmed: OPEN (check_budget_exhausted)
++recovery_self_pending: OPEN (check_budget_exhausted)
++recovery_restart_source: OPEN (check_budget_exhausted)
++recovery_restart_history: OPEN (check_budget_exhausted)
++recovery_restart_nonempty: OPEN (check_budget_exhausted)
++INCOMPLETE: /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624584766961427/results.json
++Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.
+--- before/madraft/local-round2.out
++++ after/madraft/local-round2.out
+@@ -0,0 +1,4 @@
++proof: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624251002251375/proof.log
++INCOMPLETE: /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624251002251375/results.json
++Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.
+--- before/madraft/obligation-round2.out
++++ after/madraft/obligation-round2.out
+@@ -0,0 +1,39 @@
++build: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624424773628093/build.log
++inventory: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624424773628093/inventory.log
++tests_seed_1_raft_raft_vote_tests: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624424773628093/tests_seed_1_raft_raft_vote_tests.log
++source_boundary: PASS (same_candidate_imports)
++recovery_rules: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624424773628093/recovery_rules.log
++recovery_campaign: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624424773628093/recovery_campaign.log
++recovery_authorization: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624424773628093/recovery_authorization.log
++recovery_history: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624424773628093/recovery_history.log
++recovery_reply_rules: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624424773628093/recovery_reply_rules.log
++recovery_self_vote: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624424773628093/recovery_self_vote.log
++recovery_rounds: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624424773628093/recovery_rounds.log
++recovery_higher_reply: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624424773628093/recovery_higher_reply.log
++recovery_provenance: OPEN (verification_timeout)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624424773628093/recovery_provenance.log
++recovery_nonempty: OPEN (check_budget_exhausted)
++recovery_promotion: OPEN (check_budget_exhausted)
++recovery_election_basis: OPEN (check_budget_exhausted)
++recovery_election_history: OPEN (check_budget_exhausted)
++recovery_election_nonempty: OPEN (check_budget_exhausted)
++recovery_receive_confirmed: OPEN (check_budget_exhausted)
++recovery_receive_pending: OPEN (check_budget_exhausted)
++recovery_self_confirmed: OPEN (check_budget_exhausted)
++recovery_self_pending: OPEN (check_budget_exhausted)
++recovery_restart_source: OPEN (check_budget_exhausted)
++recovery_restart_history: OPEN (check_budget_exhausted)
++recovery_restart_nonempty: OPEN (check_budget_exhausted)
++INCOMPLETE: /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624424773628093/results.json
++Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.
+--- before/madraft/proof/local_history.rs
++++ after/madraft/proof/local_history.rs
+@@ -0,0 +1,4 @@
++//! Checks the invariant of the actual Core and its cross-instance composition.
++#[path="../../tasks/election_recovery/api.rs"] mod vote_api;
++#[path="../src/raft/vote_core.rs"] mod vote_core;
++#[path="vote_lemmas.rs"] mod vote_lemmas;
+--- before/madraft/proof/recovery_source.rs
++++ after/madraft/proof/recovery_source.rs
+@@ -0,0 +1,84 @@
++//! Source induction over the fixed executor's actual Write and Restart calls.
++use crate::{vote_api::*,recovery_network::*};
++use vstd::prelude::*;
++verus! {
++broadcast use vstd::seq_lib::group_seq_properties;
++pub open spec fn storage_ok(v:crate::vote_api::View) -> bool {
++    valid_state(v.config,v.state) && (v.pending.is_some() ==> {
++        let w=v.pending.unwrap();valid_record(v.config,w.record) && w.record.state==v.state && w.record.op<v.next
++    })
++}
++pub open spec fn source_inv(t:Trace) -> bool {
++    &&& recovered_from_own_write(t)
++    &&& forall|n:int| 0<=n<t.net.nodes.len() ==> {
++        let o=#[trigger] t.net.nodes[n];
++        &&& storage_ok(o.state)
++        &&& (t.live[n] ==> o.state.pending==match t.io[n] {Some(p)=>Some(p.proposed.write),None=>None})
++        &&& (t.images[n].is_some() ==> valid_record(o.state.config,t.images[n].unwrap().record))
++    }
++}
++pub proof fn initialize(t:Trace)
++    requires boot(t),ensures source_inv(t),
++{
++    assert forall|n:int| 0<=n<t.net.nodes.len() implies {
++        let o=#[trigger] t.net.nodes[n];
++        &&& storage_ok(o.state)
++        &&& (t.live[n] ==> o.state.pending==match t.io[n] {Some(p)=>Some(p.proposed.write),None=>None})
++        &&& (t.images[n].is_some() ==> valid_record(o.state.config,t.images[n].unwrap().record))
++    } by {
++        assert(t.live[n] && t.epochs[n]==0 && !t.ready[n]);
++        assert(t.io[n].is_none() && t.images[n].is_none());
++        assert(valid_state(t.net.nodes[n].state.config,t.net.nodes[n].state.state));
++        assert(t.net.nodes[n].state.pending.is_none());
++    }
++    assert(t.frames.len()==0);
++    assert forall|n:int| 0<=n<t.images.len() && (#[trigger] t.images[n]).is_some() implies image_source(t,t.images[n].unwrap(),n) by {
++        assert(n<t.net.nodes.len());assert(t.live[n] && t.epochs[n]==0);assert(t.images[n].is_none());
++    }
++    assert(recovered_from_own_write(t));
++}
++pub proof fn source_extends(a:Trace,b:Trace,i:Image,n:int)
++    requires image_source(a,i,n),b.frames.len()>0,b.frames.drop_last()==a.frames,
++    ensures image_source(b,i,n),
++{assert(b.frames[i.at as int]==a.frames[i.at as int]);}
++#[verifier::spinoff_prover]
++pub proof fn preserve(a:Trace,b:Trace,s:Step)
++    requires source_inv(a),shape(a),enabled(a,s),b==step_after(a,s),shape(b),a.frames.len()<usize::MAX,
++    ensures source_inv(b),
++{
++    assert(b.frames.len()==a.frames.len()+1);
++    assert(b.frames.drop_last()==a.frames);
++    let at=actor(a,s);
++    assert(0<=at<a.net.nodes.len());
++    assert forall|n:int| 0<=n<b.net.nodes.len() implies {
++        let o=#[trigger] b.net.nodes[n];
++        &&& storage_ok(o.state)
++        &&& (b.live[n] ==> o.state.pending==match b.io[n] {Some(p)=>Some(p.proposed.write),None=>None})
++        &&& (b.images[n].is_some() ==> valid_record(o.state.config,b.images[n].unwrap().record))
++    } by {
++        if n!=at {assert(b.net.nodes[n]==a.net.nodes[n]);assert(b.io[n]==a.io[n]);assert(b.images[n]==a.images[n]);}
++        else {
++            match s {
++                Step::Start(_)=>{},Step::Promote(_)=>{},Step::Receive(_)=>{},Step::Error(_)=>{},Step::Deliver(_)=>{},
++                Step::Write{..}=>{},Step::Notify(_)=>{},Step::Stop(_)=>{},Step::Restart(_)=>{},
++            }
++        }
++    }
++    assert forall|n:int| 0<=n<b.images.len() && (#[trigger] b.images[n]).is_some()
++        implies image_source(b,b.images[n].unwrap(),n) by {
++        if n==at && s== (Step::Write{node:at as usize,success:true}) {
++            assert(b.images[n].unwrap().at==a.frames.len());
++            assert(b.frames[a.frames.len() as int].io==a.io[n]);
++        } else {assert(b.images[n]==a.images[n]);source_extends(a,b,a.images[n].unwrap(),n);}
++    }
++    assert forall|k:int| 0<=k<b.frames.len() && (#[trigger] b.frames[k]).step is Restart implies {
++        let f=b.frames[k];
++        &&& !f.was_live && f.is_live && f.image.is_some() && image_source(b,f.image.unwrap(),f.node as int)
++        &&& f.after.state==recovered_view(f.before.state.config,f.image.unwrap().record)
++        &&& f.after.base==Some(f.image.unwrap().record) && f.after.choices==Seq::<Choice>::empty() && f.after.votes==Set::<u64>::empty()
++    } by {
++        if k<a.frames.len() {assert(b.frames[k]==a.frames[k]);source_extends(a,b,a.frames[k].image.unwrap(),a.frames[k].node as int);}
++        else {assert(b.frames[k].step==s);assert(a.images[at].is_some());source_extends(a,b,a.images[at].unwrap(),at);}
++    }
++}
++}
+--- before/madraft/proof/source_check.rs
++++ after/madraft/proof/source_check.rs
+@@ -0,0 +1,31 @@
++//! Executable successful-write origin and retained-history connection.
++use vstd::prelude::*;
++#[path="../../tasks/election_recovery/api.rs"] mod vote_api;
++#[path="../src/raft/vote_core.rs"] mod vote_core;
++#[path="../../requirements/targets.rs"] mod targets;
++#[path="../../tasks/election_recovery/observation.rs"] mod election_observation;
++#[path="../../tasks/election_recovery/network.rs"] mod vote_network;
++#[path="../../tasks/election_recovery/recovery_network.rs"] mod recovery_network;
++#[path="recovery_source.rs"] mod recovery_source;
++use vote_api::*;
++verus! {
++pub fn finite_sources(initials:&Vec<Initial>,events:&Vec<recovery_network::Step>)
++    requires 0<initials.len()<=u64::MAX,
++        forall|i:int| 0<=i<initials.len() ==> valid_initial(Config{node:i as u64,members:initials.len() as u64},#[trigger] initials[i]) && initials[i].role==Role::Follower,
++{
++    let mut n=recovery_network::new_network(initials);
++    proof {recovery_source::initialize(n.trace());}
++    let mut k=0;
++    while k<events.len()
++        invariant k<=events.len(),n.represented(),n.trace().frames.len()==k,recovery_source::source_inv(n.trace()),
++        decreases events.len()-k,
++    {
++        let e=events[k];if !recovery_network::is_enabled(&n,e) {return;}
++        let ghost before=n.trace();recovery_network::execute(&mut n,e);
++        proof {recovery_source::preserve(before,n.trace(),e);}
++        assert(recovery_network::recovered_from_own_write(n.trace()));
++        assert(n.trace().frames.drop_last()==before.frames);
++        k+=1;
++    }
++}
++}
+--- before/madraft/proof/vote_lemmas.rs
++++ after/madraft/proof/vote_lemmas.rs
+@@ -3,14 +3,32 @@
+ use vstd::prelude::*;
+ verus! {
+ pub proof fn uniqueness(tracked c: &Core) ensures unique(c.choices()) {
+-    assert(false); // OPEN: generate an invariant of the actual executable core.
++    c.history();
+ }
+ pub proof fn restart_composition(tracked before: &Core, tracked after: &Core, record: Record)
+     requires before.view().state == record.state, before.view().next == record.op + 1,
+         after.base() == Some(record), before.view().config == after.view().config,
+     ensures unique(before.choices() + after.choices()),
+ {
+-    assert(false); // OPEN: preserved vote constrains every subsequent actual output.
++    before.history();after.history();
++    let a=before.choices();let b=after.choices();let joined=a+b;
++    assert forall|i:int,j:int| 0<=i<joined.len() && 0<=j<joined.len()
++        && (#[trigger] joined[i]).node==(#[trigger] joined[j]).node && joined[i].term==joined[j].term
++        implies joined[i].candidate==joined[j].candidate by {
++        if i<a.len() && j<a.len() {assert(joined[i]==a[i]);assert(joined[j]==a[j]);}
++        else if i>=a.len() && j>=a.len() {assert(joined[i]==b[i-a.len()]);assert(joined[j]==b[j-a.len()]);}
++        else if i<a.len() {
++            assert(joined[i]==a[i]);assert(joined[j]==b[j-a.len()]);
++            assert(a[i].term<=record.state.term);assert(b[j-a.len()].term>=record.state.term);
++            assert(a[i].term==record.state.term);
++            assert(record.state.voted_for==Some(a[i].candidate));
++        } else {
++            assert(joined[j]==a[j]);assert(joined[i]==b[i-a.len()]);
++            assert(a[j].term<=record.state.term);assert(b[i-a.len()].term>=record.state.term);
++            assert(a[j].term==record.state.term);
++            assert(record.state.voted_for==Some(a[j].candidate));
++        }
++    }
+ }
+ }
+ 
+--- before/madraft/safety-round2.out
++++ after/madraft/safety-round2.out
+@@ -0,0 +1,36 @@
++source_boundary: PASS (same_candidate_imports)
++recovery_rules: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624252156454503/recovery_rules.log
++recovery_campaign: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624252156454503/recovery_campaign.log
++recovery_authorization: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624252156454503/recovery_authorization.log
++recovery_history: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624252156454503/recovery_history.log
++recovery_reply_rules: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624252156454503/recovery_reply_rules.log
++recovery_self_vote: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624252156454503/recovery_self_vote.log
++recovery_rounds: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624252156454503/recovery_rounds.log
++recovery_higher_reply: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624252156454503/recovery_higher_reply.log
++recovery_provenance: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624252156454503/recovery_provenance.log
++recovery_nonempty: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624252156454503/recovery_nonempty.log
++recovery_promotion: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624252156454503/recovery_promotion.log
++recovery_election_basis: OPEN (verification_timeout)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624252156454503/recovery_election_basis.log
++recovery_election_history: OPEN (check_budget_exhausted)
++recovery_election_nonempty: OPEN (check_budget_exhausted)
++recovery_receive_confirmed: OPEN (check_budget_exhausted)
++recovery_receive_pending: OPEN (check_budget_exhausted)
++recovery_self_confirmed: OPEN (check_budget_exhausted)
++recovery_self_pending: OPEN (check_budget_exhausted)
++recovery_restart_source: OPEN (check_budget_exhausted)
++recovery_restart_history: OPEN (check_budget_exhausted)
++recovery_restart_nonempty: OPEN (check_budget_exhausted)
++INCOMPLETE: /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624252156454503/results.json
++Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.
+--- before/madraft/source-final-round2.out
++++ after/madraft/source-final-round2.out
+@@ -0,0 +1,4 @@
++proof: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624583630103300/proof.log
++INCOMPLETE: /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624583630103300/results.json
++Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.
+--- before/madraft/source-round2.out
++++ after/madraft/source-round2.out
+@@ -0,0 +1,4 @@
++proof: OPEN (verification_timeout)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624512256568125/proof.log
++INCOMPLETE: /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624512256568125/results.json
++Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.
+--- before/madraft/src/raft/vote_core.rs
++++ after/madraft/src/raft/vote_core.rs
+@@ -15,6 +15,9 @@
+     pub closed spec fn choices(&self) -> Seq<Choice> { self.data.choices() }
+     pub closed spec fn base(&self) -> Option<Record> { self.data.base() }
+     pub closed spec fn votes(&self) -> Set<u64> { self.data.votes() }
++    pub proof fn history(tracked &self)
++        ensures history_ok(self.view(),self.choices(),self.base()),
++    { use_type_invariant(self); }
+     pub proof fn domain(tracked &self)
+         ensures valid_state(self.view().config,self.view().state), voters_domain(self.view(),self.votes()),
+     { use_type_invariant(self); self.data.domain() }
+@@ -80,13 +83,18 @@
+     }
+ 
+     closed spec fn wf(&self) -> bool {
+-        valid_state(self.state.config,self.state.state)
++        history_ok(self.state,self.outputs@,self.origin@)
++        && valid_state(self.state.config,self.state.state)
+         && voters_domain(self.state,self.votes())
+         && self.voters@.no_duplicates()
+         && self.voters.len() <= u64::MAX
+         && (self.state.pending.is_some() ==> {
+             let w=self.state.pending.unwrap();
+             w.record.state==self.state.state && w.record.op<self.state.next
++            && (w.action is Reply && w.action->Reply_0.granted ==> {
++                let r=w.action->Reply_0;
++                r.node==self.state.config.node && r.term==self.state.state.term && self.state.state.voted_for==Some(r.candidate)
++            })
+             && (w.action is Send ==> self.state.role==Role::Candidate && self.state.round==Some(self.state.state.term) && !self.state.halted)
+         })
+     }
+@@ -137,6 +145,7 @@
+     {
+         proof { assert(self.wf()); }
+         let v=self.state;
++        let ghost h=self.outputs@;let ghost b=self.origin@;
+         proof { empty_votes(); }
+         if v.halted {return Receive::Reject(Fault::Halted);}
+         if v.pending.is_some() {return Receive::Reject(Fault::Busy);}
+@@ -151,6 +160,7 @@
+         let w=Write{record:Record{op:v.next,state},request:Some(request),action:Action::Reply(Reply{node:v.config.node,term:state.term,candidate:request.candidate,granted:grant})};
+         if higher {self.demote(request.term);}
+         self.state.state=state;self.state.next=v.next+1;self.state.pending=Some(w);
++        proof { history_advance(v,self.state,h,b); }
+         Receive::Save(w)
+     }
+ 
+@@ -163,6 +173,7 @@
+     {
+         proof { assert(self.wf()); }
+         let v=self.state;
++        let ghost h=self.outputs@;let ghost b=self.origin@;
+         proof { empty_votes(); }
+         if v.halted {return Campaign::Reject(Fault::Halted);}
+         if v.pending.is_some() {return Campaign::Reject(Fault::Busy);}
+@@ -174,7 +185,11 @@
+         let w=Write{record:Record{op:v.next,state},request:Some(request),action:Action::Send(Send{config:v.config,request})};
+         self.state=StateView{config:v.config,state,role:Role::Candidate,next:v.next+1,pending:Some(w),halted:false,round:Some(state.term),self_saved:false};
+         self.voters=Vec::new();
+-        proof { self.outputs@=self.outputs@.push(choice(self.view())); }
++        proof {
++            history_advance(v,self.state,h,b);
++            history_append(self.state,h,b);
++            self.outputs@=self.outputs@.push(choice(self.view()));
++        }
+         Campaign::Save(w)
+     }
+ 
+@@ -188,6 +203,7 @@
+     {
+         proof { assert(self.wf()); }
+         let v=self.state;
++        let ghost h=self.outputs@;let ghost b=self.origin@;
+         proof { empty_votes(); }
+         if let Some(w)=v.pending {
+             if w.record.op==notice.op {
+@@ -198,7 +214,11 @@
+                 if matches!(w.action,Action::Send(_)) {self.state.self_saved=true;let mut own=Vec::new();own.push(v.config.node);
+                     proof { assert(own@.to_set() =~= Set::<u64>::empty().insert(v.config.node)); assert(own@.no_duplicates()); }
+                     self.voters=own;}
+-                proof { self.outputs@=append_action(self.outputs@,Some(w.action)); }
++                proof {
++                    history_advance(v,self.state,h,b);
++                    if let Action::Reply(r)=w.action { if r.granted { history_append(self.state,h,b); } }
++                    self.outputs@=append_action(self.outputs@,Some(w.action));
++                }
+                 proof { assert(voters_domain(self.state,self.votes())); }
+                 return Some(w.action);
+             }
+@@ -215,6 +235,7 @@
+     {
+         proof { assert(self.wf()); }
+         let v=self.state;
++        let ghost h=self.outputs@;let ghost b=self.origin@;
+         proof { empty_votes(); }
+         if v.halted {return Collect::Reject(Fault::Halted);}
+         if v.pending.is_some() {return Collect::Reject(Fault::Busy);}
+@@ -249,6 +270,7 @@
+     {
+         proof { assert(self.wf()); }
+         let v=self.state;
++        let ghost h=self.outputs@;let ghost b=self.origin@;
+         proof { empty_votes(); }
+         if !v.halted && v.pending.is_none() && matches!(v.role,Role::Candidate) && v.self_saved && v.round==Some(v.state.term) && v.state.voted_for==Some(v.config.node) && self.has_vote(v.config.node) && self.vote_count()>v.config.members/2 {
+             self.state.role=Role::Leader;true
+@@ -272,15 +294,63 @@
+     }
+ 
+     fn demote(&mut self, term:u64)
+-        requires old(self).wf(), old(self).state.pending.is_none(), term>=old(self).state.state.term,
++        requires old(self).wf(), old(self).state.pending.is_none(), term>old(self).state.state.term,
+         ensures self.wf(),
+             self.state == (StateView{state:Persistent{term,voted_for:None,log:old(self).state.state.log},role:Role::Follower,round:None,self_saved:false,..old(self).state}),
+             self.votes()==Set::<u64>::empty(),self.choices()==old(self).choices(),self.base()==old(self).base(),
+     {
+         proof { empty_votes(); }
++        let ghost v=self.state;let ghost h=self.outputs@;let ghost b=self.origin@;
+         self.state.state.term=term;self.state.state.voted_for=None;self.state.role=Role::Follower;
+         self.state.round=None;self.state.self_saved=false;self.voters=Vec::new();
+-    }
++        proof { history_advance(v,self.state,h,b); }
++    }
++}
++pub open spec fn history_ok(v:StateView,h:Seq<Choice>,b:Option<Record>) -> bool {
++    &&& unique(h)
++    &&& forall|i:int| 0<=i<h.len() ==> {
++        let c=#[trigger] h[i];
++        &&& c.node==v.config.node && c.term<=v.state.term
++        &&& (c.term==v.state.term ==> v.state.voted_for==Some(c.candidate))
++        &&& (b.is_some() ==> c.term>=b.unwrap().state.term
++            && (c.term==b.unwrap().state.term && b.unwrap().state.voted_for.is_some() ==> b.unwrap().state.voted_for==Some(c.candidate)))
++    }
++    &&& b.is_some() ==> b.unwrap().state.term<=v.state.term
++        && (b.unwrap().state.term==v.state.term && b.unwrap().state.voted_for.is_some() ==> v.state.voted_for==b.unwrap().state.voted_for)
++}
++proof fn history_advance(v:StateView,u:StateView,h:Seq<Choice>,b:Option<Record>)
++    requires history_ok(v,h,b),u.config==v.config,u.state.term>=v.state.term,
++        u.state.term==v.state.term && v.state.voted_for.is_some() ==> u.state.voted_for==v.state.voted_for,
++    ensures history_ok(u,h,b),
++{
++    assert forall|i:int| 0<=i<h.len() implies {
++        let c=#[trigger] h[i];
++        &&& c.node==u.config.node && c.term<=u.state.term
++        &&& (c.term==u.state.term ==> u.state.voted_for==Some(c.candidate))
++        &&& (b.is_some() ==> c.term>=b.unwrap().state.term
++            && (c.term==b.unwrap().state.term && b.unwrap().state.voted_for.is_some() ==> b.unwrap().state.voted_for==Some(c.candidate)))
++    } by {assert(h[i].term<=v.state.term);}
++}
++proof fn history_append(v:StateView,h:Seq<Choice>,b:Option<Record>)
++    requires history_ok(v,h,b),v.state.voted_for.is_some(),
++        b.is_some() && b.unwrap().state.term==v.state.term && b.unwrap().state.voted_for.is_some() ==> b.unwrap().state.voted_for==v.state.voted_for,
++    ensures history_ok(v,h.push(choice(v)),b),
++{
++    let c=choice(v);let next=h.push(c);
++    assert forall|i:int,j:int| 0<=i<next.len() && 0<=j<next.len()
++        && (#[trigger] next[i]).node==(#[trigger] next[j]).node && next[i].term==next[j].term
++        implies next[i].candidate==next[j].candidate by {
++        if i<h.len() && j<h.len() {assert(h[i]==next[i]);assert(h[j]==next[j]);}
++        else if i<h.len() {assert(h[i].term==v.state.term);}
++        else if j<h.len() {assert(h[j].term==v.state.term);}
++    }
++    assert forall|i:int| 0<=i<next.len() implies {
++        let c=#[trigger] next[i];
++        &&& c.node==v.config.node && c.term<=v.state.term
++        &&& (c.term==v.state.term ==> v.state.voted_for==Some(c.candidate))
++        &&& (b.is_some() ==> c.term>=b.unwrap().state.term
++            && (c.term==b.unwrap().state.term && b.unwrap().state.voted_for.is_some() ==> b.unwrap().state.voted_for==Some(c.candidate)))
++    } by {if i<h.len() {assert(next[i]==h[i]);}}
+ }
+ proof fn empty_votes()
+     ensures Seq::<u64>::empty().to_set()==Set::<u64>::empty(),Seq::<u64>::empty().no_duplicates(),
+--- before/madraft/tests-round2.out
++++ after/madraft/tests-round2.out
+@@ -0,0 +1,4 @@
++tests_seed_2_raft_raft_vote_tests: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624344713672616/tests_seed_2_raft_raft_vote_tests.log
++INCOMPLETE: /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624344713672616/results.json
++Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.

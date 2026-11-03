@@ -1,5 +1,0 @@
-# Historical election safety — DRAFT
-
-Generate the unfinished receiver, campaign, collection and promotion Core together with its Verus proofs. Read tasks/election_safety/TASK.md and the fixed API/callers. Work only in madraft/. Do not import another run or change fixed inputs. Choose private representations, invariants and proof decomposition. All actual protocol decisions belong in the same Cargo/Verus Core.
-
-Use python3 scripts/check.py obligation --task election-safety for small attempts, safety --task election-safety for proof feedback, and final --task election-safety for all tests, seeds and proofs. Keep madraft/PROGRESS.md and RESULT.md with one current obligation, actual diagnostics and open host premises. Stop modifying all candidate files during final. Report a reproducible fixed-input objection rather than changing acceptance. The no-restart election subsystem, four local recovery windows and complete Raft are separate results; the latter remains OPEN. Preserve tools.ini and licenses; do not merge, push or publish. Keep Markdown prose paragraphs on one physical line.

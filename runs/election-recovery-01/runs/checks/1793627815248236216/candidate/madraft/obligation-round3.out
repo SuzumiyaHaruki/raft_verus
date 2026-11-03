@@ -1,0 +1,35 @@
+build: OPEN (test_timeout)
+  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793625597112728447/build.log
+inventory: OPEN (build_dependency_failed)
+tests_seed_1_raft_raft_vote_tests: OPEN (build_dependency_failed)
+source_boundary: PASS (same_candidate_imports)
+recovery_rules: PASS (checked)
+  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793625597112728447/recovery_rules.log
+recovery_campaign: PASS (checked)
+  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793625597112728447/recovery_campaign.log
+recovery_authorization: PASS (checked)
+  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793625597112728447/recovery_authorization.log
+recovery_history: PASS (checked)
+  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793625597112728447/recovery_history.log
+recovery_reply_rules: PASS (checked)
+  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793625597112728447/recovery_reply_rules.log
+recovery_self_vote: PASS (checked)
+  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793625597112728447/recovery_self_vote.log
+recovery_rounds: OPEN (verification_timeout)
+  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793625597112728447/recovery_rounds.log
+recovery_higher_reply: OPEN (check_budget_exhausted)
+recovery_provenance: OPEN (check_budget_exhausted)
+recovery_nonempty: OPEN (check_budget_exhausted)
+recovery_promotion: OPEN (check_budget_exhausted)
+recovery_election_basis: OPEN (check_budget_exhausted)
+recovery_election_history: OPEN (check_budget_exhausted)
+recovery_election_nonempty: OPEN (check_budget_exhausted)
+recovery_receive_confirmed: OPEN (check_budget_exhausted)
+recovery_receive_pending: OPEN (check_budget_exhausted)
+recovery_self_confirmed: OPEN (check_budget_exhausted)
+recovery_self_pending: OPEN (check_budget_exhausted)
+recovery_restart_source: OPEN (check_budget_exhausted)
+recovery_restart_history: OPEN (check_budget_exhausted)
+recovery_restart_nonempty: OPEN (check_budget_exhausted)
+INCOMPLETE: /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793625597112728447/results.json
+Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.

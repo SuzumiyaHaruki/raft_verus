@@ -1,0 +1,24 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/.controller/election-recovery-01/check-1-1793623922087121703/candidate/tasks/election_recovery/caller.rs --crate-type lib --no-cheating --triggers-mode silent --cfg madsim --cfg es_provenance
+verification results:: 79 verified, 3 errors
+error: assertion failed
+ --> /home/nitro/Desktop/raft_verus/runs/.controller/election-recovery-01/check-1-1793623922087121703/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:6:12
+  |
+6 |     assert(false); // OPEN: generate an invariant of the actual executable core.
+  |            ^^^^^ assertion failed
+
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/election-recovery-01/check-1-1793623922087121703/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:13:12
+   |
+13 |     assert(false); // OPEN: preserved vote constrains every subsequent actual output.
+   |            ^^^^^ assertion failed
+
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/.controller/election-recovery-01/check-1-1793623922087121703/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:25:10
+   |
+25 | { assert(false); }
+   |          ^^^^^ assertion failed
+
+error: aborting due to 3 previous errors
+
+
+process=COMPLETED exit=1

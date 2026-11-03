@@ -1,0 +1,2872 @@
+{
+  "version-rustc": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "--version"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.018423916000756435,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/version-rustc.log",
+    "meaning": "REAL tool check",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "version-cargo": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "--version"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.023790703002305236,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/version-cargo.log",
+    "meaning": "REAL tool check",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "version-verus": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "--version"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.04722568600118393,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/version-verus.log",
+    "meaning": "REAL tool check",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "definitions": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/tasks/election_recovery/api.rs",
+      "--crate-type",
+      "lib",
+      "--no-cheating"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.9773409120025462,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/definitions.log",
+    "meaning": "REAL tool check",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-rules": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.2056024060002528,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-rules.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-rules": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.3602850509996642,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-rules.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-campaign": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_campaign",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.1703136880023521,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-campaign.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-campaign": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_campaign",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.5527356430029613,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-campaign.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-authorization": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_authorization",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.371816969003703,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-authorization.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-authorization": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_authorization",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.7393416440027067,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-authorization.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-history": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_history",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.4347201510026935,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-history.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-history": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_history",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.9184800799994264,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-history.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-reply_rules": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_reply_rules",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.3092436059960164,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-reply_rules.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-reply_rules": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_reply_rules",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.7820183829971938,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-reply_rules.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-self_vote": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_self_vote",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.3811390550035867,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-self_vote.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-self_vote": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_self_vote",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.6137251519976417,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-self_vote.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-rounds": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_rounds",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.331968111997412,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-rounds.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-rounds": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_rounds",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.7849285219999729,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-rounds.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-higher_reply": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_higher_reply",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.4065045389943407,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-higher_reply.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-higher_reply": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_higher_reply",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 2.1179222319988185,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-higher_reply.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-provenance": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_provenance",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.7039275740025914,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-provenance.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-provenance": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_provenance",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 3.4018695859995205,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-provenance.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-nonempty": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_nonempty",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.6733159189971047,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-nonempty.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-nonempty": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_nonempty",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 2.434573175996775,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-nonempty.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-promotion": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_promotion",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.5243725510008517,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-promotion.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-promotion": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_promotion",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.662017572998593,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-promotion.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-election_basis": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_election_basis",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.8016646789983497,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-election_basis.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-election_basis": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_election_basis",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 3.449573699996108,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-election_basis.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-election_history": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_election_history",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.6813035270024557,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-election_history.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-election_history": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_election_history",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 2.9626552859990625,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-election_history.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-election_nonempty": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_election_nonempty",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.771080009995785,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-election_nonempty.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-election_nonempty": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_election_nonempty",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 2.2688491779990727,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-election_nonempty.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-receive_confirmed": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_receive_confirmed",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.3668413790001068,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-receive_confirmed.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-receive_confirmed": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_receive_confirmed",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 2.4106377770003746,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-receive_confirmed.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-receive_pending": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_receive_pending",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.5420794730016496,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-receive_pending.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-receive_pending": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_receive_pending",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 2.7196326900011627,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-receive_pending.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-self_confirmed": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_self_confirmed",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.3663600500003668,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-self_confirmed.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-self_confirmed": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_self_confirmed",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 2.3383164889964974,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-self_confirmed.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-self_pending": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_self_pending",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.4208875820040703,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-self_pending.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-self_pending": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_self_pending",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 2.3926332900009584,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-self_pending.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-restart_source": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_restart_source",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 2.0199150330008706,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-restart_source.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-restart_source": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_restart_source",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 4.418373761000112,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-restart_source.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-restart_history": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_restart_history",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 2.0036264909940655,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-restart_history.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-restart_history": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_restart_history",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 4.276016346993856,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-restart_history.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "typecheck-restart_nonempty": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_restart_nonempty",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 2.085852452000836,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/typecheck-restart_nonempty.log",
+    "meaning": "TYPECHECKED ONLY; no body-proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-restart_nonempty": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_restart_nonempty",
+      "--verify-root"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 16.207561873998202,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-restart_nonempty.log",
+    "meaning": "CONDITIONAL caller; candidate contracts/lemmas UNPROVED; never acceptance",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-network": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_provenance",
+      "--verify-module",
+      "vote_network",
+      "--no-cheating"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 9.030233065001084,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-network.log",
+    "meaning": "CONDITIONAL actual-call/record plumbing; candidate contracts unproved, no Raft invariant supplied",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "conditional-recovery-network": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_restart_history",
+      "--verify-module",
+      "recovery_network",
+      "--no-cheating"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 33.4088402960042,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/conditional-recovery-network.log",
+    "meaning": "CONDITIONAL storage/instance/observation correspondence; all candidate bodies and invariants remain unproved",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "unfinished": {
+    "status": "INCOMPLETE",
+    "report": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/unfinished/results.json",
+    "meaning": "Unfinished seed rejection, NOT a generated candidate"
+  },
+  "observer-build": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "test",
+      "--manifest-path",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/unfinished/madraft/Cargo.toml",
+      "--locked",
+      "--offline",
+      "--release",
+      "--lib",
+      "--no-run",
+      "--message-format=json"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 50.672268488000554,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-build.log",
+    "meaning": "REAL tool check",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build"
+    }
+  },
+  "observer-1-observer_live_then_cancelled": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_live_then_cancelled",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.014548268998623826,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-1-observer_live_then_cancelled.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "1"
+    }
+  },
+  "observer-1-observer_queued_reply_then_closed": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_queued_reply_then_closed",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.014400546002434567,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-1-observer_queued_reply_then_closed.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "1"
+    }
+  },
+  "observer-1-observer_transport_error": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_transport_error",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.0133763940029894,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-1-observer_transport_error.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "1"
+    }
+  },
+  "observer-1-observer_panicked_producer": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_panicked_producer",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.012855947999923956,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-1-observer_panicked_producer.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "1"
+    }
+  },
+  "observer-1-collection_observation_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::collection_observation_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.013184027004172094,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-1-collection_observation_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "1"
+    }
+  },
+  "observer-1-collection_queue_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::collection_queue_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.01363281699741492,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-1-collection_queue_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "1"
+    }
+  },
+  "observer-1-election_observation_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::election_observation_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.015390054999443237,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-1-election_observation_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "1"
+    }
+  },
+  "observer-1-promotion_schedule_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::promotion_schedule_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.014498702999844681,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-1-promotion_schedule_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "1"
+    }
+  },
+  "observer-1-restart_file_window_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::restart_file_window_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.013055873998382594,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-1-restart_file_window_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "1"
+    }
+  },
+  "observer-2-observer_live_then_cancelled": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_live_then_cancelled",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.014870300998154562,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-2-observer_live_then_cancelled.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "2"
+    }
+  },
+  "observer-2-observer_queued_reply_then_closed": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_queued_reply_then_closed",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.01318021699989913,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-2-observer_queued_reply_then_closed.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "2"
+    }
+  },
+  "observer-2-observer_transport_error": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_transport_error",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.01302819000557065,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-2-observer_transport_error.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "2"
+    }
+  },
+  "observer-2-observer_panicked_producer": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_panicked_producer",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.014182186998368707,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-2-observer_panicked_producer.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "2"
+    }
+  },
+  "observer-2-collection_observation_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::collection_observation_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.013804259993776213,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-2-collection_observation_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "2"
+    }
+  },
+  "observer-2-collection_queue_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::collection_queue_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.013478952998411842,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-2-collection_queue_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "2"
+    }
+  },
+  "observer-2-election_observation_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::election_observation_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.014024541000253521,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-2-election_observation_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "2"
+    }
+  },
+  "observer-2-promotion_schedule_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::promotion_schedule_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.016038786998251453,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-2-promotion_schedule_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "2"
+    }
+  },
+  "observer-2-restart_file_window_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::restart_file_window_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.016043415998865385,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-2-restart_file_window_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "2"
+    }
+  },
+  "observer-3-observer_live_then_cancelled": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_live_then_cancelled",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.014709376002429053,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-3-observer_live_then_cancelled.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "3"
+    }
+  },
+  "observer-3-observer_queued_reply_then_closed": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_queued_reply_then_closed",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.01302151400159346,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-3-observer_queued_reply_then_closed.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "3"
+    }
+  },
+  "observer-3-observer_transport_error": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_transport_error",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.012197580006613862,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-3-observer_transport_error.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "3"
+    }
+  },
+  "observer-3-observer_panicked_producer": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_panicked_producer",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.012744534004013985,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-3-observer_panicked_producer.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "3"
+    }
+  },
+  "observer-3-collection_observation_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::collection_observation_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.012985235996893607,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-3-collection_observation_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "3"
+    }
+  },
+  "observer-3-collection_queue_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::collection_queue_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.013188671997340862,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-3-collection_queue_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "3"
+    }
+  },
+  "observer-3-election_observation_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::election_observation_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.014494299997750204,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-3-election_observation_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "3"
+    }
+  },
+  "observer-3-promotion_schedule_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::promotion_schedule_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.013263888999063056,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-3-promotion_schedule_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "3"
+    }
+  },
+  "observer-3-restart_file_window_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::restart_file_window_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.014621397000155412,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-3-restart_file_window_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "3"
+    }
+  },
+  "observer-4-observer_live_then_cancelled": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_live_then_cancelled",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.008665851994010154,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-4-observer_live_then_cancelled.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "4"
+    }
+  },
+  "observer-4-observer_queued_reply_then_closed": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_queued_reply_then_closed",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.012781919998815283,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-4-observer_queued_reply_then_closed.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "4"
+    }
+  },
+  "observer-4-observer_transport_error": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_transport_error",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.013250613999844063,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-4-observer_transport_error.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "4"
+    }
+  },
+  "observer-4-observer_panicked_producer": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_panicked_producer",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.015540642001724336,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-4-observer_panicked_producer.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "4"
+    }
+  },
+  "observer-4-collection_observation_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::collection_observation_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.013476001004164573,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-4-collection_observation_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "4"
+    }
+  },
+  "observer-4-collection_queue_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::collection_queue_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.014645094001025427,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-4-collection_queue_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "4"
+    }
+  },
+  "observer-4-election_observation_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::election_observation_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.01317038299748674,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-4-election_observation_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "4"
+    }
+  },
+  "observer-4-promotion_schedule_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::promotion_schedule_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.013803746005578432,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-4-promotion_schedule_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "4"
+    }
+  },
+  "observer-4-restart_file_window_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::restart_file_window_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.013853173004463315,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-4-restart_file_window_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "4"
+    }
+  },
+  "observer-5-observer_live_then_cancelled": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_live_then_cancelled",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.01394582799548516,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-5-observer_live_then_cancelled.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "5"
+    }
+  },
+  "observer-5-observer_queued_reply_then_closed": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_queued_reply_then_closed",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.014780221004912164,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-5-observer_queued_reply_then_closed.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "5"
+    }
+  },
+  "observer-5-observer_transport_error": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_transport_error",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.015126657999644522,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-5-observer_transport_error.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "5"
+    }
+  },
+  "observer-5-observer_panicked_producer": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::observer_panicked_producer",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.014266244994360022,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-5-observer_panicked_producer.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "5"
+    }
+  },
+  "observer-5-collection_observation_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::collection_observation_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.015624969004420564,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-5-collection_observation_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "5"
+    }
+  },
+  "observer-5-collection_queue_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::collection_queue_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.013786788003926631,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-5-collection_queue_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "5"
+    }
+  },
+  "observer-5-election_observation_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::election_observation_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.014435937999223825,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-5-election_observation_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "5"
+    }
+  },
+  "observer-5-promotion_schedule_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::promotion_schedule_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.013424564000160899,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-5-promotion_schedule_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "5"
+    }
+  },
+  "observer-5-restart_file_window_calibration": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/observer-build/release/deps/madraft-9d1fbd9857b1c1bd",
+      "raft::raft::vote_tests::restart_file_window_calibration",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.005325904996425379,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/observer-5-restart_file_window_calibration.log",
+    "meaning": "REAL Rust/MadSim observation check; never a protocol-success result",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "MADSIM_TEST_SEED": "5"
+    }
+  },
+  "bad_vote-compile": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "/home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs",
+      "--edition",
+      "2021",
+      "--test",
+      "--cfg",
+      "bad_vote",
+      "--cfg",
+      "madsim",
+      "--extern",
+      "vstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+      "-L",
+      "dependency=/home/nitro/.local/share/raft-verus/verus-x86-linux",
+      "--check-cfg",
+      "cfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "-o",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/fixture-bad_vote"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.25498613699892303,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/bad_vote-compile.log",
+    "meaning": "REAL tool check",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "bad_vote-rust": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/fixture-bad_vote",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 101,
+    "seconds": 0.015286537003703415,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/bad_vote-rust.log",
+    "meaning": "REAL intentionally wrong fragment",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "bad_vote-verus": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "bad_vote",
+      "--no-cheating"
+    ],
+    "process": "COMPLETED",
+    "exit": 1,
+    "seconds": 1.0071099189954111,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/bad_vote-verus.log",
+    "meaning": "REAL defective body proof; semantic FAILURE expected",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "bad_term-compile": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "/home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs",
+      "--edition",
+      "2021",
+      "--test",
+      "--cfg",
+      "bad_term",
+      "--cfg",
+      "madsim",
+      "--extern",
+      "vstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+      "-L",
+      "dependency=/home/nitro/.local/share/raft-verus/verus-x86-linux",
+      "--check-cfg",
+      "cfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "-o",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/fixture-bad_term"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.24196069999743486,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/bad_term-compile.log",
+    "meaning": "REAL tool check",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "bad_term-rust": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/fixture-bad_term",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 101,
+    "seconds": 0.013581918996351305,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/bad_term-rust.log",
+    "meaning": "REAL intentionally wrong fragment",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "bad_term-verus": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "bad_term",
+      "--no-cheating"
+    ],
+    "process": "COMPLETED",
+    "exit": 1,
+    "seconds": 0.9838834260008298,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/bad_term-verus.log",
+    "meaning": "REAL defective body proof; semantic FAILURE expected",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "bad_history-compile": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "/home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs",
+      "--edition",
+      "2021",
+      "--test",
+      "--cfg",
+      "bad_history",
+      "--cfg",
+      "madsim",
+      "--extern",
+      "vstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+      "-L",
+      "dependency=/home/nitro/.local/share/raft-verus/verus-x86-linux",
+      "--check-cfg",
+      "cfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "-o",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/fixture-bad_history"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.25306638500478584,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/bad_history-compile.log",
+    "meaning": "REAL tool check",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "bad_history-rust": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/fixture-bad_history",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 101,
+    "seconds": 0.01506352800060995,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/bad_history-rust.log",
+    "meaning": "REAL intentionally wrong fragment",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "bad_history-verus": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "bad_history",
+      "--no-cheating"
+    ],
+    "process": "COMPLETED",
+    "exit": 1,
+    "seconds": 0.9454624630016042,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/bad_history-verus.log",
+    "meaning": "REAL defective body proof; semantic FAILURE expected",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "bad_source-compile": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "/home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs",
+      "--edition",
+      "2021",
+      "--test",
+      "--cfg",
+      "bad_source",
+      "--cfg",
+      "madsim",
+      "--extern",
+      "vstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+      "-L",
+      "dependency=/home/nitro/.local/share/raft-verus/verus-x86-linux",
+      "--check-cfg",
+      "cfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "-o",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/fixture-bad_source"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.29271434499969473,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/bad_source-compile.log",
+    "meaning": "REAL tool check",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "bad_source-rust": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/fixture-bad_source",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 101,
+    "seconds": 0.016812242996820714,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/bad_source-rust.log",
+    "meaning": "REAL intentionally wrong fragment",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "bad_source-verus": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "bad_source",
+      "--no-cheating"
+    ],
+    "process": "COMPLETED",
+    "exit": 1,
+    "seconds": 1.121560382998723,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/bad_source-verus.log",
+    "meaning": "REAL defective body proof; semantic FAILURE expected",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "control-compile": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "/home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs",
+      "--edition",
+      "2021",
+      "--test",
+      "--cfg",
+      "control",
+      "--cfg",
+      "madsim",
+      "--extern",
+      "vstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib",
+      "-L",
+      "dependency=/home/nitro/.local/share/raft-verus/verus-x86-linux",
+      "--check-cfg",
+      "cfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "-o",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/fixture-control"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.26877587299532024,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/control-compile.log",
+    "meaning": "REAL tool check",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "control-rust": {
+    "command": [
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/fixture-control",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.016341377995559014,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/control-rust.log",
+    "meaning": "REAL source-observation control; no protocol implementation",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "control-verus": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "control",
+      "--no-cheating"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.2291128789947834,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/control-verus.log",
+    "meaning": "REAL observation/specification control",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "erased_ledger-typecheck": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/erased_ledger/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_restart_history",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 2.5073997660001623,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/erased_ledger-typecheck.log",
+    "meaning": "TYPECHECK ONLY: isolated actual executor mutation",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "erased_ledger-conditional-rejection": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/erased_ledger/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_restart_history",
+      "--verify-module",
+      "recovery_network",
+      "--no-cheating"
+    ],
+    "process": "COMPLETED",
+    "exit": 1,
+    "seconds": 42.197604872999364,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/erased_ledger-conditional-rejection.log",
+    "meaning": "CONDITIONAL executable correspondence rejection; candidate contracts unproved, NOT a Raft proof",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "arbitrary_recovery_record-typecheck": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/arbitrary_recovery_record/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_restart_history",
+      "--no-verify"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 2.5017583160006325,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/arbitrary_recovery_record-typecheck.log",
+    "meaning": "TYPECHECK ONLY: isolated actual executor mutation",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "arbitrary_recovery_record-conditional-rejection": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/arbitrary_recovery_record/tasks/election_recovery/caller.rs",
+      "--crate-type",
+      "lib",
+      "--cfg",
+      "madsim",
+      "--cfg",
+      "es_restart_history",
+      "--verify-module",
+      "recovery_network",
+      "--no-cheating"
+    ],
+    "process": "COMPLETED",
+    "exit": 1,
+    "seconds": 20.288070143993536,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/arbitrary_recovery_record-conditional-rejection.log",
+    "meaning": "CONDITIONAL executable correspondence rejection; candidate contracts unproved, NOT a Raft proof",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "existing-core-tests-1": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "test",
+      "--manifest-path",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/existing-core-diagnostic/madraft/Cargo.toml",
+      "--locked",
+      "--offline",
+      "--release",
+      "--lib",
+      "raft::raft::vote_tests::",
+      "--",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 49.65487535499415,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/existing-core-tests-1.log",
+    "meaning": "REAL Rust/MadSim fixed-test calibration against unchanged existing Core; no new generation/proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/existing-core-build",
+      "MADSIM_TEST_SEED": "1"
+    }
+  },
+  "existing-core-tests-2": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "test",
+      "--manifest-path",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/existing-core-diagnostic/madraft/Cargo.toml",
+      "--locked",
+      "--offline",
+      "--release",
+      "--lib",
+      "raft::raft::vote_tests::",
+      "--",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.11953618800180266,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/existing-core-tests-2.log",
+    "meaning": "REAL Rust/MadSim fixed-test calibration against unchanged existing Core; no new generation/proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/existing-core-build",
+      "MADSIM_TEST_SEED": "2"
+    }
+  },
+  "existing-core-tests-3": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "test",
+      "--manifest-path",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/existing-core-diagnostic/madraft/Cargo.toml",
+      "--locked",
+      "--offline",
+      "--release",
+      "--lib",
+      "raft::raft::vote_tests::",
+      "--",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.11680728200008161,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/existing-core-tests-3.log",
+    "meaning": "REAL Rust/MadSim fixed-test calibration against unchanged existing Core; no new generation/proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/existing-core-build",
+      "MADSIM_TEST_SEED": "3"
+    }
+  },
+  "existing-core-tests-4": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "test",
+      "--manifest-path",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/existing-core-diagnostic/madraft/Cargo.toml",
+      "--locked",
+      "--offline",
+      "--release",
+      "--lib",
+      "raft::raft::vote_tests::",
+      "--",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.13093993400252657,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/existing-core-tests-4.log",
+    "meaning": "REAL Rust/MadSim fixed-test calibration against unchanged existing Core; no new generation/proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/existing-core-build",
+      "MADSIM_TEST_SEED": "4"
+    }
+  },
+  "existing-core-tests-5": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "test",
+      "--manifest-path",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/existing-core-diagnostic/madraft/Cargo.toml",
+      "--locked",
+      "--offline",
+      "--release",
+      "--lib",
+      "raft::raft::vote_tests::",
+      "--",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.12858452000364196,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/existing-core-tests-5.log",
+    "meaning": "REAL Rust/MadSim fixed-test calibration against unchanged existing Core; no new generation/proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/existing-core-build",
+      "MADSIM_TEST_SEED": "5"
+    }
+  },
+  "ignore_file-build": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "test",
+      "--manifest-path",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/mutant-ignore_file/madraft/Cargo.toml",
+      "--locked",
+      "--offline",
+      "--release",
+      "--lib",
+      "--no-run"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 51.42671923599846,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/ignore_file-build.log",
+    "meaning": "REAL tool check",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/mutant-build-ignore_file"
+    }
+  },
+  "ignore_file-rust": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "test",
+      "--manifest-path",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/mutant-ignore_file/madraft/Cargo.toml",
+      "--locked",
+      "--offline",
+      "--release",
+      "--lib",
+      "raft::raft::vote_tests::cluster_completed_restarts_keep_votes_and_past_leader",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 101,
+    "seconds": 0.13561068100534612,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/ignore_file-rust.log",
+    "meaning": "REAL isolated host defect; expected independent runtime failure; Core unchanged",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/mutant-build-ignore_file",
+      "MADSIM_TEST_SEED": "1"
+    }
+  },
+  "early_barrier-build": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "test",
+      "--manifest-path",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/mutant-early_barrier/madraft/Cargo.toml",
+      "--locked",
+      "--offline",
+      "--release",
+      "--lib",
+      "--no-run"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 50.42709314900276,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/early_barrier-build.log",
+    "meaning": "REAL tool check",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/mutant-build-early_barrier"
+    }
+  },
+  "early_barrier-rust": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "test",
+      "--manifest-path",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/mutant-early_barrier/madraft/Cargo.toml",
+      "--locked",
+      "--offline",
+      "--release",
+      "--lib",
+      "raft::raft::vote_tests::restart_file_window_calibration",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 101,
+    "seconds": 0.12915295400307514,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/early_barrier-rust.log",
+    "meaning": "REAL isolated host defect; expected independent runtime failure; Core unchanged",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/mutant-build-early_barrier",
+      "MADSIM_TEST_SEED": "1"
+    }
+  },
+  "existing-core-final-recheck": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "test",
+      "--manifest-path",
+      "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/existing-core-diagnostic/madraft/Cargo.toml",
+      "--locked",
+      "--offline",
+      "--release",
+      "--lib",
+      "raft::raft::vote_tests::",
+      "--",
+      "--nocapture"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.1384750500001246,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/existing-core-final-recheck.log",
+    "meaning": "REAL unchanged diagnostic Core/host recheck; no new generation/proof credit",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+      "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/existing-core-build",
+      "MADSIM_TEST_SEED": "1"
+    }
+  },
+  "system-regression": {
+    "command": [
+      "/usr/bin/python3",
+      "-m",
+      "unittest",
+      "test_checks",
+      "test_election_recovery",
+      "test_election_safety",
+      "test_election_start",
+      "test_helpers",
+      "test_obligations",
+      "test_request_vote",
+      "test_review_stop",
+      "test_vote_collection",
+      "-v"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 24.68931361399882,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/system-regression.log",
+    "meaning": "Offline system regressions: agent/checker results are SIMULATED; real tools are checked separately above",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "definitions-recheck": {
+    "command": [
+      "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+      "/home/nitro/Desktop/raft_verus/tasks/election_recovery/api.rs",
+      "--crate-type",
+      "lib",
+      "--no-cheating"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 1.283321460003208,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/definitions-recheck.log",
+    "meaning": "REAL tool check",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "preview": {
+    "command": [
+      "/usr/bin/python3",
+      "scripts/run.py",
+      "new",
+      "runs/election-recovery-01",
+      "--task",
+      "election-recovery"
+    ],
+    "process": "COMPLETED",
+    "exit": 0,
+    "seconds": 0.10723760299879359,
+    "log": "/home/nitro/Desktop/raft_verus/review/election_recovery/check-03/preview.log",
+    "meaning": "REAL tool check",
+    "environment": {
+      "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+      "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+      "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)"
+    }
+  },
+  "summary": {
+    "status": "MAINTENANCE_CHECKS_PASSED",
+    "generation": "NOT_RUN",
+    "candidate": "UNIMPLEMENTED",
+    "local_proofs": "OPEN",
+    "scoped_election_recovery_no_restart": "OPEN",
+    "cross_node_source": "OPEN",
+    "global_safety": "ALL_OPEN",
+    "full_madraft": "INCOMPLETE",
+    "liveness": "OPEN",
+    "host": "UNVERIFIED"
+  }
+}

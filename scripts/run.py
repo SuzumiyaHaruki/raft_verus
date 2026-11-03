@@ -101,8 +101,8 @@ def fixed_objection(workspace, authority, state, report):
 
 
 def success_label(state):
-    module = scoped_task(state.get('task','full'))
-    return module.LABEL if module else 'MACHINE_CHECKS_PASSED'
+    from inputs import success_label as registered_success
+    return registered_success(state.get('task','full'))
 
 
 def ready_for_final(state, report):

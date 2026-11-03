@@ -1,0 +1,11 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623349066306410/candidate/madraft/proof/core_check.rs --crate-type lib --no-cheating --triggers-mode silent
+error: in 'requires' clause of public function, cannot refer to private function
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623349066306410/candidate/madraft/proof/../src/raft/vote_core.rs:87:18
+   |
+87 |         requires self.wf(), ensures valid_state(self.view().config,self.view().state), voters_domain(self.view(),self.votes()),
+   |                  ^^^^^^^^^
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

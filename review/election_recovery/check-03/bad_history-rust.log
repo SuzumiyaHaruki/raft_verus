@@ -1,0 +1,20 @@
+$ /home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/fixture-bad_history --nocapture
+
+running 1 test
+test fixture ... FAILED
+
+failures:
+
+failures:
+    fixture
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+thread 'fixture' (5544) panicked at /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:42:9:
+assertion `left == right` failed: restart erased historical observation
+  left: []
+ right: [Choice { node: 1, term: 7, candidate: 2 }]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+process=COMPLETED exit=101

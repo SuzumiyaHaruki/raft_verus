@@ -1,0 +1,49 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624329860761984/candidate/madraft/proof/source_check.rs --crate-type lib --no-cheating --triggers-mode silent
+error: `View` is ambiguous
+ --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624329860761984/candidate/madraft/proof/recovery_source.rs:5:31
+  |
+5 | pub open spec fn storage_ok(v:View) -> bool {
+  |                               ^^^^ ambiguous name
+  |
+  = warning: this was previously accepted by the compiler but is being phased out; it will become a hard error in a future release!
+  = note: for more information, see issue #114095 <https://github.com/rust-lang/rust/issues/114095>
+  = note: ambiguous because of multiple glob imports of a name in the same module
+note: `View` could refer to the trait imported here
+ --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624329860761984/candidate/madraft/proof/recovery_source.rs:3:5
+  |
+3 | use vstd::prelude::*;
+  |     ^^^^^^^^^^^^^^^^
+  = help: consider adding an explicit import of `View` to disambiguate
+note: `View` could also refer to the struct imported here
+ --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624329860761984/candidate/madraft/proof/recovery_source.rs:2:13
+  |
+2 | use crate::{vote_api::*,recovery_network::*};
+  |             ^^^^^^^^^^^
+  = help: consider adding an explicit import of `View` to disambiguate
+  = note: `#[deny(ambiguous_glob_imports)]` (part of `#[deny(future_incompatible)]`) on by default
+
+error[E0782]: expected a type, found a trait
+ --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624329860761984/candidate/madraft/proof/recovery_source.rs:5:31
+  |
+5 | pub open spec fn storage_ok(v:View) -> bool {
+  |                               ^^^^
+  |
+help: use a new generic type parameter, constrained by `View`
+  |
+5 - pub open spec fn storage_ok(v:View) -> bool {
+5 + pub open spec fn storage_ok<T: View>(v:T) -> bool {
+  |
+help: you can also use an opaque type, but users won't be able to specify the type parameter when calling the `fn`, having to rely exclusively on type inference
+  |
+5 | pub open spec fn storage_ok(v:impl View) -> bool {
+  |                               ++++
+help: alternatively, use a trait object to accept any type that implements `View`, accessing its methods at runtime using dynamic dispatch
+  |
+5 | pub open spec fn storage_ok(v:&dyn View) -> bool {
+  |                               ++++
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0782`.
+
+process=COMPLETED exit=1

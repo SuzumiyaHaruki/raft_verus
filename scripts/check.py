@@ -10,7 +10,7 @@ import shlex
 import sys
 import time
 
-from inputs import SCOPED_TASKS, scoped_task, INPUT_VERSION, input_version, copy_files, differences, files_under, fingerprint, protected_files, save_json
+from inputs import SCOPED_TASKS, scoped_task, success_label, INPUT_VERSION, input_version, copy_files, differences, files_under, fingerprint, protected_files, save_json
 from process import run_process
 from tools import ROOT, environment, settings
 
@@ -588,7 +588,7 @@ class Checks:
         elif changed or snapshot_changed or mismatched or any(s != 'PASS' for s in statuses):
             status = 'INCOMPLETE'
         else:
-            status = (module.LABEL if module else 'MACHINE_CHECKS_PASSED') if mode == 'final' else 'PASS'
+            status = success_label(self.task) if mode == 'final' else 'PASS'
         if mode == 'initial' and status == 'PASS':
             status = 'NEEDS_REVIEW'  # A working solution is not the expected starting scaffold.
         report = dict(status=status, mode=mode, input_version=input_version(self.task),
@@ -691,6 +691,12 @@ def parse_seeds(text):
     return seeds
 
 
+def exit_status(status, task='full'):
+    if status in ('PASS', success_label(task)):
+        return 0
+    return 2 if status in ('BLOCKED', 'NEEDS_REVIEW') else 1
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('kind', choices=['build', 'inventory', 'test', 'definitions', 'proof', 'top', 'foundation', 'obligation', 'feedback', 'safety', 'final'])
@@ -727,7 +733,7 @@ def main():
                 print('  ' + result['log'])
         print(report['status'] + ': ' + str(output / 'results.json'))
         print(SEMANTIC_BOUNDARY)
-    return 0 if report['status'] in ('PASS', 'MACHINE_CHECKS_PASSED','REQUEST_VOTE_CHECKS_PASSED','ELECTION_START_CHECKS_PASSED') else 2 if report['status'] in ('BLOCKED', 'NEEDS_REVIEW') else 1
+    return exit_status(report['status'], args.task)
 
 
 if __name__ == '__main__':

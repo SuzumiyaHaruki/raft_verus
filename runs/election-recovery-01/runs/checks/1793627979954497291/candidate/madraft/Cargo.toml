@@ -1,0 +1,23 @@
+[package]
+name = "madraft"
+version = "0.1.0"
+edition = "2018"
+authors = ["Runji Wang <wangrunji0408@163.com>"]
+description = "The labs of Raft consensus algorithm on MadSim."
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+madsim = { git = "https://github.com/madsim-rs/madsim", rev = "519950efb4711464f300ed7edf2967ed62d5f502", features = ["rpc", "macros"] }
+log = "0.4"
+rand = "0.8"
+futures = "0.3"
+serde = { version = "1.0", features = ["derive"] }
+bincode = "1.3"
+thiserror = "1.0"
+
+# Resolve the simulator dependency consistently with the selected toolchain.
+async-channel = "=2.5.0"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(madsim)', 'cfg(verus_keep_ghost)'] }

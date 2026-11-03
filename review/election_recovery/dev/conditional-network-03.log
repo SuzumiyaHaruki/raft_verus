@@ -1,0 +1,87 @@
+/home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/caller.rs --crate-type lib --cfg madsim --cfg es_restart_history --verify-module recovery_network --no-cheating
+verification results:: 8 verified, 2 errors (partial verification with `--verify-*`)
+note: verifying module recovery_network
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/recovery_network.rs:192:1
+    |
+192 | pub fn new_network(initials:&Vec<Initial>) -> (n:Network)
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/recovery_network.rs:195:13
+    |
+195 |     ensures n.represented(),boot(n.trace()),n.cores.len()==initials.len(),
+    |             ^^^^^^^^^^^^^^^ failed this postcondition
+...
+214 |     Network{tick:0,cores,io,images,ready,epochs,sent:Vec::new(),replies:Vec::new(),send_epochs:Vec::new(),history:Ghost(history)}
+    |     ----------------------------------------------------------------------------------------------------------------------------- at the end of the function body
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/recovery_network.rs:195:29
+    |
+195 |     ensures n.represented(),boot(n.trace()),n.cores.len()==initials.len(),
+    |                             ^^^^^^^^^^^^^^^ failed this postcondition
+...
+214 |     Network{tick:0,cores,io,images,ready,epochs,sent:Vec::new(),replies:Vec::new(),send_epochs:Vec::new(),history:Ghost(history)}
+    |     ----------------------------------------------------------------------------------------------------------------------------- at the end of the function body
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/recovery_network.rs:222:13
+    |
+222 |     ensures n.represented(),n.trace()==step_after(old(n).trace(),s),
+    |             ^^^^^^^^^^^^^^^ failed this postcondition
+...
+291 |     n.tick=n.tick+1;proof{n.history@=expected;}
+    |                          ---------------------- at the end of the function body
+
+note: automatically chose triggers for this expression:
+  --> /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/recovery_network.rs:55:12
+   |
+55 |           && forall|i:int| 0<=i<t.net.nodes.len() ==> t.live[i] && t.epochs[i]==0
+   |  ____________^
+56 | |             && t.io[i].is_none() && t.images[i].is_none() && !t.ready[i]
+   | |________________________________________________________________________^
+
+note:   trigger 1 of 3:
+  --> /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/recovery_network.rs:55:53
+   |
+55 |         && forall|i:int| 0<=i<t.net.nodes.len() ==> t.live[i] && t.epochs[i]==0
+   |                                                     ^^^^^^^^^
+
+note:   trigger 2 of 3:
+  --> /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/recovery_network.rs:55:66
+   |
+55 |         && forall|i:int| 0<=i<t.net.nodes.len() ==> t.live[i] && t.epochs[i]==0
+   |                                                                  ^^^^^^^^^^^
+
+note:   trigger 3 of 3:
+  --> /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/recovery_network.rs:56:63
+   |
+56 |             && t.io[i].is_none() && t.images[i].is_none() && !t.ready[i]
+   |                                                               ^^^^^^^^^^
+
+note: Verus printed one or more automatically chosen quantifier triggers
+      because it had low confidence in the chosen triggers.
+      To suppress these messages, do one of the following:
+        (1) manually annotate a single desired trigger using #[trigger]
+            (example: forall|i: int, j: int| f(i) && #[trigger] g(i) && #[trigger] h(j)),
+        (2) manually annotate multiple desired triggers using #![trigger ...]
+            (example: forall|i: int| #![trigger f(i)] #![trigger g(i)] f(i) && g(i)),
+        (3) accept the automatically chosen trigger using #![auto]
+            (example: forall|i: int, j: int| #![auto] f(i) && g(i) && h(j))
+        (4) use the --triggers-mode silent command-line option to suppress all printing of triggers.
+      (Note: triggers are used by the underlying SMT theorem prover to instantiate quantifiers;
+      the theorem prover instantiates a quantifier whenever some expression matches the
+      pattern specified by one of the quantifier's triggers.)
+  --> /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/recovery_network.rs:55:12
+   |
+55 |           && forall|i:int| 0<=i<t.net.nodes.len() ==> t.live[i] && t.epochs[i]==0
+   |  ____________^
+56 | |             && t.io[i].is_none() && t.images[i].is_none() && !t.ready[i]
+   | |________________________________________________________________________^
+
+error: aborting due to 3 previous errors
+
+
+exit=1 process=COMPLETED

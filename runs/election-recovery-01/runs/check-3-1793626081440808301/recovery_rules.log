@@ -1,0 +1,4 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/.controller/election-recovery-01/check-3-1793626081440808301/candidate/tasks/election_recovery/caller.rs --crate-type lib --no-cheating --triggers-mode silent --cfg madsim
+verification results:: 69 verified, 0 errors
+
+process=COMPLETED exit=0

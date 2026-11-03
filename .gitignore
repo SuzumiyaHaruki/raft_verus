@@ -1,5 +1,5 @@
 /runs/*
-!/runs/election-safety-01/
+!/runs/election-recovery-01/
 cargo-target/
 /madraft/target/
 __pycache__/

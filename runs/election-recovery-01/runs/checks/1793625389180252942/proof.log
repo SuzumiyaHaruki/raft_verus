@@ -1,0 +1,27 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793625389180252942/candidate/madraft/proof/network_check.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 79 verified, 1 errors
+error: assertion failed
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793625389180252942/candidate/madraft/proof/network_invariant.rs:146:52
+    |
+146 |     assert forall|i:int| 0<=i<b.sent.len() implies sent_ok(b,i) by {
+    |                                                    ^^^^^^^^^^^^ assertion failed
+
+error: precondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793625389180252942/candidate/madraft/proof/network_invariant.rs:147:73
+    |
+ 95 |     requires extends(a,b),choice_for(a,v,n,term),
+    |                           ---------------------- failed precondition
+...
+147 |         if i<a.sent.len() {assert(b.sent[i]==a.sent[i]);let s=a.sent[i];lift_choice(a,b,s.node,s.node,s.payload.request.term);}
+    |                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793625389180252942/candidate/madraft/proof/network_invariant.rs:136:1
+    |
+136 | pub proof fn preserve(a:Trace,b:Trace,e:Step)
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 2 previous errors
+
+
+process=COMPLETED exit=1

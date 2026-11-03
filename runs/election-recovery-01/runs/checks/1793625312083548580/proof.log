@@ -1,0 +1,30 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793625312083548580/candidate/madraft/proof/network_check.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 76 verified, 1 errors
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793625312083548580/candidate/madraft/proof/network_invariant.rs:88:52
+   |
+88 |     assert forall|i:int| 0<=i<b.sent.len() implies sent_ok(b,i) by {}
+   |                                                    ^^^^^^^^^^^^ assertion failed
+
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793625312083548580/candidate/madraft/proof/network_invariant.rs:89:55
+   |
+89 |     assert forall|i:int| 0<=i<b.replies.len() implies returned_ok(b,i) by {}
+   |                                                       ^^^^^^^^^^^^^^^^ assertion failed
+
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793625312083548580/candidate/madraft/proof/network_invariant.rs:84:53
+   |
+84 |     assert forall|n:int| 0<=n<b.nodes.len() implies local(#[trigger] b.nodes[n]) && pending_ok(b,n) by {
+   |                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793625312083548580/candidate/madraft/proof/network_invariant.rs:78:1
+   |
+78 | pub proof fn preserve(a:Trace,b:Trace,e:Step)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 3 previous errors
+
+
+process=COMPLETED exit=1

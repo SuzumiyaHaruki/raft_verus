@@ -1,0 +1,12 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624252156454503/candidate/tasks/election_recovery/caller.rs --crate-type lib --no-cheating --triggers-mode silent --cfg madsim --cfg es_provenance
+verification results:: 84 verified, 1 errors
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624252156454503/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:43:10
+   |
+43 | { assert(false); }
+   |          ^^^^^ assertion failed
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

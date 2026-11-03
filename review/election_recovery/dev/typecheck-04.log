@@ -1,0 +1,11 @@
+/home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/caller.rs --crate-type lib --cfg madsim --cfg es_restart_history --no-verify
+error: cannot call function `core::option::impl&%0::map` with mode exec
+  --> /home/nitro/Desktop/raft_verus/target/election-recovery-dev/tasks/election_recovery/recovery_network.rs:49:31
+   |
+49 |         &&& t.net.pending[i]==p.map(|p:Io| p.proposed)
+   |                               ^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 1 previous error
+
+
+exit=1 process=COMPLETED

@@ -1,0 +1,162 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/core_check.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 32 verified, 8 errors
+error: constructed value may fail to meet its declared type invariant
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:40:14
+   |
+11 | ... spec fn wf(&self) -> bool {
+   |          -------------------- type invariant declared here
+...
+40 | ...me(Core{state:StateView{config:c,state:initial.state,role:initial.role,next:0,pending:None,halted:false,round:None,self_saved:false},outputs:Ghost(Seq::empty()),origin:Ghost(None),voters:Vec::new()})
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: constructed value may fail to meet its declared type invariant
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:49:14
+   |
+11 | ... spec fn wf(&self) -> bool {
+   |          -------------------- type invariant declared here
+...
+49 | ...me(Core{state:StateView{config:c,state:record.state,role:Role::Follower,next:record.op+1,pending:None,halted:false,round:None,self_saved:false},outputs:Ghost(Seq::empty()),origin:Ghost(Some(record)),voters:Vec::new()})
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:176:5
+    |
+176 |     fn demote(&mut self, term:u64)
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: constructed value may fail to meet its declared type invariant
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:181:9
+    |
+ 11 |     closed spec fn wf(&self) -> bool {
+    |                 -------------------- type invariant declared here
+...
+181 |         self.state.state.term=term;self.state.state.voted_for=None;self.state.role=Role::Follower;
+    |         ^^^^
+
+error: constructed value may fail to meet its declared type invariant
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:181:36
+    |
+ 11 |     closed spec fn wf(&self) -> bool {
+    |                 -------------------- type invariant declared here
+...
+181 |         self.state.state.term=term;self.state.state.voted_for=None;self.state.role=Role::Follower;
+    |                                    ^^^^
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:55:5
+   |
+55 |     pub fn receive(&mut self, request: Request) -> (out: Receive)
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: constructed value may fail to meet its declared type invariant
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:67:69
+   |
+11 |     closed spec fn wf(&self) -> bool {
+   |                 -------------------- type invariant declared here
+...
+67 |             if request.term>v.state.term {self.demote(request.term);self.state.halted=true;}
+   |                                                                     ^^^^
+
+error: constructed value may fail to meet its declared type invariant
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:75:9
+   |
+11 |     closed spec fn wf(&self) -> bool {
+   |                 -------------------- type invariant declared here
+...
+75 |         self.state.state=state;self.state.next=v.next+1;self.state.pending=Some(w);
+   |         ^^^^
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:79:5
+   |
+79 |     pub fn start_election(&mut self) -> (out: Campaign)
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: constructed value may fail to meet its declared type invariant
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:94:9
+   |
+11 |     closed spec fn wf(&self) -> bool {
+   |                 -------------------- type invariant declared here
+...
+94 |         self.state=StateView{config:v.config,state,role:Role::Candidate,next:v.next+1,pending:Some(w),halted:false,round:Some(state.term)...
+   |         ^^^^
+
+error: constructed value may fail to meet its declared type invariant
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:95:9
+   |
+11 |     closed spec fn wf(&self) -> bool {
+   |                 -------------------- type invariant declared here
+...
+95 |         self.voters=Vec::new();
+   |         ^^^^
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:100:5
+    |
+100 |     pub fn complete(&mut self, notice: Completion) -> (out: Option<Action>)
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: constructed value may fail to meet its declared type invariant
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:112:21
+    |
+ 11 |     closed spec fn wf(&self) -> bool {
+    |                 -------------------- type invariant declared here
+...
+112 |                     self.state.halted=true;self.state.round=None;self.state.self_saved=false;self.voters=Vec::new();return None;
+    |                     ^^^^
+
+error: constructed value may fail to meet its declared type invariant
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:112:94
+    |
+ 11 |     closed spec fn wf(&self) -> bool {
+    |                 -------------------- type invariant declared here
+...
+112 |                     self.state.halted=true;self.state.round=None;self.state.self_saved=false;self.voters=Vec::new();return None;
+    |                                                                                              ^^^^
+
+error: constructed value may fail to meet its declared type invariant
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:114:130
+    |
+ 11 |     closed spec fn wf(&self) -> bool {
+    |                 -------------------- type invariant declared here
+...
+114 |                 if matches!(w.action,Action::Send(_)) {self.state.self_saved=true;let mut own=Vec::new();own.push(v.config.node);self.vot...
+    |                                                                                                                                  ^^^^
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:187:30
+    |
+187 |     ensures out@==v@.push(n),out@.to_set()==v@.to_set().insert(n),out@.no_duplicates(),
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+194 |     assert(out@==v@);out.push(n);out
+    |                                  --- at the end of the function body
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:121:5
+    |
+121 |     pub fn collect(&mut self, context: RpcContext, result: RpcResult) -> (out: Collect)
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: constructed value may fail to meet its declared type invariant
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:135:38
+    |
+ 11 |     closed spec fn wf(&self) -> bool {
+    |                 -------------------- type invariant declared here
+...
+135 |                 if v.next==u64::MAX {self.state.halted=true;return Collect::Reject(Fault::Exhausted);}
+    |                                      ^^^^
+
+error: constructed value may fail to meet its declared type invariant
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623274601662543/candidate/madraft/proof/../src/raft/vote_core.rs:137:17
+    |
+ 11 |     closed spec fn wf(&self) -> bool {
+    |                 -------------------- type invariant declared here
+...
+137 |                 self.state.next=v.next+1;self.state.pending=Some(w);return Collect::Save(w);
+    |                 ^^^^
+
+error: aborting due to 14 previous errors
+
+
+process=COMPLETED exit=1

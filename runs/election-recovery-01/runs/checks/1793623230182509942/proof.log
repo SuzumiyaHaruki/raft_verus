@@ -1,0 +1,11 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623230182509942/candidate/madraft/proof/core_check.rs --crate-type lib --no-cheating --triggers-mode silent
+error: couldn't read `/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623230182509942/candidate/madraft/proof/../../tasks/election_recovery/api.rs`: No such file or directory (os error 2)
+ --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623230182509942/candidate/madraft/proof/core_check.rs:1:48
+  |
+1 | #[path="../../tasks/election_recovery/api.rs"] mod vote_api;
+  |                                                ^^^^^^^^^^^^^
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

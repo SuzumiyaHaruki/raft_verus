@@ -1,0 +1,15 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623488464881856/candidate/madraft/proof/core_check.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 55 verified, 1 errors
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623488464881856/candidate/madraft/proof/../src/raft/vote_core.rs:184:17
+    |
+184 |         ensures self.wf(),
+    |                 ^^^^^^^^^ failed this postcondition
+...
+201 |                 return Some(w.action);
+    |                 --------------------- at this exit
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

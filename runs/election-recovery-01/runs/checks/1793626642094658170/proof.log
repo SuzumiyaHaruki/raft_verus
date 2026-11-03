@@ -1,0 +1,24 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793626642094658170/candidate/madraft/proof/recovery_check.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 109 verified, 3 errors
+error: function body check: Resource limit (rlimit) exceeded; consider rerunning with --profile for more details
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793626642094658170/candidate/madraft/proof/recovery_invariant.rs:154:1
+    |
+154 | pub proof fn disk_step(a:Trace,b:Trace,s:Step)
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: function body check: Resource limit (rlimit) exceeded; consider rerunning with --profile for more details
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793626642094658170/candidate/madraft/proof/recovery_invariant.rs:130:1
+    |
+130 | pub proof fn ledger_step(a:Trace,b:Trace,s:Step)
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: function body check: Resource limit (rlimit) exceeded; consider rerunning with --profile for more details
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793626642094658170/candidate/madraft/proof/recovery_invariant.rs:168:1
+    |
+168 | pub proof fn preserve(a:Trace,b:Trace,s:Step)
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 3 previous errors
+
+
+process=COMPLETED exit=1

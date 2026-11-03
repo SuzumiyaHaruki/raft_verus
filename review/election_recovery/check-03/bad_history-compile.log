@@ -1,0 +1,244 @@
+$ /home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs --edition 2021 --test --cfg bad_history --cfg madsim --extern vstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib -L dependency=/home/nitro/.local/share/raft-verus/verus-x86-linux --check-cfg 'cfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)' -o /home/nitro/Desktop/raft_verus/target/election-recovery-maintenance/check-03/fixture-bad_history
+warning: unexpected `cfg` condition name: `bad_vote`
+ --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:6:11
+  |
+6 | #[cfg(any(bad_vote,bad_term))]
+  |           ^^^^^^^^
+  |
+  = help: expected names are: `verus_keep_ghost`, `verus_keep_ghost_body`, `verus_no_vstd`, and `verus_verify_core` and 31 more
+  = help: to expect this configuration use `--check-cfg=cfg(bad_vote)`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+  = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition name: `bad_term`
+ --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:6:20
+  |
+6 | #[cfg(any(bad_vote,bad_term))]
+  |                    ^^^^^^^^
+  |
+  = help: to expect this configuration use `--check-cfg=cfg(bad_term)`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_history`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:17:7
+   |
+17 | #[cfg(bad_history)]
+   |       ^^^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_history)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `control`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:20:7
+   |
+20 | #[cfg(control)]
+   |       ^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(control)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_source`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:25:11
+   |
+25 | #[cfg(any(bad_source,control))]
+   |           ^^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_source)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `control`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:25:22
+   |
+25 | #[cfg(any(bad_source,control))]
+   |                      ^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(control)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `test`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:32:1
+   |
+32 | #[test]
+   | ^^^^^^^
+   |
+   = note: using a cfg inside a attribute macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `test` crate for guidance on how handle this unexpected cfg
+   = help: to expect this configuration use `--check-cfg=cfg(test)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_vote`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:36:15
+   |
+36 |     #[cfg(any(bad_vote,bad_term))] {
+   |               ^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_vote)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_term`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:36:24
+   |
+36 |     #[cfg(any(bad_vote,bad_term))] {
+   |                        ^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_term)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_history`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:40:15
+   |
+40 |     #[cfg(any(bad_history,control))] {
+   |               ^^^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_history)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `control`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:40:27
+   |
+40 |     #[cfg(any(bad_history,control))] {
+   |                           ^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(control)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `bad_source`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:44:15
+   |
+44 |     #[cfg(any(bad_source,control))] {
+   |               ^^^^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(bad_source)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `control`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:44:26
+   |
+44 |     #[cfg(any(bad_source,control))] {
+   |                          ^^^^^^^
+   |
+   = help: to expect this configuration use `--check-cfg=cfg(control)`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg.html> for more information about checking conditional configuration
+
+warning: unused variable: `old`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:18:13
+   |
+18 | fn retained(old:&Vec<Choice>) -> (out:Vec<Choice>) ensures out@==old@,
+   |             ^^^ help: if this is intentional, prefix it with an underscore: `_old`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `record`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:34:9
+   |
+34 |     let record=Record{op:3,state:Persistent{term:7,voted_for:Some(2),log:Log{term:4,index:5}}};
+   |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_record`
+
+warning: unused variable: `config`
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/fixtures.rs:35:9
+   |
+35 |     let config=Config{node:1,members:3};
+   |         ^^^^^^ help: if this is intentional, prefix it with an underscore: `_config`
+
+warning: enum `Role` is never used
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/api.rs:11:10
+   |
+11 | pub enum Role { Follower, Candidate, Leader }
+   |          ^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `Initial` is never constructed
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/api.rs:13:12
+   |
+13 | pub struct Initial { pub state: Persistent, pub role: Role }
+   |            ^^^^^^^
+
+warning: struct `Request` is never constructed
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/api.rs:15:12
+   |
+15 | pub struct Request { pub term: u64, pub candidate: u64, pub log: Log }
+   |            ^^^^^^^
+
+warning: struct `Reply` is never constructed
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/api.rs:17:12
+   |
+17 | pub struct Reply { pub node: u64, pub term: u64, pub candidate: u64, pub granted: bool }
+   |            ^^^^^
+
+warning: struct `Send` is never constructed
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/api.rs:21:12
+   |
+21 | pub struct Send { pub config: Config, pub request: Request }
+   |            ^^^^
+
+warning: enum `Action` is never used
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/api.rs:23:10
+   |
+23 | pub enum Action { Reply(Reply), Send(Send), Persisted }
+   |          ^^^^^^
+
+warning: struct `Write` is never constructed
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/api.rs:25:12
+   |
+25 | pub struct Write { pub record: Record, pub request: Option<Request>, pub action: Action }
+   |            ^^^^^
+
+warning: struct `Completion` is never constructed
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/api.rs:27:12
+   |
+27 | pub struct Completion { pub op: u64, pub success: bool }
+   |            ^^^^^^^^^^
+
+warning: enum `Fault` is never used
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/api.rs:29:10
+   |
+29 | pub enum Fault { Invalid, Busy, Exhausted, Halted, Leader, TermExhausted }
+   |          ^^^^^
+
+warning: enum `Receive` is never used
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/api.rs:31:10
+   |
+31 | pub enum Receive { Save(Write), Reject(Fault) }
+   |          ^^^^^^^
+
+warning: enum `Campaign` is never used
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/api.rs:33:10
+   |
+33 | pub enum Campaign { Save(Write), Reject(Fault) }
+   |          ^^^^^^^^
+
+warning: struct `View` is never constructed
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/api.rs:37:12
+   |
+37 | pub struct View { pub config: Config, pub state: Persistent, pub role: Role,
+   |            ^^^^
+
+warning: enum `Event` is never used
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/api.rs:41:10
+   |
+41 | pub enum Event { Promote, Start, Receive(Request), Complete(Completion), Rpc(RpcContext, RpcResult) }
+   |          ^^^^^
+
+warning: struct `RpcContext` is never constructed
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/api.rs:43:12
+   |
+43 | pub struct RpcContext { pub sent: Send, pub peer: u64 }
+   |            ^^^^^^^^^^
+
+warning: enum `RpcResult` is never used
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/api.rs:46:10
+   |
+46 | pub enum RpcResult { Reply { term: u64, granted: bool }, Error }
+   |          ^^^^^^^^^
+
+warning: enum `Collect` is never used
+  --> /home/nitro/Desktop/raft_verus/tasks/election_recovery/api.rs:48:10
+   |
+48 | pub enum Collect { Save(Write), Counted, Ignored, Reject(Fault) }
+   |          ^^^^^^^
+
+warning: 32 warnings emitted
+
+
+process=COMPLETED exit=0

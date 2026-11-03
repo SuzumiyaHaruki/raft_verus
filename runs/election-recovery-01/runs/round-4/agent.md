@@ -1,0 +1,3 @@
+Recovery initialization now verifies through the actual constructor: 99 verified, zero errors. Ledger and message preservation also verify; three step lemmas remain blocked by solver resource limits.
+
+All 43 election tests passed at seeds 1–5. Full restart safety remains OPEN. Exact diagnostics, the next proof splits, and unverified host premises are saved in `madraft/PROGRESS.md` and `madraft/RESULT.md`.

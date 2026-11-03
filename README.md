@@ -1,6 +1,6 @@
 # Joint MadRaft implementation and proof experiment — DRAFT
 
-The experimental Codex starts from the unfinished MadRaft labs and generates executable implementation and Verus proofs together. Maintenance changes the controller, inputs and generic examples; it does not supply a Raft solution. Current maintenance results and limitations are in [the election-safety maintenance report](review/election_safety/RESULT.md); [RESULT.md](RESULT.md) retains earlier controller results.
+The experimental Codex starts from the unfinished MadRaft labs and generates executable implementation and Verus proofs together. Maintenance changes the controller, inputs and generic examples; it does not supply a Raft solution. Current maintenance results and limitations are in [the election-recovery maintenance report](review/election_recovery/RESULT.md); [RESULT.md](RESULT.md) retains earlier controller results.
 
 | Path | Purpose |
 | --- | --- |
@@ -81,6 +81,13 @@ The optional `--task election-safety` extends the unfinished input with actual s
 python3 scripts/run.py new runs/election-safety-01 --task election-safety
 # Start only when the operator chooses to run the generation experiment.
 python3 scripts/run.py new runs/election-safety-01 --task election-safety --execute
+```
+
+The optional `--task election-recovery` adds repeated cluster restarts only after a complete successful write, before or after its matching Core completion. It retains the earlier 38 tests and 18 proof groups and adds retained-record provenance, cross-instance Choice/election history and real multi-node recovery scenarios. Interrupted/failed-write recovery and full Raft remain OPEN. New inputs contain unfinished Core and proof entries, never an old run's answer. See [the task](tasks/election_recovery/TASK.md) and [maintenance evidence](review/election_recovery/RESULT.md).
+
+```bash
+python3 scripts/run.py new runs/election-recovery-01 --task election-recovery
+python3 scripts/run.py new runs/election-recovery-01 --task election-recovery --model gpt-6.1-sol --effort high --execute
 ```
 
 The following per-obligation/block and full-acceptance discussion applies to default full mode.

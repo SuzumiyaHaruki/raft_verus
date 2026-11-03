@@ -1,0 +1,11 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623373305519961/candidate/madraft/proof/core_check.rs --crate-type lib --no-cheating --triggers-mode silent
+error: only one module-level `broadcast use` allowed for each module
+ --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623373305519961/candidate/madraft/proof/../src/raft/vote_core.rs:9:1
+  |
+9 | broadcast use vstd::set::group_set_axioms;
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 1 previous error
+
+
+process=COMPLETED exit=1

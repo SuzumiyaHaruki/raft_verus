@@ -1,0 +1,4 @@
+Actual HEAD (external Git metadata): 7f0a2709f233c09d67b50cc96ff31b6b50974dac
+Protected paths: madraft, requirements, labs, runs, tools.ini, AGENTS.md, .gitignore, tasks/request_vote, tasks/election_start, tasks/vote_collection, tasks/election_safety
+Command: git --git-dir=/tmp/raft-vote-collection-publish/.git --work-tree=/home/nitro/Desktop/raft_verus diff --exit-code 7f0a2709f233c09d67b50cc96ff31b6b50974dac -- madraft requirements labs runs tools.ini AGENTS.md .gitignore tasks/request_vote tasks/election_start tasks/vote_collection tasks/election_safety
+exit=0

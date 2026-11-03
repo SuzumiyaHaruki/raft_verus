@@ -1,0 +1,24 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624387948988072/candidate/madraft/proof/source_check.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 89 verified, 1 errors
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624387948988072/candidate/madraft/proof/recovery_source.rs:20:1
+   |
+20 | pub proof fn initialize(t:Trace)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624387948988072/candidate/madraft/proof/recovery_source.rs:29:16
+   |
+29 |         assert(t.io[n].is_none() && t.images[n].is_none());
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed
+
+error: assertion failed
+  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793624387948988072/candidate/madraft/proof/recovery_source.rs:34:12
+   |
+34 |     assert(recovered_from_own_write(t));
+   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^ assertion failed
+
+error: aborting due to 2 previous errors
+
+
+process=COMPLETED exit=1

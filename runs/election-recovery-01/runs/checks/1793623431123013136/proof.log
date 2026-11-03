@@ -1,0 +1,90 @@
+$ /home/nitro/.local/share/raft-verus/verus-x86-linux/verus /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623431123013136/candidate/madraft/proof/core_check.rs --crate-type lib --no-cheating --triggers-mode silent
+verification results:: 47 verified, 6 errors
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623431123013136/candidate/madraft/proof/../src/raft/vote_core.rs:107:17
+    |
+107 | ...   ensures out.is_some() ==> out.unwrap().wf(),
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+113 | ...   Some(Data{state:StateView{config:c,state:initial.state,role:initial.role,next:0,pending:None,halted:false,round:None,self_saved:false},outputs:Ghost(Seq::empty()),origin:Ghost(None),voters:Vec::new()})
+    |       --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- at the end of the function body
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623431123013136/candidate/madraft/proof/../src/raft/vote_core.rs:117:17
+    |
+117 | ...   ensures out.is_some() ==> out.unwrap().wf(),
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed this postcondition
+...
+123 | ...   Some(Data{state:StateView{config:c,state:record.state,role:Role::Follower,next:record.op+1,pending:None,halted:false,round:None,self_saved:false},outputs:Ghost(Seq::empty()),origin:Ghost(Some(record)),voters:Vec::new()})
+    |       ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- at the end of the function body
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623431123013136/candidate/madraft/proof/../src/raft/vote_core.rs:262:17
+    |
+260 |     fn demote(&mut self, term:u64)
+    |     ------------------------------ at the end of the function body
+261 |         requires old(self).wf(), old(self).state.pending.is_none(), term>=old(self).state.state.term,
+262 |         ensures self.wf(),
+    |                 ^^^^^^^^^ failed this postcondition
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623431123013136/candidate/madraft/proof/../src/raft/vote_core.rs:157:17
+    |
+157 |         ensures self.wf(),
+    |                 ^^^^^^^^^ failed this postcondition
+...
+175 |         Campaign::Save(w)
+    |         ----------------- at the end of the function body
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623431123013136/candidate/madraft/proof/../src/raft/vote_core.rs:178:5
+    |
+178 |     fn complete(&mut self, notice: Completion) -> (out: Option<Action>)
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623431123013136/candidate/madraft/proof/../src/raft/vote_core.rs:180:17
+    |
+180 |         ensures self.wf(),
+    |                 ^^^^^^^^^ failed this postcondition
+...
+192 |                     self.state.halted=true;self.state.round=None;self.state.self_saved=false;self.voters=Vec::new();return None;
+    |                                                                                                                     ----------- at this exit
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623431123013136/candidate/madraft/proof/../src/raft/vote_core.rs:180:17
+    |
+180 |         ensures self.wf(),
+    |                 ^^^^^^^^^ failed this postcondition
+...
+196 |                 return Some(w.action);
+    |                 --------------------- at this exit
+
+note: function body check: not all errors may have been reported; rerun with a higher value for --multiple-errors to find other potential errors in this function
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623431123013136/candidate/madraft/proof/../src/raft/vote_core.rs:201:5
+    |
+201 |     fn collect(&mut self, context: RpcContext, result: RpcResult) -> (out: Collect)
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: postcondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623431123013136/candidate/madraft/proof/../src/raft/vote_core.rs:203:17
+    |
+203 |         ensures self.wf(),
+    |                 ^^^^^^^^^ failed this postcondition
+...
+222 |                 self.voters=with_vote(&self.voters,context.peer);return Collect::Counted;
+    |                                                                  ----------------------- at this exit
+
+error: precondition not satisfied
+   --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623431123013136/candidate/madraft/proof/../src/raft/vote_core.rs:222:17
+    |
+222 |                 self.voters=with_vote(&self.voters,context.peer);return Collect::Counted;
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+271 |     requires v.len()<u64::MAX, !v@.contains(n),v@.no_duplicates(),
+    |              ---------------- failed precondition
+
+error: aborting due to 8 previous errors
+
+
+process=COMPLETED exit=1

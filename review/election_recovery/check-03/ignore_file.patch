@@ -1,0 +1,11 @@
+--- host.rs
++++ host.rs
+@@ -31,7 +31,7 @@
+ }
+ pub async fn load(config: Config, recovery_only: bool) -> io::Result<Core> {
+     let core = match fs::read("state").await {
+-        Ok(bytes) => Core::recover(config,decode(&bytes)?),
++        Ok(_bytes) => Core::new(config, Initial { state:Persistent{term:0,voted_for:None,log:Log{term:0,index:0}},role:Role::Follower }),
+         Err(e) if e.kind() == io::ErrorKind::NotFound && !recovery_only => Core::new(config,
+             Initial { state:Persistent{term:0,voted_for:None,log:Log{term:0,index:0}},role:Role::Follower }),
+         Err(e) => return Err(e),

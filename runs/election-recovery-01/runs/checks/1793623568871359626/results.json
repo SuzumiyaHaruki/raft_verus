@@ -1,0 +1,1180 @@
+{
+  "status": "INCOMPLETE",
+  "mode": "safety",
+  "input_version": "madraft-election-recovery-1",
+  "candidate_revision": "standalone",
+  "workspace": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01",
+  "checker_authority": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01",
+  "snapshot": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate",
+  "source_files": [
+    "Cargo.lock",
+    "Cargo.toml",
+    "LICENSE",
+    "PROGRESS.md",
+    "README.md",
+    "connection.out",
+    "core-check.out",
+    "obligation.out",
+    "proof/README.md",
+    "proof/core_check.rs",
+    "proof/progress.rs",
+    "proof/recovery_connection.rs",
+    "proof/recovery_lemmas.rs",
+    "proof/vote_lemmas.rs",
+    "refactor_core.py",
+    "safety.out",
+    "src/kvraft/client.rs",
+    "src/kvraft/mod.rs",
+    "src/kvraft/msg.rs",
+    "src/kvraft/server.rs",
+    "src/kvraft/tester.rs",
+    "src/kvraft/tests.rs",
+    "src/lib.rs",
+    "src/raft/mod.rs",
+    "src/raft/raft.rs",
+    "src/raft/state.rs",
+    "src/raft/tester.rs",
+    "src/raft/tests.rs",
+    "src/raft/vote_core.rs",
+    "src/shard_ctrler/client.rs",
+    "src/shard_ctrler/mod.rs",
+    "src/shard_ctrler/msg.rs",
+    "src/shard_ctrler/server.rs",
+    "src/shard_ctrler/tester.rs",
+    "src/shard_ctrler/tests.rs",
+    "src/shardkv/client.rs",
+    "src/shardkv/mod.rs",
+    "src/shardkv/msg.rs",
+    "src/shardkv/server.rs",
+    "src/shardkv/tester.rs",
+    "src/shardkv/tests.rs",
+    "src/test_support.rs",
+    "tests.out"
+  ],
+  "checks": {
+    "source_boundary": {
+      "status": "PASS",
+      "reason": "same_candidate_imports",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [],
+      "log": null,
+      "scope": "source_boundary",
+      "external_paths": []
+    },
+    "recovery_rules": {
+      "status": "OPEN",
+      "reason": "verification_failure",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_rules.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 2.251145987997006,
+      "seed": null,
+      "diagnostic": "error: assertion failed\n --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:6:12\n  |\n6 |     assert(false); // OPEN: generate an invariant of the actual executable core.\n  |            ^^^^^ assertion failed\n\nerror: assertion failed\n  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:13:12\n   |\n13 |     assert(false); // OPEN: preserved vote constrains every subsequent actual output.\n   |            ^^^^^ assertion failed\n\nerror: aborting due to 2 previous errors\n\nverification results:: 64 verified, 2 errors\n",
+      "errors": [
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "uniqueness",
+          "line": 6,
+          "column": 12,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "restart_composition",
+          "line": 13,
+          "column": 12,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        }
+      ],
+      "category": "proof_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "recovery_campaign": {
+      "status": "OPEN",
+      "reason": "verification_failure",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_campaign"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_campaign.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 2.161995932998252,
+      "seed": null,
+      "diagnostic": "error: assertion failed\n --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:6:12\n  |\n6 |     assert(false); // OPEN: generate an invariant of the actual executable core.\n  |            ^^^^^ assertion failed\n\nerror: assertion failed\n  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:13:12\n   |\n13 |     assert(false); // OPEN: preserved vote constrains every subsequent actual output.\n   |            ^^^^^ assertion failed\n\nerror: aborting due to 2 previous errors\n\nverification results:: 66 verified, 2 errors\n",
+      "errors": [
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "uniqueness",
+          "line": 6,
+          "column": 12,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "restart_composition",
+          "line": 13,
+          "column": 12,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        }
+      ],
+      "category": "proof_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "recovery_authorization": {
+      "status": "OPEN",
+      "reason": "verification_failure",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_authorization"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_authorization.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 2.5164164250018075,
+      "seed": null,
+      "diagnostic": "error: assertion failed\n --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:6:12\n  |\n6 |     assert(false); // OPEN: generate an invariant of the actual executable core.\n  |            ^^^^^ assertion failed\n\nerror: assertion failed\n  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:13:12\n   |\n13 |     assert(false); // OPEN: preserved vote constrains every subsequent actual output.\n   |            ^^^^^ assertion failed\n\nerror: aborting due to 2 previous errors\n\nverification results:: 66 verified, 2 errors\n",
+      "errors": [
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "uniqueness",
+          "line": 6,
+          "column": 12,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "restart_composition",
+          "line": 13,
+          "column": 12,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        }
+      ],
+      "category": "proof_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "recovery_history": {
+      "status": "OPEN",
+      "reason": "verification_failure",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_history"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_history.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 2.1475145229996997,
+      "seed": null,
+      "diagnostic": "error: assertion failed\n --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:6:12\n  |\n6 |     assert(false); // OPEN: generate an invariant of the actual executable core.\n  |            ^^^^^ assertion failed\n\nerror: assertion failed\n  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:13:12\n   |\n13 |     assert(false); // OPEN: preserved vote constrains every subsequent actual output.\n   |            ^^^^^ assertion failed\n\nerror: aborting due to 2 previous errors\n\nverification results:: 67 verified, 2 errors\n",
+      "errors": [
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "uniqueness",
+          "line": 6,
+          "column": 12,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "restart_composition",
+          "line": 13,
+          "column": 12,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        }
+      ],
+      "category": "proof_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "recovery_reply_rules": {
+      "status": "OPEN",
+      "reason": "verification_failure",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_reply_rules"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_reply_rules.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 2.180533655002364,
+      "seed": null,
+      "diagnostic": "error: assertion failed\n --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:6:12\n  |\n6 |     assert(false); // OPEN: generate an invariant of the actual executable core.\n  |            ^^^^^ assertion failed\n\nerror: assertion failed\n  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:13:12\n   |\n13 |     assert(false); // OPEN: preserved vote constrains every subsequent actual output.\n   |            ^^^^^ assertion failed\n\nerror: aborting due to 2 previous errors\n\nverification results:: 65 verified, 2 errors\n",
+      "errors": [
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "uniqueness",
+          "line": 6,
+          "column": 12,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "restart_composition",
+          "line": 13,
+          "column": 12,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        }
+      ],
+      "category": "proof_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "recovery_self_vote": {
+      "status": "OPEN",
+      "reason": "verification_failure",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_self_vote"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_self_vote.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 2.3608770909995656,
+      "seed": null,
+      "diagnostic": "error: assertion failed\n --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:6:12\n  |\n6 |     assert(false); // OPEN: generate an invariant of the actual executable core.\n  |            ^^^^^ assertion failed\n\nerror: assertion failed\n  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:13:12\n   |\n13 |     assert(false); // OPEN: preserved vote constrains every subsequent actual output.\n   |            ^^^^^ assertion failed\n\nerror: aborting due to 2 previous errors\n\nverification results:: 65 verified, 2 errors\n",
+      "errors": [
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "uniqueness",
+          "line": 6,
+          "column": 12,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "restart_composition",
+          "line": 13,
+          "column": 12,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        }
+      ],
+      "category": "proof_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "recovery_rounds": {
+      "status": "OPEN",
+      "reason": "verification_failure",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_rounds"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_rounds.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 2.627284469999722,
+      "seed": null,
+      "diagnostic": "error: assertion failed\n --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:6:12\n  |\n6 |     assert(false); // OPEN: generate an invariant of the actual executable core.\n  |            ^^^^^ assertion failed\n\nerror: assertion failed\n  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:13:12\n   |\n13 |     assert(false); // OPEN: preserved vote constrains every subsequent actual output.\n   |            ^^^^^ assertion failed\n\nerror: aborting due to 2 previous errors\n\nverification results:: 65 verified, 2 errors\n",
+      "errors": [
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "uniqueness",
+          "line": 6,
+          "column": 12,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "restart_composition",
+          "line": 13,
+          "column": 12,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        }
+      ],
+      "category": "proof_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "recovery_higher_reply": {
+      "status": "OPEN",
+      "reason": "verification_failure",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_higher_reply"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_higher_reply.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "COMPLETED",
+      "exit_code": 1,
+      "elapsed_seconds": 2.1375871030031703,
+      "seed": null,
+      "diagnostic": "error: assertion failed\n --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:6:12\n  |\n6 |     assert(false); // OPEN: generate an invariant of the actual executable core.\n  |            ^^^^^ assertion failed\n\nerror: assertion failed\n  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:13:12\n   |\n13 |     assert(false); // OPEN: preserved vote constrains every subsequent actual output.\n   |            ^^^^^ assertion failed\n\nerror: aborting due to 2 previous errors\n\nverification results:: 65 verified, 2 errors\n",
+      "errors": [
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "uniqueness",
+          "line": 6,
+          "column": 12,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "restart_composition",
+          "line": 13,
+          "column": 12,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        }
+      ],
+      "category": "proof_failure",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "recovery_provenance": {
+      "status": "OPEN",
+      "reason": "verification_timeout",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [
+        "/home/nitro/.local/share/raft-verus/verus-x86-linux/verus",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/caller.rs",
+        "--crate-type",
+        "lib",
+        "--no-cheating",
+        "--triggers-mode",
+        "silent",
+        "--cfg",
+        "madsim",
+        "--cfg",
+        "es_provenance"
+      ],
+      "log": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_provenance.log",
+      "scope": "entire imported compilation unit; no function filtering",
+      "process": "TIMEOUT",
+      "exit_code": -15,
+      "elapsed_seconds": 6.575583527999697,
+      "seed": null,
+      "diagnostic": "error: assertion failed\n --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:6:12\n  |\n6 |     assert(false); // OPEN: generate an invariant of the actual executable core.\n  |            ^^^^^ assertion failed\n\nerror: assertion failed\n  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:13:12\n   |\n13 |     assert(false); // OPEN: preserved vote constrains every subsequent actual output.\n   |            ^^^^^ assertion failed\n\nerror: assertion failed\n  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:25:10\n   |\n25 | { assert(false); }\n   |          ^^^^^ assertion failed\n\n",
+      "errors": [
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "uniqueness",
+          "line": 6,
+          "column": 12,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "restart_composition",
+          "line": 13,
+          "column": 12,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        },
+        {
+          "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+          "function": "network_initial",
+          "line": 25,
+          "column": 10,
+          "message": "assertion failed",
+          "category": "dependency_failure"
+        }
+      ],
+      "category": "timeout",
+      "environment": {
+        "RUSTC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/home/nitro/.local/share/raft-verus/rustup/toolchains/1.92.0-x86_64-unknown-linux-gnu/bin/rustdoc",
+        "RUSTUP_HOME": "/home/nitro/.local/share/raft-verus/rustup",
+        "CARGO_HOME": "/home/nitro/Desktop/raft_verus/target/madraft-cargo",
+        "CARGO_TARGET_DIR": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/cargo-target",
+        "CARGO_ENCODED_RUSTFLAGS": "--cfg\u001fmadsim\u001f--extern\u001fvstd=/home/nitro/.local/share/raft-verus/verus-x86-linux/libvstd.rlib\u001f-L\u001fdependency=/home/nitro/.local/share/raft-verus/verus-x86-linux\u001f--check-cfg\u001fcfg(verus_keep_ghost,verus_keep_ghost_body,verus_verify_core,verus_no_vstd)",
+        "MADSIM_TEST_NUM": "1"
+      }
+    },
+    "recovery_nonempty": {
+      "status": "OPEN",
+      "reason": "check_budget_exhausted",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [],
+      "log": null,
+      "scope": "recovery_nonempty",
+      "category": "not_run",
+      "seed": null
+    },
+    "recovery_promotion": {
+      "status": "OPEN",
+      "reason": "check_budget_exhausted",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [],
+      "log": null,
+      "scope": "recovery_promotion",
+      "category": "not_run",
+      "seed": null
+    },
+    "recovery_election_basis": {
+      "status": "OPEN",
+      "reason": "check_budget_exhausted",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [],
+      "log": null,
+      "scope": "recovery_election_basis",
+      "category": "not_run",
+      "seed": null
+    },
+    "recovery_election_history": {
+      "status": "OPEN",
+      "reason": "check_budget_exhausted",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [],
+      "log": null,
+      "scope": "recovery_election_history",
+      "category": "not_run",
+      "seed": null
+    },
+    "recovery_election_nonempty": {
+      "status": "OPEN",
+      "reason": "check_budget_exhausted",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [],
+      "log": null,
+      "scope": "recovery_election_nonempty",
+      "category": "not_run",
+      "seed": null
+    },
+    "recovery_receive_confirmed": {
+      "status": "OPEN",
+      "reason": "check_budget_exhausted",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [],
+      "log": null,
+      "scope": "recovery_receive_confirmed",
+      "category": "not_run",
+      "seed": null
+    },
+    "recovery_receive_pending": {
+      "status": "OPEN",
+      "reason": "check_budget_exhausted",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [],
+      "log": null,
+      "scope": "recovery_receive_pending",
+      "category": "not_run",
+      "seed": null
+    },
+    "recovery_self_confirmed": {
+      "status": "OPEN",
+      "reason": "check_budget_exhausted",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [],
+      "log": null,
+      "scope": "recovery_self_confirmed",
+      "category": "not_run",
+      "seed": null
+    },
+    "recovery_self_pending": {
+      "status": "OPEN",
+      "reason": "check_budget_exhausted",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [],
+      "log": null,
+      "scope": "recovery_self_pending",
+      "category": "not_run",
+      "seed": null
+    },
+    "recovery_restart_source": {
+      "status": "OPEN",
+      "reason": "check_budget_exhausted",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [],
+      "log": null,
+      "scope": "recovery_restart_source",
+      "category": "not_run",
+      "seed": null
+    },
+    "recovery_restart_history": {
+      "status": "OPEN",
+      "reason": "check_budget_exhausted",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [],
+      "log": null,
+      "scope": "recovery_restart_history",
+      "category": "not_run",
+      "seed": null
+    },
+    "recovery_restart_nonempty": {
+      "status": "OPEN",
+      "reason": "check_budget_exhausted",
+      "input_version": "madraft-election-recovery-1",
+      "candidate_revision": "standalone",
+      "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+      "command": [],
+      "log": null,
+      "scope": "recovery_restart_nonempty",
+      "category": "not_run",
+      "seed": null
+    }
+  },
+  "required": [
+    "source_boundary",
+    "recovery_rules",
+    "recovery_campaign",
+    "recovery_authorization",
+    "recovery_history",
+    "recovery_reply_rules",
+    "recovery_self_vote",
+    "recovery_rounds",
+    "recovery_higher_reply",
+    "recovery_provenance",
+    "recovery_nonempty",
+    "recovery_promotion",
+    "recovery_election_basis",
+    "recovery_election_history",
+    "recovery_election_nonempty",
+    "recovery_receive_confirmed",
+    "recovery_receive_pending",
+    "recovery_self_confirmed",
+    "recovery_self_pending",
+    "recovery_restart_source",
+    "recovery_restart_history",
+    "recovery_restart_nonempty"
+  ],
+  "input_fingerprint": "879c00ac1fdfa2b31d8bfb6172a9ed48906055deb1f9b3b4804339f3601947d3",
+  "evidence_mismatches": [],
+  "result_reuse": "No historical PASS reuse; identical units in this invocation share one actual result/log.",
+  "current_obligation": {
+    "plan": {
+      "id": "election-recovery-rules",
+      "goal": "election-recovery-rules",
+      "statement": "Close the fixed election-recovery rules caller",
+      "kind": "composition",
+      "entry": "madraft/src/raft/vote_core.rs",
+      "functions": [
+        "madraft/src/raft/vote_core.rs::try_become_leader",
+        "madraft/src/raft/vote_core.rs::receive",
+        "madraft/src/raft/vote_core.rs::start_election",
+        "madraft/src/raft/vote_core.rs::complete",
+        "madraft/src/raft/vote_core.rs::collect",
+        "madraft/src/raft/vote_core.rs::vote_count",
+        "madraft/src/raft/vote_core.rs::has_vote",
+        "madraft/src/raft/vote_core.rs::recover"
+      ],
+      "dependencies": [],
+      "premises": "Finite fixed-membership histories permit repeated node restarts only after a complete successful write, before or after its matching Core completion. Other nodes and old network messages continue. Truthful I/O, file retention, callback incarnation/cancellation, serialization and RPC forwarding are UNVERIFIED. Interrupted/failed-write recovery, full MadRaft, the other four properties and conditional liveness remain OPEN."
+    },
+    "units": {
+      "recovery_rules": "madraft/src/raft/vote_core.rs"
+    },
+    "layer": "PREPARATION",
+    "first_blocker": {
+      "check": "recovery_rules",
+      "entry": "madraft/src/raft/vote_core.rs",
+      "reason": "verification_failure",
+      "category": "proof_failure",
+      "log": "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_rules.log",
+      "diagnostic": "error: assertion failed\n --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:6:12\n  |\n6 |     assert(false); // OPEN: generate an invariant of the actual executable core.\n  |            ^^^^^ assertion failed\n\nerror: assertion failed\n  --> /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/candidate/tasks/election_recovery/../../madraft/proof/vote_lemmas.rs:13:12\n   |\n13 |     assert(false); // OPEN: preserved vote constrains every subsequent actual output.\n   |            ^^^^^ assertion failed\n\nerror: aborting due to 2 previous errors\n\nverification results:: 64 verified, 2 errors\n",
+      "failed_tests": null,
+      "seed": null
+    },
+    "imported_references": [
+      "madraft/src/raft/vote_core.rs"
+    ]
+  },
+  "assessments": {
+    "election_safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "leader_append_only": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "log_matching": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "leader_completeness": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "state_machine_safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "execution_link": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "snapshot_observation": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "nonempty_execution": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    },
+    "safety": {
+      "formula_status": "OPEN",
+      "formula_scope": "Candidate-defined relations and observations; not automatic runtime coverage.",
+      "connection_status": "OPEN",
+      "checked_connection_units": [],
+      "open_connections": [
+        "initialization",
+        "transitions",
+        "outputs",
+        "recovery",
+        "snapshots"
+      ],
+      "implementation_task": "OPEN"
+    }
+  },
+  "functional_plan": [],
+  "placeholders": [
+    "madraft/src/kvraft/client.rs::call",
+    "madraft/src/kvraft/server.rs::apply",
+    "madraft/src/raft/raft.rs::apply",
+    "madraft/src/raft/raft.rs::cond_install_snapshot",
+    "madraft/src/raft/raft.rs::persist",
+    "madraft/src/raft/raft.rs::restore",
+    "madraft/src/raft/raft.rs::snapshot",
+    "madraft/src/raft/raft.rs::start",
+    "madraft/src/shard_ctrler/server.rs::apply",
+    "madraft/src/shardkv/client.rs::append",
+    "madraft/src/shardkv/client.rs::get",
+    "madraft/src/shardkv/client.rs::put",
+    "madraft/src/shardkv/server.rs::apply",
+    "madraft/src/shardkv/server.rs::new"
+  ],
+  "semantic_review": "NOT_PERFORMED",
+  "implementation_acceptance": "NOT_ESTABLISHED",
+  "elapsed_seconds": 25.068630046996986,
+  "diagnostics": [
+    {
+      "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+      "function": "uniqueness",
+      "line": 6,
+      "column": 12,
+      "message": "assertion failed",
+      "category": "dependency_failure",
+      "affected": [
+        "recovery_rules",
+        "recovery_campaign",
+        "recovery_authorization",
+        "recovery_history",
+        "recovery_reply_rules",
+        "recovery_self_vote",
+        "recovery_rounds",
+        "recovery_higher_reply",
+        "recovery_provenance"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_rules.log",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_campaign.log",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_authorization.log",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_history.log",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_reply_rules.log",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_self_vote.log",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_rounds.log",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_higher_reply.log",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_provenance.log"
+      ]
+    },
+    {
+      "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+      "function": "restart_composition",
+      "line": 13,
+      "column": 12,
+      "message": "assertion failed",
+      "category": "dependency_failure",
+      "affected": [
+        "recovery_rules",
+        "recovery_campaign",
+        "recovery_authorization",
+        "recovery_history",
+        "recovery_reply_rules",
+        "recovery_self_vote",
+        "recovery_rounds",
+        "recovery_higher_reply",
+        "recovery_provenance"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_rules.log",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_campaign.log",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_authorization.log",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_history.log",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_reply_rules.log",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_self_vote.log",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_rounds.log",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_higher_reply.log",
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_provenance.log"
+      ]
+    },
+    {
+      "file": "tasks/election_recovery/../../madraft/proof/vote_lemmas.rs",
+      "function": "network_initial",
+      "line": 25,
+      "column": 10,
+      "message": "assertion failed",
+      "category": "dependency_failure",
+      "affected": [
+        "recovery_provenance"
+      ],
+      "logs": [
+        "/home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_provenance.log"
+      ]
+    },
+    {
+      "category": "not_run",
+      "message": "check_budget_exhausted",
+      "dependency": "recovery_nonempty",
+      "detail": "",
+      "affected": [
+        "recovery_nonempty"
+      ],
+      "logs": []
+    },
+    {
+      "category": "not_run",
+      "message": "check_budget_exhausted",
+      "dependency": "recovery_promotion",
+      "detail": "",
+      "affected": [
+        "recovery_promotion"
+      ],
+      "logs": []
+    },
+    {
+      "category": "not_run",
+      "message": "check_budget_exhausted",
+      "dependency": "recovery_election_basis",
+      "detail": "",
+      "affected": [
+        "recovery_election_basis"
+      ],
+      "logs": []
+    },
+    {
+      "category": "not_run",
+      "message": "check_budget_exhausted",
+      "dependency": "recovery_election_history",
+      "detail": "",
+      "affected": [
+        "recovery_election_history"
+      ],
+      "logs": []
+    },
+    {
+      "category": "not_run",
+      "message": "check_budget_exhausted",
+      "dependency": "recovery_election_nonempty",
+      "detail": "",
+      "affected": [
+        "recovery_election_nonempty"
+      ],
+      "logs": []
+    },
+    {
+      "category": "not_run",
+      "message": "check_budget_exhausted",
+      "dependency": "recovery_receive_confirmed",
+      "detail": "",
+      "affected": [
+        "recovery_receive_confirmed"
+      ],
+      "logs": []
+    },
+    {
+      "category": "not_run",
+      "message": "check_budget_exhausted",
+      "dependency": "recovery_receive_pending",
+      "detail": "",
+      "affected": [
+        "recovery_receive_pending"
+      ],
+      "logs": []
+    },
+    {
+      "category": "not_run",
+      "message": "check_budget_exhausted",
+      "dependency": "recovery_self_confirmed",
+      "detail": "",
+      "affected": [
+        "recovery_self_confirmed"
+      ],
+      "logs": []
+    },
+    {
+      "category": "not_run",
+      "message": "check_budget_exhausted",
+      "dependency": "recovery_self_pending",
+      "detail": "",
+      "affected": [
+        "recovery_self_pending"
+      ],
+      "logs": []
+    },
+    {
+      "category": "not_run",
+      "message": "check_budget_exhausted",
+      "dependency": "recovery_restart_source",
+      "detail": "",
+      "affected": [
+        "recovery_restart_source"
+      ],
+      "logs": []
+    },
+    {
+      "category": "not_run",
+      "message": "check_budget_exhausted",
+      "dependency": "recovery_restart_history",
+      "detail": "",
+      "affected": [
+        "recovery_restart_history"
+      ],
+      "logs": []
+    },
+    {
+      "category": "not_run",
+      "message": "check_budget_exhausted",
+      "dependency": "recovery_restart_nonempty",
+      "detail": "",
+      "affected": [
+        "recovery_restart_nonempty"
+      ],
+      "logs": []
+    }
+  ],
+  "changed_standards": [],
+  "concurrent_changes": [],
+  "liveness": "OPEN \u2014 not accepted by safety checks",
+  "semantic_boundary": "Finite fixed-membership histories permit repeated node restarts only after a complete successful write, before or after its matching Core completion. Other nodes and old network messages continue. Truthful I/O, file retention, callback incarnation/cancellation, serialization and RPC forwarding are UNVERIFIED. Interrupted/failed-write recovery, full MadRaft, the other four properties and conditional liveness remain OPEN.",
+  "task_completion": "OPEN",
+  "task_scope": "election-recovery",
+  "full_madraft": "INCOMPLETE",
+  "global_safety": {
+    "election_safety": "OPEN",
+    "leader_append_only": "OPEN",
+    "log_matching": "OPEN",
+    "leader_completeness": "OPEN",
+    "state_machine_safety": "OPEN"
+  },
+  "local_goals": {
+    "rules": "OPEN",
+    "campaign": "OPEN",
+    "authorization": "OPEN",
+    "history": "OPEN",
+    "reply_rules": "OPEN",
+    "self_vote": "OPEN",
+    "rounds": "OPEN",
+    "higher_reply": "OPEN",
+    "provenance": "OPEN",
+    "nonempty": "OPEN",
+    "promotion": "OPEN",
+    "election_basis": "OPEN",
+    "election_history": "OPEN",
+    "election_nonempty": "OPEN",
+    "receive_confirmed": "OPEN",
+    "receive_pending": "OPEN",
+    "self_confirmed": "OPEN",
+    "self_pending": "OPEN",
+    "restart_source": "OPEN",
+    "restart_history": "OPEN",
+    "restart_nonempty": "OPEN"
+  },
+  "host_verification": "UNVERIFIED",
+  "uncovered": [
+    "interrupted/failed-write recovery",
+    "stale/corrupt retained storage",
+    "physical power-loss durability",
+    "real log-to-summary correspondence",
+    "replication, commitment, application and snapshots",
+    "complete Raft protocol and faults"
+  ],
+  "formula_status": {
+    "no_restart_election_safety": "OPEN",
+    "completed_write_restarts": "OPEN"
+  },
+  "scoped_election_safety_no_restart": "OPEN",
+  "scoped_election_safety_completed_write_restarts": "OPEN",
+  "local_recovery_windows": {
+    "receive_confirmed": "OPEN",
+    "receive_pending": "OPEN",
+    "self_confirmed": "OPEN",
+    "self_pending": "OPEN"
+  },
+  "arbitrary_crash_recovery": "OPEN"
+}

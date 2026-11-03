@@ -1,0 +1,5 @@
+{
+  "source": "/home/nitro/Desktop/raft_verus/runs/election-safety-01/madraft/src/raft/vote_core.rs",
+  "input_fingerprint": "ee9ef6921fc5d07f110e6f9c9038e86dc732556de908315d54919996d6ac0ec1",
+  "purpose": "Isolated Rust wiring diagnostic ONLY; not new experiment input, generation or cross-restart proof"
+}

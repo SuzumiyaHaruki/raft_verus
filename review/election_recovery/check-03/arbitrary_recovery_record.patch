@@ -1,0 +1,11 @@
+--- recovery_network.rs
++++ recovery_network.rs
+@@ -244,7 +244,7 @@
+         Step::Stop(_) => {slot=None;n.io[at]=None;n.ready[at]=false;},
+         Step::Restart(_) => {
+             let image=n.images[at].unwrap();
+-            slot=Core::recover(Config{node:at as u64,members:(n.cores.len()+1) as u64},image.record);
++            slot=Core::recover(Config{node:at as u64,members:(n.cores.len()+1) as u64},Record{op:0,state:Persistent{term:0,voted_for:None,log:Log{term:0,index:0}}});
+             n.epochs[at]=epoch+1;n.ready[at]=false;
+         },
+         Step::Write{success,..} => {

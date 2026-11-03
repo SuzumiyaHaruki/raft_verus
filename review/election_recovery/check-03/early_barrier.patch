@@ -1,0 +1,11 @@
+--- host.rs
++++ host.rs
+@@ -48,7 +48,7 @@
+     Ok(())
+ }
+ pub async fn save(w: Write, h: &Hooks) -> io::Result<()> {
+-    checkpoint(h,w,false).await?;
++    checkpoint(h,w,false).await?; checkpoint(h,w,true).await?;
+     let file = fs::File::create("state").await?;
+     // Fault injection uses a real read-only file handle: the actual write fails.
+     let file = if h.fail_write { fs::File::open("state").await? } else { file };

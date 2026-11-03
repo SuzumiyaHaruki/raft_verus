@@ -1,0 +1,5 @@
+# Completed-write restart Election Safety — DRAFT
+
+Generate the unfinished MadRaft election Core and its proofs together. Read tasks/election_recovery/TASK.md, api.rs, caller.rs and recovery_network.rs. The new goal is general finite cluster histories with repeated node restarts at successful-write windows, preserving actual cross-instance choices, message sources and historical elections. Work only in madraft/. Never import another run or alter fixed inputs. Choose the implementation, private representation, invariant and proof decomposition yourself.
+
+Use scripts/check.py with --task election-recovery for obligation, safety and final checks. Begin the actual recovery-to-history connection early. Keep one current obligation and actual diagnostics in madraft/PROGRESS.md; report all scoped/global outcomes and unverified host premises in madraft/RESULT.md. Return by the soft handoff deadline. Stop candidate edits during final checks. Submit a minimal fixed-input objection instead of changing acceptance. Preserve tools.ini and licenses; do not merge, push or publish. Keep Markdown prose paragraphs on one physical line.

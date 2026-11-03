@@ -1,0 +1,11 @@
+--- recovery_network.rs
++++ recovery_network.rs
+@@ -314,7 +314,7 @@
+         &&& (p.is_some() ==> expected.live[j] && p.unwrap().epoch==expected.epochs[j])
+     } by {if j!=at {assert(expected.io[j]==before.io[j]);} }
+     assert(shape(expected));
+-    n.tick=n.tick+1;proof{n.history@=expected;}
++    n.tick=n.tick+1;proof{n.history@=Trace{choices:Seq::empty(),frames:Seq::empty(),..expected};}
+ }
+ // Structural routing, lifecycle and incarnation checks only.
+ pub fn is_enabled(n:&Network,s:Step) -> (yes:bool)

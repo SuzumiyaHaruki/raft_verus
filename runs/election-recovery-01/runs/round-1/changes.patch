@@ -1,0 +1,619 @@
+--- before/madraft/OBJECTION.md
++++ after/madraft/OBJECTION.md
+@@ -0,0 +1 @@
++Minimal tooling mismatch: assignment AGENTS.md and TASK.md require keeping PROGRESS.md under madraft/ and editing only madraft/. scripts/check.py::current_obligation at lines 73–75 instead reads workspace-root PROGRESS.md, and Check initialization at lines 345–350 copies only that root file into the snapshot. Reproduce with `python3 scripts/check.py obligation --task election-recovery --timeout 100` while the current block exists in madraft/PROGRESS.md. The obligation is not discovered. No acceptance, protected file or root scaffold was changed. The two nominated entries can be checked directly with `python3 scripts/check.py proof madraft/proof/core_check.rs --task election-recovery --timeout 30` and `python3 scripts/check.py proof madraft/proof/recovery_connection.rs --task election-recovery --timeout 30`; both passed.
+--- before/madraft/PROGRESS.md
++++ after/madraft/PROGRESS.md
+@@ -0,0 +1,33 @@
++Implemented the shared executable Core constructors, receiving, campaign preparation, completion authorization, collection of distinct votes, majority promotion and recovery. All 43 election tests passed at seed 1 in runs/checks/1793623374295078319; the first cold test invocation timed out during compilation. No earlier candidate was imported.
++
++Current proof repair: the first direct field invariant approach failed because intermediate field mutations did not preserve the invariant. A private Data transition now works on a copy and restores the Core invariant at its public boundary. Core verification PASSED (56 verified, zero errors, runs/checks/1793623511685136342). The executable successful-write/recovery connection PASSED (83 verified, zero errors, runs/checks/1793623528019081807). Local uniqueness and general network induction remain OPEN.
++
++<!-- obligation -->
++```ini
++[obligation]
++id = successful-write-origin
++statement = An actual campaign Write followed by successful Write, optional Notify, Stop and Restart retains the observed Choice ledger and recovers exactly that node's retained record.
++goal = election_safety
++kind = composition
++functions = madraft/src/raft/vote_core.rs::new, madraft/src/raft/vote_core.rs::start_election, madraft/src/raft/vote_core.rs::complete, madraft/src/raft/vote_core.rs::recover
++entry = madraft/proof/recovery_connection.rs
++parent =
++dependencies = madraft/proof/core_check.rs
++premises = Truthful completed-write/readback and fixed host mapping; arbitrary repeated-history induction and archived vote provenance remain open.
++tests = raft::raft::vote_tests
++```
++<!-- /obligation -->
++
++<!-- connections -->
++| Behavior | Actual functions | Proof entry | Open premises / next step |
++| --- | --- | --- | --- |
++| initialization | madraft/src/raft/vote_core.rs::new | madraft/proof/core_check.rs | Establish private invariant and fixed host inputs. |
++| transitions | madraft/src/raft/vote_core.rs::receive, madraft/src/raft/vote_core.rs::collect, madraft/src/raft/vote_core.rs::try_become_leader | madraft/proof/core_check.rs | General network preservation remains open. |
++| outputs | madraft/src/raft/vote_core.rs::complete, madraft/src/raft/vote_core.rs::start_election | madraft/proof/recovery_connection.rs | Truthful I/O completion, RPC mapping and scheduling remain host premises. |
++| recovery | madraft/src/raft/vote_core.rs::recover | madraft/proof/recovery_connection.rs | Repeated restart ledger/provenance induction remains open. |
++| snapshots | madraft/src/raft/raft.rs::snapshot, madraft/src/raft/raft.rs::cond_install_snapshot | madraft/proof/progress.rs | Unimplemented and unproved. |
++<!-- /connections -->
++
++The obligation command was run with --task election-recovery --timeout 100 on an earlier revision; it includes earlier Core proof failures. The checker reads only root PROGRESS.md, so it does not discover this required madraft/PROGRESS.md obligation; see OBJECTION.md. Safety/final checks are bounded for the handoff and cannot establish complete acceptance. Next obstacle: strengthen the private invariant with pending-action/Choice constraints, prove uniqueness and restart_composition, then prove cross-instance ledger/image/source preservation for every fixed recovery step.
++
++Final diagnostic revision 1793623612629693837: build TIMEOUT; no final test-coverage claim. Safety revision 1793623568871359626 isolates vote_lemmas.rs::uniqueness and restart_composition as the first assertion failures. Reports and failures are retained for the next slice.
+--- before/madraft/RESULT.md
++++ after/madraft/RESULT.md
+@@ -0,0 +1,13 @@
++Partial implementation; completed-write restart Election Safety is OPEN. No full-assignment or scoped final-success status is claimed.
++
++The one public Core now implements checked initialization, receiver decisions, self-vote campaigning, matching completion authorization, distinct real-peer collection, strict-majority promotion and completed-record recovery. It is used by the unchanged registered RPC/async driver and fixed executors. Its private Data and invariant establish the unchanged executable method contracts, state validity and bounded finite distinct voter set. Public mutations copy the private voter vector; this is correct but adds O(cluster size) allocation/copy cost. No assume/admit/external consensus body was added.
++
++Checks: all 43 election-recovery tests PASS at seed 1 on revision 1793623374295078319, including actual file windows, same-node restart, RPC failures/delays, old callbacks and historical elections. The first cold invocation timed out compiling (1793623241115667927), not a test assertion failure. Core proof PASS: 56 verified, zero errors (1793623511685136342). Recovery connection PASS: 83 verified, zero errors (1793623528019081807). Both use real fixed executor/candidate bodies under --no-cheating. The connection covers arbitrary legal initial cluster/member selection followed by an accepted campaign, actual successful Write, optional Notify, Stop and Restart; it retains the actual Choice ledger and proves the retained image's write-event origin. It does not prove arbitrary repetitions or receiver/higher-reply write histories.
++
++All 18 preserved scoped theorem groups and all three general restart groups remain OPEN pending the original vote_lemmas/recovery_lemmas bodies: uniqueness, restart_composition, network_initial/network_step/network_conclusion and recovery initialize/preserve/conclude still contain explicit failing obligations. Four local recovery-window callers are not closed because they import those unfinished lemmas. The five global safety targets remain OPEN: Election Safety, Leader Append-Only, Log Matching, Leader Completeness and State Machine Safety. Full Raft 2A/2B/2C/2D, KV 3A/3B, shard controller 4A and sharded KV 4B are OPEN; their original tests were preserved and not established by this slice. Snapshots, interrupted writes, arbitrary crash recovery, log-summary refinement, application correctness and conditional liveness remain OPEN. No global model theorem or local count is presented as implementation acceptance.
++
++Host premises remain UNVERIFIED: vote_host::encode/decode preserve record values; load reads this same node's latest permitted retained successful image; save/checkpoint report the actual operation and result; RaftHandle::new_receiver_observed, start_election, send_vote_request, deliver_vote_result, vote_call, start_rpc_server and request_vote serialize operations, associate immutable RPC contexts with genuine peers, forward actual outputs and cancel dead caller tasks. The fixed recovery executor separates actual Write and Notify, retains message/Choice/election history and checks incarnations, but it is not a filesystem or async-host refinement proof. MadSim completed writes survive node kill/restart; sync_all is a simulator no-op and power_fail is unfinished. No physical durability, torn-write or stale/corrupt read guarantee is proved. Stable configuration/identity, non-forging peers, faithful encoding, Rust/Verus/vstd/SMT and scheduling/storage host contracts are trusted as disclosed by the fixed environment.
++
++Reproduce with `python3 scripts/check.py test raft::raft::vote_tests --task election-recovery --seed 1 --timeout 90`, `python3 scripts/check.py proof madraft/proof/core_check.rs --task election-recovery --timeout 30`, `python3 scripts/check.py proof madraft/proof/recovery_connection.rs --task election-recovery --timeout 30`, `python3 scripts/check.py obligation --task election-recovery --timeout 100`, `python3 scripts/check.py safety --task election-recovery --timeout 25`, and `python3 scripts/check.py final --task election-recovery --timeout 50`. The final bounded checks are diagnostic runs, not complete acceptance. See OBJECTION.md for the root-versus-madraft progress-path mismatch.
++
++Stopped-candidate safety (1793623568871359626) reports uniqueness and restart_composition assertion failures at vote_lemmas.rs lines 6 and 13; recovery_provenance timed out and remaining groups exhausted the 25-second budget. The bounded final run (1793623612629693837) timed out during build, so inventory/tests were not established on its final snapshot; its formal failures and budget exhaustion are retained in that results.json. The earlier seed-1 PASS and direct proof PASS remain separately scoped evidence.
+--- before/madraft/connection.out
++++ after/madraft/connection.out
+@@ -0,0 +1,4 @@
++proof: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623528019081807/proof.log
++PASS: /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623528019081807/results.json
++Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.
+--- before/madraft/core-check.out
++++ after/madraft/core-check.out
+@@ -0,0 +1,4 @@
++proof: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623511685136342/proof.log
++PASS: /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623511685136342/results.json
++Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.
+--- before/madraft/final.out
++++ after/madraft/final.out
+@@ -0,0 +1,41 @@
++build: OPEN (test_timeout)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623612629693837/build.log
++inventory: OPEN (build_dependency_failed)
++tests_seed_1_raft_raft_vote_tests: OPEN (build_dependency_failed)
++tests_seed_2_raft_raft_vote_tests: OPEN (build_dependency_failed)
++tests_seed_3_raft_raft_vote_tests: OPEN (build_dependency_failed)
++tests_seed_4_raft_raft_vote_tests: OPEN (build_dependency_failed)
++tests_seed_5_raft_raft_vote_tests: OPEN (build_dependency_failed)
++source_boundary: PASS (same_candidate_imports)
++recovery_rules: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623612629693837/recovery_rules.log
++recovery_campaign: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623612629693837/recovery_campaign.log
++recovery_authorization: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623612629693837/recovery_authorization.log
++recovery_history: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623612629693837/recovery_history.log
++recovery_reply_rules: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623612629693837/recovery_reply_rules.log
++recovery_self_vote: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623612629693837/recovery_self_vote.log
++recovery_rounds: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623612629693837/recovery_rounds.log
++recovery_higher_reply: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623612629693837/recovery_higher_reply.log
++recovery_provenance: OPEN (verification_timeout)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623612629693837/recovery_provenance.log
++recovery_nonempty: OPEN (check_budget_exhausted)
++recovery_promotion: OPEN (check_budget_exhausted)
++recovery_election_basis: OPEN (check_budget_exhausted)
++recovery_election_history: OPEN (check_budget_exhausted)
++recovery_election_nonempty: OPEN (check_budget_exhausted)
++recovery_receive_confirmed: OPEN (check_budget_exhausted)
++recovery_receive_pending: OPEN (check_budget_exhausted)
++recovery_self_confirmed: OPEN (check_budget_exhausted)
++recovery_self_pending: OPEN (check_budget_exhausted)
++recovery_restart_source: OPEN (check_budget_exhausted)
++recovery_restart_history: OPEN (check_budget_exhausted)
++recovery_restart_nonempty: OPEN (check_budget_exhausted)
++INCOMPLETE: /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623612629693837/results.json
++Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.
+--- before/madraft/obligation.out
++++ after/madraft/obligation.out
+@@ -0,0 +1,42 @@
++build: OPEN (test_timeout)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/build.log
++inventory: OPEN (build_dependency_failed)
++tests_seed_1_raft_raft_vote_tests: OPEN (build_dependency_failed)
++source_boundary: PASS (same_candidate_imports)
++recovery_rules: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/recovery_rules.log
++recovery_campaign: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/recovery_campaign.log
++recovery_authorization: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/recovery_authorization.log
++recovery_history: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/recovery_history.log
++recovery_reply_rules: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/recovery_reply_rules.log
++recovery_self_vote: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/recovery_self_vote.log
++recovery_rounds: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/recovery_rounds.log
++recovery_higher_reply: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/recovery_higher_reply.log
++recovery_provenance: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/recovery_provenance.log
++recovery_nonempty: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/recovery_nonempty.log
++recovery_promotion: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/recovery_promotion.log
++recovery_election_basis: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/recovery_election_basis.log
++recovery_election_history: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/recovery_election_history.log
++recovery_election_nonempty: OPEN (verification_timeout)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/recovery_election_nonempty.log
++recovery_receive_confirmed: OPEN (check_budget_exhausted)
++recovery_receive_pending: OPEN (check_budget_exhausted)
++recovery_self_confirmed: OPEN (check_budget_exhausted)
++recovery_self_pending: OPEN (check_budget_exhausted)
++recovery_restart_source: OPEN (check_budget_exhausted)
++recovery_restart_history: OPEN (check_budget_exhausted)
++recovery_restart_nonempty: OPEN (check_budget_exhausted)
++INCOMPLETE: /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623498062143766/results.json
++Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.
+--- before/madraft/proof/core_check.rs
++++ after/madraft/proof/core_check.rs
+@@ -0,0 +1,3 @@
++#[path="../../tasks/election_recovery/api.rs"] mod vote_api;
++#[path="../src/raft/vote_core.rs"] mod vote_core;
++fn main() {}
+--- before/madraft/proof/recovery_connection.rs
++++ after/madraft/proof/recovery_connection.rs
+@@ -0,0 +1,38 @@
++//! Executable successful-write origin and retained-history connection.
++use vstd::prelude::*;
++#[path="../../tasks/election_recovery/api.rs"] mod vote_api;
++#[path="../src/raft/vote_core.rs"] mod vote_core;
++#[path="../../requirements/targets.rs"] mod targets;
++#[path="../../tasks/election_recovery/observation.rs"] mod election_observation;
++#[path="../../tasks/election_recovery/network.rs"] mod vote_network;
++#[path="../../tasks/election_recovery/recovery_network.rs"] mod recovery_network;
++use vote_api::*;
++verus! {
++#[verifier::spinoff_prover]
++pub fn actual_written_restart(initials:&Vec<Initial>,node:usize,notify:bool)
++    requires 0<initials.len()<=u64::MAX,node<initials.len(),
++        forall|i:int| 0<=i<initials.len() ==> valid_initial(Config{node:i as u64,members:initials.len() as u64},#[trigger] initials[i]) && initials[i].role==Role::Follower,
++{
++    use recovery_network::{Step as S,execute};
++    let mut n=recovery_network::new_network(initials);
++    execute(&mut n,S::Start(node));
++    if n.io[node].is_none() {return;}
++    let actual=n.io[node].unwrap().proposed.write;
++    let ghost ledger=n.trace().choices;
++    assert(ledger.len()==1);
++    assert(ledger[0]==Choice{node:node as u64,term:actual.record.state.term,candidate:node as u64});
++    execute(&mut n,S::Write{node,success:true});
++    let ghost image=n.trace().images[node as int].unwrap();
++    assert(image.record==actual.record && image.epoch==0 && image.at==1);
++    assert(recovery_network::image_source(n.trace(),image,node as int));
++    if notify {execute(&mut n,S::Notify(node));}
++    execute(&mut n,S::Stop(node));
++    execute(&mut n,S::Restart(node));
++    assert(n.trace().choices==ledger);
++    assert(n.trace().net.nodes[node as int].state==recovered_view(Config{node:node as u64,members:initials.len() as u64},actual.record));
++    assert(n.trace().net.nodes[node as int].base==Some(actual.record));
++    assert(n.trace().net.nodes[node as int].choices==Seq::<Choice>::empty());
++    assert(n.trace().net.nodes[node as int].votes==Set::<u64>::empty());
++    assert(recovery_network::image_source(n.trace(),image,node as int));
++}
++}
+--- before/madraft/safety.out
++++ after/madraft/safety.out
+@@ -0,0 +1,33 @@
++source_boundary: PASS (same_candidate_imports)
++recovery_rules: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_rules.log
++recovery_campaign: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_campaign.log
++recovery_authorization: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_authorization.log
++recovery_history: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_history.log
++recovery_reply_rules: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_reply_rules.log
++recovery_self_vote: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_self_vote.log
++recovery_rounds: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_rounds.log
++recovery_higher_reply: OPEN (verification_failure)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_higher_reply.log
++recovery_provenance: OPEN (verification_timeout)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/recovery_provenance.log
++recovery_nonempty: OPEN (check_budget_exhausted)
++recovery_promotion: OPEN (check_budget_exhausted)
++recovery_election_basis: OPEN (check_budget_exhausted)
++recovery_election_history: OPEN (check_budget_exhausted)
++recovery_election_nonempty: OPEN (check_budget_exhausted)
++recovery_receive_confirmed: OPEN (check_budget_exhausted)
++recovery_receive_pending: OPEN (check_budget_exhausted)
++recovery_self_confirmed: OPEN (check_budget_exhausted)
++recovery_self_pending: OPEN (check_budget_exhausted)
++recovery_restart_source: OPEN (check_budget_exhausted)
++recovery_restart_history: OPEN (check_budget_exhausted)
++recovery_restart_nonempty: OPEN (check_budget_exhausted)
++INCOMPLETE: /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623568871359626/results.json
++Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.
+--- before/madraft/src/raft/vote_core.rs
++++ after/madraft/src/raft/vote_core.rs
+@@ -1,78 +1,331 @@
+-//! UNIMPLEMENTED student input. Cargo and Verus import this exact file.
++//! Executable election and completed-write recovery core.
+ use super::vote_api::*;
+ use super::vote_api::View as StateView;
+ use vstd::prelude::*;
++use vstd::seq_lib::*;
++use vstd::set_lib::*;
+ verus! {
+-// These fields are a starting declaration, NOT an invariant or solution.
+-// You may redesign private representation and add auxiliary ghost state.
+-pub struct Core { state: StateView, outputs: Ghost<Seq<Choice>>, origin: Ghost<Option<Record>>, voters: Vec<u64> }
++broadcast use {vstd::seq_lib::group_seq_properties,vstd::set::group_set_axioms,vstd::seq_lib::seq_to_set_is_finite};
++// The private Data is copied before mutation so each public Core boundary retains its invariant.
++pub struct Core { data: Data }
+ impl Core {
+-    pub closed spec fn view(&self) -> StateView { self.state }
+-    pub closed spec fn choices(&self) -> Seq<Choice> { self.outputs@ }
+-    pub closed spec fn base(&self) -> Option<Record> { self.origin@ }
+-
+-    pub closed spec fn votes(&self) -> Set<u64> { self.voters@.to_set() }
+-
+-    // Public domain fact, not a supplied inductive Raft invariant. Establish it
+-    // with your own representation and invariant, including after recovery.
++    #[verifier::type_invariant]
++    closed spec fn wf(&self) -> bool { self.data.wf() }
++    pub closed spec fn view(&self) -> StateView { self.data.view() }
++    pub closed spec fn choices(&self) -> Seq<Choice> { self.data.choices() }
++    pub closed spec fn base(&self) -> Option<Record> { self.data.base() }
++    pub closed spec fn votes(&self) -> Set<u64> { self.data.votes() }
+     pub proof fn domain(tracked &self)
+         ensures valid_state(self.view().config,self.view().state), voters_domain(self.view(),self.votes()),
+-    { assert(false); } // OPEN
+-
++    { use_type_invariant(self); self.data.domain() }
+     pub fn new(c: Config, initial: Initial) -> (out: Option<Self>)
+         ensures out.is_some() <==> valid_initial(c,initial),
+             out.is_some() ==> out.unwrap().view() == fresh_view(c,initial)
+                 && out.unwrap().choices() == Seq::<Choice>::empty() && out.unwrap().base().is_none() && out.unwrap().votes() == Set::<u64>::empty(),
+-    { unreached() } // TODO: implement checked initialization
+-
++    { let d=Data::new(c,initial); match d {Some(data)=>Some(Core{data}),None=>None} }
+     pub fn recover(c: Config, record: Record) -> (out: Option<Self>)
+         ensures out.is_some() <==> valid_record(c,record),
+             out.is_some() ==> out.unwrap().view() == recovered_view(c,record)
+                 && out.unwrap().choices() == Seq::<Choice>::empty() && out.unwrap().base() == Some(record) && out.unwrap().votes() == Set::<u64>::empty(),
+-    { unreached() } // TODO: implement actual recovery and establish your invariant
+-
++    { let d=Data::recover(c,record); match d {Some(data)=>Some(Core{data}),None=>None} }
+     pub fn inspect(&self) -> (out: StateView) ensures out == self.view()
+-    { unreached() } // TODO: return the actual state
+-
++    { proof { use_type_invariant(&*self); } self.data.inspect() }
+     pub fn receive(&mut self, request: Request) -> (out: Receive)
+         ensures out == receive_result(old(self).view(), request),
+             self.view() == receive_after(old(self).view(),request,out),
+             self.choices() == old(self).choices(), self.base() == old(self).base(),
+             self.votes() == receive_votes(old(self).view(),old(self).votes(),request,out),
+-    { unreached() } // TODO: implement actual receiver and choose useful invariants
+-
++    { proof { use_type_invariant(&*self); } let mut d=self.data.copy(); let out=d.receive(request); self.data=d; out }
+     pub fn start_election(&mut self) -> (out: Campaign)
+         ensures out == start_result(old(self).view()), self.view() == start_after(old(self).view(),out),
+             self.choices() == start_choices(old(self).choices(),old(self).view(),out),
+             self.base() == old(self).base(), self.votes() == start_votes(old(self).votes(),out),
+-    { unreached() } // TODO: actual checked increment/self-choice/save, no send authorization here
+-
++    { proof { use_type_invariant(&*self); } let mut d=self.data.copy(); let out=d.start_election(); self.data=d; out }
+     pub fn complete(&mut self, notice: Completion) -> (out: Option<Action>)
+         ensures out == complete_result(old(self).view(),notice),
+             self.view() == complete_after(old(self).view(),notice),
+             self.choices() == append_action(old(self).choices(),out), self.base() == old(self).base(),
+             self.votes() == completion_votes(old(self).view(),old(self).votes(),notice),
+-    { unreached() } // TODO: authorize only the matching saved reply OR campaign send
++    { proof { use_type_invariant(&*self); } let mut d=self.data.copy(); let out=d.complete(notice); self.data=d; out }
+     pub fn collect(&mut self, context: RpcContext, result: RpcResult) -> (out: Collect)
+         ensures out == collect_result(old(self).view(),old(self).votes(),context,result),
+             self.view() == collect_after(old(self).view(),context,result,out),
+             self.votes() == collect_votes(old(self).view(),old(self).votes(),context,result,out),
+             self.choices() == old(self).choices(), self.base() == old(self).base(),
+-    { unreached() } // OPEN: actual reply handling, including higher old replies.
+-
+-    // No external count, boolean or certificate: inspect this Core's own votes.
++    { proof { use_type_invariant(&*self); } let mut d=self.data.copy(); let out=d.collect(context,result); self.data=d; out }
+     pub fn try_become_leader(&mut self) -> (elected: bool)
+         ensures elected == promotion_allowed(old(self).view(),old(self).votes()),
+             self.view() == promotion_after(old(self).view(),old(self).votes()),
+             self.votes() == old(self).votes(), self.choices() == old(self).choices(),
+             self.base() == old(self).base(),
+-    { unreached() } // OPEN: actual strict-majority decision and role transition.
+-
++    { proof { use_type_invariant(&*self); } let mut d=self.data.copy(); let out=d.try_become_leader(); self.data=d; out }
+     pub fn vote_count(&self) -> (out: u64) ensures out as nat == self.votes().len()
+-    { unreached() } // OPEN: executable query, not a ghost-only tally.
+-
++    { proof { use_type_invariant(&*self); } self.data.vote_count() }
+     pub fn has_vote(&self, member: u64) -> (out: bool) ensures out == self.votes().contains(member)
+-    { unreached() }
+-
+-}
+-}
++    { proof { use_type_invariant(&*self); } self.data.has_vote(member) }
++}
++struct Data { state: StateView, outputs: Ghost<Seq<Choice>>, origin: Ghost<Option<Record>>, voters: Vec<u64> }
++impl Data {
++    fn copy(&self) -> (d:Self)
++        requires self.wf(),
++        ensures d.wf(),d.state==self.state,d.voters@==self.voters@,d.outputs==self.outputs,d.origin==self.origin,
++    {
++        let mut voters=Vec::new();let mut i=0;
++        while i<self.voters.len()
++            invariant i<=self.voters.len(),voters@==self.voters@.subrange(0,i as int),
++            decreases self.voters.len()-i,
++        {voters.push(self.voters[i]);i+=1;}
++        assert(voters@==self.voters@);
++        Data{state:self.state,voters,outputs:Ghost(self.outputs@),origin:Ghost(self.origin@)}
++    }
++
++    closed spec fn wf(&self) -> bool {
++        valid_state(self.state.config,self.state.state)
++        && voters_domain(self.state,self.votes())
++        && self.voters@.no_duplicates()
++        && self.voters.len() <= u64::MAX
++        && (self.state.pending.is_some() ==> {
++            let w=self.state.pending.unwrap();
++            w.record.state==self.state.state && w.record.op<self.state.next
++            && (w.action is Send ==> self.state.role==Role::Candidate && self.state.round==Some(self.state.state.term) && !self.state.halted)
++        })
++    }
++    closed spec fn view(&self) -> StateView { self.state }
++    closed spec fn choices(&self) -> Seq<Choice> { self.outputs@ }
++    closed spec fn base(&self) -> Option<Record> { self.origin@ }
++
++    closed spec fn votes(&self) -> Set<u64> { self.voters@.to_set() }
++
++    // Public domain fact, not a supplied inductive Raft invariant. Establish it
++    // with your own representation and invariant, including after recovery.
++    proof fn domain(tracked &self)
++        requires self.wf(), ensures valid_state(self.view().config,self.view().state), voters_domain(self.view(),self.votes()),
++    { assert(self.wf()); }
++
++    fn new(c: Config, initial: Initial) -> (out: Option<Self>)
++        ensures out.is_some() ==> out.unwrap().wf(),
++            out.is_some() <==> valid_initial(c,initial),
++            out.is_some() ==> out.unwrap().view() == fresh_view(c,initial)
++                && out.unwrap().choices() == Seq::<Choice>::empty() && out.unwrap().base().is_none() && out.unwrap().votes() == Set::<u64>::empty(),
++    {
++        proof { empty_votes(); }
++        if !state_valid(c,initial.state) || (initial.state.term==0 && !matches!(initial.role,Role::Follower)) { return None; }
++        Some(Data{state:StateView{config:c,state:initial.state,role:initial.role,next:0,pending:None,halted:false,round:None,self_saved:false},outputs:Ghost(Seq::empty()),origin:Ghost(None),voters:Vec::new()})
++    }
++
++    fn recover(c: Config, record: Record) -> (out: Option<Self>)
++        ensures out.is_some() ==> out.unwrap().wf(),
++            out.is_some() <==> valid_record(c,record),
++            out.is_some() ==> out.unwrap().view() == recovered_view(c,record)
++                && out.unwrap().choices() == Seq::<Choice>::empty() && out.unwrap().base() == Some(record) && out.unwrap().votes() == Set::<u64>::empty(),
++    {
++        proof { empty_votes(); }
++        if !state_valid(c,record.state) || record.op==u64::MAX { return None; }
++        Some(Data{state:StateView{config:c,state:record.state,role:Role::Follower,next:record.op+1,pending:None,halted:false,round:None,self_saved:false},outputs:Ghost(Seq::empty()),origin:Ghost(Some(record)),voters:Vec::new()})
++    }
++
++    fn inspect(&self) -> (out: StateView) requires self.wf(), ensures out == self.view()
++    { self.state }
++
++    fn receive(&mut self, request: Request) -> (out: Receive)
++        requires old(self).wf(),
++        ensures self.wf(),
++            out == receive_result(old(self).view(), request),
++            self.view() == receive_after(old(self).view(),request,out),
++            self.choices() == old(self).choices(), self.base() == old(self).base(),
++            self.votes() == receive_votes(old(self).view(),old(self).votes(),request,out),
++    {
++        proof { assert(self.wf()); }
++        let v=self.state;
++        proof { empty_votes(); }
++        if v.halted {return Receive::Reject(Fault::Halted);}
++        if v.pending.is_some() {return Receive::Reject(Fault::Busy);}
++        if !request_valid(v.config,request) {return Receive::Reject(Fault::Invalid);}
++        if v.next==u64::MAX {
++            if request.term>v.state.term {self.demote(request.term);self.state.halted=true;}
++            return Receive::Reject(Fault::Exhausted);
++        }
++        let higher=request.term>v.state.term;
++        let grant=request.term>=v.state.term && (request.log.term>v.state.log.term || (request.log.term==v.state.log.term && request.log.index>=v.state.log.index)) && (higher || v.state.voted_for.is_none() || v.state.voted_for==Some(request.candidate));
++        let state=Persistent{term:if higher {request.term} else {v.state.term},voted_for:if grant {Some(request.candidate)} else if higher {None} else {v.state.voted_for},log:v.state.log};
++        let w=Write{record:Record{op:v.next,state},request:Some(request),action:Action::Reply(Reply{node:v.config.node,term:state.term,candidate:request.candidate,granted:grant})};
++        if higher {self.demote(request.term);}
++        self.state.state=state;self.state.next=v.next+1;self.state.pending=Some(w);
++        Receive::Save(w)
++    }
++
++    fn start_election(&mut self) -> (out: Campaign)
++        requires old(self).wf(),
++        ensures self.wf(),
++            out == start_result(old(self).view()), self.view() == start_after(old(self).view(),out),
++            self.choices() == start_choices(old(self).choices(),old(self).view(),out),
++            self.base() == old(self).base(), self.votes() == start_votes(old(self).votes(),out),
++    {
++        proof { assert(self.wf()); }
++        let v=self.state;
++        proof { empty_votes(); }
++        if v.halted {return Campaign::Reject(Fault::Halted);}
++        if v.pending.is_some() {return Campaign::Reject(Fault::Busy);}
++        if matches!(v.role,Role::Leader) {return Campaign::Reject(Fault::Leader);}
++        if v.state.term==u64::MAX {return Campaign::Reject(Fault::TermExhausted);}
++        if v.next==u64::MAX {return Campaign::Reject(Fault::Exhausted);}
++        let state=Persistent{term:v.state.term+1,voted_for:Some(v.config.node),log:v.state.log};
++        let request=Request{term:state.term,candidate:v.config.node,log:state.log};
++        let w=Write{record:Record{op:v.next,state},request:Some(request),action:Action::Send(Send{config:v.config,request})};
++        self.state=StateView{config:v.config,state,role:Role::Candidate,next:v.next+1,pending:Some(w),halted:false,round:Some(state.term),self_saved:false};
++        self.voters=Vec::new();
++        proof { self.outputs@=self.outputs@.push(choice(self.view())); }
++        Campaign::Save(w)
++    }
++
++    fn complete(&mut self, notice: Completion) -> (out: Option<Action>)
++        requires old(self).wf(),
++        ensures self.wf(),
++            out == complete_result(old(self).view(),notice),
++            self.view() == complete_after(old(self).view(),notice),
++            self.choices() == append_action(old(self).choices(),out), self.base() == old(self).base(),
++            self.votes() == completion_votes(old(self).view(),old(self).votes(),notice),
++    {
++        proof { assert(self.wf()); }
++        let v=self.state;
++        proof { empty_votes(); }
++        if let Some(w)=v.pending {
++            if w.record.op==notice.op {
++                self.state.pending=None;
++                if !notice.success {
++                    self.state.halted=true;self.state.round=None;self.state.self_saved=false;self.voters=Vec::new();return None;
++                }
++                if matches!(w.action,Action::Send(_)) {self.state.self_saved=true;let mut own=Vec::new();own.push(v.config.node);
++                    proof { assert(own@.to_set() =~= Set::<u64>::empty().insert(v.config.node)); assert(own@.no_duplicates()); }
++                    self.voters=own;}
++                proof { self.outputs@=append_action(self.outputs@,Some(w.action)); }
++                proof { assert(voters_domain(self.state,self.votes())); }
++                return Some(w.action);
++            }
++        }
++        None
++    }
++    fn collect(&mut self, context: RpcContext, result: RpcResult) -> (out: Collect)
++        requires old(self).wf(),
++        ensures self.wf(),
++            out == collect_result(old(self).view(),old(self).votes(),context,result),
++            self.view() == collect_after(old(self).view(),context,result,out),
++            self.votes() == collect_votes(old(self).view(),old(self).votes(),context,result,out),
++            self.choices() == old(self).choices(), self.base() == old(self).base(),
++    {
++        proof { assert(self.wf()); }
++        let v=self.state;
++        proof { empty_votes(); }
++        if v.halted {return Collect::Reject(Fault::Halted);}
++        if v.pending.is_some() {return Collect::Reject(Fault::Busy);}
++        if !context_valid(v,context) {return Collect::Reject(Fault::Invalid);}
++        if let RpcResult::Reply{term,granted}=result {
++            if term>v.state.term {
++                self.demote(term);
++                if v.next==u64::MAX {self.state.halted=true;return Collect::Reject(Fault::Exhausted);}
++                let w=Write{record:Record{op:v.next,state:self.state.state},request:None,action:Action::Persisted};
++                self.state.next=v.next+1;self.state.pending=Some(w);return Collect::Save(w);
++            }
++            if matches!(v.role,Role::Candidate) && v.self_saved && v.round==Some(v.state.term) && granted && term==v.state.term && context.sent.request.term==term && context.sent.request.log.term==v.state.log.term && context.sent.request.log.index==v.state.log.index && !self.has_vote(context.peer) {
++                proof {
++                    self.voters@.unique_seq_to_set();
++                    bounded_votes(self.votes().insert(context.peer),v.config.members);
++                    assert(self.votes().insert(context.peer).len()==self.votes().len()+1);
++                }
++                self.voters=with_vote(&self.voters,context.peer);return Collect::Counted;
++            }
++        }
++        Collect::Ignored
++    }
++
++    // No external count, boolean or certificate: inspect this Core's own votes.
++    fn try_become_leader(&mut self) -> (elected: bool)
++        requires old(self).wf(),
++        ensures self.wf(),
++            elected == promotion_allowed(old(self).view(),old(self).votes()),
++            self.view() == promotion_after(old(self).view(),old(self).votes()),
++            self.votes() == old(self).votes(), self.choices() == old(self).choices(),
++            self.base() == old(self).base(),
++    {
++        proof { assert(self.wf()); }
++        let v=self.state;
++        proof { empty_votes(); }
++        if !v.halted && v.pending.is_none() && matches!(v.role,Role::Candidate) && v.self_saved && v.round==Some(v.state.term) && v.state.voted_for==Some(v.config.node) && self.has_vote(v.config.node) && self.vote_count()>v.config.members/2 {
++            self.state.role=Role::Leader;true
++        } else {false}
++    }
++
++    fn vote_count(&self) -> (out: u64) requires self.wf(), ensures out as nat == self.votes().len()
++    {
++        proof { assert(self.wf()); self.voters@.unique_seq_to_set(); }
++        self.voters.len() as u64
++    }
++
++    fn has_vote(&self, member: u64) -> (out: bool) requires self.wf(), ensures out == self.votes().contains(member)
++    {
++        let mut i=0;
++        while i<self.voters.len()
++            invariant i<=self.voters.len(),forall|j:int| 0<=j<i ==> self.voters@[j]!=member,
++            decreases self.voters.len()-i,
++        { if self.voters[i]==member {return true;} i+=1; }
++        false
++    }
++
++    fn demote(&mut self, term:u64)
++        requires old(self).wf(), old(self).state.pending.is_none(), term>=old(self).state.state.term,
++        ensures self.wf(),
++            self.state == (StateView{state:Persistent{term,voted_for:None,log:old(self).state.state.log},role:Role::Follower,round:None,self_saved:false,..old(self).state}),
++            self.votes()==Set::<u64>::empty(),self.choices()==old(self).choices(),self.base()==old(self).base(),
++    {
++        proof { empty_votes(); }
++        self.state.state.term=term;self.state.state.voted_for=None;self.state.role=Role::Follower;
++        self.state.round=None;self.state.self_saved=false;self.voters=Vec::new();
++    }
++}
++proof fn empty_votes()
++    ensures Seq::<u64>::empty().to_set()==Set::<u64>::empty(),Seq::<u64>::empty().no_duplicates(),
++        Set::<u64>::empty().finite(),Set::<u64>::empty().len()==0,
++{
++    assert(Seq::<u64>::empty().to_set() =~= Set::<u64>::empty());
++}
++proof fn members_size(m:u64)
++    ensures Set::<u64>::new(|n:u64|n<m).finite(),Set::<u64>::new(|n:u64|n<m).len()==m,
++    decreases m,
++{
++    let all=Set::<u64>::new(|n:u64|n<m);
++    if m==0 { assert(all =~= Set::<u64>::empty()); }
++    else {
++        members_size((m-1) as u64);
++        let smaller=Set::<u64>::new(|n:u64|n<m-1);
++        assert(all =~= smaller.insert((m-1) as u64));
++    }
++}
++proof fn bounded_votes(v:Set<u64>,m:u64)
++    requires v.finite(),forall|n:u64| #[trigger] v.contains(n) ==> n<m,
++    ensures v.len()<=m,
++{
++    members_size(m);let all=Set::<u64>::new(|n:u64|n<m);
++    assert(v.subset_of(all));lemma_len_subset(v,all);
++}
++fn with_vote(v:&Vec<u64>,n:u64) -> (out:Vec<u64>)
++    requires v.len()<u64::MAX, !v@.contains(n),v@.no_duplicates(),
++    ensures out@==v@.push(n),out@.to_set()==v@.to_set().insert(n),out@.no_duplicates(),
++{
++    let mut out=Vec::new();let mut i=0;
++    while i<v.len()
++        invariant i<=v.len(),out@==v@.subrange(0,i as int),
++        decreases v.len()-i,
++    {out.push(v[i]);i+=1;}
++    assert(out@==v@);out.push(n);
++    assert(out@.to_set() =~= v@.to_set().insert(n));out
++}
++fn state_valid(c:Config,s:Persistent) -> (ok:bool) ensures ok==valid_state(c,s) {
++    c.members>0 && c.node<c.members && ((s.log.index==0)==(s.log.term==0)) && s.log.term<=s.term && match s.voted_for {Some(n)=>s.term>0 && n<c.members,None=>true}
++}
++fn request_valid(c:Config,r:Request) -> (ok:bool) ensures ok==valid_request(c,r) {
++    r.term>0 && r.candidate<c.members && ((r.log.index==0)==(r.log.term==0)) && r.log.term<=r.term
++}
++fn context_valid(v:StateView,c:RpcContext) -> (ok:bool) ensures ok==valid_context(v,c) {
++    c.sent.config.node==v.config.node && c.sent.config.members==v.config.members && c.peer<v.config.members && c.peer!=v.config.node && c.sent.request.candidate==v.config.node && request_valid(v.config,c.sent.request)
++}
++}
+--- before/madraft/tests.out
++++ after/madraft/tests.out
+@@ -0,0 +1,4 @@
++tests_seed_1_raft_raft_vote_tests: PASS (checked)
++  /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623374295078319/tests_seed_1_raft_raft_vote_tests.log
++INCOMPLETE: /home/nitro/Desktop/raft_verus/runs/election-recovery-01/runs/checks/1793623374295078319/results.json
++Verus checks the supplied definitions and imported bodies. Source linkage and nonempty witnesses reject some disconnected/vacuous candidates; they do not decide arbitrary execution/observation adequacy. Review all runtime paths, crash histories, snapshot decoders, caller preconditions and the declared host TCB. Conditional liveness remains OPEN.

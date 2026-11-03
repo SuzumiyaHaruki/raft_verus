@@ -1,0 +1,8 @@
+--- checked/prepare.py
++++ current/prepare.py
+@@ -100,4 +100,4 @@
+     file.write_text(text)
+     shutil.copy2(task / 'recovery_lemmas.rs', root / 'madraft/proof/recovery_lemmas.rs')
+     shutil.copy2(task / 'AGENTS.md', root / 'AGENTS.md')
+-    return ['madraft/src/raft/vote_core.rs', 'madraft/proof/vote_lemmas.rs']
++    return ['madraft/src/raft/vote_core.rs', 'madraft/proof/vote_lemmas.rs', 'madraft/proof/recovery_lemmas.rs']
